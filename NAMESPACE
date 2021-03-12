@@ -1,0 +1,5 @@
+export(normalize)
+importFrom(tidyr, "%>%")
+importFrom(Rcpp, evalCpp)
+useDynLib(FORTLS, .registration=TRUE)
+exportPattern("^[[:alpha:]]+")

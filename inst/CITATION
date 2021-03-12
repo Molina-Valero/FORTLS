@@ -1,0 +1,18 @@
+citHeader("To cite package FORTLS in publications use:")
+
+year <- sub("-.*", "", meta$Date)
+note <- sprintf("R package version %s", meta$Version)
+
+
+bibentry(bibtype = "Manual",
+         title = "{FORTLS}: Automatic processing of TLS point cloud data for forestry purposes",
+         author = c(person("Juan", "Molina-Valero", "Alberto"),
+                    person("María", "Ginzo Villamayor", "José"),
+                    person("Antonio", "Novo Pérez", "Manuel"),
+                    person("Adela", "Martínez-Calvo"),
+                    person("Juan", "Álvarez-González", "Gabriel"),
+                    person("Fernando", "Montes"),
+                    person("César", "Pérez-Cruzado")),
+         year = year,
+         note = note,
+         url = "https://CRAN.R-project.org/package=FORTLS")
