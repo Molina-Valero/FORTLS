@@ -3,7 +3,8 @@ simulations <- function(tree.list.tls, distance.sampling = NULL,
                         tree.list.field,
                         plot.parameters = list(radius.max = 25, k.tree.max = 50,
                                                BAF.max = 4),
-                        dir.data = NULL, save.result = TRUE, dir.result = NULL) {
+                        dir.data = NULL, save.result = TRUE,
+                        dir.result = NULL) {
 
 
   # Check arguments
@@ -51,7 +52,7 @@ simulations <- function(tree.list.tls, distance.sampling = NULL,
     if (any(!unique(tree.list.tls[, "id"]) %in%
             unique(distance.sampling$tree[, "id"])))
       warning("There is any plot identification in 'tree.list.tls' argument ",
-           "which is missing in 'distance.sampling' argument")
+              "which is missing in 'distance.sampling' argument")
     for (.i in unique(tree.list.tls[, "id"])) {
 
       if (any(!unique(tree.list.tls[tree.list.tls[, "id"] == .i, "tree"]) %in%
@@ -83,7 +84,7 @@ simulations <- function(tree.list.tls, distance.sampling = NULL,
   }
   if (any(!unique(tree.list.tls[, "id"]) %in% unique(tree.list.field[, "id"])))
     stop("There is any plot identification in 'tree.list.tls' argument ",
-            "which is missing in 'tree.list.field' argument")
+         "which is missing in 'tree.list.field' argument")
 
   # 'plot.parameters' must be list(radius.max = 25, k.tree.max = 50,
   # BAF.max = 4) (by default) or a list with all or any of the numeric and
@@ -231,14 +232,14 @@ simulations <- function(tree.list.tls, distance.sampling = NULL,
                  },
                  y = .ef.names, z = .mean.names, simplify = FALSE),
     field = c(
-              # Density (trees/ha), basal area (m2/ha) and volume (m3/ha)
-              "N", "G", "V",
+      # Density (trees/ha), basal area (m2/ha) and volume (m3/ha)
+      "N", "G", "V",
 
-              # Mean diameters (cm), and mean heights (m)
-              paste(names(.mean.names), sep = "."),
+      # Mean diameters (cm), and mean heights (m)
+      paste(names(.mean.names), sep = "."),
 
-              # Mean dominant diameters (cm), and mean dominant heights (m)
-              paste(names(.mean.names), "0", sep = ".")))
+      # Mean dominant diameters (cm), and mean dominant heights (m)
+      paste(names(.mean.names), "0", sep = ".")))
 
   # Define radius increment, and create a list containing empty data.frames
   # where results will be saved for fixed area plots
@@ -320,12 +321,24 @@ simulations <- function(tree.list.tls, distance.sampling = NULL,
   tree.list.field <- tree.list.field[, c("id", "tree", "horizontal.distance",
                                          "dbh", "total.height"), drop = FALSE]
 
-  .files <- list.files(pattern = "txt", path = dir.data)
+  # Define TXT files list
+  .files <- unique(tree.list.tls$file)
+  .files.exists <- .files %in% list.files(pattern = "txt", path = dir.data)
+  if (all(!.files.exists)) {
 
-  .files <- suppressWarnings(tree.list.tls$file[which(tree.list.tls$file == .files)])
+    warning("None of the TXT files in 'tree.list.tls' is available in ",
+            "'dir.data', so no computation will be done")
+  }
+  else if (any(!.files.exists)) {
+
+    warning(sum(!.files.exists), " TXT files in 'tree.list.tls' are ",
+            "missing in 'dir.data', so no computation will be done for them")
+
+  }
+  .files <- .files[.files.exists]
 
   # Loop for each TLS plot
-  for (.i in unique(.files)) {
+  for (.i in .files) {
 
 
     # Select TLS plot id
@@ -346,17 +359,18 @@ simulations <- function(tree.list.tls, distance.sampling = NULL,
     .distSampling <- distance.sampling
     if (!is.null(.distSampling))
       .distSampling <-
-        as.matrix(distance.sampling$tree[distance.sampling$tree$id == .id, ,
-                                         drop = FALSE])
+      as.matrix(distance.sampling$tree[distance.sampling$tree$id == .id, ,
+                                       drop = FALSE])
 
 
     # Create points' database and trees' database for plot .id - TLS data ----
 
 
     # Read the points' database for the TLS plot from the file .i
-    .data.tls <- suppressMessages(vroom::vroom(file.path(dir.data, .i),
-                                               col_select = c("x", "y", "z", "rho"),
-                                               progress = FALSE))
+    .data.tls <- suppressMessages(
+      vroom::vroom(file.path(dir.data, .i),
+                   col_select = c("x", "y", "z", "rho"), progress = FALSE)
+    )
     .data.tls <- as.data.frame(.data.tls, stringsAsFactors = FALSE)
 
     # Select data corresponding to the TLS plot from the trees' database
@@ -392,12 +406,8 @@ simulations <- function(tree.list.tls, distance.sampling = NULL,
                      return(P99)
                    },
                    voro =.voro)
-    ## .tree$tls <- cbind(.tree$tls, P99 = .P99[.tree$tls[, "tree"]])
-
-    ####
     .P99 <- data.frame(tree = names(.P99), P99 = .P99)
     .tree$tls <- merge(.tree$tls, .P99, by = "tree", all = FALSE)
-    ####
 
     # Compute angular aperture
     .wide <- .tree$tls$phi.right - .tree$tls$phi.left
@@ -458,21 +468,21 @@ simulations <- function(tree.list.tls, distance.sampling = NULL,
                             num.dec = .num.dec)
       .radius.min <- max(.radius.min)
       .radius.max <- plot.parameters$radius.max
+      .rho.max <- .customCeiling(max(.data.tls[, "rho"]), Decimals = .num.dec)
+      if (.radius.max > .rho.max) {
+
+        .radius.max <- .rho.max
+        warning("For plot ", .id, ", 'plot.parameters$radius.max' was reduced ",
+                "to ", .radius.max, " since it is the maximum distance in ",
+                "point cloud data")
+
+      }
       if (.radius.min > .radius.max) {
 
         .radius.max <- .radius.min
         warning("For plot ", .id, ", 'plot.parameters$radius.max' was ",
                 "increased to ", .radius.min, " to ensure that at least one ",
                 "tree is included in all the simulated plots")
-
-      }
-
-      if (.radius.max > max(.data.tls[, "rho"])) {
-
-        .radius.max <- max(.data.tls[, "rho"])
-        warning("For plot ", .id, ", 'plot.parameters$radius.max' was ",
-                "reduced to ", .radius.max, " since it is the maximum distance in ",
-                "point cloud data")
 
       }
 

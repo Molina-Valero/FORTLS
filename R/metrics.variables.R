@@ -1,11 +1,9 @@
 
 metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
-                              plot.parameters,
-                              dir.data = NULL, save.result = TRUE, dir.result = NULL) {
+                              plot.parameters, dir.data = NULL,
+                              save.result = TRUE, dir.result = NULL) {
 
-  # Check if plot.parameter argument is included,
-  # otherwise, function will stop
-
+  # Check if plot.parameter argument is included, otherwise, function will stop
   if(is.null(plot.parameters))
     stop('No plot design specified in plot.parameters argument')
 
@@ -116,12 +114,24 @@ metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
   }
   names(.num) <- rownames(plot.parameters)
 
-  .files <- list.files(pattern = "txt", path = dir.data)
+  # Define TXT files list
+  .files <- unique(tree.list.tls$file)
+  .files.exists <- .files %in% list.files(pattern = "txt", path = dir.data)
+  if (all(!.files.exists)) {
 
-  .files <- suppressWarnings(tree.list.tls$file[which(tree.list.tls$file == .files)])
+    warning("None of the TXT files in 'tree.list.tls' is available in ",
+            "'dir.data', so no computation will be done")
+  }
+  else if (any(!.files.exists)) {
+
+    warning(sum(!.files.exists), " TXT files in 'tree.list.tls' are ",
+            "missing in 'dir.data', so no computation will be done for them")
+
+  }
+  .files <- .files[.files.exists]
 
   # Loop for each TLS plot
-  for (.i in unique(.files)) {
+  for (.i in .files) {
 
     # Select TLS plot stratum
     .stratum <- ifelse(!is.null(tree.list.tls$stratum),
@@ -143,19 +153,23 @@ metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
 
 
     .distSampling <- distance.sampling
-    if (!is.null(.distSampling))
+    if (!is.null(.distSampling)) {
+
       .distSampling <-
         as.matrix(distance.sampling$tree[distance.sampling$tree$id == .id, ,
                                          drop = FALSE])
+
+    }
 
 
     # Create points' database and trees' database for plot .id ----
 
 
     # Read the points' database for the TLS plot from the file .i
-    .data.tls <- suppressMessages(vroom::vroom(file.path(dir.data, .i),
-                                               col_select = c("x", "y", "z", "rho"),
-                                               progress = FALSE))
+    .data.tls <- suppressMessages(
+      vroom::vroom(file.path(dir.data, .i),
+                   col_select = c("x", "y", "z", "rho"), progress = FALSE)
+    )
     .data.tls <- as.data.frame(.data.tls, stringsAsFactors = FALSE)
 
     # Select data corresponding to the TLS plot from the trees' database
@@ -191,12 +205,8 @@ metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
                      return(P99)
                    },
                    voro =.voro)
-    # .tree.tls <- cbind(.tree.tls, P99 = .P99[.tree.tls[, "tree"]])
-
-    ####
     .P99 <- data.frame(tree = names(.P99), P99 = .P99)
     .tree.tls <- merge(.tree.tls, .P99, by = "tree", all = FALSE)
-    ####
 
     # Compute angular aperture
     .wide <- .tree.tls$phi.right - .tree.tls$phi.left
@@ -240,6 +250,7 @@ metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
                 " to ensure that at least one tree is included")
 
       }
+      .radius.min <- .radius.max
 
       # Compute a radius sequence, select trees according to maximum radius,
       # compute accumulated number of points, and create a matrix containing
@@ -267,8 +278,7 @@ metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
                                                dec = .num.dec)
 
       # Filter plot by maximum radius
-      .row.names <- .format.numb(x = plot.parameters[.stratum, "radius"],
-                                 dec = .num.dec)
+      .row.names <- .format.numb(x = .radius.max, dec = .num.dec)
       .fixedAreaPlot <- .fixedAreaPlot[.row.names, , drop = FALSE]
 
       # Compute mean dominant diameters and heights for each radius value
@@ -318,10 +328,10 @@ metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
 
       # Define maximum number of trees according to 'plot.parameters' argument,
       # and number of trees' database
-      .k.tree.max <- max(.tree.tls[,"tree"])
+      .k.tree.max <- nrow(.tree.tls)
       if (.k.tree.max < plot.parameters[.stratum, "k.tree"]) {
 
-        warning("For plot ", .i, ", k-tree was reduced to ", .k.tree.max,
+        warning("For plot ", .id, ", k-tree was reduced to ", .k.tree.max,
                 " since it is the number of trees in the plot")
 
       } else {
@@ -346,8 +356,7 @@ metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
                                            dec = .num.dec)
 
       # Filter plot by maximum k-tree
-      .row.names <- .format.numb(x = plot.parameters[.stratum, "k.tree"],
-                                 dec = .num.dec)
+      .row.names <- .format.numb(x = .k.tree.max, dec = .num.dec)
       .kTreePlot <- .kTreePlot[.row.names, , drop = FALSE]
 
       # Create radius sequence for computing dominant diameters and heights,
@@ -403,8 +412,23 @@ metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
       # Define number of decimals places to be considered
       .num.dec <- .decimals(plot.parameters[.stratum, "BAF"])
 
+      # Define minimum and maximum value for BAF sequence according to
+      # 'plot.parameters' argument, and BAF values in trees' database
+      .BAF.rang <- range(.customFloor(.tree.tls[, "BAF"], Decimals = .num.dec))
+      .BAF.min <- .BAF.rang[1]
+      .BAF.max <- plot.parameters[.stratum, "BAF"]
+      if (.BAF.rang[2] < .BAF.max) {
+
+        .BAF.max <- .BAF.rang[2]
+        warning("For plot ", .id, ", BAF was reduced to ", .BAF.max,
+                " to ensure that at least one tree is included")
+
+      }
+      .BAF.min <- .BAF.max
+
       # Compute a BAF sequence for angle-count plots
-      .BAF.seq <- round(plot.parameters[.stratum, "BAF"], .num.dec)
+      .BAF.seq <- seq(from = .BAF.max, to = .BAF.min, by = - 10 ^ (-.num.dec))
+      .BAF.seq <- sort(unique(round(.BAF.seq, .num.dec)))
       names(.BAF.seq) <- .format.numb(x = .BAF.seq, dec = .num.dec)
 
       # Compute correction of occlusion, estimate variables per ha, and
@@ -465,7 +489,7 @@ metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
     t1 <- Sys.time()
     message(" (", format(round(difftime(t1, t0, units = "secs"), 2)), ")")
 
-    }
+  }
 
 
   # Save fixed area, k-tree and/or angle-count plot results, and write csv files
