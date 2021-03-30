@@ -1,10 +1,9 @@
 
-tree.detection.multiple <- function(files,
+tree.detection.multiple <- function(files, id = NULL, file = NULL,
 
                         normalize.arguments =
 
-                        list(max.dist = NULL, min.height = NULL, max.height = NULL,
-                             id = NULL, file = NULL),
+                        list(max.dist = NULL, min.height = NULL, max.height = NULL),
 
                         tree.detection.arguments =
 
@@ -30,12 +29,47 @@ tree.detection.multiple <- function(files,
 
   }
 
+  if(is.null(tree.detection.arguments$breaks)){
+
+    .breaks <- c(1.0, 1.3, 1.6)
+
+  } else {
+
+    .breaks <- tree.detection.arguments$breaks
+
+  }
+
 
   for (i in (1:length(files))) {
 
   message("Computing plot: ", i)
 
   message("Normalizing")
+
+  # Assign id
+
+  if(!is.null(id)){
+
+    .id <- id[i]
+
+  } else {
+
+    .id <- i
+
+  }
+
+
+  # File name
+
+  if(!is.null(file)){
+
+    .file <- paste(file[i], ".txt", sep = "")
+
+  } else {
+
+    .file <- paste(.id, ".txt", sep = "")
+
+  }
 
   .data <- normalize(las = files[[i]],
 
@@ -45,7 +79,7 @@ tree.detection.multiple <- function(files,
 
                      max.height = normalize.arguments$max.height,
 
-                     id = i,
+                     id = .id, file = .file,
 
                      dir.data = dir.data, save.result = save.result, dir.result = dir.result)
 
@@ -59,7 +93,7 @@ tree.detection.multiple <- function(files,
 
                                    dbh.max = tree.detection.arguments$dbh.max,
 
-                                   breaks = tree.detection.arguments$breaks,
+                                   breaks = .breaks,
 
                                    ncr.threshold = .ncr.threshold,
 
@@ -77,7 +111,7 @@ tree.detection.multiple <- function(files,
 
                                      dbh.max = tree.detection.arguments$dbh.max,
 
-                                     breaks = tree.detection.arguments$breaks,
+                                     breaks = .breaks,
 
                                      ncr.threshold = .ncr.threshold,
 

@@ -109,7 +109,7 @@ distance.sampling <- function(tree.list.tls,
 
 
 
-  # Fitting detection probability functions by stratum
+  ## Fitting detection probability functions by stratum
 
   for (i in unique(.data$Region.Label)) {
 
@@ -208,9 +208,14 @@ distance.sampling <- function(tree.list.tls,
 
   # Final merge
   # Se obtiene un data frame con los valores de la probabilidad de detecci?n de cada arbol
-  .salida <- data.frame(object = .dat$object,
+  .salida <- data.frame(# object = .dat$object,
                         P.hn = .hn$ddf$fitted, P.hn.cov = .hn_cov$ddf$fitted,
                         P.hr = .hr$ddf$fitted, P.hr.cov = .hr_cov$ddf$fitted)
+  .salida <- merge(data.frame(object = .dat$object), .salida, by = "row.names", all = TRUE)
+  .salida$P.hn <- ifelse(is.na(.salida$P.hn),  mean(.salida$P.hn, na.rm = TRUE), .salida$P.hn)
+  .salida$P.hn.cov <- ifelse(is.na(.salida$P.hn.cov),  mean(.salida$P.hn.cov, na.rm = TRUE), .salida$P.hn.cov)
+  .salida$P.hr <- ifelse(is.na(.salida$P.hr),  mean(.salida$P.hr, na.rm = TRUE), .salida$P.hr)
+  .salida$P.hr.cov <- ifelse(is.na(.salida$P.hr.cov),  mean(.salida$P.hr.cov, na.rm = TRUE), .salida$P.hr.cov)
 
   # Se asocian los valores obtenidos a sus respectivos ?rboles
   .tree_n <- merge(.dat, .salida, by = "object")

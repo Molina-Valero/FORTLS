@@ -27,13 +27,12 @@ normalize <- function(las,
 
   # Giving the same scale factor to all coordinates
 
-  las@header@PHB[["X scale factor"]] <- 0.000001
-  las@header@PHB[["Y scale factor"]] <- 0.000001
-  las@header@PHB[["Z scale factor"]] <- 0.000001
+  las@header@PHB[["X scale factor"]] <- 0.001
+  las@header@PHB[["Y scale factor"]] <- 0.001
+  las@header@PHB[["Z scale factor"]] <- 0.001
 
 
   # Normalize
-
   .data <- lidR::classify_ground(las, algorithm = lidR::csf(), last_returns = FALSE)
 
   .pb$tick()
@@ -42,6 +41,8 @@ normalize <- function(las,
   # Generaion of Digital Terrain Model (DTM)
 
   .dtm <- suppressWarnings(lidR::grid_terrain(.data, algorithm = lidR::knnidw()))
+  .dtm[.dtm < min(.data@data$Z)] <- NA
+
 
   .pb$tick()
 
