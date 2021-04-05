@@ -213,8 +213,8 @@ tree.detection <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.threshold = 0
       for(.i in 1:length(.x2.values)){
         for(.j in 1:length(.y2.values)){
 
-          .den <- .dat[which(.dat$phi < ((.x2.values[.i]) + 0.005) &
-                             .dat$phi > ((.x2.values[.i]) - 0.005) &
+          .den <- .dat[which(.dat$phi < ((.x2.values[.i]) + 0.0005) &
+                             .dat$phi > ((.x2.values[.i]) - 0.0005) &
                              .dat$rho < ((.y2.values[.j]) + 0.02) &
                              .dat$rho > ((.y2.values[.j]) - 0.02)), ]
 
