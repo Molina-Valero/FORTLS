@@ -94,7 +94,7 @@
       # .v <- (pi / 4) * tree[, "dbh"] ^ 2 * .column.height * 0.45
 
       # Paraboloid
-      .v <- pi * (.column.height ^ 2 / 2) * ((tree[, "dbh"] / 2) ^ 2 / (.column.height - 1.3))
+      .v <- pi * (.column.height ^ 2 / 2) * ((tree[, "dbh"] / 2) ^ 2 / (.column.height - 1.3) ^ 2)
 
       tree <- cbind(tree, V.acum = cumsum(.v))
 
