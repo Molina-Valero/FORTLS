@@ -175,9 +175,9 @@ tree.detection <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.threshold = 0
         for(.j in 1:length(.y.values)){
 
           .den <- .dat[which(.dat$x < ((.x.values[.i]) + 0.015) &
-                              .dat$x > ((.x.values[.i]) - 0.015) &
-                              .dat$y < ((.y.values[.j]) + 0.015) &
-                              .dat$y > ((.y.values[.j]) - 0.015)), ]
+                             .dat$x > ((.x.values[.i]) - 0.015) &
+                             .dat$y < ((.y.values[.j]) + 0.015) &
+                             .dat$y > ((.y.values[.j]) - 0.015)), ]
 
       # Aquellas celdas con menos de 2 puntos no las tengo en cuenta
       # para luego m?s tarde calcular la densidad media por celda
@@ -198,7 +198,7 @@ tree.detection <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.threshold = 0
 
       if(nrow(.dat) < 1){next}
 
-      .n <- 0.7 * (0.1 / (tan(.alpha.h / 2) * mean(.dat$rho) * 2)) * (0.001 / .alpha.h)
+      .n <- 0.7 * (0.1 / (tan(.alpha.h / 2) * mean(.dat$rho) * 2))
 
       # Valores de las coordenadas phi y rho correspondientes a las
       # intersecciones de la malla:
@@ -213,10 +213,10 @@ tree.detection <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.threshold = 0
       for(.i in 1:length(.x2.values)){
         for(.j in 1:length(.y2.values)){
 
-          .den <- .dat[which(.dat$phi < ((.x2.values[.i]) + 0.0005) &
-                             .dat$phi > ((.x2.values[.i]) - 0.0005) &
-                             .dat$rho < ((.y2.values[.j]) + 0.02) &
-                             .dat$rho > ((.y2.values[.j]) - 0.02)), ]
+          .den <- .dat[which(.dat$phi <= ((.x2.values[.i]) + (.alpha.h/2)) &
+                             .dat$phi >= ((.x2.values[.i]) - (.alpha.h/2)) &
+                             .dat$rho <= ((.y2.values[.j]) + 0.02) &
+                             .dat$rho <= ((.y2.values[.j]) - 0.02)), ]
 
       # Aquellas celdas con menos de 2 puntos no las tengo en cuenta
       # para luego m?s tarde calcular la densidad media por celda
@@ -237,7 +237,9 @@ tree.detection <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.threshold = 0
      # Estmiaci?n de la densidad media por celda
     .density <- ifelse(is.nan(.density), NA, .density)
 
-    if(mean(.density, na.rm = T) < .n | is.nan(mean(.density, na.rm = T))){next}
+    if(is.nan(mean(.density, na.rm = TRUE))){next}
+
+    if(max(.density[which(!is.na(.density))], na.rm = T) <= .n){next}
 
       # Eliminaci?n de las celdas con solo un punto
       .dat <- merge(.dat, .remove, by = "point", all.y = TRUE)
