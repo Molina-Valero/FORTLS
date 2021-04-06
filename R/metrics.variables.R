@@ -502,10 +502,12 @@ metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
                                              fixed.area.plot[, "radius"]), ,
                                        drop = FALSE]
     rownames(fixed.area.plot) <- NULL
-    utils::write.csv(fixed.area.plot,
-                     file = file.path(dir.result,
-                                      "metrics.variables.fixed.area.plot.csv"),
-                     row.names = FALSE)
+    if (isTRUE(save.result))
+      utils::write.csv(fixed.area.plot,
+                       file =
+                         file.path(dir.result,
+                                   "metrics.variables.fixed.area.plot.csv"),
+                       row.names = FALSE)
 
   }
 
@@ -514,10 +516,12 @@ metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
     k.tree.plot <- k.tree.plot[order(k.tree.plot[, "id"], k.tree.plot[, "k"]), ,
                                drop = FALSE]
     rownames(k.tree.plot) <- NULL
-    utils::write.csv(k.tree.plot,
-                     file = file.path(dir.result,
-                                      "metrics.variables.k.tree.plot.csv"),
-                     row.names = FALSE)
+    if (isTRUE(save.result))
+      utils::write.csv(k.tree.plot,
+                       file =
+                         file.path(dir.result,
+                                   "metrics.variables.k.tree.plot.csv"),
+                       row.names = FALSE)
 
   }
 
@@ -527,10 +531,12 @@ metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
                                                angle.count.plot[, "BAF"]), ,
                                          drop = FALSE]
     rownames(angle.count.plot) <- NULL
-    utils::write.csv(angle.count.plot,
-                     file = file.path(dir.result,
-                                      "metrics.variables.angle.count.plot.csv"),
-                     row.names = FALSE)
+    if (isTRUE(save.result))
+      utils::write.csv(angle.count.plot,
+                       file =
+                         file.path(dir.result,
+                                   "metrics.variables.angle.count.plot.csv"),
+                       row.names = FALSE)
 
   }
 

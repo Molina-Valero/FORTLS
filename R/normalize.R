@@ -1,5 +1,4 @@
 
-
 normalize <- function(las,
                       max.dist = NULL, min.height = NULL, max.height = NULL,
                       id = NULL, file=NULL,
@@ -76,7 +75,7 @@ normalize <- function(las,
 
   # Extracting coordinates values
 
-  .data <- .data[, c("X", "Y", "Z")]
+  .data <- .data[, c("X", "Y", "Z"), drop = FALSE]
   colnames(.data) <- c("x", "y", "z")
 
 
@@ -84,7 +83,7 @@ normalize <- function(las,
 
   if(!is.null(min.height)) {
 
-    .data <- .data[which(.data$z > min.height), ]
+    .data <- .data[which(.data$z > min.height), , drop = FALSE]
 
   }
 
@@ -93,7 +92,7 @@ normalize <- function(las,
 
   if(!is.null(max.height)) {
 
-    .data <- .data[which(.data$z < max.height), ]
+    .data <- .data[which(.data$z < max.height), , drop = FALSE]
 
   }
 
@@ -154,7 +153,7 @@ normalize <- function(las,
   }
 
 
-  .data <- .data[, c("id", "file", "point", "x", "y", "z", "rho", "phi", "r", "theta", "prob", "prob.selec")]
+  .data <- .data[, c("id", "file", "point", "x", "y", "z", "rho", "phi", "r", "theta", "prob", "prob.selec"), drop = FALSE]
 
   .pb$tick()
 
@@ -162,11 +161,11 @@ normalize <- function(las,
 
   # Obtaining working directory for saving files
 
-  if(!is.null(save.result)){
+  if(isTRUE(save.result)){
 
-  .data.red <- .data[which(.data$prob.selec == 1), ]
+    .data.red <- .data[which(.data$prob.selec == 1), , drop = FALSE]
 
-  vroom::vroom_write(.data.red, path = file.path(dir.result, .data.red$file[1]), delim = ",", progress = FALSE)
+    vroom::vroom_write(.data.red, path = file.path(dir.result, .data.red$file[1]), delim = ",", progress = FALSE)
 
   }
 
@@ -177,4 +176,3 @@ normalize <- function(las,
 
 
 }
-
