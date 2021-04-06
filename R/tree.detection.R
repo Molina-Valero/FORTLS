@@ -202,7 +202,7 @@ tree.detection <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.threshold = 0
 
       # Valores de las coordenadas phi y rho correspondientes a las
       # intersecciones de la malla:
-      .x2.values <- seq(from = .phimin, to = .phimax, by = 0.001)
+      .x2.values <- seq(from = .phimin, to = .phimax, by = .alpha.h)
       .y2.values <- seq(from = .rhomin, to = .rhomax, by = 0.04)
 
       # Matriz donde se va a almacenar el n?mero de puntos por celda
@@ -239,7 +239,7 @@ tree.detection <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.threshold = 0
 
     if(is.nan(mean(.density, na.rm = TRUE))){next}
 
-    if(max(.density[which(!is.na(.density))], na.rm = T) <= .n){next}
+    if(max(.density[which(!is.na(.density))], na.rm = T) < .n){next}
 
       # Eliminaci?n de las celdas con solo un punto
       .dat <- merge(.dat, .remove, by = "point", all.y = TRUE)
