@@ -1,5 +1,5 @@
 
-tree.detection.multiple <- function(files, id = NULL, file = NULL,
+tree.detection.multiple <- function(las.list, id = NULL, file = NULL,
 
                                     normalize.arguments =
 
@@ -40,7 +40,7 @@ tree.detection.multiple <- function(files, id = NULL, file = NULL,
   }
 
 
-  for (i in (1:length(files))) {
+  for (i in (1:length(las.list))) {
 
     message("Computing plot: ", i)
 
@@ -71,7 +71,7 @@ tree.detection.multiple <- function(files, id = NULL, file = NULL,
 
     }
 
-    .data <- normalize(las = files[[i]],
+    .data <- normalize(las = las.list[[i]],
 
                        max.dist = normalize.arguments$max.dist,
 

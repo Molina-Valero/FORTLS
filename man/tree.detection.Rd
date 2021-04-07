@@ -31,9 +31,9 @@ tree.detection(data,
 
 \itemize{
 
-  \item {\code{horizontal.angle}}: horizontal angle aperture (rad).
+  \item {\code{horizontal.angle}}: horizontal angle aperture (degrees).
 
-  \item {\code{vertical.angle}}: vertical angle aperture (rad).}
+  \item {\code{vertical.angle}}: vertical angle aperture (degrees).}
 
   \item{}{or separation between two consecutive points at a certain distance from TLS:}
 
