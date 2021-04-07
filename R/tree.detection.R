@@ -152,7 +152,7 @@ tree.detection <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.threshold = 0
           .den <- .dat[which(.dat$x <= ((.x.values[.i]) + 0.015) &
                                .dat$x > ((.x.values[.i]) - 0.015) &
                                .dat$y <= ((.y.values[.j]) + 0.015) &
-                               .dat$y > ((.y.values[.j]) - 0.015)), drop = FALSE]
+                               .dat$y > ((.y.values[.j]) - 0.015)), , drop = FALSE]
 
           # Discard cells with less than 2 points for computing mean points
           # density by cell
