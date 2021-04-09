@@ -111,13 +111,14 @@ tree.detection.multiple <- function(las.list, id = NULL, file = NULL,
 
     }
 
-  }
+    if(isTRUE(save.result)){
 
-  if(isTRUE(save.result)){
+      utils::write.csv(.tree.list.tls,
+                       file = file.path(dir.result, "tree.list.tls.csv"),
+                       row.names = FALSE)
 
-    utils::write.csv(.tree.list.tls,
-                     file = file.path(dir.result, "tree.list.tls.csv"),
-                     row.names = FALSE)
+    }
+
 
   }
 
