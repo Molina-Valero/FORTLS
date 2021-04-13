@@ -4,7 +4,7 @@ normalize <- function(las,
                       id = NULL, file=NULL,
                       dir.data = NULL, save.result = TRUE, dir.result = NULL){
 
-  .pb <- progress::progress_bar$new(total = 8)
+  .pb <- progress::progress_bar$new(total = 11)
   .pb$tick()
 
 
@@ -19,49 +19,86 @@ normalize <- function(las,
 
   # Loading input (LAS file)
 
-  las <- suppressWarnings(lidR::readLAS(file.path(dir.data, las), select = "xyz"))
+  .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyz")))
 
   .pb$tick()
 
 
   # Giving the same scale factor to all coordinates
 
-  las@header@PHB[["X scale factor"]] <- 0.001
-  las@header@PHB[["Y scale factor"]] <- 0.001
-  las@header@PHB[["Z scale factor"]] <- 0.001
-
-
-  # Normalize
-  .data <- lidR::classify_ground(las, algorithm = lidR::csf(), last_returns = FALSE)
-
-  .pb$tick()
-
-
-  # Generaion of Digital Terrain Model (DTM)
-
-  .dtm <- suppressWarnings(lidR::grid_terrain(.data, algorithm = lidR::knnidw()))
-  .dtm[.dtm < min(.data@data$Z)] <- NA
-
-
-  .pb$tick()
-
-  # Normalization of cloud data
-
-  .data <- suppressWarnings(lidR::normalize_height(.data, .dtm, add_lasattribute = FALSE, na.rm = TRUE))
-
-  .pb$tick()
+  .las@header@PHB[["X scale factor"]] <- 0.001
+  .las@header@PHB[["Y scale factor"]] <- 0.001
+  .las@header@PHB[["Z scale factor"]] <- 0.001
 
 
   # Data filtering at horizontal distances larger than max_dist m in the horizontal plane
 
   if(!is.null(max.dist)) {
 
-    .data <- lidR::clip_circle(.data, 0, 0, max.dist)
+    .las <- lidR::clip_circle(.las, 0, 0, max.dist)
 
   }
 
   .pb$tick()
 
+
+  # Normalize
+
+  # .ws  <- seq(3,12, 4)
+  # .th  <- seq(0.1, 1.5, length.out = length(.ws))
+  # .data <- lidR::classify_ground(.las, algorithm = lidR::pmf(.ws, .th), last_returns = FALSE)
+
+  .data <- suppressWarnings(suppressMessages(lidR::classify_ground(.las, algorithm = lidR::csf(), last_returns = FALSE)))
+
+  .pb$tick()
+
+
+  # Generaion of Digital Terrain Model (DTM)
+
+  # .dtm <- suppressWarnings(suppressMessages(lidR::grid_terrain(.data, res = 0.2, algorithm = lidR::knnidw())))
+  .dtm <- suppressWarnings(suppressMessages(lidR::grid_terrain(.data, res = 0.2, algorithm = lidR::tin())))
+  .dtm[.dtm < min(.data@data$Z)] <- NA
+
+  .pb$tick()
+
+  # Estimating slope
+
+  raster::crs(.dtm) <- "+proj=utm +zone=19 +ellps=GRS80 +datum=NAD83"
+  .slope <- raster::terrain(.dtm, opt=c('slope'), unit='radians')
+
+  .pb$tick()
+
+  if(mean(.slope@data@values, na.rm = TRUE) > 0.3){
+
+
+    # Normalize
+
+    .data <- suppressWarnings(suppressMessages(lidR::classify_ground(.las, algorithm = lidR::csf(sloop_smooth = TRUE), last_returns = FALSE)))
+
+
+    # Generaion of Digital Terrain Model (DTM)
+
+    # .dtm <- suppressWarnings(suppressMessages(lidR::grid_terrain(.data, res = 0.2, algorithm = lidR::knnidw())))
+    .dtm <- suppressWarnings(suppressMessages(lidR::grid_terrain(.data, res = 0.2, algorithm = lidR::tin())))
+    .dtm[.dtm < min(.data@data$Z)] <- NA
+
+
+  }
+
+  .pb$tick()
+
+
+  # Normalization of cloud data
+
+  .data <- suppressWarnings(suppressMessages(lidR::normalize_height(.data, .dtm, add_lasattribute = FALSE, na.rm = TRUE)))
+
+  .pb$tick()
+
+  # Assigning slope to point cloud
+
+  .data <- lidR::merge_spatial(.data, .slope, "slope")
+
+  .pb$tick()
 
   # Test for getting a smaller file - data frame
 
@@ -75,8 +112,8 @@ normalize <- function(las,
 
   # Extracting coordinates values
 
-  .data <- .data[, c("X", "Y", "Z"), drop = FALSE]
-  colnames(.data) <- c("x", "y", "z")
+  .data <- .data[, c("X", "Y", "Z", "slope"), drop = FALSE]
+  colnames(.data) <- c("x", "y", "z", "slope")
 
 
   # Low point filtering
@@ -153,7 +190,7 @@ normalize <- function(las,
   }
 
 
-  .data <- .data[, c("id", "file", "point", "x", "y", "z", "rho", "phi", "r", "theta", "prob", "prob.selec"), drop = FALSE]
+  .data <- .data[, c("id", "file", "point", "x", "y", "z", "rho", "phi", "r", "theta", "slope", "prob", "prob.selec"), drop = FALSE]
 
   .pb$tick()
 

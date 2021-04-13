@@ -198,35 +198,43 @@ tree.detection <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.threshold = 0
 
       if(nrow(.dat) < 1){next}
 
-      .n <- 0.7 * (0.1 / (tan(.alpha.h / 2) * mean(.dat$rho) * 2))
+      if(is.nan(mean(.dat$slope, na.rm = TRUE))){
+
+        .n <- (0.1 / (tan(.alpha.v / 2) * (mean(.dat$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2))
+
+      } else {
+
+        .n <- (0.1 / (tan(.alpha.v / 2) * (mean(.dat$r) / cos(mean(.dat$slope, na.rm = TRUE))) * 2))
+
+      }
+
+      # Ratio points
+
+      if(mean(.cut$slope, na.rm = TRUE) > 0.3){.n <- 0.7 * .n}
+
 
       # Obtain phi and rho coordinates corresponding to mesh intersections
-      .x2.values <- seq(from = .phimin, to = .phimax, by = .alpha.h)
-      .y2.values <- seq(from = .rhomin, to = .rhomax, by = 0.04)
+      .x2.values <- seq(from = min(.dat$phi), to = max(.dat$phi), by = .alpha.h)
 
       # Define matrix where points number by cell will be stored
-      .density <- matrix(0, ncol = length(.x2.values), nrow = length(.y2.values))
+      .density <- vector(length = length(.x2.values))
 
       .remove <- data.frame(point = as.numeric())
 
       for(.i in 1:length(.x2.values)){
-        for(.j in 1:length(.y2.values)){
 
-          .den <- .dat[which(.dat$phi <= ((.x2.values[.i]) + (.alpha.h/2)) &
-                             .dat$phi > ((.x2.values[.i]) - (.alpha.h/2)) &
-                             .dat$rho <= ((.y2.values[.j]) + 0.02) &
-                             .dat$rho > ((.y2.values[.j]) - 0.02)), , drop = FALSE]
+        .den <- .dat[which(.dat$phi <= ((.x2.values[.i]) + (.alpha.h/2)) &
+                           .dat$phi >  ((.x2.values[.i]) - (.alpha.h/2))), ]
 
-          # Discard cells with less than 2 points for computing mean density by
-          # cell
-          .density[.j, .i] <- ifelse(nrow(.den) < 2, NA, nrow(.den))
+        # Aquellas celdas con menos de 2 puntos no las tengo en cuenta
+        # para luego m?s tarde calcular la densidad media por celda
+        .density[.i] <- ifelse(nrow(.den) < 1, NA, nrow(.den))
 
-          if(nrow(.den) > 1){
 
-            .rem <- data.frame(point = .den$point)
-            .remove <- rbind(.remove, .rem)
+        if(nrow(.den) > 1){
 
-          }
+          .rem <- data.frame(point = .den$point)
+          .remove <- rbind(.remove, .rem)
 
         }
 
@@ -238,7 +246,7 @@ tree.detection <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.threshold = 0
 
       if(is.nan(mean(.density, na.rm = TRUE))){next}
 
-      if(max(.density[which(!is.na(.density))], na.rm = T) < .n){next}
+      if(max(.density[which(!is.na(.density))], na.rm = T) < floor(.n)){next}
 
       # Remove cells containing only 1 point
       .dat <- merge(.dat, .remove, by = "point", all.y = TRUE)
@@ -311,6 +319,13 @@ tree.detection <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.threshold = 0
 
       }
 
+      # Evaluamos aquí el ratio
+
+      .ratio <- nrow(.dat.2) / (.n * ((max(.dat.2$phi) - min(.dat.2$phi)) / .alpha.h))
+
+      if(.ratio < 0.5){next}
+
+
       # Select 1st percentil, if necessary for strange points
       # It remains to be seen what happens if cluster is located in 0 +/- phi
       .pto.left <- stats::quantile(.dat.2$phi, prob = 0.01)
@@ -325,7 +340,7 @@ tree.detection <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.threshold = 0
       # For points in section center, select those in half the angle aperture
       # phi +/- TLS aperture .alpha
       .phi.cent <- max(.dat.2$phi) - ((max(.dat.2$phi) - min(.dat.2$phi)) / 2)
-      .rho.cent <- mean(.dat.2$rho[which(.dat.2$phi > (.phi.cent - .alpha.h) & .dat.2$phi < (.phi.cent + .alpha.h))])
+      .rho.cent <- mean(.dat.2$rho[which(round(.dat.2$phi, 3) >= round(.phi.cent - .alpha.h, 3) & round(.dat.2$phi, 3) <= round(.phi.cent + .alpha.h, 3))])
 
       if(is.nan(.rho.cent)){next}
 
@@ -343,7 +358,7 @@ tree.detection <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.threshold = 0
       # numeration and phi must be found when they are ordered with respect to
       # phi
       .dat.2$n <- c(1:nrow(.dat.2))
-      .cor <- try(stats::cor.test(x = .dat.2$n, y = .dat.2$phi, method = 'pearson')) # cor function could be used instead
+      .cor <- try(stats::cor.test(x = .dat.2$n, y = .dat.2$phi, method = 'pearson'), silent = TRUE) # cor function could be used instead
       # .cor <- try(stats::cor.test(x = .dat2$n, y = .dat2$phi, method = 'spearman'))
 
       # If error, go to next iteration
@@ -447,6 +462,10 @@ tree.detection <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.threshold = 0
   .filter$radio.est <- ifelse(.filter$dif == 0, .filter$radius,
                               .filter$radius + .slope * .filter$dif)
 
+  # When there are not enough tree to the linear model, and tress were
+  # detected at at different sections than 1.3 m, we assume these radius
+  # as dbh. This could happen in very few situations.
+  .filter$radio.est <- ifelse(is.na(.filter$radio.est), .filter$radius, .filter$radio.est)
 
   .radio.est <- tapply(.filter$radio.est, .filter$cluster, mean)
 
@@ -481,6 +500,9 @@ tree.detection <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.threshold = 0
   # (ArcCirc == 1) in section corresponding to 1.3 m (where dbh is estimated)
   .filter$filter <- ifelse(.filter$sec == 1.3 & .filter$arc.circ == 1, 1, 0)
   .filter2 <- subset(.filter, .filter$filter == 1)
+
+  if(nrow(.filter2) < 1)
+    .filter2 <- .filter
 
   # Estimate number of points by cluster, with and without point cropping
   # process, corresponding to radius 1 m
