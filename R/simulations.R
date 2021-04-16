@@ -690,6 +690,15 @@ simulations <- function(tree.list.tls, distance.sampling = NULL,
 
       }
 
+      if (min(.BAF.rang[1, ]) > .BAF.max) {
+
+        .BAF.max <- max(.BAF.rang[1, ])
+        warning("For plot ", .id, ", 'plot.parameters$BAF.max' was increased to ",
+                .BAF.max, " to ensure that at least one tree is included in ",
+                "all the simulated plots")
+
+      }
+
       # Loop for TLS and field cases
       for (.j in names(angle.count.plot)) {
 
