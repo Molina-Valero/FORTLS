@@ -3,7 +3,8 @@ tree.detection.multiple <- function(las.list, id = NULL, file = NULL,
 
                                     normalize.arguments =
 
-                                      list(max.dist = NULL, min.height = NULL, max.height = NULL),
+                                      list(max.dist = NULL, min.height = NULL, max.height = NULL,
+                                           algorithm.dtm = "tin", res.dtm = 0.2),
 
                                     tree.detection.arguments =
 
@@ -18,6 +19,32 @@ tree.detection.multiple <- function(las.list, id = NULL, file = NULL,
                                            plot.attributes = NULL),
 
                                     dir.data = NULL, save.result = TRUE, dir.result = NULL){
+
+
+  # DTM algorhitm
+
+  if(is.null(normalize.arguments$algorithm.dtm)){
+
+    .algorithm.dtm <- "tin"
+
+  } else {
+
+    .algorithm.dtm <- normalize.arguments$algorithm.dtm
+
+  }
+
+
+  if(is.null(normalize.arguments$res.dtm)){
+
+    .res.dtm <- 0.2
+
+  } else {
+
+    .res.dtm <- normalize.arguments$res.dtm
+
+  }
+
+  # Tree detection arguments
 
   if(is.null(tree.detection.arguments$ncr.threshold)){
 
@@ -71,6 +98,7 @@ tree.detection.multiple <- function(las.list, id = NULL, file = NULL,
 
     }
 
+
     .data <- normalize(las = las.list[[i]],
 
                        max.dist = normalize.arguments$max.dist,
@@ -78,6 +106,10 @@ tree.detection.multiple <- function(las.list, id = NULL, file = NULL,
                        min.height = normalize.arguments$min.height,
 
                        max.height = normalize.arguments$max.height,
+
+                       algorithm.dtm = .algorithm.dtm,
+
+                       res.dtm = .res.dtm,
 
                        id = .id, file = .file,
 

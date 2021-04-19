@@ -57,19 +57,13 @@ normalize <- function(las,
   # Generaion of Digital Terrain Model (DTM)
 
 
-  if(algorithm.dtm == "knnidw"){
-
+  if(algorithm.dtm == "knnidw")
     .dtm <- suppressWarnings(suppressMessages(lidR::grid_terrain(.data, res = res.dtm, algorithm = lidR::knnidw())))
 
 
-  }
+  if(algorithm.dtm == "tin")
+    .dtm <- suppressWarnings(suppressMessages(lidR::grid_terrain(.data, res = res.dtm, algorithm = lidR::tin())))
 
-  if(algorithm.dtm == "tin"){
-
-
-  .dtm <- suppressWarnings(suppressMessages(lidR::grid_terrain(.data, res = res.dtm, algorithm = lidR::tin())))
-
-  }
 
   .dtm[.dtm < min(.data@data$Z)] <- NA
 
@@ -92,19 +86,13 @@ normalize <- function(las,
 
     # Generaion of Digital Terrain Model (DTM)
 
-    if(algorithm.dtm == "knnidw"){
-
+    if(algorithm.dtm == "knnidw")
       .dtm <- suppressWarnings(suppressMessages(lidR::grid_terrain(.data, res = res.dtm, algorithm = lidR::knnidw())))
 
 
-    }
-
-    if(algorithm.dtm == "tin"){
-
-
+    if(algorithm.dtm == "tin")
       .dtm <- suppressWarnings(suppressMessages(lidR::grid_terrain(.data, res = res.dtm, algorithm = lidR::tin())))
 
-    }
 
     .dtm[.dtm < min(.data@data$Z)] <- NA
 
