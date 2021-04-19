@@ -59,7 +59,7 @@ normalize <- function(las,
 
   if(algorithm.dtm == "knnidw"){
 
-    .dtm <- suppressWarnings(suppressMessages(lidR::grid_terrain(.data, res = 0.2, algorithm = lidR::knnidw())))
+    .dtm <- suppressWarnings(suppressMessages(lidR::grid_terrain(.data, res = res.dtm, algorithm = lidR::knnidw())))
 
 
   }
@@ -94,7 +94,7 @@ normalize <- function(las,
 
     if(algorithm.dtm == "knnidw"){
 
-      .dtm <- suppressWarnings(suppressMessages(lidR::grid_terrain(.data, res = 0.2, algorithm = lidR::knnidw())))
+      .dtm <- suppressWarnings(suppressMessages(lidR::grid_terrain(.data, res = res.dtm, algorithm = lidR::knnidw())))
 
 
     }
