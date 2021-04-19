@@ -1,6 +1,7 @@
 
 normalize <- function(las,
                       max.dist = NULL, min.height = NULL, max.height = NULL,
+                      algorithm.dtm = "tin", res.dtm = 0.2,
                       id = NULL, file=NULL,
                       dir.data = NULL, save.result = TRUE, dir.result = NULL){
 
@@ -55,8 +56,21 @@ normalize <- function(las,
 
   # Generaion of Digital Terrain Model (DTM)
 
-  # .dtm <- suppressWarnings(suppressMessages(lidR::grid_terrain(.data, res = 0.2, algorithm = lidR::knnidw())))
-  .dtm <- suppressWarnings(suppressMessages(lidR::grid_terrain(.data, res = 0.2, algorithm = lidR::tin())))
+
+  if(algorithm.dtm == "knnidw"){
+
+    .dtm <- suppressWarnings(suppressMessages(lidR::grid_terrain(.data, res = 0.2, algorithm = lidR::knnidw())))
+
+
+  }
+
+  if(algorithm.dtm == "tin"){
+
+
+  .dtm <- suppressWarnings(suppressMessages(lidR::grid_terrain(.data, res = res.dtm, algorithm = lidR::tin())))
+
+  }
+
   .dtm[.dtm < min(.data@data$Z)] <- NA
 
   .pb$tick()
@@ -78,8 +92,20 @@ normalize <- function(las,
 
     # Generaion of Digital Terrain Model (DTM)
 
-    # .dtm <- suppressWarnings(suppressMessages(lidR::grid_terrain(.data, res = 0.2, algorithm = lidR::knnidw())))
-    .dtm <- suppressWarnings(suppressMessages(lidR::grid_terrain(.data, res = 0.2, algorithm = lidR::tin())))
+    if(algorithm.dtm == "knnidw"){
+
+      .dtm <- suppressWarnings(suppressMessages(lidR::grid_terrain(.data, res = 0.2, algorithm = lidR::knnidw())))
+
+
+    }
+
+    if(algorithm.dtm == "tin"){
+
+
+      .dtm <- suppressWarnings(suppressMessages(lidR::grid_terrain(.data, res = res.dtm, algorithm = lidR::tin())))
+
+    }
+
     .dtm[.dtm < min(.data@data$Z)] <- NA
 
 
