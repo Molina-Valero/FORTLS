@@ -153,19 +153,19 @@ Stratum, plot identification and k:
       TLS variables:
     \itemize{
       \item \code{N.tls}, \code{N.hn}, \code{N.hr}, \code{N.hn.cov},
-      \code{N.hr.cov}, \code{N.sh},
+      \code{N.hr.cov}, \code{N.sh}, \cr
       \code{G.tls}, \code{G.hn}, \code{G.hr}, \code{G.hn.cov}, \code{G.hr.cov},
-      \code{G.sh}, \code{V.tls}, \code{V.hn}, \code{V.hr}, \code{V.hn.cov}, \cr
-      \code{V.hr.cov}, \code{V.sh}, \code{d.tls}, \code{dg.tls},
-      \code{dgeom.tls}, \code{dharm.tls}, \code{h.tls}, \code{hg.tls},
-      \code{hgeom.tls}, \code{hharm.tls}, \code{d.0.tls}, \code{dg.0.tls},
-      \code{dgeom.0.tls}, \code{dharm.0.tls}, \code{h.0.tls}, \code{hg.0.tls},
+      \code{G.sh}, \cr \code{V.tls}, \code{V.hn}, \code{V.hr}, \code{V.hn.cov},
+      \code{V.hr.cov}, \code{V.sh}, \cr \code{d.tls}, \code{dg.tls},
+      \code{dgeom.tls}, \code{dharm.tls}, \cr \code{h.tls}, \code{hg.tls},
+      \code{hgeom.tls}, \code{hharm.tls}, \cr \code{d.0.tls}, \code{dg.0.tls},
+      \code{dgeom.0.tls}, \code{dharm.0.tls}, \cr \code{h.0.tls}, \code{hg.0.tls},
       \code{hgeom.0.tls}, \code{hharm.0.tls}}
 
     TLS metrics:
     \itemize{
-      \item \code{N.hr.cov}, \code{N.sh}, \code{num.points}, \cr
-      \code{num.points.est}, \code{num.points.hom}, \code{num.points.hom.est}, \code{P05},
+      \item \code{num.points},
+      \code{num.points.est}, \code{num.points.hom}, \code{num.points.hom.est}, \cr          \code{P01},\code{P05},
       \code{P10}, \code{P20}, \code{P25}, \code{P30}, \code{P40}, \code{P50},
       \code{P60}, \code{P70}, \code{P75}, \code{P80}, \code{P90}, \code{P95},
       \code{P99}: same description and format
@@ -197,16 +197,15 @@ TLS variables:
       \code{fixed.area.plot} element.
       \item \code{V.pam}: stand volume (\eqn{{m}^{3}/ha}{m^3/ha}) with occlusion correction based
       on gap probability attenuation with distance from TLS.
-      \item \code{d.tls}, \code{dg.tls}, \code{dgeom.tls}, \code{dharm.tls},
-      \code{h.tls}, \code{hg.tls}, \code{hgeom.tls}, \cr \code{hharm.tls},
-      \code{d.0.tls}, \code{dg.0.tls}, \code{dgeom.0.tls}, \code{dharm.0.tls},
+      \item \code{d.tls}, \code{dg.tls}, \code{dgeom.tls}, \code{dharm.tls}, \cr
+      \code{h.tls}, \code{hg.tls}, \code{hgeom.tls}, \code{hharm.tls}, \cr
+      \code{d.0.tls}, \code{dg.0.tls}, \code{dgeom.0.tls}, \code{dharm.0.tls}, \cr
       \code{h.0.tls}, \code{hg.0.tls}, \code{hgeom.0.tls}, \code{hharm.0.tls}}
 
       TLS metrics:
     \itemize{
       \item \code{num.points}, \code{num.points.est}, \code{num.points.hom},
-      \code{num.points.hom.est},
-      \code{fixed.area.plot} element.
+      \code{num.points.hom.est}, \cr
       \code{P01}, \code{P05}, \code{P10}, \code{P20}, \code{P25}, \code{P30},
       \code{P40}, \code{P50}, \code{P60}, \code{P70}, \code{P75}, \code{P80},
       \code{P90}, \code{P95}, \code{P99}: same description and format as
@@ -310,7 +309,8 @@ download.file(url = "https://www.dropbox.com/s/5rwmbyn8tmqc48m/9.txt?raw=1",
               destfile = file.path(dir.data, "9.txt"), method = "wininet",
               mode = "wb")
 
-plot.parameters <- data.frame(radius = c(10, 15), k.tree = c(8, 12), BAF = c(1.5, 2))
+plot.parameters <- data.frame(radius = c(10, 15), k.tree = c(8, 12), BAF = c(1.5, 2),
+num.trees = c(100, 75))
 
 met.var.TLS <- metrics.variables(tree.list.tls = tree.list.tls,
                                  distance.sampling = ds,

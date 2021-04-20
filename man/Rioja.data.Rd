@@ -41,5 +41,5 @@ variables are provided for each tree (see \code{\link{tree.detection}} \sQuote{V
       [,1] \tab id   \tab character/numeric \tab plot identification (coincident to TLS scans)\cr
       [,2] \tab stratum    \tab numeric \tab stratum (1-2)\cr}}}
 \usage{data(Rioja.data)}
-\format{List with 3 data frames containing 598 observations and 15 variables (tree.list.tls), 659 observations and 7 variables (tree.list.field), and 16 observations and 2 variables (plot.attributes).}
+\format{List with 3 data frames containing 598 observations and 15 variables (tree.list.tls), 659 observations and 9 variables (tree.list.field), and 16 observations and 2 variables (plot.attributes).}
 \keyword{datasets}

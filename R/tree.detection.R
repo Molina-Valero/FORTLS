@@ -210,7 +210,7 @@ tree.detection <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.threshold = 0
 
       # Ratio points
 
-      if(mean(.cut$slope, na.rm = TRUE) > 0.3){.n <- 0.7 * .n}
+      if(mean(.cut$slope, na.rm = TRUE) > 0.5){.n <- 0.7 * .n}
 
 
       # Obtain phi and rho coordinates corresponding to mesh intersections
