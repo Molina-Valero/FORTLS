@@ -15,7 +15,7 @@ tree.detection(data,
                tls.resolution = list(),
                breaks = c(1.0, 1.3, 1.6),
                plot.attributes = NULL,
-               dir.result = NULL, save.result = TRUE)}
+               save.result = TRUE, dir.result = NULL)}
 
 \arguments{
 
