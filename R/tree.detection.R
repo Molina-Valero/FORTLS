@@ -319,7 +319,7 @@ tree.detection <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.threshold = 0
 
       }
 
-      # Evaluamos aquÃ­ el ratio
+      # Evaluamos aquí el ratio
 
       .ratio <- nrow(.dat.2) / (.n * ((max(.dat.2$phi) - min(.dat.2$phi)) / .alpha.h))
 
@@ -493,7 +493,8 @@ tree.detection <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.threshold = 0
   # was identified as circumference arch (ArcCirc)
   .tree$partial.occlusion <- ifelse(.tree$partial.occlusion == 0, 1, 0)
 
-  .tree$dbh <- .tree$radius * 2
+  # Compute dbh (cm)
+  .tree$dbh <- .tree$radius * 200
 
   # Calculate points belonging to radius unit
   # Since it will be an estimation, select sections completely visible

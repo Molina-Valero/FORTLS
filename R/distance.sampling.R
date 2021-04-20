@@ -7,6 +7,9 @@ distance.sampling <- function(tree.list.tls,
   # El argumento plot.radius se refiere al radio de la parcela considerado
   .data <- tree.list.tls
 
+  # Convert dbh (cm) to International System of Units (m)
+  .data$dbh <- .data$dbh / 100
+
 
   # Selecting plots especifiesd in the argument id.plots (NULL by default)
   if(is.null(id.plots)) {

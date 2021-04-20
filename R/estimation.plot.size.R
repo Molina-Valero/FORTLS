@@ -16,6 +16,9 @@ estimation.plot.size <- function(tree.list.tls,
   if (is.null(tree.list.tls$stratum) | all.plot.designs)
     tree.list.tls$stratum <- 1
 
+  # Convert dbh (cm) to International System of Units (m)
+  tree.list.tls$dbh <- tree.list.tls$dbh / 100
+
   # Define character vector containing metrics names for fixed area, k-tree
   # and angle-count plots: density (trees/ha), and basal area (m2/ha)
   .metrics.names <- c("N", "G")

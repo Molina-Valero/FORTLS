@@ -181,6 +181,11 @@ simulations <- function(tree.list.tls, distance.sampling = NULL,
   }
 
 
+  # Convert dbh (cm) to International System of Units (m)
+  tree.list.tls$dbh <- tree.list.tls$dbh / 100
+  tree.list.field$dbh <- tree.list.field$dbh / 100
+
+
   # Define values for certain plot parameters, and create empty data.frames
   # where results will be saved
 
@@ -313,9 +318,6 @@ simulations <- function(tree.list.tls, distance.sampling = NULL,
                       is.na(tree.list.field$dead) &
                       !is.na(tree.list.field$total.height) &
                       !is.na(tree.list.field$dbh), , drop = FALSE]
-
-  # Convert dbh (cm) to SI units (m)
-  tree.list.field$dbh <- tree.list.field$dbh / 100
 
   # Select only columns required for calculations below
   tree.list.field <- tree.list.field[, c("id", "tree", "horizontal.distance",
@@ -545,7 +547,7 @@ simulations <- function(tree.list.tls, distance.sampling = NULL,
                                         drop = FALSE])
         }
 
-        # Convert diameters from SI units (m) to cm
+        # Convert diameters from International System of Units (m) to cm
         .col.names <- names(.mean.names)[substr(names(.mean.names), 1, 1) ==
                                            "d"]
         .col.names <- c(.col.names, paste(.col.names, "0", sep = "."))
@@ -644,7 +646,7 @@ simulations <- function(tree.list.tls, distance.sampling = NULL,
 
         }
 
-        # Convert diameters from SI units (m) to cm
+        # Convert diameters from International System of Units (m) to cm
         .col.names <- names(.mean.names)[substr(names(.mean.names), 1, 1) ==
                                            "d"]
         .col.names <- c(.col.names, paste(.col.names, "0", sep = "."))
@@ -754,7 +756,7 @@ simulations <- function(tree.list.tls, distance.sampling = NULL,
 
         }
 
-        # Convert diameters from SI units (m) to cm
+        # Convert diameters from International System of Units (m) to cm
         .col.names <- names(.mean.names)[substr(names(.mean.names), 1, 1) ==
                                            "d"]
         .col.names <- c(.col.names, paste(.col.names, "0", sep = "."))

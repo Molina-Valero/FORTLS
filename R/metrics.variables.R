@@ -13,6 +13,10 @@ metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
   if (is.null(dir.result)) dir.result <- getwd()
 
 
+  # Convert dbh (cm) to International System of Units (m)
+  tree.list.tls$dbh <- tree.list.tls$dbh / 100
+
+
   # Define values for certain plot parameters, and create empty data.frames
   # where results will be saved
 
