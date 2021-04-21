@@ -319,7 +319,7 @@ tree.detection <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.threshold = 0
 
       }
 
-      # Evaluamos aquí el ratio
+      # Evaluamos aqui el ratio
 
       .ratio <- nrow(.dat.2) / (.n * ((max(.dat.2$phi) - min(.dat.2$phi)) / .alpha.h))
 
