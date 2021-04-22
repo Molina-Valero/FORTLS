@@ -526,7 +526,7 @@
   # Final vector with BAF, N (trees/ha), number of points, G (m2/ha),
   # V (m3/ha), mean diameters (cm), and/or mean heights (m)
   .Plot <- c()
-  if (is.null(case)) .Plot <- c(.Plot, data[1, "stratum"])
+  if (is.null(case)) .Plot <- c(.Plot, stratum = data[1, "stratum"])
   .Plot <- c(.Plot, BAF = BAF, apply(.N, 2, sum))
   if (!is.null(case) && case == "tls") {
 

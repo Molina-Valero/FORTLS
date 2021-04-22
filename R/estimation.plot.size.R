@@ -24,8 +24,8 @@ estimation.plot.size <- function(tree.list.tls,
   .metrics.names <- c("N", "G")
 
 
-  # Define radius increment, and create an empty data.frame where results
-  # will be saved for fixed area plots
+  # Define radius increment, and create an empty data.frame where results will
+  # be saved for fixed area plots
   .fixed.area.plot <- NULL
   if (!is.null(plot.parameters$radius.max)) {
 
@@ -86,9 +86,9 @@ estimation.plot.size <- function(tree.list.tls,
     # Select data corresponding to the TLS plot from the trees' database
     .tree.tls <- tree.list.tls[tree.list.tls$id == .i, , drop = FALSE]
 
-    # Select only columns required for calculations below, and convert to matrix
+    # Select only columns required for calculations below
     .col.names <- c("stratum", "tree", "horizontal.distance", "dbh")
-    .tree.tls <- as.matrix(.tree.tls[ , .col.names, drop = FALSE])
+    .tree.tls <- .tree.tls[ , .col.names, drop = FALSE]
     rownames(.tree.tls) <- NULL
 
     # Order by horizontal distance, and compute variables/metrics: density,
@@ -117,7 +117,7 @@ estimation.plot.size <- function(tree.list.tls,
       if (.radius.min > .radius.max) .radius.max <- .radius.min
 
       # Compute a radius sequence, select trees according to maximum radius,
-      # and create a matrix containing the trees' data for each radius value
+      # and create a data.frame containing the trees' data for each radius value
       .fixedAreaPlot <-
         .radius.fixed.area.calculation(radius.min = .radius.min,
                                        radius.increment = .radius.increment,
@@ -154,7 +154,7 @@ estimation.plot.size <- function(tree.list.tls,
 
       # Define maximum number of trees according to 'plot.parameters' argument,
       # and number of trees' database
-      .k.tree.max <- max(.tree.tls[,"tree"])
+      .k.tree.max <- nrow(.tree.tls)
       if (.k.tree.max >= plot.parameters$k.tree.max)
         .k.tree.max <- round(plot.parameters$k.tree.max)
 
