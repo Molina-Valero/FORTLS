@@ -1,14 +1,13 @@
 
-
 # Compute several weighted mean functions for a numeric vector
 
 .wmean.calculation <- function(data, w, mean.names) {
 
-         sapply(mean.names,
-                function(x, data, w) {
-                  get(paste("weighted_mean", x, sep = "_"))(data, w)
-                },
-                data = data, w = w)
+  sapply(mean.names,
+         function(x, data, w) {
+           get(paste("weighted_mean", x, sep = "_"))(data, w)
+         },
+         data = data, w = w)
 
 }
 
@@ -28,15 +27,15 @@
 
 .customCeiling <- function(x, Decimals = 1) {
 
-    x2 <- x * 10 ^ Decimals
-    ceiling(x2) / 10 ^ Decimals
+  x2 <- x * 10 ^ Decimals
+  ceiling(x2) / 10 ^ Decimals
 
 }
 
 .customFloor <- function(x, Decimals = 1) {
 
-    x2 <- x * 10 ^ Decimals
-    floor(x2) / 10 ^ Decimals
+  x2 <- x * 10 ^ Decimals
+  floor(x2) / 10 ^ Decimals
 
 }
 
@@ -94,7 +93,8 @@
       # .v <- (pi / 4) * tree[, "dbh"] ^ 2 * .column.height * 0.45
 
       # Paraboloid
-      .v <- pi * (.column.height ^ 2 / 2) * ((tree[, "dbh"] / 2) ^ 2 / (.column.height - 1.3))
+      .v <- pi * (.column.height ^ 2 / 2) * ((tree[, "dbh"] / 2) ^ 2 /
+                                               (.column.height - 1.3) ^ 2)
 
       tree <- cbind(tree, V.acum = cumsum(.v))
 
@@ -145,7 +145,7 @@
 
 
 # Compute a radius sequence, select trees according to argument 'radius.max',
-# compute accumulated number of points, and create a matrix containing the
+# compute accumulated number of points, and create a data.frame containing the
 # trees' data for each radius value - FIXED AREA PLOTS
 
 .radius.fixed.area.calculation <- function(radius.min, radius.increment,
@@ -181,16 +181,18 @@
   }
 
 
-  # Create a matrix containing the trees' data corresponding to each value in
-  # the previous radius sequence
+  # Create a data.frame containing the trees' data corresponding to each value
+  # in the previous radius sequence
   tree <-
     lapply(1:length(.radius.seq),
            function(n, x, y, data) {
              ind <- y == x[n]
              if (sum(ind) > 0) result <- data[ind, , drop = FALSE]
              else {
-               result <- matrix(NA, nrow = 1, ncol = ncol(data),
-                                dimnames = list(NULL, colnames(data)))
+               result <- data.frame(matrix(NA, nrow = 1, ncol = ncol(data),
+                                           dimnames = list(NULL,
+                                                           colnames(data))),
+                                    stringsAsFactors = FALSE)
                result[, "radius"] <- as.numeric(x[n])
              }
              return(result)
@@ -199,9 +201,7 @@
            y = .format.numb(x = tree[, "radius"], dec =num.dec), data = tree)
   tree <- do.call(rbind, tree)
 
-  # Fill missing values in the matrix using previous values
-
-  tree <- as.data.frame(tree, stringsAsFactors = FALSE)
+  # Fill missing values in the data.frame using previous values
 
   # Tree
   .tree <- tree %>% tidyr::fill("tree", .direction = "down")
@@ -272,14 +272,12 @@
       tree$num.points.est <- .num.points.est$num.points.est
 
       .num.points.hom.est <- tree %>% tidyr::fill("num.points.hom.est",
-                                           .direction = "down")
+                                                  .direction = "down")
       tree$num.points.hom.est <- .num.points.hom.est$num.points.hom.est
 
     }
 
   }
-
-  tree <- as.matrix(tree)
 
   return(tree)
 
@@ -342,7 +340,7 @@
                           .col.names, drop = FALSE]
       colnames(distance.sampling) <- gsub("P", "EF", .col.names, fixed = TRUE)
       distance.sampling <- 10000 /
-                           (distance.sampling * pi * data[, "radius"] ^ 2)
+        (distance.sampling * pi * data[, "radius"] ^ 2)
       data <- cbind(data, distance.sampling)
 
     }
@@ -357,23 +355,25 @@
       # Compute shadows area
       .col.names <- c("horizontal.distance", "dbh", "partial.occlusion",
                       "wide")
-      .shadow <- cbind(data[data[, "radius"] <= .j, .col.names, drop = FALSE],
-                       shadow = NA)
+      .shadow <- as.matrix(cbind(data[data[, "radius"] <= .j, .col.names,
+                                      drop = FALSE],
+                                 shadow = NA))
 
-      .shadow[, "shadow"] <- ifelse(.shadow[, "partial.occlusion"] == 0,
+      .shadow[, "shadow"] <- ifelse(
+        .shadow[, "partial.occlusion"] == 0,
 
         # Non-occluded trees
         ((((pi * .j ^ 2) - (pi * .shadow[, "horizontal.distance"] ^ 2)) /
-          (2 * pi)) * atan2(.shadow[, "dbh"],
-                            .shadow[, "horizontal.distance"])) -
+            (2 * pi)) * atan2(.shadow[, "dbh"],
+                              .shadow[, "horizontal.distance"])) -
           ((pi * (.shadow[, "dbh"] / 2) ^ 2) / 2),
 
         # Occluded trees
         ((((pi * .j ^ 2) - (pi * .shadow[, "horizontal.distance"] ^ 2)) /
-          (2 * pi)) * (.shadow[, "wide"])) -
-        (((pi * (.shadow[, "dbh"] / 2) ^ 2) *
-          .shadow[, "wide"]) / atan2(.shadow[, "dbh"],
-                                     .shadow[, "horizontal.distance"])))
+            (2 * pi)) * (.shadow[, "wide"])) -
+          (((pi * (.shadow[, "dbh"] / 2) ^ 2) *
+              .shadow[, "wide"]) / atan2(.shadow[, "dbh"],
+                                         .shadow[, "horizontal.distance"])))
 
       # Correction: shadow = 0 if tree is not completely inside the plot
       .shadow[.shadow[, "horizontal.distance"] + .shadow[, "dbh"] / 2 > .j,
@@ -474,16 +474,16 @@
     .column.height <- switch(case, tls = data[, "P99"],
                              field = data[, "total.height"])
     .V <- cbind(V = pi * (data[, "dbh"] / 2) ^ 2 * .column.height * 0.45 *
-                    .N[, "N"])
+                  .N[, "N"])
 
     if (case == "tls") {
 
       # Correction of occlusion - Strahler et al. (2008)
       .De <- mean(data[, "dbh"]) *
-            (1 + (stats::sd(data[, "dbh"], na.rm = TRUE) /
-                  mean(data[, "dbh"], na.rm = TRUE)) ^ 2) ^ 0.5
+        (1 + (stats::sd(data[, "dbh"], na.rm = TRUE) /
+                mean(data[, "dbh"], na.rm = TRUE)) ^ 2) ^ 0.5
       .t <- ((.N[, "N"] / 10000) * .De * data[, "dbh"]) /
-            (2 * sqrt(BAF / 10000))
+        (2 * sqrt(BAF / 10000))
       .Ft <- (2 / .t ^ 2) * (1 - exp(-.t) * (1 + .t))
 
       # Density (trees / ha), basal area (m2 / ha) and volume (m3 / ha) with
@@ -526,7 +526,7 @@
   # Final vector with BAF, N (trees/ha), number of points, G (m2/ha),
   # V (m3/ha), mean diameters (cm), and/or mean heights (m)
   .Plot <- c()
-  if (is.null(case)) .Plot <- c(.Plot, data[1, "stratum"])
+  if (is.null(case)) .Plot <- c(.Plot, stratum = data[1, "stratum"])
   .Plot <- c(.Plot, BAF = BAF, apply(.N, 2, sum))
   if (!is.null(case) && case == "tls") {
 
@@ -540,7 +540,7 @@
 
   return(.Plot)
 
-  }
+}
 
 
 # Compute Pearson/Spearman correlations

@@ -245,7 +245,7 @@ following main steps:
       mean tree heights (m), calculated from the arithmetic mean, quadratic mean, geometric
       mean and harmonic mean, respectively.
       }
-  TLS metrics derived from simulated TLS plots:
+  TLS variables derived from simulated TLS plots:
     \itemize{
       \item \code{N.tls}: stand density (trees/ha) without occlusion
       corrections.
@@ -255,14 +255,6 @@ following main steps:
       argument is \code{NULL}.
       \item \code{N.sh}: stand density (trees/ha) with correction of the
       shadowing effect.
-      \item \code{num.points}, \code{num.points.est}, \code{num.points.hom},
-      \code{num.points.hom.est}: number of points and estimated number of
-      points (points) belonging to trees with normal sections (+/- 5 cm) in the
-      original point cloud (\code{num.points} and \code{num.points.est},
-      respectively); and number of points and estimated number of points
-      (points) belonging to trees normal sections (+/- 5 cm) in the reduced
-      point cloud (\code{num.points.hom} and \code{num.points.hom.est},
-      respectively).
       \item \code{G.tls}: stand basal area (\eqn{{m}^{2}/ha}{m^2/ha}) without occlusion
       corrections.
       \item \code{G.hn}, \code{G.hr}, \code{G.hn.cov}, \code{G.hr.cov}: stand
@@ -291,6 +283,17 @@ following main steps:
       \item \code{h.0.tls}, \code{hg.0.tls}, \code{hgeom.0.tls},
       \code{hharm.0.tls}: dominant mean tree heights (m), calculated from the arithmetic
       mean, quadratic mean, geometric mean and harmonic mean, respectively.
+    }
+    TLS metrics derived from simulated TLS plots:
+    \itemize{
+      \item \code{num.points}, \code{num.points.est}, \code{num.points.hom},
+      \code{num.points.hom.est}: number of points and estimated number of
+      points (points) belonging to trees with normal sections (+/- 5 cm) in the
+      original point cloud (\code{num.points} and \code{num.points.est},
+      respectively); and number of points and estimated number of points
+      (points) belonging to trees normal sections (+/- 5 cm) in the reduced
+      point cloud (\code{num.points.hom} and \code{num.points.hom.est},
+      respectively).
       \item \code{P01}, \code{P05}, \code{P10}, \code{P20}, \code{P25},
       \code{P30}, \code{P40}, \code{P50}, \code{P60}, \code{P70}, \code{P75},
       \code{P80}, \code{P90}, \code{P95}, \code{P99}: height percentiles
@@ -316,28 +319,25 @@ following main steps:
     \itemize{
       \item \code{N}, \code{G}, \code{V}, \code{d}, \code{dg}, \code{dgeom},
       \code{dharm}, \code{h}, \code{hg}, \code{hgeom}, \code{hharm},
-      \code{d.0}, \code{dg.0}, \code{dgeom.0}, \code{dharm.0}, \code{h.0},
+      \code{d.0}, \code{dg.0}, \code{dgeom.0}, \cr \code{dharm.0}, \code{h.0},
       \code{hg.0}, \code{hgeom.0}, \code{hharm.0}: same description and format
       as indicated in the \code{fixed.area.plot} element.
     }
-  TLS metrics derived from simulated TLS plots:
+  TLS variables derived from simulated TLS plots:
     \itemize{
-      \item \code{N.tls}, \code{N.hn}, \code{N.hr}, \code{N.hn.cov},
-      \code{N.hr.cov}, \code{N.sh}, \code{num.points}, \cr
-      \code{num.points.est}, \code{num.points.hom}, \code{num.points.hom.est},
-      \code{G.tls}, \code{G.hn}, \code{G.hr}, \code{G.hn.cov}, \code{G.hr.cov},
-      \code{G.sh}, \code{V.tls}, \code{V.hn}, \code{V.hr}, \code{V.hn.cov}, \cr
-      \code{V.hr.cov}, \code{V.sh}, \code{d.tls}, \code{dg.tls},
-      \code{dgeom.tls}, \code{dharm.tls}, \code{h.tls}, \code{hg.tls},
-      \code{hgeom.tls}, \code{hharm.tls}, \code{d.0.tls}, \code{dg.0.tls},
-      \code{dgeom.0.tls}, \code{dharm.0.tls}, \code{h.0.tls}, \code{hg.0.tls},
-      \code{hgeom.0.tls}, \code{hharm.0.tls}, \code{P01}, \code{P05},
-      \code{P10}, \code{P20}, \code{P25}, \code{P30}, \code{P40}, \code{P50},
-      \code{P60}, \code{P70}, \code{P75}, \code{P80}, \code{P90}, \code{P95},
-      \code{P99}: same description and format as indicated in
-      \code{fixed.area.plot} element.
-    }
-  }
+      \item \code{N.tls}, \code{N.hn}, \code{N.hr}, \code{N.hn.cov}, \code{N.hr.cov}, \code{N.sh}, \cr
+      \code{G.tls}, \code{G.hn}, \code{G.hr}, \code{G.hn.cov}, \code{G.hr.cov}, \code{G.sh}, \cr
+      \code{V.tls}, \code{V.hn}, \code{V.hr}, \code{V.hn.cov}, \code{V.hr.cov}, \code{V.sh}, \cr
+      \code{d.tls}, \code{dg.tls}, \code{dgeom.tls}, \code{dharm.tls}, \cr
+      \code{h.tls}, \code{hg.tls}, \code{hgeom.tls}, \code{hharm.tls}, \cr
+      \code{d.0.tls}, \code{dg.0.tls}, \code{dgeom.0.tls}, \code{dharm.0.tls}, \cr
+      \code{h.0.tls}, \code{hg.0.tls}, \code{hgeom.0.tls}, \code{hharm.0.tls}}
+
+    TLS metrics derived from simulated TLS plots:
+    \itemize{
+      \item \code{num.points}, \code{num.points.est}, \code{num.points.hom}, \code{num.points.hom.est}, \cr
+      \code{P01}, \code{P05}, \code{P10}, \code{P20}, \code{P25}, \code{P30}, \code{P40}, \code{P50}, \code{P60}, \code{P70}, \code{P75}, \code{P80}, \code{P90}, \code{P95}, \code{P99}: same description and format as indicated in
+      \code{fixed.area.plot} element.}}
 
 
   \item{angle.count.plot}{
@@ -358,19 +358,16 @@ following main steps:
     \itemize{
       \item \code{N}, \code{G}, \code{V}, \code{d}, \code{dg}, \code{dgeom},
       \code{dharm}, \code{h}, \code{hg}, \code{hgeom}, \code{hharm},
-      \code{d.0}, \code{dg.0}, \code{dgeom.0}, \code{dharm.0}, \code{h.0},
+      \code{d.0}, \code{dg.0}, \code{dgeom.0}, \cr \code{dharm.0}, \code{h.0},
       \code{hg.0}, \code{hgeom.0}, \code{hharm.0}: same description and format
       as indicated in the \code{fixed.area.plot} element.
     }
-  TLS metrics derived from simulated TLS plots:
+  TLS variables derived from simulated TLS plots:
     \itemize{
       \item \code{N.tls}: same description and format as indicated in the
       \code{fixed.area.plot} element.
       \item \code{N.pam}: stand density (trees/ha) with occlusion correction
       based on gap probability attenuation with distance to TLS.
-      \item \code{num.points}, \code{num.points.est}, \code{num.points.hom},
-      \code{num.points.hom.est}: same description and format as
-      indicated in \code{fixed.area.plot} element.
       \item \code{G.tls}: same description and format as indicated in
       \code{fixed.area.plot} element.
       \item \code{G.pam}: stand basal area (\eqn{{m}^{2}/ha}{m^2/ha}) with occlusion correction
@@ -379,10 +376,15 @@ following main steps:
       \code{fixed.area.plot} element.
       \item \code{V.pam}: stand volume (\eqn{{m}^{3}/ha}{m^3/ha})with occlusion correction based
       on gap probability attenuation with distance to TLS.
-      \item \code{d.tls}, \code{dg.tls}, \code{dgeom.tls}, \code{dharm.tls},
-      \code{h.tls}, \code{hg.tls}, \code{hgeom.tls}, \cr \code{hharm.tls},
-      \code{d.0.tls}, \code{dg.0.tls}, \code{dgeom.0.tls}, \code{dharm.0.tls},
-      \code{h.0.tls}, \code{hg.0.tls}, \code{hgeom.0.tls}, \code{hharm.0.tls},
+      \item \code{d.tls}, \code{dg.tls}, \code{dgeom.tls}, \code{dharm.tls}, \cr
+      \code{h.tls}, \code{hg.tls}, \code{hgeom.tls}, \code{hharm.tls}, \cr
+      \code{d.0.tls}, \code{dg.0.tls}, \code{dgeom.0.tls}, \code{dharm.0.tls}, \cr
+      \code{h.0.tls}, \code{hg.0.tls}, \code{hgeom.0.tls}, \code{hharm.0.tls}
+    }
+    TLS metrics derived from simulated TLS plots:
+    \itemize{
+      \item \code{num.points}, \code{num.points.est}, \code{num.points.hom},
+      \code{num.points.hom.est}, \cr
       \code{P01}, \code{P05}, \code{P10}, \code{P20}, \code{P25}, \code{P30},
       \code{P40}, \code{P50}, \code{P60}, \code{P70}, \code{P75}, \code{P80},
       \code{P90}, \code{P95}, \code{P99}: same description and format as

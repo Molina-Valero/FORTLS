@@ -16,13 +16,16 @@ estimation.plot.size <- function(tree.list.tls,
   if (is.null(tree.list.tls$stratum) | all.plot.designs)
     tree.list.tls$stratum <- 1
 
+  # Convert dbh (cm) to International System of Units (m)
+  tree.list.tls$dbh <- tree.list.tls$dbh / 100
+
   # Define character vector containing metrics names for fixed area, k-tree
   # and angle-count plots: density (trees/ha), and basal area (m2/ha)
   .metrics.names <- c("N", "G")
 
 
-  # Define radius increment, and create an empty data.frame where results
-  # will be saved for fixed area plots
+  # Define radius increment, and create an empty data.frame where results will
+  # be saved for fixed area plots
   .fixed.area.plot <- NULL
   if (!is.null(plot.parameters$radius.max)) {
 
@@ -83,9 +86,9 @@ estimation.plot.size <- function(tree.list.tls,
     # Select data corresponding to the TLS plot from the trees' database
     .tree.tls <- tree.list.tls[tree.list.tls$id == .i, , drop = FALSE]
 
-    # Select only columns required for calculations below, and convert to matrix
+    # Select only columns required for calculations below
     .col.names <- c("stratum", "tree", "horizontal.distance", "dbh")
-    .tree.tls <- as.matrix(.tree.tls[ , .col.names, drop = FALSE])
+    .tree.tls <- .tree.tls[ , .col.names, drop = FALSE]
     rownames(.tree.tls) <- NULL
 
     # Order by horizontal distance, and compute variables/metrics: density,
@@ -114,7 +117,7 @@ estimation.plot.size <- function(tree.list.tls,
       if (.radius.min > .radius.max) .radius.max <- .radius.min
 
       # Compute a radius sequence, select trees according to maximum radius,
-      # and create a matrix containing the trees' data for each radius value
+      # and create a data.frame containing the trees' data for each radius value
       .fixedAreaPlot <-
         .radius.fixed.area.calculation(radius.min = .radius.min,
                                        radius.increment = .radius.increment,
@@ -151,7 +154,7 @@ estimation.plot.size <- function(tree.list.tls,
 
       # Define maximum number of trees according to 'plot.parameters' argument,
       # and number of trees' database
-      .k.tree.max <- max(.tree.tls[,"tree"])
+      .k.tree.max <- nrow(.tree.tls)
       if (.k.tree.max >= plot.parameters$k.tree.max)
         .k.tree.max <- round(plot.parameters$k.tree.max)
 
@@ -308,68 +311,68 @@ estimation.plot.size <- function(tree.list.tls,
 
     for (i in c(1:length(.plots))) {
 
-    .data <- .plots[[i]]
+      .data <- .plots[[i]]
 
-    .axis <- .data[[2]]
-    .data <- .data[[1]]
+      .axis <- .data[[2]]
+      .data <- .data[[1]]
 
-    # Density (tree/ha)
+      # Density (tree/ha)
 
-    plot(.data[, 3], .data$N, type = "n",
-         main = .axis[[1]],
-         xlab = .axis[[2]],
-         ylab = expression(italic("N") ~ (trees/ha)),
-         xlim = c(min(.data[, 3]), max(.data[, 3])),
-         ylim = c(min(.data$N), max(.data$N)))
+      plot(.data[, 3], .data$N, type = "n",
+           main = .axis[[1]],
+           xlab = .axis[[2]],
+           ylab = expression(italic("N") ~ (trees/ha)),
+           xlim = c(min(.data[, 3]), max(.data[, 3])),
+           ylim = c(min(.data$N), max(.data$N)))
 
-    # The rest of the plots
+      # The rest of the plots
 
-    for (.i in unique(.data$id)) {
+      for (.i in unique(.data$id)) {
 
-      .dat <- subset(.data, .data$id == .i)
+        .dat <- subset(.data, .data$id == .i)
 
-      .x <- .dat[, 3]
-      .y <- .dat$N
+        .x <- .dat[, 3]
+        .y <- .dat$N
 
-      graphics::lines(.x, .y, col = scales::alpha(.dat$stratum, 0.5))
+        graphics::lines(.x, .y, col = scales::alpha(.dat$stratum, 0.5))
+
+      }
+
+      graphics::legend("topright",
+                       legend = unique(as.character(.data$stratum)),
+                       text.col = unique(.data$stratum),
+                       bty = "n", pch = 15,
+                       col = unique(.data$stratum))
+
+      # Basal area (m2/ha)
+
+      plot(.data[, 3], .data$G, type = "n",
+           main = .axis[[1]],
+           xlab = .axis[[2]],
+           ylab = expression(italic("G") ~ (m^{2}/ha)),
+           xlim = c(min(.data[, 3]), max(.data[, 3])),
+           ylim = c(min(.data$G), max(.data$G)))
+
+      # The rest of the plots
+
+      for (.i in unique(.data$id)) {
+
+        .dat <- subset(.data, .data$id == .i)
+
+        .x <- .dat[, 3]
+        .y <- .dat$G
+
+        graphics::lines(.x, .y, col = scales::alpha(.dat$stratum, 0.5))
+
+      }
+
+      graphics::legend("topright",
+                       legend = unique(as.character(.data$stratum)),
+                       text.col = unique(.data$stratum),
+                       bty = "n", pch = 15,
+                       col = unique(.data$stratum))
 
     }
-
-    graphics::legend("topright",
-           legend = unique(as.character(.data$stratum)),
-           text.col = unique(.data$stratum),
-           bty = "n", pch = 15,
-           col = unique(.data$stratum))
-
-    # Basal area (m2/ha)
-
-    plot(.data[, 3], .data$G, type = "n",
-         main = .axis[[1]],
-         xlab = .axis[[2]],
-         ylab = expression(italic("G") ~ (m^{2}/ha)),
-         xlim = c(min(.data[, 3]), max(.data[, 3])),
-         ylim = c(min(.data$G), max(.data$G)))
-
-    # The rest of the plots
-
-    for (.i in unique(.data$id)) {
-
-      .dat <- subset(.data, .data$id == .i)
-
-      .x <- .dat[, 3]
-      .y <- .dat$G
-
-      graphics::lines(.x, .y, col = scales::alpha(.dat$stratum, 0.5))
-
-    }
-
-    graphics::legend("topright",
-           legend = unique(as.character(.data$stratum)),
-           text.col = unique(.data$stratum),
-           bty = "n", pch = 15,
-           col = unique(.data$stratum))
-
-   }
   }
 
   # Mean values ----
@@ -408,7 +411,7 @@ estimation.plot.size <- function(tree.list.tls,
 
         .dat <- subset(.data, .data$stratum == i)
 
-        .area <- .dat[which(!is.na(.dat$N.sd)), ]
+        .area <- .dat[which(!is.na(.dat$N.sd)), , drop = FALSE]
 
         graphics::par(new=T)
 
@@ -440,10 +443,10 @@ estimation.plot.size <- function(tree.list.tls,
       }
 
       graphics::legend("topright",
-             legend = unique(as.character(.data$stratum)),
-             text.col = unique(.data$stratum),
-             bty = "n", pch = 15,
-             col = unique(.data$stratum))
+                       legend = unique(as.character(.data$stratum)),
+                       text.col = unique(.data$stratum),
+                       bty = "n", pch = 15,
+                       col = unique(.data$stratum))
 
       # Basal area (m2/ha)
 
@@ -460,7 +463,7 @@ estimation.plot.size <- function(tree.list.tls,
 
         .dat <- subset(.data, .data$stratum == i)
 
-        .area <- .dat[which(!is.na(.dat$G.sd)), ]
+        .area <- .dat[which(!is.na(.dat$G.sd)), , drop = FALSE]
 
         graphics::par(new=T)
 
@@ -493,10 +496,10 @@ estimation.plot.size <- function(tree.list.tls,
       }
 
       graphics::legend("topright",
-             legend = unique(as.character(.data$stratum)),
-             text.col = unique(.data$stratum),
-             bty = "n", pch = 15,
-             col = unique(.data$stratum))
+                       legend = unique(as.character(.data$stratum)),
+                       text.col = unique(.data$stratum),
+                       bty = "n", pch = 15,
+                       col = unique(.data$stratum))
 
     }
 
@@ -559,11 +562,11 @@ estimation.plot.size <- function(tree.list.tls,
 
       graphics::mtext(.axis[[2]], side = 1, line = j, at = 0, adj = 1, col = i)
 
-      .area <- .data[which(!is.na(.data$N.sd)), ]
+      .area <- .data[which(!is.na(.data$N.sd)), , drop = FALSE]
 
       graphics::polygon(c(.area[, 2], rev(.area[, 2])),
-                      c(.area$N.max, rev(.area$N.min)),
-                      col = scales::alpha(i, 0.25), border = NA)
+                        c(.area$N.max, rev(.area$N.min)),
+                        col = scales::alpha(i, 0.25), border = NA)
 
       graphics::lines(.data[, 2], .data$N, col = scales::alpha(i, 0.75),
                       lwd = 2)
@@ -572,12 +575,12 @@ estimation.plot.size <- function(tree.list.tls,
 
 
     graphics::legend("topright",
-           legend = c(.plots$.fixed.area.plot[[2]]$main,
-                      .plots$.k.tree.plot[[2]]$main,
-                      .plots$.angle.count.plot[[2]]$main),
-           text.col = c(1:length(.plots)), cex = 0.75,
-           bty = "n", pch = 15,
-           col = c(1:length(.plots)))
+                     legend = c(.plots$.fixed.area.plot[[2]]$main,
+                                .plots$.k.tree.plot[[2]]$main,
+                                .plots$.angle.count.plot[[2]]$main),
+                     text.col = c(1:length(.plots)), cex = 0.75,
+                     bty = "n", pch = 15,
+                     col = c(1:length(.plots)))
 
 
     # Basal area (m2/ha)
@@ -627,7 +630,7 @@ estimation.plot.size <- function(tree.list.tls,
 
       graphics::mtext(.axis[[2]], side = 1, line = j, adj = 1, at = 0, col = i)
 
-      .area <- .data[which(!is.na(.data$G.sd)), ]
+      .area <- .data[which(!is.na(.data$G.sd)), , drop = FALSE]
 
       graphics::polygon(c(.area[, 2], rev(.area[, 2])),
                         c(.area$G.max, rev(.area$G.min)),
@@ -639,12 +642,12 @@ estimation.plot.size <- function(tree.list.tls,
     }
 
     graphics::legend("topright",
-           legend = c(.plots$.fixed.area.plot[[2]]$main,
-                      .plots$.k.tree.plot[[2]]$main,
-                      .plots$.angle.count.plot[[2]]$main),
-           text.col = c(1:length(.plots)), cex = 0.75,
-           bty = "n", pch = 15,
-           col = c(1:length(.plots)))
+                     legend = c(.plots$.fixed.area.plot[[2]]$main,
+                                .plots$.k.tree.plot[[2]]$main,
+                                .plots$.angle.count.plot[[2]]$main),
+                     text.col = c(1:length(.plots)), cex = 0.75,
+                     bty = "n", pch = 15,
+                     col = c(1:length(.plots)))
 
   }
 

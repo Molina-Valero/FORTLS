@@ -1,5 +1,4 @@
 
-
 distance.sampling <- function(tree.list.tls,
                               id.plots = NULL,
                               strata.attributes = NULL){
@@ -7,6 +6,9 @@ distance.sampling <- function(tree.list.tls,
   # Funciona con el data frame que se obtiene de la funci?n tree_detection()
   # El argumento plot.radius se refiere al radio de la parcela considerado
   .data <- tree.list.tls
+
+  # Convert dbh (cm) to International System of Units (m)
+  .data$dbh <- .data$dbh / 100
 
 
   # Selecting plots especifiesd in the argument id.plots (NULL by default)
@@ -16,7 +18,7 @@ distance.sampling <- function(tree.list.tls,
 
   } else {
 
-    .data <- .data[is.element(.data$id, id.plots),]
+    .data <- .data[is.element(.data$id, id.plots), , drop = FALSE]
 
   }
 
@@ -81,12 +83,12 @@ distance.sampling <- function(tree.list.tls,
   .data$object <- c(1:nrow(.data))
 
   # Naming the rest of fields according to ddf() function
-  .data <- .data[, c("stratum", "id", "tree", "Effort", "horizontal.distance", "OBS", "object", "dbh")]
+  .data <- .data[, c("stratum", "id", "tree", "Effort", "horizontal.distance", "OBS", "object", "dbh"), drop = FALSE]
   colnames(.data) <- c("Region.Label", "Sample.Label", "tree", "Effort", "distance", "OBS", "object", "dbh")
 
 
   # Deleting possible missing distances
-  .data <- .data[!is.na(.data$distance), ]
+  .data <- .data[!is.na(.data$distance), , drop = FALSE]
 
 
   # Defining empty data frames where results will be added
@@ -109,129 +111,134 @@ distance.sampling <- function(tree.list.tls,
 
 
 
-  # Fitting detection probability functions by stratum
+  ## Fitting detection probability functions by stratum
 
   for (i in unique(.data$Region.Label)) {
 
-  # Defining plots location
-  # graphics::par(mfrow = c(2, 2))
+    # Defining plots location
+    # graphics::par(mfrow = c(2, 2))
 
 
-  # Selecting the correstponding stratum
-  .dat <- .data[which(.data$Region.Label == i), ]
+    # Selecting the correstponding stratum
+    .dat <- .data[which(.data$Region.Label == i), , drop = FALSE]
 
-  # Defining maximum distance for fitting detection probability functions
-  if(is.null(strata.attributes$plot.radius)){
+    # Defining maximum distance for fitting detection probability functions
+    if(is.null(strata.attributes$plot.radius)){
 
-    .max.dist <- max(.dat$distance)
+      .max.dist <- max(.dat$distance)
 
-  } else {
+    } else {
 
-    .max.dist <- strata.attributes$plot.radius[i]
+      .max.dist <- strata.attributes$plot.radius[i]
 
-  }
-
-
-  .dat <- .dat[which(.dat$distance <= .max.dist), ]
+    }
 
 
-  # Ahora se utiliza la funci?n ddf() del paquete mrds,
-  # el cual ha sido desarrollado para este tipo de muestreos
+    .dat <- .dat[which(.dat$distance <= .max.dist), , drop = FALSE]
 
-  # Half-Normal fucntion
 
-  .error_hn <- try(suppressMessages(Distance::ds(.dat, truncation = list(left = 1, right = .max.dist), transect = "point", key = "hn", adjustment = NULL)))
+    # Ahora se utiliza la funci?n ddf() del paquete mrds,
+    # el cual ha sido desarrollado para este tipo de muestreos
 
-  if(class(.error_hn)[1] == "try-error"){
+    # Half-Normal fucntion
 
-    .hn <- data.frame(fitted = NA, criterion = NA)
-    .hn <- list(ddf = .hn)
+    .error_hn <- try(suppressMessages(Distance::ds(.dat, truncation = list(left = 1, right = .max.dist), transect = "point", key = "hn", adjustment = NULL)))
 
-  } else {
+    if(class(.error_hn)[1] == "try-error"){
 
-    .hn <- suppressMessages(Distance::ds(.dat, truncation = list(left = 1, right = .max.dist), transect = "point", key = "hn", adjustment = NULL))
+      .hn <- data.frame(fitted = NA, criterion = NA)
+      .hn <- list(ddf = .hn)
 
-    # plot(.hn, main = paste("Half-normal - stratum", i, sep = " "))
+    } else {
 
-  }
+      .hn <- suppressMessages(Distance::ds(.dat, truncation = list(left = 1, right = .max.dist), transect = "point", key = "hn", adjustment = NULL))
 
-  # Half-Normal fucntion with dbh as coovariate
+      # plot(.hn, main = paste("Half-normal - stratum", i, sep = " "))
 
-  .error_hn_cov <- try(suppressMessages(Distance::ds(.dat, truncation = list(left = 1, right = .max.dist), transect = "point", key = "hn", formula=~dbh, adjustment = NULL)))
+    }
 
-  if(class(.error_hn_cov)[1] == "try-error"){
+    # Half-Normal fucntion with dbh as coovariate
 
-    .hn_cov <- data.frame(fitted = NA, criterion = NA)
-    .hn_cov <- list(ddf = .hn_cov)
+    .error_hn_cov <- try(suppressMessages(Distance::ds(.dat, truncation = list(left = 1, right = .max.dist), transect = "point", key = "hn", formula=~dbh, adjustment = NULL)))
 
-  } else {
+    if(class(.error_hn_cov)[1] == "try-error"){
 
-    .hn_cov <- suppressMessages(Distance::ds(.dat, truncation = list(left = 1, right = .max.dist), transect = "point", key = "hn", formula=~dbh, adjustment = NULL))
+      .hn_cov <- data.frame(fitted = NA, criterion = NA)
+      .hn_cov <- list(ddf = .hn_cov)
 
-    # plot(.hn_cov, main = paste("Half-normal with dbh as coovariate - Stratum", i, sep = " "))
+    } else {
 
-  }
+      .hn_cov <- suppressMessages(Distance::ds(.dat, truncation = list(left = 1, right = .max.dist), transect = "point", key = "hn", formula=~dbh, adjustment = NULL))
 
-  # Hazard rate
+      # plot(.hn_cov, main = paste("Half-normal with dbh as coovariate - Stratum", i, sep = " "))
 
-  .error_hr <- try(suppressMessages(Distance::ds(.dat, truncation = list(left = 1, right = .max.dist), transect = "point", key = "hn", adjustment = NULL)))
+    }
 
-  if(class(.error_hr)[1] == "try-error"){
+    # Hazard rate
 
-    .hr <- data.frame(fitted = NA, criterion = NA)
-    .hr <- list(ddf = .hr)
+    .error_hr <- try(suppressMessages(Distance::ds(.dat, truncation = list(left = 1, right = .max.dist), transect = "point", key = "hn", adjustment = NULL)))
 
-  } else {
+    if(class(.error_hr)[1] == "try-error"){
 
-    .hr <- suppressMessages(Distance::ds(.dat, truncation = list(left = 1, right = .max.dist), transect = "point", key = "hr", adjustment = NULL))
+      .hr <- data.frame(fitted = NA, criterion = NA)
+      .hr <- list(ddf = .hr)
 
-    # plot(.hr, main = paste("Hazard rate - stratum", i, sep = " "))
+    } else {
 
-  }
+      .hr <- suppressMessages(Distance::ds(.dat, truncation = list(left = 1, right = .max.dist), transect = "point", key = "hr", adjustment = NULL))
 
-  # Hazard rate with dbh as coovariate
+      # plot(.hr, main = paste("Hazard rate - stratum", i, sep = " "))
 
-  .error_hr_cov <- try(suppressMessages(Distance::ds(.dat, truncation = list(left = 1, right = .max.dist), transect = "point", key = "hr", formula=~dbh, adjustment = NULL)))
+    }
 
-  if(class(.error_hr_cov)[1] == "try-error"){
+    # Hazard rate with dbh as coovariate
 
-    .hr_cov <- data.frame(fitted = NA, criterion = NA)
-    .hr_cov <- list(ddf = .hr_cov)
+    .error_hr_cov <- try(suppressMessages(Distance::ds(.dat, truncation = list(left = 1, right = .max.dist), transect = "point", key = "hr", formula=~dbh, adjustment = NULL)))
 
-  } else {
+    if(class(.error_hr_cov)[1] == "try-error"){
 
-    .hr_cov <- suppressMessages(Distance::ds(.dat, truncation = list(left = 1, right = .max.dist), transect = "point", key = "hr", formula=~dbh, adjustment = NULL))
+      .hr_cov <- data.frame(fitted = NA, criterion = NA)
+      .hr_cov <- list(ddf = .hr_cov)
 
-    # plot(.hr_cov,  main = paste("Hazard rate with dbh as coovariate - stratum", i, sep = " "))
+    } else {
 
-  }
+      .hr_cov <- suppressMessages(Distance::ds(.dat, truncation = list(left = 1, right = .max.dist), transect = "point", key = "hr", formula=~dbh, adjustment = NULL))
 
-  # Final merge
-  # Se obtiene un data frame con los valores de la probabilidad de detecci?n de cada arbol
-  .salida <- data.frame(object = .dat$object,
-                        P.hn = .hn$ddf$fitted, P.hn.cov = .hn_cov$ddf$fitted,
-                        P.hr = .hr$ddf$fitted, P.hr.cov = .hr_cov$ddf$fitted)
+      # plot(.hr_cov,  main = paste("Hazard rate with dbh as coovariate - stratum", i, sep = " "))
 
-  # Se asocian los valores obtenidos a sus respectivos ?rboles
-  .tree_n <- merge(.dat, .salida, by = "object")
+    }
 
-  .tree_n <- .tree_n[, c("Region.Label", "Sample.Label", "tree", "P.hn", "P.hn.cov", "P.hr", "P.hr.cov")]
-  colnames(.tree_n) <- c("stratum", "id", "tree", "P.hn", "P.hn.cov", "P.hr", "P.hr.cov")
+    # Final merge
+    # Se obtiene un data frame con los valores de la probabilidad de detecci?n de cada arbol
+    .salida <- data.frame(# object = .dat$object,
+      P.hn = .hn$ddf$fitted, P.hn.cov = .hn_cov$ddf$fitted,
+      P.hr = .hr$ddf$fitted, P.hr.cov = .hr_cov$ddf$fitted)
+    .salida <- merge(data.frame(object = .dat$object), .salida, by = "row.names", all = TRUE)
+    .salida$P.hn <- ifelse(is.na(.salida$P.hn),  mean(.salida$P.hn, na.rm = TRUE), .salida$P.hn)
+    .salida$P.hn.cov <- ifelse(is.na(.salida$P.hn.cov),  mean(.salida$P.hn.cov, na.rm = TRUE), .salida$P.hn.cov)
+    .salida$P.hr <- ifelse(is.na(.salida$P.hr),  mean(.salida$P.hr, na.rm = TRUE), .salida$P.hr)
+    .salida$P.hr.cov <- ifelse(is.na(.salida$P.hr.cov),  mean(.salida$P.hr.cov, na.rm = TRUE), .salida$P.hr.cov)
 
-  .tree <- rbind(.tree, .tree_n)
+    # Se asocian los valores obtenidos a sus respectivos ?rboles
+    .tree_n <- merge(.dat, .salida, by = "object")
 
-  # Obtaining values of detection probability functions fitted
-  .par_n <- data.frame(P.hn.scale = exp(.hn$ddf$par[1]),
-                       P.hn.cov.scale.intercept = exp(.hn_cov$ddf$par[1]), P.hn.cov.dbh = .hn_cov$ddf$par[2],
-                       P.hr.scale = exp(.hr$ddf$par[2]), P.hr.shape = exp(.hr$ddf$par[1]),
-                       P.hr.cov.scale.intercept = exp(.hr_cov$ddf$par[2]), P.hr.cov.dbh = .hr_cov$ddf$par[3], P.hr.cov.shape = exp(.hr_cov$ddf$par[1]))
+    .tree_n <- .tree_n[, c("Region.Label", "Sample.Label", "tree", "P.hn", "P.hn.cov", "P.hr", "P.hr.cov"), drop = FALSE]
+    colnames(.tree_n) <- c("stratum", "id", "tree", "P.hn", "P.hn.cov", "P.hr", "P.hr.cov")
 
-  .par <- rbind(.par, .par_n)
+    .tree <- rbind(.tree, .tree_n)
 
-  # Data frame con el valor del AIC de los modelos ajustados
-  .treeAIC_n <- data.frame(P.hn = .hn$ddf$criterion, P.hn.cov = .hn_cov$ddf$criterion, P.hr = .hr$ddf$criterion, P.hr.cov = .hr_cov$ddf$criterion)
+    # Obtaining values of detection probability functions fitted
+    .par_n <- data.frame(P.hn.scale = exp(.hn$ddf$par[1]),
+                         P.hn.cov.scale.intercept = exp(.hn_cov$ddf$par[1]), P.hn.cov.dbh = .hn_cov$ddf$par[2],
+                         P.hr.scale = exp(.hr$ddf$par[2]), P.hr.shape = exp(.hr$ddf$par[1]),
+                         P.hr.cov.scale.intercept = exp(.hr_cov$ddf$par[2]), P.hr.cov.dbh = .hr_cov$ddf$par[3], P.hr.cov.shape = exp(.hr_cov$ddf$par[1]))
 
-  .treeAIC <- rbind(.treeAIC, .treeAIC_n)
+    .par <- rbind(.par, .par_n)
+
+    # Data frame con el valor del AIC de los modelos ajustados
+    .treeAIC_n <- data.frame(P.hn = .hn$ddf$criterion, P.hn.cov = .hn_cov$ddf$criterion, P.hr = .hr$ddf$criterion, P.hr.cov = .hr_cov$ddf$criterion)
+
+    .treeAIC <- rbind(.treeAIC, .treeAIC_n)
 
   }
 
@@ -242,4 +249,3 @@ distance.sampling <- function(tree.list.tls,
   return(.tree)
 
 }
-

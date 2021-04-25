@@ -9,10 +9,12 @@
 \description{This function integrates both, the \code{\link{normalize}} and \code{\link{tree.detection}} functions, generating the same \sQuote{Output Files} as indicated for these, and it returs the same \sQuote{Value} as described for \code{\link{tree.detection}}. However, this function is designed for working with several plots, producing a list of all scans considered automatically from LAS files.}
 
 \usage{
-tree.detection.multiple(files,
+tree.detection.multiple(las.list, id = NULL, file = NULL,
                         normalize.arguments = list(max.dist = NULL,
                                                    min.height = NULL,
-                                                   max.height = NULL),
+                                                   max.height = NULL,
+                                                   algorithm.dtm = "tin",
+                                                   res.dtm = 0.2),
                         tree.detection.arguments = list(dbh.min = 7.5,
                                                         dbh.max = 200,
                                                         ncr.threshold = 0.1,
@@ -23,13 +25,17 @@ tree.detection.multiple(files,
 
 \arguments{
 
-  \item{files}{Character vector containing the names of all LAS files for analysis and belonging to TLS point cloud, including .las extension (see \sQuote{Examples})}
+  \item{las.list}{Character vector containing the names of all LAS files for analysis and belonging to TLS point cloud, including .las extension (see \sQuote{Examples})}
+
+  \item{id}{Optional vector with plots identification encoded as character string or numeric. If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, the plots will be encoded with correlative numbers from 1 to n plots.}
+
+  \item{file}{Optional vector containing files name identification encoded as character string or numeric value. If it is null, file will be encoded as \code{id} by default.}
 
   \item{normalize.arguments}{Optional list including the following arguments related to the normalization process (see \code{\link{normalize}}):}
 
   \itemize{
 
-    \item \code{max.dist}, \code{min.height}, \code{max.height}: same description and format as indicated for same named \code{\link{normalize}} arguments}
+    \item \code{max.dist}, \code{min.height}, \code{max.height}, \code{algorithm.dtm}, \code{res.dtm}: same description and format as indicated for same named \code{\link{normalize}} arguments}
 
 
   \item{tree.detection.arguments}{Optional list including the following arguments related to tree detection process (see \code{\link{tree.detection}}):}
@@ -40,9 +46,9 @@ tree.detection.multiple(files,
 
   \item{dir.data}{Optional character string naming the absolute path of the directory where LAS files containing TLS point clouds are located. \code{.Platform$file.sep} must be used as the path separator in \code{dir.dat}. If this argument is not specified by the user, it will be set to \code{NULL} by default and, as consequence, the current working directory of the \R process will be assigned to \code{dir.dat} during the execution.}
 
-    \item{dir.result}{Optional character string naming the absolute path of an existing directory where files described in \sQuote{Output Files} section will be saved. \code{.Platform$file.sep} must be used as the path separator in \code{dir.result}. If this argument is not specified by the user, and \code{save.result} is \code{TRUE}, it will be set to \code{NULL} by default and, as a consequence, the current working directory of the \R process will be assigned to \code{dir.result} during the execution.}
+  \item{save.result}{Optional logical which indicates whether or not the output files described in \sQuote{Output Files} section should be saved in the \code{dir.result}. If this argument is not specified by the user, it will be set to \code{TRUE} by default and, as a consequence, the output files will be saved.}
 
-    \item{save.result}{Optional logical which indicates whether or not the output files described in \sQuote{Output Files} section should be saved in the \code{dir.result}. If this argument is not specified by the user, it will be set to \code{TRUE} by default and, as a consequence, the output files will be saved.}}
+  \item{dir.result}{Optional character string naming the absolute path of an existing directory where files described in \sQuote{Output Files} section will be saved. \code{.Platform$file.sep} must be used as the path separator in \code{dir.result}. If this argument is not specified by the user, and \code{save.result} is \code{TRUE}, it will be set to \code{NULL} by default and, as a consequence, the current working directory of the \R process will be assigned to \code{dir.result} during the execution.}}
 
 
 \details{
@@ -103,7 +109,7 @@ files <- list.files(pattern = "las$", path = dir.data)
 
 # Tree detection
 
-tree.list.tls <- tree.detection.multiple(files = files,
+tree.list.tls <- tree.detection.multiple(las.list = files,
                                          normalize.arguments = list(max.dist = 15,
                                                                     min.height = 0.25,
                                                                     max.height = 25),

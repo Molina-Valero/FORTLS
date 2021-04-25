@@ -31,7 +31,9 @@ variables are provided for each tree (see \code{\link{tree.detection}} \sQuote{V
 [,4] \tab horizontal.distance   \tab numeric \tab horizontal distance (m) from plot center to tree center\cr
 [,5] \tab dbh   \tab numeric \tab tree diameter (cm) at breast height (1.3 m)\cr
 [,6] \tab total.height   \tab numeric \tab tree total height (m)\cr
-[,7] \tab dead   \tab numeric \tab dead (1) or not (NA)\cr}
+[,7] \tab dead   \tab numeric \tab dead (1) or not (NA)\cr
+[,8] \tab x    \tab numeric\cr
+[,9] \tab y   \tab numeric\cr}
 
 \item \code{plot.attributes}: dataframe that includes the stratum of each plot:
 
@@ -39,5 +41,5 @@ variables are provided for each tree (see \code{\link{tree.detection}} \sQuote{V
       [,1] \tab id   \tab character/numeric \tab plot identification (coincident to TLS scans)\cr
       [,2] \tab stratum    \tab numeric \tab stratum (1-2)\cr}}}
 \usage{data(Rioja.data)}
-\format{List with 3 data frames containing 598 observations and 15 variables (tree.list.tls), 659 observations and 7 variables (tree.list.field), and 16 observations and 2 variables (plot.attributes).}
+\format{List with 3 data frames containing 598 observations and 15 variables (tree.list.tls), 659 observations and 9 variables (tree.list.field), and 16 observations and 2 variables (plot.attributes).}
 \keyword{datasets}
