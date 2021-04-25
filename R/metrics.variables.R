@@ -63,7 +63,11 @@ metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
                                paste(names(z), "0", "tls", sep = "."),
 
                                # Height percentiles (m)
-                               sprintf("P%02i", 100 * .prob))
+                               sprintf("P%02i", 100 * .prob),
+
+                               # Points metrics
+                               "mean","max","min","sd","var","mode","kurtosis","skewness",
+                               "perc_on_mode", "perc_on_mean", "weibull_c", "weibull_b")
                            },
                            y = .ef.names, z = .mean.names, simplify = FALSE)
 
@@ -299,8 +303,11 @@ metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
                                z = .data.tls[, "z"], rho = .data.tls[, "rho"])
       rownames(.perc) <- .format.numb(x = .perc[, "rho_seq"], dec = .num.dec)
       .perc <- as.matrix(.perc[, colnames(.perc) != "rho_seq", drop = FALSE])
+      .pts.met <- .points.metrics(rho_seq = .fixedAreaPlot[, "radius"],
+                                  data = .data.tls)
       .fixedAreaPlot <- cbind(.fixedAreaPlot,
                               .perc[rownames(.fixedAreaPlot), , drop = FALSE])
+      .fixedAreaPlot <- cbind(.fixedAreaPlot, as.matrix(.pts.met))
 
       # Convert diameters from International System of Units (m) to cm
       .col.names <- names(.mean.names)[substr(names(.mean.names), 1, 1) == "d"]
@@ -387,8 +394,10 @@ metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
                                rho = .data.tls[, "rho"])
       rownames(.perc) <- names(.rad.seq)
       .perc <- as.matrix(.perc[, colnames(.perc) != "rho_seq", drop = FALSE])
+      .pts.met <- .points.metrics(rho_seq = .rad.seq, data = .data.tls)
       .kTreePlot <- cbind(.kTreePlot,
                           .perc[rownames(.kTreePlot), , drop = FALSE])
+      .kTreePlot <- cbind(.kTreePlot, as.matrix(.pts.met))
 
       # Convert diameters from International System of Units (m) to cm
       .col.names <- names(.mean.names)[substr(names(.mean.names), 1, 1) == "d"]
@@ -466,8 +475,10 @@ metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
                                rho = .data.tls[, "rho"])
       rownames(.perc) <- names(.BAF.seq)
       .perc <- as.matrix(.perc[, colnames(.perc) != "rho_seq", drop = FALSE])
+      .pts.met <- .points.metrics(rho_seq = .rho.seq, data = .data.tls)
       .angleCountPlot <- cbind(.angleCountPlot,
                                .perc[rownames(.angleCountPlot), , drop = FALSE])
+      .angleCountPlot <- cbind(.angleCountPlot, as.matrix(.pts.met))
 
       # Convert diameters from International System of Units (m) to cm
       .col.names <- names(.mean.names)[substr(names(.mean.names), 1, 1) == "d"]

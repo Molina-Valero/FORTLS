@@ -663,3 +663,58 @@
 }
 
 
+# LiDAR metrics: "media","max","min","desv.std","varianza","moda","kurtosis","skewness", "por_sobre_moda", "por_sobre_media", "weibull_c", "weibull_b"
+
+.getmode <- function(v) {
+  uniqv <- unique(v)
+  uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
+.c_function<-function(c, media, varianza){
+  varianza-(media^2)*(gamma(1+2/c)-(gamma(1+1/c))^2)/(gamma(1+1/c))^2
+}
+
+.points.metrics <- function(rho_seq, data){
+
+  .metricas<-data.frame(matrix(nrow=0, ncol=13))
+
+  .data <- as.data.frame(data)
+
+  for (radio in rho_seq) {
+
+    # .sub <- as.data.frame(data[data[, "rho"] <= radio,])
+    .sub <- .data[which(.data$rho <= radio), ]
+
+    .metricas_i<-data.frame(
+      # radio,
+      mean(.sub[, "z"]),
+      max(.sub[, "z"]),
+      min(.sub[, "z"]),
+      sd(.sub[, "z"]),
+      var(.sub[, "z"]),
+      .getmode(.sub[, "z"]),
+      moments::kurtosis(.sub[, "z"]),
+      moments::skewness(.sub[, "z"]))
+
+    names(.metricas_i)<-c("mean","max","min","sd","var","mode","kurtosis","skewness")
+
+    .cuenta_moda<-dim(.sub[which(.sub$z>.metricas_i$mode),])[1]
+    .cuenta_media<-dim(.sub[which(.sub$z>.metricas_i$mean),])[1]
+    .c<-uniroot(.c_function, media=.metricas_i$mean, varianza=.metricas_i$var, interval=c(min(.sub[, "z"]),max(.sub[, "z"])))$root
+    .b<-.metricas_i$mean/gamma(1+1/.c)
+    .metricas_i$perc_on_mean<-.cuenta_media*100/nrow(.sub)
+    .metricas_i$perc_on_mode<-.cuenta_moda*100/nrow(.sub)
+    .metricas_i$weibull_b<-.b
+    .metricas_i$weibull_c<-.c
+    .metricas<-rbind(.metricas,.metricas_i)
+
+  }
+
+  # .metricas <- .metricas[, 2:ncol(.metricas)]
+
+
+
+  return(.metricas)
+
+}
+

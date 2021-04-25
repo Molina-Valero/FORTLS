@@ -24,7 +24,7 @@ URL: https://github.com/Molina-Valero/FORTLS
 BugReports: https://github.com/Molina-Valero/FORTLS/issues
 License: GPL-3
 Depends: R (>= 3.5.0)
-Imports: dbscan, Distance, ggvoronoi, htmlwidgets, lidR, plotly, progress, Rcpp(>= 1.0.5), raster, scales, sp, tidyr, vroom
+Imports: dbscan, Distance, ggvoronoi, htmlwidgets, lidR, moments, plotly, progress, Rcpp(>= 1.0.5), raster, scales, sp, tidyr, vroom
 Suggests:  testthat
 LinkingTo: Rcpp, RcppEigen
 Encoding: UTF-8

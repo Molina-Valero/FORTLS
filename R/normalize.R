@@ -76,7 +76,7 @@ normalize <- function(las,
 
   .pb$tick()
 
-  if(mean(.slope@data@values, na.rm = TRUE) > 0.3){
+  if(mean(.slope@data@values, na.rm = TRUE) > 0.5){
 
 
     # Normalize
