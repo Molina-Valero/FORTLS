@@ -51,7 +51,11 @@ correlations <- function(simulations,
 
                   # Height percentiles (m)
                   sprintf("P%02i", c(1, 5, 10, 20, 25, 30, 40, 50, 60, 70, 75,
-                                     80, 90, 95, 99)))
+                                     80, 90, 95, 99)),
+
+                  # Points metrics
+                  "mean","max","min","sd","var","mode","kurtosis","skewness",
+                  "perc_on_mode", "perc_on_mean", "weibull_c", "weibull_b")
 
   # Define a character vector containing the available correlation measurements
   .cor.method <- c("pearson", "spearman")
