@@ -1,3 +1,4 @@
+#define STRICT_R_HEADERS
 #include <Rcpp.h>
 #include <vector>
 #include <iostream>
@@ -302,7 +303,7 @@ DataFrame fixed_area_cpp(std::vector<double> radius_seq,
 
     factor.assign(weights.begin(), weights.begin()
                                    + distance(hdist.begin(), pos));
-    ef = 10000 / (PI * pow(radius_seq[i], 2.0));
+    ef = 10000 / (M_PI * pow(radius_seq[i], 2.0));
     transform(factor.begin(), factor.end(), factor.begin(),
               std::bind(multiplies<double>(), std::placeholders::_1, ef));
     partial_sum(factor.begin(), factor.end(), factor.begin());
@@ -398,7 +399,7 @@ DataFrame k_tree_cpp(std::vector<double> k_seq,
 
     factor.assign(weights.begin(), weights.begin()
                                    + distance(k.begin(), pos));
-    ef = 10000 / (PI * pow(radius_seq[i], 2.0));
+    ef = 10000 / (M_PI * pow(radius_seq[i], 2.0));
     transform(factor.begin(), factor.end(), factor.begin(),
               std::bind(multiplies<double>(), std::placeholders::_1, ef));
     partial_sum(factor.begin(), factor.end(), factor.begin());
@@ -496,7 +497,7 @@ DataFrame angle_count_cpp(std::vector<double> baf_seq,
                                    + distance(baf.begin(), pos));
     ef = baf_seq[i];
     transform(factor.begin(), factor.end(), x.begin(), factor.begin(),
-              [ef](double factor, double x) { return ef / ((PI / 4) *
+              [ef](double factor, double x) { return ef / ((M_PI / 4) *
                                               pow(x, 2.0)); });
 
     for(int q = 0; q < factor.size(); q++){
