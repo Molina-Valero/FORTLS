@@ -2,6 +2,7 @@
 normalize <- function(las,
                       max.dist = NULL, min.height = NULL, max.height = NULL,
                       algorithm.dtm = "tin", res.dtm = 0.2,
+                      csf = list(cloth_resolution = 0.5),
                       id = NULL, file=NULL,
                       dir.data = NULL, save.result = TRUE, dir.result = NULL){
 
@@ -49,7 +50,7 @@ normalize <- function(las,
   # .th  <- seq(0.1, 1.5, length.out = length(.ws))
   # .data <- lidR::classify_ground(.las, algorithm = lidR::pmf(.ws, .th), last_returns = FALSE)
 
-  .data <- suppressWarnings(suppressMessages(lidR::classify_ground(.las, algorithm = lidR::csf(), last_returns = FALSE)))
+  .data <- suppressWarnings(suppressMessages(lidR::classify_ground(.las, algorithm = lidR::csf(cloth_resolution = csf$cloth_resolution), last_returns = FALSE)))
 
   .pb$tick()
 

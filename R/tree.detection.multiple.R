@@ -46,6 +46,26 @@ tree.detection.multiple <- function(las.list, id = NULL, file = NULL,
 
   # Tree detection arguments
 
+  if(is.null(tree.detection.arguments$dbh.min)){
+
+    .dbh.min <- 7.5
+
+  } else {
+
+    .dbh.min <- tree.detection.arguments$dbh.min
+
+  }
+
+  if(is.null(tree.detection.arguments$dbh.max)){
+
+    .dbh.max <- 200
+
+  } else {
+
+    .dbh.max <- tree.detection.arguments$dbh.max
+
+  }
+
   if(is.null(tree.detection.arguments$ncr.threshold)){
 
     .ncr.threshold <- 0.1
@@ -119,9 +139,9 @@ tree.detection.multiple <- function(las.list, id = NULL, file = NULL,
 
     .tree.list.tls.i <- tree.detection(data = .data,
 
-                                       dbh.min = tree.detection.arguments$dbh.min,
+                                       dbh.min = .dbh.min,
 
-                                       dbh.max = tree.detection.arguments$dbh.max,
+                                       dbh.max = .dbh.max,
 
                                        breaks = .breaks,
 
