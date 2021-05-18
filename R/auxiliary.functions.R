@@ -120,9 +120,42 @@
 
         # Mean heights (m)
         .mean.names <- mean.names[substr(names(mean.names),1, 1) == "h"]
-        .h <- .wmean(n = tree[, "n"], data = .column.height,
+
+        if(min(.column.height) < 1.3){
+
+          .n.ref <- data.frame(n = 1:length(.column.height),
+                               height = .column.height)
+          .n.ref <- .n.ref[which(.n.ref$height >= 1.3), ]
+
+          .column.height <- .column.height[which(.column.height >= 1.3)]
+          .n <- 1:length(.column.height)
+
+        # Mean heights (m)
+        .h <- .wmean(n = .n, data = .column.height,
                      mean.names = .mean.names)
-        tree <- cbind(tree, .h)
+        .h <- cbind(.n.ref, .h)
+        tree <- merge(tree, .h[, c("n", "h", "hg", "hgeom", "hharm")], by = "n", all.x = TRUE)
+
+        # Mean heights (m)
+        .h <- tree %>% tidyr::fill("h", .direction = "down")
+        tree$h <- .h$h
+
+        .hg <- tree %>% tidyr::fill("hg", .direction = "down")
+        tree$hg <- .hg$hg
+
+        .hgeom <- tree %>% tidyr::fill("hgeom", .direction = "down")
+        tree$hgeom <- .hgeom$hgeom
+
+        .hharm <- tree %>% tidyr::fill("hharm", .direction = "down")
+        tree$hharm <- .hharm$hharm
+
+        } else {
+
+          .h <- .wmean(n = tree[, "n"], data = .column.height,
+                       mean.names = .mean.names)
+          tree <- cbind(tree, .h)
+
+        }
 
       }
 
@@ -411,6 +444,19 @@
     .V <- data[, "V.acum"] * data[, .col.names, drop = FALSE]
     colnames(.V) <- gsub("EF", "V", colnames(.V), fixed = TRUE)
 
+    # Mean heights (m)
+    .h <- data %>% tidyr::fill("h", .direction = "down")
+    data$h <- .h$h
+
+    .hg <- data %>% tidyr::fill("hg", .direction = "down")
+    data$hg <- .hg$hg
+
+    .hgeom <- data %>% tidyr::fill("hgeom", .direction = "down")
+    data$hgeom <- .hgeom$hgeom
+
+    .hharm <- data %>% tidyr::fill("hharm", .direction = "down")
+    data$hharm <- .hharm$hharm
+
     # Mean diameters (cm), and mean heights (m)
     .col.names <- c("d", "dg", "dgeom", "dharm", "h", "hg", "hgeom", "hharm")
     .dh <- data[, .col.names, drop = FALSE]
@@ -508,8 +554,21 @@
 
       # Mean heights (m)
       .mean.names <- mean.names[substr(names(mean.names),1, 1) == "h"]
+
+      if(min(.column.height) < 1.3){
+
+        .column.height <- .column.height[which(.column.height >= 1.3)]
+
+        .h <- .wmean.calculation(data = .column.height,
+                                 w = rep(1, length(.column.height)),
+                                 mean.names = .mean.names)
+
+      } else {
+
       .h <- .wmean.calculation(data = .column.height, w = rep(1, nrow(data)),
                                mean.names = .mean.names)
+
+      }
 
       if (case == "tls") {
 

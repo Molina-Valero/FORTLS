@@ -581,12 +581,18 @@ simulations <- function(tree.list.tls, distance.sampling = NULL,
                                                  dec = .num.dec)
 
         # Compute mean dominant diameters and heights for each radius value
+        .tree.2 <- .tree[[.j]]
+
+        if(.j == "field"){
+        .tree.2 <- .tree.2[which(.tree.2$total.height >= 1.3), ]
+        }
+
         .dh.0 <- fixed_area_cpp(radius_seq = .fixedAreaPlot[, "radius"],
-                                hdist = .tree[[.j]][, "horizontal.distance"],
-                                d = .tree[[.j]][, "dbh"],
-                                h = .tree[[.j]][, switch(.j, tls = "P99",
-                                                         field =
-                                                           "total.height")],
+                                hdist = .tree.2[, "horizontal.distance"],
+                                d = .tree.2[, "dbh"],
+                                h = .tree.2[, switch(.j, tls = "P99",
+                                                     field =
+                                                     "total.height")],
                                 num = .num)
         rownames(.dh.0) <- .format.numb(x = .dh.0[, "radius"], dec = .num.dec)
         .dh.0 <- as.matrix(.dh.0[, colnames(.dh.0) != "radius", drop = FALSE])
@@ -691,9 +697,16 @@ simulations <- function(tree.list.tls, distance.sampling = NULL,
                            },
                            x = .rad.seq)
         # Compute mean dominant diameters and heights for each k value
+        .tree.2 <- .tree[[.j]]
+
+        if(.j == "field"){
+          .tree.2 <- .tree.2[which(.tree.2$total.height >= 1.3), ]
+        }
+
+
         .dh.0 <- k_tree_cpp(k_seq = .kTreePlot[, "k"], radius_seq = .rad.seq,
-                            k = .tree[[.j]][, "n"], d = .tree[[.j]][, "dbh"],
-                            h = .tree[[.j]][, switch(.j, tls = "P99",
+                            k = .tree.2[, "n"], d = .tree[[.j]][, "dbh"],
+                            h = .tree.2[, switch(.j, tls = "P99",
                                                      field = "total.height")],
                             num = .num)
         rownames(.dh.0) <- .format.numb(x = .dh.0[, "k"], dec = .num.dec)
@@ -794,11 +807,20 @@ simulations <- function(tree.list.tls, distance.sampling = NULL,
                                                   dec = .num.dec)
 
         # Compute mean dominant diameters and heights for each BAF value
-        .BAF.order <- order(.tree[[.j]][, "BAF"], decreasing = TRUE)
+
+        .tree.2 <- .tree[[.j]]
+
+        if(.j == "field"){
+          .tree.2 <- .tree.2[which(.tree.2$total.height >= 1.3), ]
+        }
+
+        .BAF.order <- order(.tree.2[, "BAF"], decreasing = TRUE)
+
+
         .dh.0 <- angle_count_cpp(baf_seq = .BAF.seq,
-                                 baf = .tree[[.j]][.BAF.order, "BAF"],
-                                 d = .tree[[.j]][.BAF.order, "dbh"],
-                                 h = .tree[[.j]][.BAF.order,
+                                 baf = .tree.2[.BAF.order, "BAF"],
+                                 d = .tree.2[.BAF.order, "dbh"],
+                                 h = .tree.2[.BAF.order,
                                                  switch(.j, tls = "P99",
                                                         field =
                                                           "total.height")],
