@@ -321,7 +321,7 @@ estimation.plot.size <- function(tree.list.tls,
       plot(.data[, 3], .data$N, type = "n",
            main = .axis[[1]],
            xlab = .axis[[2]],
-           ylab = expression(italic("N") ~ (trees/ha)),
+           ylab = expression("N.tls" ~ (trees/ha)),
            xlim = c(min(.data[, 3]), max(.data[, 3])),
            ylim = c(min(.data$N), max(.data$N)))
 
@@ -349,7 +349,7 @@ estimation.plot.size <- function(tree.list.tls,
       plot(.data[, 3], .data$G, type = "n",
            main = .axis[[1]],
            xlab = .axis[[2]],
-           ylab = expression(italic("G") ~ (m^{2}/ha)),
+           ylab = expression("G.tls" ~ (m^{2}/ha)),
            xlim = c(min(.data[, 3]), max(.data[, 3])),
            ylim = c(min(.data$G), max(.data$G)))
 
@@ -401,7 +401,7 @@ estimation.plot.size <- function(tree.list.tls,
       plot(.data[, 2], .data$N, type = "n",
            main = .axis[[1]],
            xlab = .axis[[2]],
-           ylab = expression(italic("N") ~ (trees/ha)),
+           ylab = expression("N.tls" ~ (trees/ha)),
            xlim = c(min(.data[, 2]), max(.data[, 2])),
            ylim = c(min(.data[, c("N", "N.min", "N.max")], na.rm = TRUE),
                     max(.data[, c("N", "N.min", "N.max")], na.rm = TRUE)))
@@ -453,7 +453,7 @@ estimation.plot.size <- function(tree.list.tls,
       plot(.data[, 2], .data$G, type = "n",
            main = .axis[[1]],
            xlab = .axis[[2]],
-           ylab = expression(italic("G") ~ (m^{2}/ha)),
+           ylab = expression("G.tls" ~ (m^{2}/ha)),
            xlim = c(min(.data[, 2]), max(.data[, 2])),
            ylim = c(min(.data[, c("G", "G.min", "G.max")], na.rm = TRUE),
                     max(.data[, c("G", "G.min", "G.max")], na.rm = TRUE)))
@@ -543,7 +543,7 @@ estimation.plot.size <- function(tree.list.tls,
            main = "Density",
            xlab = "",
            xaxt = "n",
-           ylab = expression(italic("N") ~ (trees/ha)),
+           ylab = expression("N.tls" ~ (trees/ha)),
            xlim = c(0, max(.data[, 2])),
            ylim = c(.N.min, .N.max))
 
@@ -611,7 +611,7 @@ estimation.plot.size <- function(tree.list.tls,
            main = "Basal Area",
            xlab = "",
            xaxt = "n",
-           ylab = expression(italic("G") ~ (m^{2}/ha)),
+           ylab = expression("G.tls" ~ (m^{2}/ha)),
            xlim = c(0, max(.data[, 2])),
            ylim = c(.G.min, .G.max))
 
