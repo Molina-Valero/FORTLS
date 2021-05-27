@@ -137,9 +137,9 @@ for details about used notation):
 The relative bias between a field estimation and any of its TLS counterparts is
 estimated as follows
 \deqn{\frac{\frac{1}{n}\sum_{i = 1}^{n}{y_{i}} -
-\frac{1}{n}\sum_{i = 1}^{n}{x_{i}}}{\frac{1}{n}\sum_{i = 1}^{n}{y_{i}}} * 100}{
-((\sum(y_i)/n - \sum(x_i)/n) / (\sum(y_i)/n) * 100,}
-where \eqn{y_{i}}{y_i} and \eqn{x_{i}}{x_i}  are the values of the field
+\frac{1}{n}\sum_{i = 1}^{n}{x_{i}}}{\frac{1}{n}\sum_{i = 1}^{n}{x_{i}}} * 100}{
+((\sum(y_i)/n - \sum(x_i)/n) / (\sum(x_i)/n) * 100,}
+where \eqn{x_{i}}{x_i} and \eqn{y_{i}}{y_i}  are the values of the field
 estimate and its TLS counterpart, respectively, corresponding to plot
 \eqn{i}{i} for \eqn{i = 1, \ldots, n}.
 }

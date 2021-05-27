@@ -317,8 +317,8 @@ relative.bias <- function(simulations,
                           # greater than 0
                           if (ncol(data) > 0) {
                             RB.data <-
-                              ((mean(data[RB.pairs[nr, "field"], ]) -
-                                  mean(data[RB.pairs[nr, "tls"], ])) /
+                              ((mean(data[RB.pairs[nr, "tls"], ]) -
+                                  mean(data[RB.pairs[nr, "field"], ])) /
                                  mean(data[RB.pairs[nr, "field"], ])) * 100
                           } else {
                             RB.data <- NA
