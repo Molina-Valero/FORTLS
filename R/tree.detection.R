@@ -65,7 +65,7 @@ tree.detection <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.threshold = 0
 
     # Dbscan parameters
     # .eps <- .dbh.min / 2
-    .eps <- tan(.alpha.h / 2) * (max(.cut$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2)
+    .eps <- (tan(.alpha.h / 2) * (max(.cut$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2)
 
     # Clustering
     .dbscan <- dbscan::dbscan(.cut[, c("x", "y"), drop = FALSE], eps = .eps)
