@@ -1,5 +1,6 @@
 
 normalize <- function(las,
+                      x.center = NULL, y.center = NULL,
                       max.dist = NULL, min.height = NULL, max.height = NULL,
                       algorithm.dtm = "tin", res.dtm = 0.2,
                       csf = list(cloth_resolution = 0.5),
@@ -25,6 +26,22 @@ normalize <- function(las,
 
   .pb$tick()
 
+  # Establishing center
+
+  if(is.null(x.center)) {
+
+    x.center <- .las@header@PHB$`X offset`
+
+  }
+
+  if(is.null(y.center)) {
+
+    y.center <- .las@header@PHB$`Y offset`
+
+  }
+
+  .las@data$X <- .las@data$X - x.center
+  .las@data$Y <- .las@data$Y - y.center
 
   # Giving the same scale factor to all coordinates
 
