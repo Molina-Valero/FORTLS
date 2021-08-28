@@ -84,7 +84,16 @@ simulations <- function(tree.list.tls, distance.sampling = NULL,
 
   # 'tree.list.field' must be a data.frame with at least one row, certain
   # mandatory columns and most of them numeric
+  if("w" %in% colnames(tree.list.field)){
+
+  .col.names <-  c("id", "tree", "dbh", "horizontal.distance", "total.height", "w")
+
+  } else{
+
   .col.names <-  c("id", "tree", "dbh", "horizontal.distance", "total.height")
+
+  }
+
   if (!is.data.frame(tree.list.field))
     stop("'tree.list.field' must be a data.frame")
   if (nrow(tree.list.field) < 1)
@@ -259,6 +268,9 @@ simulations <- function(tree.list.tls, distance.sampling = NULL,
       # Density (trees/ha), basal area (m2/ha) and volume (m3/ha)
       "N", "G", "V",
 
+      # and Biomass (Mg/ha)
+      if("w" %in% colnames(tree.list.field)) "W",
+
       # Mean diameters (cm), and mean heights (m)
       paste(names(.mean.names), sep = "."),
 
@@ -364,8 +376,17 @@ simulations <- function(tree.list.tls, distance.sampling = NULL,
   }
 
   # Select only columns required for calculations below
+  if(is.null(tree.list.field$w)){
+
+    tree.list.field <- tree.list.field[, c("id", "tree", "horizontal.distance",
+                                           "dbh", "total.height"), drop = FALSE]
+
+    } else {
+
   tree.list.field <- tree.list.field[, c("id", "tree", "horizontal.distance",
-                                         "dbh", "total.height"), drop = FALSE]
+                                         "dbh", "total.height", "w"), drop = FALSE]
+
+  }
 
 
   # Define TXT files list
@@ -501,7 +522,11 @@ simulations <- function(tree.list.tls, distance.sampling = NULL,
 
     # Select only columns required for calculations below
     .tree$field <- tree.list.field[tree.list.field$id == .id, , drop = FALSE]
-    .col.names <- c("tree", "horizontal.distance", "dbh", "total.height")
+    if(is.null(tree.list.field$w)){
+      .col.names <- c("tree", "horizontal.distance", "dbh", "total.height")} else {
+            .col.names <- c("tree", "horizontal.distance", "dbh", "total.height", "w")
+      }
+
     .tree$field <- .tree$field[ , .col.names, drop = FALSE]
     rownames(.tree$field) <- NULL
 

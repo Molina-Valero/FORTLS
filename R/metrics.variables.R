@@ -117,6 +117,7 @@ metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
     .num <- plot.parameters$num.trees
 
   }
+
   names(.num) <- rownames(plot.parameters)
 
 

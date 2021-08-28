@@ -407,7 +407,7 @@ tree.detection <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.threshold = 0
       # Zhang et al., (2019)
       .n.w.ratio <- stats::sd(.dat$z) / sqrt(stats::sd(.dat$x) ^ 2 + stats::sd(.dat$y) ^ 2)
 
-      if(.n.w.ratio > 1.5){next}
+      if(.n.w.ratio > 1){next}
 
       # Results
       .salida <- data.frame(cluster = .dat$cluster[1],

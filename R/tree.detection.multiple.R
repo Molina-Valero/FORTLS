@@ -89,10 +89,6 @@ tree.detection.multiple <- function(las.list, id = NULL, file = NULL,
 
   for (i in (1:length(las.list))) {
 
-    message("Computing plot: ", i)
-
-    message("Normalizing")
-
     # Assign id
 
     if(!is.null(id)){
@@ -105,6 +101,11 @@ tree.detection.multiple <- function(las.list, id = NULL, file = NULL,
 
     }
 
+    # Messages
+
+    message("Computing plot: ", .id)
+
+    message("Normalizing")
 
     # File name
 

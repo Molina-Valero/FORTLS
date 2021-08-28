@@ -5,6 +5,9 @@ correlations <- function(simulations,
                          method = c("pearson", "spearman"), save.result = TRUE,
                          dir.result = NULL) {
 
+  if("W" %in% colnames(simulations$fixed.area.plot))
+    variables = c(variables, "W")
+
 
   # Define a character vector containing index name (radius, k or BAF) for each
   # available plot design
@@ -16,6 +19,10 @@ correlations <- function(simulations,
   .field.names <- c(
                     # Density (trees/ha), basal area (m2/ha) and volume (m3/ha)
                     "N", "G", "V",
+
+                    # Biomass (Mg/ha)
+                    if("W" %in% colnames(simulations$fixed.area.plot))
+                      "W",
 
                     # Mean diameters (cm), and mean dominant diameters (cm)
                     "d", "dg", "dgeom", "dharm",
@@ -481,6 +488,8 @@ correlations <- function(simulations,
             switch(.k, N = "Density (N, trees/ha)",
                    G = "Basal area (G, m<sup>2</sup>/ha)",
                    V = "Volume (V, m<sup>3</sup>/ha)",
+                   if("W" %in% colnames(simulations$fixed.area.plot))
+                     W = "Biomass (W, Mg/ha)",
                    d = "Arithmetic mean diameter (d, cm)",
                    dg = "Quadratic mean diameter (dg, cm)",
                    dgeom = "Geometric mean diameter (dgeom, cm)",

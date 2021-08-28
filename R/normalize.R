@@ -4,6 +4,7 @@ normalize <- function(las,
                       max.dist = NULL, min.height = NULL, max.height = NULL,
                       algorithm.dtm = "tin", res.dtm = 0.2,
                       csf = list(cloth_resolution = 0.5),
+                      multiple.scans = NULL,
                       id = NULL, file=NULL,
                       dir.data = NULL, save.result = TRUE, dir.result = NULL){
 
@@ -191,10 +192,18 @@ normalize <- function(las,
   # This is based on the principle that closer objects (with the same size and shape)
   # have more probability to recieve points
 
-  .data$prob <- (.data$r / max(.data$r)) ^ 2
-  .data$prob.random <- stats::runif(nrow(.data))
-  .data$prob.selec <- ifelse(.data$prob >= .data$prob.random, 1, 0)
+  if(!is.null(multiple.scans)){
 
+    .data$prob <- stats::runif(nrow(.data))
+    .data$prob.selec <- ifelse(.data$prob >= 0.5, 1, 0)
+
+  } else {
+
+    .data$prob <- (.data$r / max(.data$r)) ^ 2
+    .data$prob.random <- stats::runif(nrow(.data))
+    .data$prob.selec <- ifelse(.data$prob >= .data$prob.random, 1, 0)
+
+  }
 
   # Assign id
 

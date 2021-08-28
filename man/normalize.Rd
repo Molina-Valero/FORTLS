@@ -10,14 +10,21 @@
 
 \usage{
 normalize(las,
+          x.center = NULL, y.center = NULL,
           max.dist = NULL, min.height = NULL, max.height = NULL,
           algorithm.dtm = "tin", res.dtm = 0.2,
+          csf = list(cloth_resolution = 0.5),
+          multiple.scans = NULL,
           id = NULL, file = NULL,
           dir.data = NULL, save.result = TRUE, dir.result = NULL)}
 
 \arguments{
 
   \item{las}{Character string containing the name of LAS file belonging to TLS point cloud, including .las extension (see \sQuote{Examples}). Planimetric coordinates of point cloud data must be in local, representing TLS scan point the origin with Cartesian coordinates x and y as (0, 0).}
+
+  \item{x.center}{Planimetric x center coordinate of point cloud data.}
+
+  \item{y.center}{Planimetric y center coordinate of point cloud data.}
 
   \item{max.dist}{Optional maximum horizontal distance (m) considered from the plot centre. All points farther than \code{max.dist} will be discarded after the normalization process. If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, all points will be used in processing, with \code{max.dist} representing the farthest point.}
 
@@ -28,6 +35,15 @@ normalize(las,
     \item{algorithm.dtm}{Algorithm used to generate the digital terrain model (DTM) from the TLS point cloud. There are two posible options based on spatial interpolation: \sQuote{tin} and \sQuote{knnidw} (see \sQuote{Details}). If this argument is not specified by the user, it will be set to \sQuote{tin} algorithm.}
 
       \item{res.dtm}{numeric. Resolution of the DTM generated to normalize point cloud (see \sQuote{Details}). If this argument is not specified by the user, it will be set to 0.2 m.}
+
+      \item{csf}{List containing parameters of CSF algorithm:}
+
+\itemize{
+
+  \item {\code{cloth_resolution}}: by default 0.5.}
+
+  \item{multiple.scans}{Logical parameter indicating single scans (NULL) or multiple scans (TRUE).}
+
 
   \item{id}{Optional plot identification encoded as character string or numeric. If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, the plot will be encoded as 1.}
 

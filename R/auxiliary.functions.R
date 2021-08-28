@@ -98,6 +98,14 @@
 
       tree <- cbind(tree, V.acum = cumsum(.v))
 
+      if(case == "field" & "w" %in% colnames(tree)){
+      # Biomass, accumulated from ntree = 1 to ntree = Ntree (m3/ha)
+      .w <- tree[, "w"]
+
+      tree <- cbind(tree, W.acum = cumsum(.w))
+
+      }
+
       # Mean diameters and heights
       if (!is.null(mean.names)) {
 
@@ -259,6 +267,11 @@
     # Volume (m3/ha)
     .V.acum <- tree %>% tidyr::fill("V.acum", .direction = "down")
     tree$V.acum <- .V.acum$V.acum
+
+    if(case == "field" & "w" %in% colnames(tree)){
+    # Biomass (Mg/ha)
+    .W.acum <- tree %>% tidyr::fill("W.acum", .direction = "down")
+    tree$W.acum <- .W.acum$W.acum}
 
     # Dbh (m)
     .dbh <- tree %>% tidyr::fill("dbh", .direction = "down")
@@ -444,6 +457,11 @@
     .V <- data[, "V.acum"] * data[, .col.names, drop = FALSE]
     colnames(.V) <- gsub("EF", "V", colnames(.V), fixed = TRUE)
 
+    if(case == "field" & "W.acum" %in% colnames(data)){
+    # Biomass (Mg/ha)
+    .W <- data[, "W.acum"] * data[, .col.names, drop = FALSE]
+    colnames(.W) <- gsub("EF", "W", colnames(.W), fixed = TRUE)}
+
     # Mean heights (m)
     .h <- data %>% tidyr::fill("h", .direction = "down")
     data$h <- .h$h
@@ -486,7 +504,9 @@
 
   }
   .Plot <- cbind(.Plot, .G)
+  if (!is.null(case) & "w" %in% colnames(data)) .Plot <- cbind(.Plot, .V, .W, .dh)
   if (!is.null(case)) .Plot <- cbind(.Plot, .V, .dh)
+
   rownames(.Plot) <- NULL
 
   return(.Plot)
@@ -521,6 +541,10 @@
                              field = data[, "total.height"])
     .V <- cbind(V = pi * (data[, "dbh"] / 2) ^ 2 * .column.height * 0.45 *
                   .N[, "N"])
+
+    if(case == "field" & "w" %in% colnames(data)){
+      # Biomass (Mg/ha)
+      .W <- cbind(W = data[, "w"] * .N[, "N"])}
 
     if (case == "tls") {
 
@@ -595,6 +619,8 @@
   }
   .Plot <- c(.Plot, apply(.G, 2, sum))
   if (!is.null(case)) .Plot <- c(.Plot, apply(.V, 2, sum), .d, .h)
+  if (!is.null(case) & "w" %in% colnames(data)) .Plot <- c(.Plot, apply(.V, 2, sum), apply(.W, 2, sum), .d, .h)
+
   rownames(.Plot) <- NULL
 
   return(.Plot)
@@ -738,6 +764,9 @@
   .metricas<-data.frame(matrix(nrow=0, ncol=13))
 
   .data <- as.data.frame(data)
+
+  ####
+  .data <- .data[which(.data$z > 0.1), ]
 
   for (radio in rho_seq) {
 

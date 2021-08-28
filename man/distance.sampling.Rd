@@ -146,7 +146,7 @@ tree.list.tls <- merge(tree.list.tls, plot.attributes, by = "id")
 # Considering maximum distances of 10 and 15 m for stratum 1 and 2 respectively
 
 strata.attributes = data.frame(stratum = c(1, 2),
-                               plot.radius = c(10, 15))
+                               plot.radius = c(15, 20))
 
 ds <- distance.sampling(tree.list.tls, strata.attributes = strata.attributes)
 
