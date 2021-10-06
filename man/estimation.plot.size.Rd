@@ -63,6 +63,7 @@ Note that this is an option for choosing the best plot design when  field data a
 }
 
 \examples{
+\donttest{
 
 # Loading dataset with trees detected from TLS single-scans
 
@@ -105,4 +106,4 @@ estimation.plot.size(tree.list.tls,
 
 
 }
-
+}

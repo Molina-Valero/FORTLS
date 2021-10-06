@@ -788,7 +788,7 @@
 
     .cuenta_moda<-dim(.sub[which(.sub$z>.metricas_i$mode),])[1]
     .cuenta_media<-dim(.sub[which(.sub$z>.metricas_i$mean),])[1]
-    .c<-uniroot(.c_function, media=.metricas_i$mean, varianza=.metricas_i$var, interval=c(min(.sub[, "z"]),max(.sub[, "z"])))$root
+    .c<-stats::uniroot(.c_function, media=.metricas_i$mean, varianza=.metricas_i$var, interval=c(min(.sub[, "z"]),max(.sub[, "z"])))$root
     .b<-.metricas_i$mean/gamma(1+1/.c)
     .metricas_i$perc_on_mean<-.cuenta_media*100/nrow(.sub)
     .metricas_i$perc_on_mode<-.cuenta_moda*100/nrow(.sub)

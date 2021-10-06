@@ -1,10 +1,12 @@
 
-tree.detection.multiple <- function(las.list, id = NULL, file = NULL,
+tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
                                     normalize.arguments =
 
-                                      list(max.dist = NULL, min.height = NULL, max.height = NULL,
-                                           algorithm.dtm = "tin", res.dtm = 0.2),
+                                      list(x.center = NULL, y.center = NULL,
+                                           max.dist = NULL, min.height = NULL, max.height = NULL,
+                                           algorithm.dtm = "tin", res.dtm = 0.2,
+                                           multiple.scans = NULL),
 
                                     tree.detection.arguments =
 
@@ -122,6 +124,10 @@ tree.detection.multiple <- function(las.list, id = NULL, file = NULL,
 
     .data <- normalize(las = las.list[[i]],
 
+                       x.center = normalize.arguments$x.center,
+
+                       y.center = normalize.arguments$y.center,
+
                        max.dist = normalize.arguments$max.dist,
 
                        min.height = normalize.arguments$min.height,
@@ -138,7 +144,9 @@ tree.detection.multiple <- function(las.list, id = NULL, file = NULL,
 
     message("Detecting trees")
 
-    .tree.list.tls.i <- tree.detection(data = .data,
+    if(is.null(normalize.arguments$multiple.scans)){
+
+    .tree.list.tls.i <- tree.detection.single.scan(data = .data,
 
                                        dbh.min = .dbh.min,
 
@@ -153,6 +161,23 @@ tree.detection.multiple <- function(las.list, id = NULL, file = NULL,
                                        plot.attributes = tree.detection.arguments$plot.attributes,
 
                                        save.result = FALSE, dir.result = dir.result)
+    } else {
+
+    .tree.list.tls.i <- tree.detection.multiple.scans(data = .data,
+
+                                                      dbh.min = .dbh.min,
+
+                                                      dbh.max = .dbh.max,
+
+                                                      breaks = .breaks,
+
+                                                      ncr.threshold = .ncr.threshold,
+
+                                                      plot.attributes = tree.detection.arguments$plot.attributes,
+
+                                                      save.result = FALSE, dir.result = dir.result)
+
+    }
 
     if(i < 2){
 

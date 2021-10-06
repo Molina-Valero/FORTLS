@@ -1,12 +1,12 @@
 \encoding{UTF-8}
 
-\name{tree.detection}
+\name{tree.detection.multiple.scans}
 
-\alias{tree.detection}
+\alias{tree.detection.multiple.scans}
 
 \title{Tree Detection and Cross Section Estimation}
 
-\description{Detects trees from TLS point clouds corresponding to a single scan. For each tree detected, the function calculates the central coordinates and estimates the diameter at 1.3 m above ground level (which is known as \emph{dbh}, diameter at breast height) and classifies it as fully visible or partially occluded. Finally, the function obtains the number of points belonging to normal sections of trees (those corresponding to \emph{dbh} +/- 5 cm) and estimates them for both original and reduced (with point cropping process) point clouds.}
+\description{Detects trees from TLS point clouds corresponding to multiple scans and SLAM point clouds. For each tree detected, the function calculates the central coordinates and estimates the diameter at 1.3 m above ground level (which is known as \emph{dbh}, diameter at breast height) and classifies it as fully visible or partially occluded. Finally, the function obtains the number of points belonging to normal sections of trees (those corresponding to \emph{dbh} +/- 5 cm) and estimates them for both original and reduced (with point cropping process) point clouds.}
 
 \usage{
 tree.detection(data,

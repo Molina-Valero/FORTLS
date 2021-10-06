@@ -1,12 +1,12 @@
 \encoding{UTF-8}
 
-\name{tree.detection.multiple}
+\name{tree.detection.several.plots}
 
-\alias{tree.detection.multiple}
+\alias{tree.detection.several.plots}
 
-\title{Tree Detection and Cross Section Estimation for Multiple Plots}
+\title{Tree Detection and Cross Section Estimation for Several Plots}
 
-\description{This function integrates both, the \code{\link{normalize}} and \code{\link{tree.detection}} functions, generating the same \sQuote{Output Files} as indicated for these, and it returs the same \sQuote{Value} as described for \code{\link{tree.detection}}. However, this function is designed for working with several plots, producing a list of all scans considered automatically from LAS files.}
+\description{This function integrates both, the \code{\link{normalize}} and \code{\link{tree.detection.single.scan}} or \code{\link{tree.detection.multiple.scans}} functions, generating the same \sQuote{Output Files} as indicated for these, and it returs the same \sQuote{Value} as described for \code{\link{tree.detection}}. However, this function is designed for working with several plots, producing a list of all scans considered automatically from LAS files.}
 
 \usage{
 tree.detection.multiple(las.list, id = NULL, file = NULL,
@@ -14,7 +14,8 @@ tree.detection.multiple(las.list, id = NULL, file = NULL,
                                                    min.height = NULL,
                                                    max.height = NULL,
                                                    algorithm.dtm = "tin",
-                                                   res.dtm = 0.2),
+                                                   res.dtm = 0.2,
+                                                   multiple.scans = NULL),
                         tree.detection.arguments = list(dbh.min = 7.5,
                                                         dbh.max = 200,
                                                         ncr.threshold = 0.1,
@@ -35,7 +36,7 @@ tree.detection.multiple(las.list, id = NULL, file = NULL,
 
   \itemize{
 
-    \item \code{max.dist}, \code{min.height}, \code{max.height}, \code{algorithm.dtm}, \code{res.dtm}: same description and format as indicated for same named \code{\link{normalize}} arguments}
+    \item \code{max.dist}, \code{min.height}, \code{max.height}, \code{algorithm.dtm}, \code{res.dtm}: same description and format as indicated for same named \code{\link{normalize}} arguments, \code{multiple.scans}: same description and format as indicated for same named \code{\link{normalize}} arguments}
 
 
   \item{tree.detection.arguments}{Optional list including the following arguments related to tree detection process (see \code{\link{tree.detection}}):}
