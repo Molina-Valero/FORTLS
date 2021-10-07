@@ -1,5 +1,5 @@
 
-tree.detection.multiple.scans <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.threshold = 0.1, breaks=c(1.0, 1.3, 1.6), plot.attributes = NULL,
+tree.detection.multiple.scans <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.threshold = 0.1, tls.precision = NULL, breaks=c(1.0, 1.3, 1.6), plot.attributes = NULL,
                              save.result = TRUE, dir.result = NULL){
 
   # Obtaining working directory for saving files
@@ -31,18 +31,17 @@ tree.detection.multiple.scans <- function(data, dbh.min = 7.5, dbh.max = 200, nc
 
     message("Computing section: ", cuts, " m")
 
-    .cut <- data[which(data$z > (cuts-0.15) & data$z < (cuts+0.15)), , drop = FALSE]
+    .cut <- data[which(data$z > (cuts-0.1) & data$z < (cuts+0.1)), , drop = FALSE]
 
     .cut <- .ncr.remove.slice.double(.cut)
 
     .cut <- .cut[which(.cut$ncr < ncr.threshold | is.na(.cut$ncr)), , drop = FALSE]
 
     # Restrict to slice corresponding to cuts m +/- 5 cm
-    .cut <- .cut[which(.cut$z > (cuts-0.1) & .cut$z < (cuts+0.1)), , drop = FALSE]
+    .cut <- .cut[which(.cut$z > (cuts-0.05) & .cut$z < (cuts+0.05)), , drop = FALSE]
 
     # Dbscan parameters
-    .eps <- .dbh.min
-    # .eps <- (tan(.alpha.h / 2) * (max(.cut$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2)
+    if(is.null(tls.precision)){.eps <- .dbh.min} else {.eps <- tls.precision}
 
     # Clustering
     .error <- try(suppressMessages(dbscan::dbscan(.cut[, c("x", "y"), drop = FALSE], eps = .eps)))
@@ -77,6 +76,9 @@ tree.detection.multiple.scans <- function(data, dbh.min = 7.5, dbh.max = 200, nc
                           # Phi coordinates of left and right
                           phi.left = as.numeric(), phi.right = as.numeric(),
 
+                          # Circumference
+                          circ = as.numeric(),
+
                           # Circumference arc
                           arc.circ = as.numeric(),
 
@@ -91,7 +93,8 @@ tree.detection.multiple.scans <- function(data, dbh.min = 7.5, dbh.max = 200, nc
       # Select cluster .i
       .dat <- .cut[which(.cut$cluster == .i), , drop = FALSE]
 
-      if(nrow(.dat) < 100)
+
+      if(nrow(.dat) < 10)
         next
 
       if((max(.dat$phi) - min(.dat$phi)) < pi){
@@ -105,6 +108,7 @@ tree.detection.multiple.scans <- function(data, dbh.min = 7.5, dbh.max = 200, nc
         .dat.2 <- .dat.2[order(.dat.2$phi, decreasing = F), ]
 
       }
+
 
       # Generate mesh
 
@@ -125,8 +129,7 @@ tree.detection.multiple.scans <- function(data, dbh.min = 7.5, dbh.max = 200, nc
       .ymax <- .y.cent + .ancho.malla
 
       # Filter
-      # .h <- 2 * (tan(.alpha.h / 2) * (mean(.dat$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2)
-      .h <- 0.03
+      if(is.null(tls.precision)){.h <- 0.03} else {.h <- tls.precision * 2 }
 
       .x.values <- seq(from = .xmin, to = .xmax, by = .h)
       .y.values <- seq(from = .ymin, to = .ymax, by = .h)
@@ -254,6 +257,10 @@ tree.detection.multiple.scans <- function(data, dbh.min = 7.5, dbh.max = 200, nc
       if(is.nan(.rho.cent)){next}
 
       # Check rho coordinates for ends are greater than center ones
+      .circ <- ifelse(moments::skewness(.dat$rho) < -0.5, 1, 0)
+
+
+      # Check rho coordinates for ends are greater than center ones
       .arc.circ <- ifelse(.rho.left > .rho.cent & .rho.right > .rho.cent, 1, 0)
 
       # Convert original coordinates if cluster is located in 0 +/- phi
@@ -288,17 +295,12 @@ tree.detection.multiple.scans <- function(data, dbh.min = 7.5, dbh.max = 200, nc
 
       if(.n.w.ratio > 1){next}
 
-      .densidad_radio <- .num.points / .radio
+      .densidad_radio <- .num.points.hom / .radio
 
-      # if(.densidad_radio < 500){next}
 
-      if((.arc.circ == 1 & .densidad_radio > 500) | (.arc.circ == 0 & .occlusion > 0.95 & .densidad_radio > 500))
-      {plot(.dat$x, .dat$y, asp = 1, main = .n.w.ratio, col = "green")} else{
-
-        plot(.dat$x, .dat$y, asp = 1, main = .n.w.ratio, col = "red")}
-
-      if(nrow(.dat) < 100)
+      if(nrow(.dat) < 10)
         next
+
 
       # Results
       .salida <- data.frame(cluster = .dat$cluster[1],
@@ -313,18 +315,25 @@ tree.detection.multiple.scans <- function(data, dbh.min = 7.5, dbh.max = 200, nc
 
                             phi.left = .phi.left, phi.right = .phi.right,
 
-                            arc.circ = .arc.circ, occlusion = .occlusion,
+                            circ = .circ, arc.circ = .arc.circ,
 
-                            densidad_radio = .densidad_radio)
+                            occlusion = .occlusion,
+
+                            density.radio = .densidad_radio)
 
       .filter <- rbind(.filter, .salida)
 
     }
 
 
+    # Minimum number of points
+    .filter$tree <- ifelse(.filter$num.points.hom > stats::quantile(.filter$num.points.hom, prob = 0.1), 1, 0)
+    .filter <- .filter[which(.filter$tree == 1), , drop = FALSE]
+
     # Arch of circumference or partial arch of circumference?
-    .filter$tree <- ifelse(.filter$arc.circ == 1 & .filter$densidad_radio > 500, 1,
-                           ifelse(.filter$arc.circ == 0 & .filter$occlusion > 0.95 & .filter$densidad_radio > 500, 1, 0))
+    .filter$tree <- ifelse(.filter$circ == 1 & .filter$density.radio > stats::quantile(.filter$density.radio, prob = 0.25), 1,
+                           ifelse(.filter$arc.circ == 1 & .filter$density.radio > stats::quantile(.filter$density.radio, prob = 0.1), 1,
+                           ifelse(.filter$arc.circ == 0 & .filter$occlusion > 0.975 & .filter$density.radio > stats::quantile(.filter$density.radio, prob = 0.05), 1, 0)))
     .filter <- .filter[which(.filter$tree == 1), , drop = FALSE]
 
     # Dbh maximum and minimum
@@ -367,7 +376,7 @@ tree.detection.multiple.scans <- function(data, dbh.min = 7.5, dbh.max = 200, nc
 
   if(nrow(.filter) < 1) stop("No tree was detected")
 
-  .dbscan <- dbscan::dbscan(.filter[, c("center.x", "center.y"), drop = FALSE], eps = median(.filter$radius), minPts = 1)
+  .dbscan <- dbscan::dbscan(.filter[, c("center.x", "center.y"), drop = FALSE], eps = stats::quantile(.filter$radius, prob = 0.75), minPts = 1)
   .filter$cluster <- .dbscan$cluster
   .filter <- .filter[order(.filter$cluster, .filter$sec), , drop = FALSE]
 

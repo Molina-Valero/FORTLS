@@ -12,7 +12,6 @@
 tree.detection(data,
                dbh.min = 7.5, dbh.max = 200,
                ncr.threshold = 0.1,
-               tls.resolution = list(),
                breaks = c(1.0, 1.3, 1.6),
                plot.attributes = NULL,
                save.result = TRUE, dir.result = NULL)}
@@ -26,24 +25,6 @@ tree.detection(data,
   \item{dbh.max}{Optional maximum \emph{dbh} (cm) considered for detecting trees. By default it will be set at 200 cm.}
 
   \item{ncr.threshold}{Local surface variation (also known as normal change rate, NCR). By default it will be set as 0.1. For better understanding of this argument see \sQuote{Details}.}
-
-  \item{tls.resolution}{List containing parameters of TLS resolution. This can be defined by the angle aperture:}
-
-\itemize{
-
-  \item {\code{horizontal.angle}}: horizontal angle aperture (degrees).
-
-  \item {\code{vertical.angle}}: vertical angle aperture (degrees).}
-
-  \item{}{or separation between two consecutive points at a certain distance from TLS:}
-
-  \itemize{
-
-  \item {\code{point.dist}}: distance (mm) between two consecutive points.
-
-  \item {\code{tls.dist}}: distance (m) from TLS at which two consecutive points are separated by \code{point.dist}.
-
-  If this argument is not specified by the user, it will be set to NULL by default and, as a consequence the function will stop giving an error message.}
 
   \item{breaks}{Height above ground level (m) of slices considered for detecting trees. By default it will be 1.0, 1.3 and 1.6 m (+/- 5 cm).}
 
