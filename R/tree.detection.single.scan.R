@@ -375,6 +375,7 @@ tree.detection.single.scan <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.t
       if(class(.cor) == "try-error"){next} else{
 
         .occlusion <- .cor[[4]]
+        .occlusion.sig <- .cor["p.value"]
 
       }
 
@@ -402,7 +403,9 @@ tree.detection.single.scan <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.t
 
                             phi.left = .phi.left, phi.right = .phi.right,
 
-                            arc.circ = .arc.circ, occlusion = .occlusion)
+                            arc.circ = .arc.circ,
+
+                            occlusion = .occlusion, occlusion.sig = .occlusion.sig)
 
       .filter <- rbind(.filter, .salida)
 
@@ -411,7 +414,7 @@ tree.detection.single.scan <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.t
 
     # Arch of circumference or partial arch of circumference?
     .filter$tree <- ifelse(.filter$arc.circ == 1, 1,
-                           ifelse(.filter$arc.circ == 0 & .filter$occlusion > 0.995, 1, 0))
+                           ifelse(.filter$arc.circ == 0 & .filter$occlusion > 0.995 & .filter$occlusion.sig < 0.05, 1, 0))
     .filter <- .filter[which(.filter$tree == 1), , drop = FALSE]
 
     # Dbh maximum and minimum

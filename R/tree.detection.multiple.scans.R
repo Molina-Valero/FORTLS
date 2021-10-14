@@ -24,7 +24,7 @@ tree.detection.multiple.scans <- function(data, dbh.min = 7.5, dbh.max = 200, nc
                            radius = as.numeric(),
                            num.points = as.numeric(), num.points.hom = as.numeric(),
                            phi.left = as.numeric(), phi.right = as.numeric(),
-                           arc.circ = as.numeric(), sec = as.numeric())
+                           circ = as.numeric(), arc.circ = as.numeric(), sec = as.numeric())
 
 
   for(cuts in breaks){
@@ -92,22 +92,10 @@ tree.detection.multiple.scans <- function(data, dbh.min = 7.5, dbh.max = 200, nc
 
       # Select cluster .i
       .dat <- .cut[which(.cut$cluster == .i), , drop = FALSE]
-
+      .cluster <- .i
 
       if(nrow(.dat) < 10)
         next
-
-      if((max(.dat$phi) - min(.dat$phi)) < pi){
-
-        .dat.2 <- .dat[order(.dat$phi, decreasing = F), ]
-
-      } else {
-
-        .dat.2 <- .dat
-        .dat.2$phi <- ifelse(.dat.2$phi < 1, .dat.2$phi + (2 * pi), .dat.2$phi)
-        .dat.2 <- .dat.2[order(.dat.2$phi, decreasing = F), ]
-
-      }
 
 
       # Generate mesh
@@ -238,34 +226,57 @@ tree.detection.multiple.scans <- function(data, dbh.min = 7.5, dbh.max = 200, nc
       if(stats::quantile(.dat$dist, prob = 0.05) < (.radio / 2)) {next}
 
 
+      .dat.2 <- .dat[order(.dat$x, .dat$y, decreasing = F), ]
+
+      .dat.2$a <- sqrt((.dat.2$x - .dat.2$x[1])^2+(.dat.2$y - .dat.2$y[1])^2)
+      .dat.2$b <- sqrt((.dat.2$x[1] - .center.x)^2+(.dat.2$y[1] - .center.y)^2)
+      .dat.2$c <- sqrt((.dat.2$x - .center.x)^2+(.dat.2$y - .center.y)^2)
+
+      .dat.2$alpha <- acos(-(.dat.2$a^2-.dat.2$b^2-.dat.2$c^2)/(2*.dat.2$b*.dat.2$c))
+
+      .dat.2$x2 <- .dat.2$c * cos(.dat.2$alpha)
+      .dat.2$y2 <- .dat.2$c * sin(.dat.2$alpha)
+
+
       # Select 1st percentil, if necessary for strange points
       # It remains to be seen what happens if cluster is located in 0 +/- phi
-      .pto.left <- stats::quantile(.dat.2$phi, prob = 0.01)
-      .rho.left <- mean(.dat.2$rho[which(.dat.2$phi <= .pto.left)])
-      .phi.left <- mean(.dat.2$phi[which(.dat.2$phi <= .pto.left)])
+      .pto.left <- stats::quantile(.dat.2$alpha, prob = 0.01)
+      .x.left <- mean(.dat.2$x2[which(.dat.2$alpha <= .pto.left)])
+      .y.left <- mean(.dat.2$y2[which(.dat.2$alpha <= .pto.left)])
 
       # Select 99th percentil, if necessary for strange points
-      .pto.right <- stats::quantile(.dat.2$phi, prob = 0.99)
-      .rho.right <- mean(.dat.2$rho[which(.dat.2$phi >= .pto.right)])
-      .phi.right <- mean(.dat.2$phi[which(.dat.2$phi >= .pto.right)])
+      .pto.right <- stats::quantile(.dat.2$alpha, prob = 0.99)
+      .x.right <- mean(.dat.2$x2[which(.dat.2$alpha >= .pto.right)])
+      .y.right <- mean(.dat.2$y2[which(.dat.2$alpha >= .pto.right)])
 
       # For points in section center, select those in half the angle aperture
       # phi +/- TLS aperture .alpha
-      .phi.cent <- max(.dat.2$phi) - ((max(.dat.2$phi) - min(.dat.2$phi)) / 2)
-      .rho.cent <- mean(.dat.2$rho[which(round(.dat.2$phi, 3) >= round(.phi.cent, 3) & round(.dat.2$phi, 3) <= round(.phi.cent, 3))])
+      .phi.cent <- max(.dat.2$alpha) - ((max(.dat.2$alpha) - min(.dat.2$alpha)) / 2)
+      .x.cent <- mean(.dat.2$x2[which(round(.dat.2$alpha, 1) >= round(.phi.cent, 1) & round(.dat.2$alpha, 1) <= round(.phi.cent, 1))])
+      .y.cent <- mean(.dat.2$y2[which(round(.dat.2$alpha, 1) >= round(.phi.cent, 1) & round(.dat.2$alpha, 1) <= round(.phi.cent, 1))])
 
-      if(is.nan(.rho.cent)){next}
+      # plot(.dat.2$x2, .dat.2$y2, asp = 1, main = .cluster)
+      # points(.x.cent, .y.cent, col = "green", pch = 19)
+      # points(.x.left, .y.left, col = "red", pch = 19)
+      # points(.x.right, .y.right, col = "blue", pch = 19)
+
+      # if(is.nan(.rho.cent)){next}
 
       # Check rho coordinates for ends are greater than center ones
-      .circ <- ifelse(moments::skewness(.dat$rho) < -0.5, 1, 0)
+      # .circ <- ifelse(moments::skewness(.dat$rho) < -0.5, 1, 0)
+      .circ <- ifelse(min(.dat$x) < .center.x  - .radio * 0.75 & max(.dat$x) > .center.x + .radio * 0.75 &
+                      min(.dat$y) < .center.y  - .radio * 0.75 & max(.dat$y) > .center.y + .radio * 0.75, 1, 0)
 
 
       # Check rho coordinates for ends are greater than center ones
-      .arc.circ <- ifelse(.rho.left > .rho.cent & .rho.right > .rho.cent, 1, 0)
+      # .arc.circ <- ifelse(.c.left < .c.cent & .c.left > 0 & .c.right < .c.cent & .c.right > 0, 1, 0)
+      .arc.circ <- ifelse(.y.left < .y.cent & .y.right < .y.cent, 1, 0)
+      if(is.na(.arc.circ))
+        .arc.circ <- 0
 
       # Convert original coordinates if cluster is located in 0 +/- phi
-      .phi.left <- ifelse(.phi.left > (2 * pi), .phi.left - (2 * pi), .phi.left)
-      .phi.right <- ifelse(.phi.right > (2 * pi), .phi.right - (2 * pi), .phi.right)
+      # .phi.left <- ifelse(.phi.left > (2 * pi), .phi.left - (2 * pi), .phi.left)
+      # .phi.right <- ifelse(.phi.right > (2 * pi), .phi.right - (2 * pi), .phi.right)
 
       # If the complete circumference arc is not detected (so previous criterion
       # is not satisfied), check if there is a partial occlusion.
@@ -273,17 +284,20 @@ tree.detection.multiple.scans <- function(data, dbh.min = 7.5, dbh.max = 200, nc
       # regularity so very high correlations between their correlative
       # numeration and phi must be found when they are ordered with respect to
       # phi
+      .dat.2 <- .dat.2[order(.dat.2$alpha, decreasing = F), ]
       .dat.2$n <- c(1:nrow(.dat.2))
-      .cor <- try(stats::cor.test(x = .dat.2$n, y = .dat.2$phi, method = 'pearson'), silent = TRUE) # cor function could be used instead
+      .cor <- try(stats::cor.test(x = .dat.2$n, y = .dat.2$alpha, method = 'pearson'), silent = TRUE) # cor function could be used instead
       # .cor <- try(stats::cor.test(x = .dat2$n, y = .dat2$phi, method = 'spearman'))
 
       # If error, go to next iteration
       if(class(.cor) == "try-error"){next} else{
 
         .occlusion <- .cor[[4]]
+        .occlusion.sig <- .cor["p.value"]
 
       }
 
+      # plot(.dat$x, .dat$y, asp = 1, main = paste(.cluster, .circ, .arc.circ, sep = " "))
 
       # Coefficient of variation for distances among cluster points and the estimated center
       .cv <- stats::sd(raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)) / .radio
@@ -313,11 +327,11 @@ tree.detection.multiple.scans <- function(data, dbh.min = 7.5, dbh.max = 200, nc
 
                             num.points = .num.points, num.points.hom = .num.points.hom,
 
-                            phi.left = .phi.left, phi.right = .phi.right,
+                            # phi.left = .phi.left, phi.right = .phi.right,
 
                             circ = .circ, arc.circ = .arc.circ,
 
-                            occlusion = .occlusion,
+                            occlusion = .occlusion, occlusion.sig = .occlusion.sig,
 
                             density.radio = .densidad_radio)
 
@@ -325,15 +339,20 @@ tree.detection.multiple.scans <- function(data, dbh.min = 7.5, dbh.max = 200, nc
 
     }
 
+    # Arch of circumference or partial arch of circumference?
+    .Q1 <- stats::quantile(.filter$density.radio, prob = 0.25)
+    .Q3 <- stats::quantile(.filter$density.radio, prob = 0.75)
+    .outliers <- .Q1 - 1.5 * (.Q3 - .Q1)
 
     # Minimum number of points
-    .filter$tree <- ifelse(.filter$num.points.hom > stats::quantile(.filter$num.points.hom, prob = 0.1), 1, 0)
+    .filter$tree <- ifelse(.filter$num.points.hom > .outliers, 1, 0)
     .filter <- .filter[which(.filter$tree == 1), , drop = FALSE]
 
-    # Arch of circumference or partial arch of circumference?
-    .filter$tree <- ifelse(.filter$circ == 1 & .filter$density.radio > stats::quantile(.filter$density.radio, prob = 0.25), 1,
-                           ifelse(.filter$arc.circ == 1 & .filter$density.radio > stats::quantile(.filter$density.radio, prob = 0.1), 1,
-                           ifelse(.filter$arc.circ == 0 & .filter$occlusion > 0.975 & .filter$density.radio > stats::quantile(.filter$density.radio, prob = 0.05), 1, 0)))
+
+
+    .filter$tree <- ifelse(.filter$circ == 1 & .filter$density.radio > .outliers, 1,
+                           ifelse(.filter$arc.circ == 1 & .filter$density.radio > .outliers, 1,
+                           ifelse(.filter$arc.circ == 0 & .filter$occlusion > 0.975 & .filter$occlusion.sig < 0.05 & .filter$density.radio > .outliers, 1, 0)))
     .filter <- .filter[which(.filter$tree == 1), , drop = FALSE]
 
     # Dbh maximum and minimum
@@ -349,14 +368,14 @@ tree.detection.multiple.scans <- function(data, dbh.min = 7.5, dbh.max = 200, nc
                                center.r = as.numeric(), center.theta = as.numeric(),
                                radius = as.numeric(),
                                num.points = as.numeric(), num.points.hom = as.numeric(),
-                               phi.left = as.numeric(), phi.right = as.numeric(),
-                               arc.cir = as.numeric(), sec = as.numeric())
+                               # phi.left = as.numeric(), phi.right = as.numeric(),
+                               circ = as.numeric(), arc.cir = as.numeric(), sec = as.numeric())
 
     } else{
 
       .filter1.0 <- .filter[, c("cluster",
                                 "center.x", "center.y", "center.phi", "center.rho", "center.r", "center.theta",
-                                "radius", "num.points", "num.points.hom", "phi.left", "phi.right", "arc.circ"), drop = FALSE]
+                                "radius", "num.points", "num.points.hom", "circ", "arc.circ"), drop = FALSE]
       .filter1.0$sec <- cuts
 
     }
@@ -436,8 +455,8 @@ tree.detection.multiple.scans <- function(data, dbh.min = 7.5, dbh.max = 200, nc
                       horizontal.distance = tapply(.filter$center.rho, .filter$cluster, mean, na.rm = TRUE), # repeated line
                       radius = .radio.est$radio.est,
 
-                      phi.left = tapply(.filter$phi.left, .filter$cluster, mean, na.rm = TRUE),
-                      phi.right = tapply(.filter$phi.right, .filter$cluster, mean, na.rm = TRUE),
+                      # phi.left = tapply(.filter$phi.left, .filter$cluster, mean, na.rm = TRUE),
+                      # phi.right = tapply(.filter$phi.right, .filter$cluster, mean, na.rm = TRUE),
 
                       partial.occlusion = tapply(.filter$arc.circ, .filter$cluster, min, na.rm = TRUE),
 
@@ -477,8 +496,8 @@ tree.detection.multiple.scans <- function(data, dbh.min = 7.5, dbh.max = 200, nc
   # If plot identification (id) is not available
   if(is.null(data$id)){
 
-    .tree <- .tree[, c("tree", "center.x", "center.y", "center.phi", "phi.left", "phi.right", "horizontal.distance", "dbh", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion"), drop = FALSE]
-    colnames(.tree) <- c("tree", "x", "y", "phi", "phi.left", "phi.right", "horizontal.distance", "dbh", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion")
+    .tree <- .tree[, c("tree", "center.x", "center.y", "center.phi", "horizontal.distance", "dbh", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion"), drop = FALSE]
+    colnames(.tree) <- c("tree", "x", "y", "phi", "horizontal.distance", "dbh", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion")
 
   } else{
 
@@ -487,8 +506,8 @@ tree.detection.multiple.scans <- function(data, dbh.min = 7.5, dbh.max = 200, nc
     .tree$id <- data$id[1]
     .tree$file <- data$file[1]
 
-    .tree <- .tree[, c("id", "file", "tree", "center.x", "center.y", "center.phi", "phi.left", "phi.right", "horizontal.distance", "dbh", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion"), drop = FALSE]
-    colnames(.tree) <- c("id", "file", "tree", "x", "y", "phi", "phi.left", "phi.right", "horizontal.distance", "dbh", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion")
+    .tree <- .tree[, c("id", "file", "tree", "center.x", "center.y", "center.phi", "horizontal.distance", "dbh", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion"), drop = FALSE]
+    colnames(.tree) <- c("id", "file", "tree", "x", "y", "phi", "horizontal.distance", "dbh", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion")
 
   }
 
