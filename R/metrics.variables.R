@@ -1,5 +1,6 @@
 
 metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
+                              multiple.scans = NULL,
                               plot.parameters, dir.data = NULL,
                               save.result = TRUE, dir.result = NULL) {
 
@@ -25,10 +26,15 @@ metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
 
   # Define expansion factors/correction of occlusion names
   .ef.names <- character()
-  if (!is.null(distance.sampling))
+  if(!is.null(distance.sampling))
     .ef.names <- c(.ef.names, "hn", "hr", "hn.cov", "hr.cov")
-  .ef.names <- list(fixed.area = c(.ef.names, "sh"),
-                    k.tree = c(.ef.names, "sh"), angle.count = "pam")
+  if(is.null(multiple.scans))
+    .ef.names <- list(fixed.area = c(.ef.names, "sh"),
+                      k.tree = c(.ef.names, "sh"), angle.count = "pam")
+  if(!is.null(multiple.scans))
+    .ef.names <- list(fixed.area = c(.ef.names), k.tree = c(.ef.names), angle.count = c(.ef.names))
+
+
 
   # Define mean names
   .mean.names <- c(d = "arit", dg = "sqrt", dgeom = "geom", dharm = "harm",
@@ -43,17 +49,21 @@ metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
                            function(x, y, z) {
                              c(
                                # Density (trees/ha)
-                               c("N.tls", paste("N", y[[x]], sep = ".")),
+                               if(!is.null(multiple.scans)){"N.tls"} else {
+                                 c("N.tls", paste("N", y[[x]], sep = "."))},
 
                                # Number of points
                                "num.points", "num.points.est", "num.points.hom",
                                "num.points.hom.est",
 
                                # Basal area (m2/ha)
-                               c("G.tls", paste("G", y[[x]], sep = ".")),
+                               if(!is.null(multiple.scans)){"G.tls"} else {
+                                 c("G.tls", paste("G", y[[x]], sep = "."))},
+
 
                                # Volume (m3/ha)
-                               c("V.tls", paste("V", y[[x]], sep = ".")),
+                               if(!is.null(multiple.scans)){"V.tls"} else {
+                                 c("V.tls", paste("V", y[[x]], sep = "."))},
 
                                # Mean diameters (cm), and mean heights (m)
                                paste(names(z), "tls", sep = "."),
@@ -215,15 +225,33 @@ metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
     .P99 <- data.frame(tree = names(.P99), P99 = .P99)
     .tree.tls <- merge(.tree.tls, .P99, by = "tree", all = FALSE)
 
+    # Save results
+    .tree <- .tree.tls[, c("id", "file", "tree", "x", "y", "phi", "horizontal.distance", "dbh", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion", "P99"), drop = FALSE]
+    colnames(.tree) <- c("id", "file", "tree", "x", "y", "phi", "horizontal.distance", "dbh", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion", "total.height")
+
+    if(isTRUE(save.result)){
+
+      utils::write.csv(.tree,
+                       file = file.path(dir.result, "tree.variables.csv"),
+                       row.names = FALSE)
+    }
+
+    rm(.tree)
+
     # Compute angular aperture
+    if(is.null(multiple.scans)){
     .wide <- .tree.tls$phi.right - .tree.tls$phi.left
     .wide <- ifelse(.wide < 0, (2 * pi) + .wide, .wide)
-    .tree.tls <- cbind(.tree.tls, wide = .wide)
+    .tree.tls <- cbind(.tree.tls, wide = .wide)}
 
     # Select only columns required for calculations below
+    if(is.null(multiple.scans)){
     .col.names <- c("tree", "horizontal.distance", "dbh", "num.points",
                     "num.points.hom", "num.points.est", "num.points.hom.est",
-                    "partial.occlusion", "wide", "P99")
+                    "partial.occlusion", "wide", "P99")} else {
+    .col.names <- c("tree", "horizontal.distance", "dbh", "num.points",
+                    "num.points.hom", "num.points.est", "num.points.hom.est",
+                    "partial.occlusion", "P99")}
     .tree.tls <- .tree.tls[ , .col.names, drop = FALSE]
     rownames(.tree.tls) <- NULL
 
