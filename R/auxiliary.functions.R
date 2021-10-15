@@ -362,6 +362,7 @@
 # AND K-TREE PLOTS
 
 .fixed.area.k.tree.calculation <- function(data, distance.sampling = NULL,
+                                           multiple.scans = NULL,
                                            case = NULL){
 
 
@@ -393,7 +394,7 @@
 
     # Compute expansion factor for each radius with correction under spetial
     # consideration of shadowing (Seidel and Ammer, 2014)
-
+    if (is.null(multiple.scans)) {
     data <- cbind(data, EF.sh = NA)
 
     for (.j in unique(data[, "radius"])) {
@@ -433,7 +434,7 @@
 
     data[, "EF.sh"] <- data[, "EF"] * data[, "EF.sh"]
 
-  }
+  }}
 
 
   # Estimate variables per ha: density (trees/ha), basal area (m2/ha) and

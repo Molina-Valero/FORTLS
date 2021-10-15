@@ -298,10 +298,16 @@ metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
                                        num.dec = .num.dec)
 
       # Compute expansion factors, and estimate variables per ha
+      if(is.null(multiple.scans)){
       .fixedAreaPlot <-
         .fixed.area.k.tree.calculation(data = .fixedAreaPlot,
                                        distance.sampling = .distSampling,
-                                       case = "tls")
+                                       case = "tls")} else {
+      .fixedAreaPlot <-
+        .fixed.area.k.tree.calculation(data = .fixedAreaPlot,
+                                       distance.sampling = .distSampling,
+                                       multiple.scans = TRUE,
+                                       case = "tls")}
 
       # Select last row for each radius value
       .fixedAreaPlot <- matrix(apply(.fixedAreaPlot, 2, tapply,
