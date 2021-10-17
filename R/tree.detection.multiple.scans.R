@@ -92,11 +92,9 @@ tree.detection.multiple.scans <- function(data, dbh.min = 7.5, dbh.max = 200, nc
 
       # Select cluster .i
       .dat <- .cut[which(.cut$cluster == .i), , drop = FALSE]
-      .cluster <- .i
 
       if(nrow(.dat) < 10)
         next
-
 
       # Generate mesh
 
@@ -312,7 +310,7 @@ tree.detection.multiple.scans <- function(data, dbh.min = 7.5, dbh.max = 200, nc
       .densidad_radio <- .num.points.hom / .radio
 
 
-      if(nrow(.dat) < 10)
+      if(nrow(.dat) < 1)
         next
 
 
@@ -351,7 +349,7 @@ tree.detection.multiple.scans <- function(data, dbh.min = 7.5, dbh.max = 200, nc
 
 
     .filter$tree <- ifelse(.filter$circ == 1 & .filter$density.radio > .outliers, 1,
-                           ifelse(.filter$arc.circ == 1 & .filter$density.radio > .outliers, 1,
+                           ifelse(.filter$circ == 0 & .filter$arc.circ == 1 & .filter$density.radio > .outliers, 1,
                            ifelse(.filter$arc.circ == 0 & .filter$occlusion > 0.975 & .filter$occlusion.sig < 0.05 & .filter$density.radio > .outliers, 1, 0)))
     .filter <- .filter[which(.filter$tree == 1), , drop = FALSE]
 
@@ -433,7 +431,7 @@ tree.detection.multiple.scans <- function(data, dbh.min = 7.5, dbh.max = 200, nc
 
     if(max(.dat$arc.circ) > 0){
 
-      .dat <- .dat[which(.dat$arc.circ > 0), ]
+      .dat <- .dat[which(.dat$circ | .dat$arc.circ > 0), ]
 
     }
 
