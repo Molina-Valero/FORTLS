@@ -1,4 +1,4 @@
-# FORTLS <img src="https://github.com/Molina-Valero/FORTLS/tree/devel/man/figures/FORTLS.png" width="200" align="right"/>
+# FORTLS
 ![license](https://img.shields.io/badge/Licence-GPL--3-blue.svg) 
 
 ## Automatic Processing of TLS Point Cloud Data for Forestry Purposes
