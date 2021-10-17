@@ -1,5 +1,6 @@
 # FORTLS
-![license](https://img.shields.io/badge/Licence-GPL--3-blue.svg) 
+![license](https://img.shields.io/badge/Licence-GPL--3-blue.svg)
+[![](https://www.r-pkg.org/badges/version/spanner)](https://CRAN.R-project.org/package=FORTLS)
 
 ## Automatic Processing of TLS Point Cloud Data for Forestry Purposes
 Process automation of Terrestrial Laser Scanner (TLS) point cloud data derived from single
