@@ -140,7 +140,8 @@ dir.result <- getwd()
 
 download.file("https://www.dropbox.com/s/2c3d320o3srcawb/1.las?raw=1",
               destfile = file.path(dir.data, "1.las"),
-              method = "wininet", mode = "wb")
+              # method = "wininet",
+              mode = "wb")
 
 
 # Normalizing the whole point cloud data without considering arguments
