@@ -167,19 +167,19 @@ pcd <- normalize(las = "1.las",
 # For this case study, TLS resolution was established as:
 # point.dist = 7.67 mm and tls.dist = 10 m
 
-tree.list.tls <- tree.detection(data = pcd,
-                                tls.resolution = list(point.dist = 7.67, tls.dist = 10),
-                                dir.result = dir.result)
+tree.list.tls <- tree.detection.single.scan(data = pcd,
+                                            tls.resolution = list(point.dist = 7.67, tls.dist = 10),
+                                            dir.result = dir.result)
 
 
 
 # Tree detection considering several arguments
 
-tree.list.tls <- tree.detection(data = pcd,
-                                dbh.min = 7.5, dbh.max = 60,
-                                tls.resolution = list(point.dist = 7.67, tls.dist = 10),
-                                breaks = 1.3,
-                                dir.result = dir.result)
+tree.list.tls <- tree.detection.single.scan(data = pcd,
+                                            dbh.min = 7.5, dbh.max = 60,
+                                            tls.resolution = list(point.dist = 7.67, tls.dist = 10),
+                                            breaks = 1.3,
+                                            dir.result = dir.result)
 
   }
 
