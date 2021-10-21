@@ -19,3 +19,17 @@ Get the latest released version of FORTLS from GitHub (included in the devel bra
 ```r
 remotes::install_github("Molina-Valero/FORTLS", ref = "devel", dependencies = TRUE)
 ```
+
+
+## Normalize
+
+This function obtains coordinates relative to the plot centre for Terrestrial Laser Scanner (TLS) and SLAM point clouds (supplied as LAS files) derived from single and multiple scans. 
+
+```r
+# Establishment of working directories (optional)
+# By default here we propose the current working directory of the R process
+
+dir.data <- getwd()
+dir.result <- getwd()
+remotes::install_github("Molina-Valero/FORTLS", ref = "devel", dependencies = TRUE)
+```
