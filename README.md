@@ -31,5 +31,15 @@ This function obtains coordinates relative to the plot centre for Terrestrial La
 
 dir.data <- getwd()
 dir.result <- getwd()
-remotes::install_github("Molina-Valero/FORTLS", ref = "devel", dependencies = TRUE)
+
+# Loading example data (LAS file) to dir.data
+
+download.file("https://www.dropbox.com/s/2c3d320o3srcawb/1.las?raw=1",
+              destfile = file.path(dir.data, "1.las"),
+              # method = "wininet",
+              mode = "wb")
+
+# Normalizing the whole point cloud data without considering arguments
+
+pcd <- normalize(las = "1.las", dir.data = dir.data, dir.result = dir.result)
 ```
