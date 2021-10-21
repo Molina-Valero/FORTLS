@@ -40,3 +40,18 @@ download.file("https://www.dropbox.com/s/2c3d320o3srcawb/1.las?raw=1", destfile 
 
 pcd <- normalize(las = "1.las", dir.data = dir.data, dir.result = dir.result)
 ```
+
+## Tree detection
+### Tree detection single scan
+
+Detects trees from TLS point clouds corresponding to a single scan. For each tree detected, the function calculates the central coordinates and estimates the diameter at 1.3 m above ground level (which is known as \emph{dbh}, diameter at breast height) and classifies it as fully visible or partially occluded. Finally, the function obtains the number of points belonging to normal sections of trees (those corresponding to \emph{dbh} +/- 5 cm) and estimates them for both original and reduced (with point cropping process) point clouds.
+
+```r
+# Tree detection without considering arguments
+# For this case study, TLS resolution was established as:
+# point.dist = 7.67 mm and tls.dist = 10 m
+
+tree.list.tls <- tree.detection(data = pcd,
+                                tls.resolution = list(point.dist = 7.67, tls.dist = 10),
+                                dir.result = dir.result)
+```
