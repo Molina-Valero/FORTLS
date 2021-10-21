@@ -11,6 +11,7 @@
 \usage{
 metrics.variables(tree.list.tls,
                   distance.sampling = NULL,
+                  multiple.scans = NULL,
                   plot.parameters,
                   dir.data = NULL, save.result = TRUE, dir.result = NULL)}
 
@@ -19,6 +20,8 @@ metrics.variables(tree.list.tls,
   \item{tree.list.tls}{Data frame with information about trees detected from TLS point clouds data in the same format as \code{\link{tree.detection}} \sQuote{Value}.}
 
   \item{distance.sampling}{Optional list containing detection probabilities of trees with distance sampling methods. The format must be the same as the \sQuote{Value} obtained with \code{\link{distance.sampling}}. If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, TLS metrics using distance sampling based correction will not be calculated for circular fixed area and k-tree plot designs.}
+
+  \item{multiple.scans}{Logical parameter indicating single scans (NULL) or multiple scans (TRUE).}
 
   \item{plot.parameters}{Data frame containing parameters for circular fixed area, k-tree and angle-count plot designs. If there is a \code{stratum} column in the \code{tree.list.tls} argument, it must have the same number of rows as strata values and they must be named using strata encoding. If plot parameters are not specified, the corresponding plot designs will not be considered in the function. If no parameter is specified, the function will stop giving an error message! The parameters are as follows:}
 

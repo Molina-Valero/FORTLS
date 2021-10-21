@@ -6,7 +6,7 @@
 
 \title{Relative Coordinates and Density Reduction for TLS Point Clouds}
 
-\description{This function obtains coordinatesrelative to the plot centre for Terrestrial Laser Scanner (TLS) point clouds (supplied as LAS files) derived from single scans (with TLS scanner point as plot centre). In addition, the point cropping process developed by Molina-Valero et al., (2019) is applied as a criterion for reducing point density homogeneously in space and proportionally to object size.}
+\description{This function obtains coordinates relative to the plot centre for Terrestrial Laser Scanner (TLS) and SLAM point clouds (supplied as LAS files) derived from single scans (with TLS scanner point as plot centre). In addition, the point cropping process developed by Molina-Valero et al., (2019) is applied as a criterion for reducing point density homogeneously in space and proportionally to object size.}
 
 \usage{
 normalize(las,

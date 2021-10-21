@@ -520,6 +520,7 @@
 # PLOTS
 
 .angle.count.calculation <- function(BAF, data, mean.names = NULL,
+                                     multiple.scans = NULL,
                                      case = NULL){
 
   # Select data according to BAF
@@ -559,12 +560,18 @@
 
       # Density (trees / ha), basal area (m2 / ha) and volume (m3 / ha) with
       # correction of occlusion
+      if (is.null(multiple.scans)) {
       .N <- cbind(.N, N.pam = .N[, "N"] / .Ft)
       colnames(.N)[colnames(.N) == "N"] <- paste("N", case, sep = ".")
       .G <- cbind(.G, G.pam = .G[, "G"] / .Ft)
       colnames(.G)[colnames(.G) == "G"] <- paste("G", case, sep = ".")
       .V <- cbind(.V, V.pam = .V[, "V"] / .Ft)
-      colnames(.V)[colnames(.V) == "V"] <- paste("V", case, sep = ".")
+      colnames(.V)[colnames(.V) == "V"] <- paste("V", case, sep = ".")}
+
+      else {
+      colnames(.N)[colnames(.N) == "N"] <- paste("N", case, sep = ".")
+      colnames(.G)[colnames(.G) == "G"] <- paste("G", case, sep = ".")
+      colnames(.V)[colnames(.V) == "V"] <- paste("V", case, sep = ".")}
 
     }
 

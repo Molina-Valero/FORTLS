@@ -226,8 +226,8 @@ metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
     .tree.tls <- merge(.tree.tls, .P99, by = "tree", all = FALSE)
 
     # Save results
-    .tree <- .tree.tls[, c("id", "file", "tree", "x", "y", "phi", "horizontal.distance", "dbh", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion", "P99"), drop = FALSE]
-    colnames(.tree) <- c("id", "file", "tree", "x", "y", "phi", "horizontal.distance", "dbh", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion", "total.height")
+    .tree <- .tree.tls[, c("id", "file", "tree", "x", "y", "phi", "horizontal.distance", "dbh", "partial.occlusion", "P99"), drop = FALSE]
+    colnames(.tree) <- c("id", "file", "tree", "x", "y", "phi", "horizontal.distance", "dbh", "partial.occlusion", "total.height")
 
     if(isTRUE(save.result)){
 
@@ -392,10 +392,16 @@ metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
                                                tree = .tree.tls, case = "tls")
 
       # Compute expansion factors, and estimate variables per ha
+      if(is.null(multiple.scans)){
       .kTreePlot <-
         .fixed.area.k.tree.calculation(data = .kTreePlot,
                                        distance.sampling = .distSampling,
-                                       case = "tls")
+                                       case = "tls")} else {
+      .kTreePlot <-
+        .fixed.area.k.tree.calculation(data = .kTreePlot,
+                                       distance.sampling = .distSampling,
+                                       multiple.scans = TRUE,
+                                       case = "tls")}
       rownames(.kTreePlot) <- .format.numb(x = .kTreePlot[, "k"],
                                            dec = .num.dec)
 
@@ -479,9 +485,14 @@ metrics.variables <- function(tree.list.tls, distance.sampling = NULL,
 
       # Compute correction of occlusion, estimate variables per ha, and
       # compute mean diameters and heights
+      if(is.null(multiple.scans)){
       .angleCountPlot <- lapply(.BAF.seq, .angle.count.calculation,
                                 data = .tree.tls, mean.names = .mean.names,
-                                case = "tls")
+                                case = "tls")} else {
+      .angleCountPlot <- lapply(.BAF.seq, .angle.count.calculation,
+                                data = .tree.tls, mean.names = .mean.names,
+                                multiple.scans = TRUE,
+                                case = "tls")}
       .angleCountPlot <- do.call(rbind, .angleCountPlot)
       rownames(.angleCountPlot) <- .format.numb(x = .angleCountPlot[, "BAF"],
                                                 dec = .num.dec)

@@ -9,12 +9,13 @@
 \description{Detects trees from TLS point clouds corresponding to multiple scans and SLAM point clouds. For each tree detected, the function calculates the central coordinates and estimates the diameter at 1.3 m above ground level (which is known as \emph{dbh}, diameter at breast height) and classifies it as fully visible or partially occluded. Finally, the function obtains the number of points belonging to normal sections of trees (those corresponding to \emph{dbh} +/- 5 cm) and estimates them for both original and reduced (with point cropping process) point clouds.}
 
 \usage{
-tree.detection(data,
-               dbh.min = 7.5, dbh.max = 200,
-               ncr.threshold = 0.1,
-               breaks = c(1.0, 1.3, 1.6),
-               plot.attributes = NULL,
-               save.result = TRUE, dir.result = NULL)}
+tree.detection,multiple.scans(data,
+                              dbh.min = 7.5, dbh.max = 200,
+                              ncr.threshold = 0.1,
+                              tls.precision = NULL,
+                              breaks = c(1.0, 1.3, 1.6),
+                              plot.attributes = NULL,
+                              save.result = TRUE, dir.result = NULL)}
 
 \arguments{
 
@@ -25,6 +26,8 @@ tree.detection(data,
   \item{dbh.max}{Optional maximum \emph{dbh} (cm) considered for detecting trees. By default it will be set at 200 cm.}
 
   \item{ncr.threshold}{Local surface variation (also known as normal change rate, NCR). By default it will be set as 0.1. For better understanding of this argument see \sQuote{Details}.}
+
+  \item{tls.precision}{Average point cloud precision in m.}
 
   \item{breaks}{Height above ground level (m) of slices considered for detecting trees. By default it will be 1.0, 1.3 and 1.6 m (+/- 5 cm).}
 
@@ -62,9 +65,7 @@ Local surface variation (also known as normal change rate ,NCR), is a quantitati
 
   Azimuthal angles:
     \itemize{
-      \item \code{phi}: angular coordinate (rad) of tree centre.
-      \item \code{phi.left}: angular coordinate (rad) of left border of tree section.
-      \item \code{phi.right}: angular coordinate (rad) of right border of tree section}
+      \item \code{phi}: angular coordinate (rad) of tree centre.}
 
 \item{horizontal.distance}{horizontal distance (m) from plot centre to tree centre.}
 
@@ -130,37 +131,27 @@ dir.data <- getwd()
 dir.result <- getwd()
 
 
-# Loading example data (LAS file) to dir.data
+# Loading example data of SLAM point cloud (LAS file) to dir.data
 
-download.file("https://www.dropbox.com/s/2c3d320o3srcawb/1.las?raw=1",
-              destfile = file.path(dir.data, "1.las"),
-              method = "wininet", mode = "wb")
+download.file("https://www.dropbox.com/s/j15lkv0rv2id69e/multiple.scans.las?dl=0
+",
+              destfile = file.path(dir.data, "multiple.scans.las"),
+              , mode = "wb")
 
 # Normalizing the point cloud data as a neccesary step for detecting trees
 
-pcd <- normalize(las = "1.las",
-                 max.dist = 15, min.height = 0.25, max.height = 25,
-                 id = "1", file = "1.txt",
+pcd <- normalize(las = "multiple.scans.las",
+                 max.height = 45,
+                 algorithm.dtm = "knnidw",
+                 res.dtm = 0.25,
+                 multiple.scans = TRUE,
                  dir.data = dir.data, dir.result = dir.result)
 
 
 # Tree detection without considering arguments
-# For this case study, TLS resolution was established as:
-# point.dist = 7.67 mm and tls.dist = 10 m
 
-tree.list.tls <- tree.detection(data = pcd,
-                                tls.resolution = list(point.dist = 7.67, tls.dist = 10),
-                                dir.result = dir.result)
-
-
-
-# Tree detection considering several arguments
-
-tree.list.tls <- tree.detection(data = pcd,
-                                dbh.min = 7.5, dbh.max = 60,
-                                tls.resolution = list(point.dist = 7.67, tls.dist = 10),
-                                breaks = 1.3,
-                                dir.result = dir.result)
+tree.list.tls <- tree.detection.multiple.scans(data = pcd,
+                                               dir.result = dir.result)
 
   }
 
