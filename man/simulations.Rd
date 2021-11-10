@@ -491,8 +491,7 @@ dir.data <- getwd()
 # Download example of TXT file corresponding to plot 1 from Rioja data set
 
 download.file(url = "https://www.dropbox.com/s/w4fgcyezr2olj9m/1.txt?raw=1",
-              destfile = file.path(dir.data, "1.txt"), method = "wininet",
-              mode = "wb")
+              destfile = file.path(dir.data, "1.txt"), mode = "wb")
 
 # Establish directory where simulation results corresponding to plot 1 from
 # Rioja data set will be saved. For instance, current working directory
