@@ -15,7 +15,7 @@ tree.detection.multiple(las.list, id = NULL, file = NULL,
                                                    max.height = NULL,
                                                    algorithm.dtm = "tin",
                                                    res.dtm = 0.2,
-                                                   multiple.scans = NULL),
+                                                   multi.scans = NULL),
                         tree.detection.arguments = list(dbh.min = 7.5,
                                                         dbh.max = 200,
                                                         ncr.threshold = 0.1,
@@ -36,7 +36,7 @@ tree.detection.multiple(las.list, id = NULL, file = NULL,
 
   \itemize{
 
-    \item \code{max.dist}, \code{min.height}, \code{max.height}, \code{algorithm.dtm}, \code{res.dtm}: same description and format as indicated for same named \code{\link{normalize}} arguments, \code{multiple.scans}: same description and format as indicated for same named \code{\link{normalize}} arguments}
+    \item \code{max.dist}, \code{min.height}, \code{max.height}, \code{algorithm.dtm}, \code{res.dtm}: same description and format as indicated for same named \code{\link{normalize}} arguments, \code{multi.scans}: same description and format as indicated for same named \code{\link{normalize}} arguments}
 
 
   \item{tree.detection.arguments}{Optional list including the following arguments related to tree detection process (see \code{\link{tree.detection}}):}

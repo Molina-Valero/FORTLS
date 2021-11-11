@@ -163,19 +163,19 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
                                        save.result = FALSE, dir.result = dir.result)
     } else {
 
-    .tree.list.tls.i <- tree.detection.multiple.scans(data = .data,
+    .tree.list.tls.i <- tree.detection.multi.scans(data = .data,
 
-                                                      dbh.min = .dbh.min,
+                                                   dbh.min = .dbh.min,
 
-                                                      dbh.max = .dbh.max,
+                                                   dbh.max = .dbh.max,
 
-                                                      breaks = .breaks,
+                                                   breaks = .breaks,
 
-                                                      ncr.threshold = .ncr.threshold,
+                                                   ncr.threshold = .ncr.threshold,
 
-                                                      plot.attributes = tree.detection.arguments$plot.attributes,
+                                                   plot.attributes = tree.detection.arguments$plot.attributes,
 
-                                                      save.result = FALSE, dir.result = dir.result)
+                                                   save.result = FALSE, dir.result = dir.result)
 
     }
 

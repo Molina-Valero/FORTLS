@@ -36,9 +36,7 @@ tree.detection.single.scan <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.t
 
   }
 
-  # Generation of homogenized point cloud
-
-  # .ncr.threshold <- .ncr.threshold.double(data)
+  # Starting with clustering process
 
   .filteraux <- data.frame(cluster = as.numeric(),
                            center.x = as.numeric(), center.y = as.numeric(),
@@ -63,7 +61,7 @@ tree.detection.single.scan <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.t
     # Restrict to slice corresponding to cuts m +/- 5 cm
     .cut <- .cut[which(.cut$z > (cuts-0.05) & .cut$z < (cuts+0.05)), , drop = FALSE]
 
-    # Dbscan parameters
+    # DBSCAN parameters
     .eps <- (tan(.alpha.h / 2) * (max(.cut$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2)
 
     # Clustering
@@ -106,12 +104,12 @@ tree.detection.single.scan <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.t
                           occlusion = as.numeric())
 
 
-    for(.i in unique(.cut$cluster)){
+    for(i in unique(.cut$cluster)){
 
       .pb$tick()
 
-      # Select cluster .i
-      .dat <- .cut[which(.cut$cluster == .i), , drop = FALSE]
+      # Select cluster i
+      .dat <- .cut[which(.cut$cluster == i), , drop = FALSE]
 
       # First filter
       .n <- (0.1 / (tan(.alpha.v / 2) * (mean(.dat$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2))
@@ -171,17 +169,17 @@ tree.detection.single.scan <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.t
 
       .density <- matrix(0, ncol = length(.x.values), nrow = length(.y.values))
 
-      for(.i in 1:length(.x.values)){
-        for(.j in 1:length(.y.values)){
+      for(i in 1:length(.x.values)){
+        for(j in 1:length(.y.values)){
 
-          .den <- .dat[which(.dat$x <= ((.x.values[.i]) + .h) &
-                             .dat$x > ((.x.values[.i]) - .h) &
-                             .dat$y <= ((.y.values[.j]) + .h) &
-                             .dat$y > ((.y.values[.j]) - .h)), , drop = FALSE]
+          .den <- .dat[which(.dat$x <= ((.x.values[i]) + .h) &
+                             .dat$x > ((.x.values[i]) - .h) &
+                             .dat$y <= ((.y.values[j]) + .h) &
+                             .dat$y > ((.y.values[j]) - .h)), , drop = FALSE]
 
           # Discard cells with less than 2 points for computing mean points
           # density by cell
-          .density[.j, .i] <- ifelse(nrow(.den) < 1, NA, nrow(.den))
+          .density[j, i] <- ifelse(nrow(.den) < 1, NA, nrow(.den))
 
         }
 
@@ -196,17 +194,17 @@ tree.detection.single.scan <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.t
       .density <- matrix(0, ncol = length(.x.values), nrow = length(.y.values))
       .remove <- data.frame(point = as.numeric())
 
-      for(.i in 1:length(.x.values)){
-        for(.j in 1:length(.y.values)){
+      for(i in 1:length(.x.values)){
+        for(j in 1:length(.y.values)){
 
-          .den <- .dat[which(.dat$x <= ((.x.values[.i]) + .h) &
-                             .dat$x > ((.x.values[.i]) - .h) &
-                             .dat$y <= ((.y.values[.j]) + .h) &
-                             .dat$y > ((.y.values[.j]) - .h)), , drop = FALSE]
+          .den <- .dat[which(.dat$x <= ((.x.values[i]) + .h) &
+                             .dat$x > ((.x.values[i]) - .h) &
+                             .dat$y <= ((.y.values[j]) + .h) &
+                             .dat$y > ((.y.values[j]) - .h)), , drop = FALSE]
 
           # Discard cells with less than 2 points for computing mean density by
           # cell
-          .density[.j, .i] <- ifelse(nrow(.den) < 1, NA, nrow(.den))
+          .density[j, i] <- ifelse(nrow(.den) < 1, NA, nrow(.den))
 
           if(nrow(.den) > .threeshold){
 
@@ -246,14 +244,14 @@ tree.detection.single.scan <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.t
 
       .remove <- data.frame(point = as.numeric())
 
-      for(.i in 1:length(.x2.values)){
+      for(i in 1:length(.x2.values)){
 
-        .den <- .dat[which(.dat$phi <= ((.x2.values[.i]) + (.alpha.h/2)) &
-                           .dat$phi >  ((.x2.values[.i]) - (.alpha.h/2))), ]
+        .den <- .dat[which(.dat$phi <= ((.x2.values[i]) + (.alpha.h/2)) &
+                           .dat$phi >  ((.x2.values[i]) - (.alpha.h/2))), ]
 
         # Aquellas celdas con menos de 2 puntos no las tengo en cuenta
         # para luego m?s tarde calcular la densidad media por celda
-        .density[.i] <- ifelse(nrow(.den) < 1, NA, nrow(.den))
+        .density[i] <- ifelse(nrow(.den) < 1, NA, nrow(.den))
 
 
         if(nrow(.den) > 1){
@@ -293,11 +291,11 @@ tree.detection.single.scan <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.t
       # distances between points and corresponding intersection will be stored
       .matriz <- matrix(0, ncol = length(.x.values), nrow = length(.y.values))
 
-      for(.i in 1:length(.x.values)){
-        for(.j in 1:length(.y.values)){
+      for(i in 1:length(.x.values)){
+        for(j in 1:length(.y.values)){
 
-          .variance <- stats::var(raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.i], .y.values[.j]), lonlat=FALSE))
-          .matriz[.j, .i] <- .variance
+          .variance <- stats::var(raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[i], .y.values[j]), lonlat=FALSE))
+          .matriz[j, i] <- .variance
 
         }
       }
@@ -388,7 +386,7 @@ tree.detection.single.scan <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.t
       # Zhang et al., (2019)
       .n.w.ratio <- stats::sd(.dat$z) / sqrt(stats::sd(.dat$x) ^ 2 + stats::sd(.dat$y) ^ 2)
 
-      if(.n.w.ratio > 1){next}
+      if(.n.w.ratio > 1 | is.nan(.n.w.ratio)){next}
 
       # Results
       .salida <- data.frame(cluster = .dat$cluster[1],
@@ -447,6 +445,7 @@ tree.detection.single.scan <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.t
   }# End of cuts loop
 
   .filter<-.filteraux
+  rm(.filteraux)
 
   # Repeat this for the remaining sections!!!
   # Merge of all sections ----
@@ -576,16 +575,45 @@ tree.detection.single.scan <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.t
     .tree$points.m <- mean(.filter2$points.radio)
     .tree$points.m.hom <- mean(.filter2$points.radio.hom)
 
-    # Finally, compute number of points estimated for each tree according to
-    # radius
+    # Computing number of points estimated for each tree according to radius
     .tree$num.points.est <- .tree$points.m * .tree$radius
     .tree$num.points.hom.est <- .tree$points.m.hom * .tree$radius
+
+    # Obtaining reduced point cloud
+    data <- data[data$prob.selec == 1, ]
+    data <- data[, c("x", "y", "z", "rho")]
+
+    # Voronoi tessellation
+    .voro <- .tree[ , c("tree", "center.x", "center.y"), drop = FALSE]
+    .voro <- ggvoronoi::voronoi_polygon(.voro, x = "center.x", y = "center.y", outline = NULL,
+                                        data.frame = FALSE)
+
+    sp::coordinates(data) <- ~ x + y + z
+    .voro <- sp::over(data, .voro)
+    .voro <- sp::SpatialPointsDataFrame(data, .voro)
+
+    .voro <- as.data.frame(.voro, stringsAsFactors = FALSE)
+    .voro <- .voro[!is.na(.voro$tree), , drop = FALSE]
+
+
+    # Compute height percentile P99.9
+    .P99 <- sapply(sort(unique(.voro$tree)),
+                   function(tree, voro) {
+                     z <- voro$z[voro$tree == tree]
+                     P99 <-
+                       height_perc_cpp(rho_seq = Inf, z = z, rho = z)[, "P99.9"]
+                     names(P99) <- tree
+                     return(P99)
+                   },
+                   voro =.voro)
+    .P99 <- data.frame(tree = names(.P99), P99.9 = .P99)
+    .tree <- merge(.tree, .P99, by = "tree", all = FALSE)
 
     # If plot identification (id) is not available
     if(is.null(data$id)){
 
-      .tree <- .tree[, c("tree", "center.x", "center.y", "center.phi", "phi.left", "phi.right", "horizontal.distance", "dbh", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion"), drop = FALSE]
-      colnames(.tree) <- c("tree", "x", "y", "phi", "phi.left", "phi.right", "horizontal.distance", "dbh", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion")
+      .tree <- .tree[, c("tree", "center.x", "center.y", "center.phi", "phi.left", "phi.right", "horizontal.distance", "dbh", "P99.9", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion"), drop = FALSE]
+      colnames(.tree) <- c("tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion")
 
     } else{
 
@@ -594,8 +622,8 @@ tree.detection.single.scan <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.t
       .tree$id <- data$id[1]
       .tree$file <- data$file[1]
 
-      .tree <- .tree[, c("id", "file", "tree", "center.x", "center.y", "center.phi", "phi.left", "phi.right", "horizontal.distance", "dbh", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion"), drop = FALSE]
-      colnames(.tree) <- c("id", "file", "tree", "x", "y", "phi", "phi.left", "phi.right", "horizontal.distance", "dbh", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion")
+      .tree <- .tree[, c("id", "file", "tree", "center.x", "center.y", "center.phi", "phi.left", "phi.right", "horizontal.distance", "dbh", "P99.9", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion"), drop = FALSE]
+      colnames(.tree) <- c("id", "file", "tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion")
 
     }
 

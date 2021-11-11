@@ -179,6 +179,7 @@ DataFrame height_perc_cpp(std::vector<double> rho_seq, std::vector<double> z,
   NumericVector P90(n);
   NumericVector P95(n);
   NumericVector P99(n);
+  NumericVector P999(n);
 
   vector<double> quartiles(14);
 
@@ -198,7 +199,7 @@ DataFrame height_perc_cpp(std::vector<double> rho_seq, std::vector<double> z,
                                               0.20, 0.25, 0.30,
                                               0.40, 0.50, 0.60,
                                               0.70, 0.75, 0.80,
-                                              0.90, 0.95, 0.99});
+                                              0.90, 0.95, 0.99, 0.999});
 
     P01[i] = quartiles[0];
     P05[i] = quartiles[1];
@@ -215,6 +216,7 @@ DataFrame height_perc_cpp(std::vector<double> rho_seq, std::vector<double> z,
     P90[i] = quartiles[12];
     P95[i] = quartiles[13];
     P99[i] = quartiles[14];
+    P999[i] = quartiles[15];
 
   }
 
@@ -226,7 +228,7 @@ DataFrame height_perc_cpp(std::vector<double> rho_seq, std::vector<double> z,
                            Named("P60") = P60, Named("P70") = P70,
                            Named("P75") = P75, Named("P80") = P80,
                            Named("P90") = P90, Named("P95") = P95,
-                           Named("P99") = P99);
+                           Named("P99") = P99, Named("P99.9") = P999);
 
 }
 

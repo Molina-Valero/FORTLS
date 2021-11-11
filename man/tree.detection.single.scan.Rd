@@ -85,9 +85,11 @@ Local surface variation (also known as normal change rate ,NCR), is a quantitati
       \item \code{phi.left}: angular coordinate (rad) of left border of tree section.
       \item \code{phi.right}: angular coordinate (rad) of right border of tree section}
 
-\item{horizontal.distance}{horizontal distance (m) from plot centre to tree centre.}
+\item{h.dist}{horizontal distance (m) from plot centre to tree centre.}
 
 \item{\emph{dbh}}{estimated tree diameter (cm) at breast height (1.3 m).}
+
+\item{\emph{h}}{estimated tree total height (m).}
 
 \item{num.points}{number of points corresponding to a normal section (+/- 5 cm) in the original point cloud.}
 

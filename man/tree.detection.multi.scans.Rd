@@ -1,8 +1,8 @@
 \encoding{UTF-8}
 
-\name{tree.detection.multiple.scans}
+\name{tree.detection.multi.scans}
 
-\alias{tree.detection.multiple.scans}
+\alias{tree.detection.multi.scans}
 
 \title{Tree Detection and Cross Section Estimation}
 
@@ -67,9 +67,11 @@ Local surface variation (also known as normal change rate ,NCR), is a quantitati
     \itemize{
       \item \code{phi}: angular coordinate (rad) of tree centre.}
 
-\item{horizontal.distance}{horizontal distance (m) from plot centre to tree centre.}
+\item{h.dist}{horizontal distance (m) from plot centre to tree centre.}
 
 \item{\emph{dbh}}{estimated tree diameter (cm) at breast height (1.3 m).}
+
+\item{\emph{h}}{estimated tree total height (m).}
 
 \item{num.points}{number of points corresponding to a normal section (+/- 5 cm) in the original point cloud.}
 
