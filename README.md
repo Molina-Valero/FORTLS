@@ -36,13 +36,21 @@ dir.result <- getwd()
 
 download.file("https://www.dropbox.com/s/2c3d320o3srcawb/1.las?raw=1", destfile = file.path(dir.data, "1.las"), mode = "wb")
 
-# Normalizing the whole point cloud data without considering arguments
+download.file("https://www.dropbox.com/s/2c3d320o3srcawb/2.las?raw=1", destfile = file.path(dir.data, "2.las"), mode = "wb")
 
-pcd <- normalize(las = "1.las", dir.data = dir.data, dir.result = dir.result)
+download.file("https://www.dropbox.com/s/j15lkv0rv2id69e/multiple.scans.las?dl=0", destfile = file.path(dir.data, "multi.scans.las"), mode = "wb")
+
+# Normalizing a single scan point cloud data without considering arguments
+
+pcd.single.scan <- normalize(las = "1.las", dir.data = dir.data, dir.result = dir.result)
+
+# Normalizing a SLAM point cloud data without considering arguments
+
+pcd.multi.scans <- normalize(las = "multi.scans.las", multi.scans = TRUE, dir.data = dir.data, dir.result = dir.result)
 ```
 
 ## Tree detection
-### Tree detection from single scans
+### Tree detection from Terrestrial Laser Scanning (TLS) single scans point clouds
 
 Detects trees from TLS point clouds corresponding to a single scan. For each tree detected, the function calculates the central coordinates and estimates the diameter at 1.3 m above ground level (which is known as dbh, diameter at breast height) and classifies it as fully visible or partially occluded. Finally, the function obtains the number of points belonging to normal sections of trees (those corresponding to dbh +/- 5 cm) and estimates them for both original and reduced (with point cropping process) point clouds.
 
@@ -51,5 +59,29 @@ Detects trees from TLS point clouds corresponding to a single scan. For each tre
 # For this case study, TLS resolution was established as:
 # point.dist = 7.67 mm and tls.dist = 10 m
 
-tree.list.tls <- tree.detection.single.scan(data = pcd, tls.resolution = list(point.dist = 7.67, tls.dist = 10), dir.result = dir.result)
+tree.list.tls <- tree.detection.single.scan(data = pcd.single.scan, tls.resolution = list(point.dist = 7.67, tls.dist = 10), dir.result = dir.result)
+```
+### Tree detection from multi scans or Simultaneous Localisation And Mapping (SLAM) point clouds
+
+```r
+tree.list.tls <- tree.detection.multi.scans(data = pcd.multi.scans, dir.result = dir.result)
+```
+
+### Tree detection from several plots
+
+```r
+files <- list.files(pattern = "las$", path = dir.data)[1:2]
+
+tree.list.tls <- tree.detection.several.plots(las.list = files,
+
+                                              normalize.arguments = list(max.dist = 15,
+                                                                         algorithm.dtm = "knnidw",
+                                                                         res.dtm = 0.25),
+
+                                              tree.detection.arguments = list(dbh.min = 7.5, dbh.max = 100,
+                                                                              breaks = 1.3,
+                                                                              tls.resolution = list(point.dist = 7.67,
+                                                                                                    tls.dist = 10)),
+
+                                              dir.data = dir.data, dir.result = dir.result)
 ```
