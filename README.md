@@ -121,9 +121,11 @@ Considering the previous charts, plot design parameters within ranges in which e
 
 # About
 
-**FORTLS** it is being developed openly at [University of Santiaog de Compostela](https://www.usc.gal/en).
+**FORTLS** it is being developed openly at [University of Santiago de Compostela](https://www.usc.gal/en).
 
 Development of the `FORTLS` package is being possible thanks to the following financial support:
 
-* Modelling the effects of intensity of perturbation on the structure of natural forests and their carbon stocks by using data from the National Forestry Inventory supported by MCIN/ AEI /10.13039/501100011033/ FEDER
+* Modelling the effects of intensity of perturbation on the structure of natural forests and their carbon stocks by using data from the National Forestry Inventory project supported by:
+
+<img src="http://www.aei.gob.es/stfls/MICINN/AEI/ficheros/micin-uefeder-aei.pdf" width="600" align="center">
 
