@@ -118,3 +118,12 @@ estimation.plot.size(tree.list.tls, average = TRUE)
 estimation.plot.size(tree.list.tls, all.plot.designs = TRUE)
 ```
 Considering the previous charts, plot design parameters within ranges in which estimated curves for density and basal area are stable can be selected. These ranges are 13-17 m, 12-36 trees and 1.2-1.6 BAF for density; and 13-17 m, 12-36 trees and 0.8-1.2 BAF for basal area. Thus, the following values can be chosen as plot design parameters: 15 m for radius, 24 for number of trees and 1 for BAF.
+
+# About
+
+**FORTLS** it is being developed openly at [University of Santiaog de Compostela](https://www.usc.gal/en).
+
+Development of the `FORTLS` package is being possible thanks to the following financial support:
+
+* Modelling the effects of intensity of perturbation on the structure of natural forests and their carbon stocks by using data from the National Forestry Inventory supported by MCIN/ AEI /10.13039/501100011033/ FEDER
+
