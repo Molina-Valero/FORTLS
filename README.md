@@ -68,7 +68,7 @@ tree.list.tls <- tree.detection.multi.scans(data = pcd.multi.scans, dir.result =
 ```
 
 ### Tree detection from several plots
-
+For analysis of .las files corresponding to several plots, tree.detection.several.plots is the most appropriate function as it integrates both the normalize and tree.detection functions and allows a character vector containing multiple .las file names to be included as an argument. For instance, all .las files in the dir.data directory can be jointly analyzed as follows.
 ```r
 files <- list.files(pattern = "las$", path = dir.data)[1:2]
 
@@ -84,4 +84,27 @@ tree.list.tls <- tree.detection.several.plots(las.list = files,
                                                                                                     tls.dist = 10)),
 
                                               dir.data = dir.data, dir.result = dir.result)
+```
+## Distance sampling
+Sampling methodologies are implemented in the `distance.sampling` function. They are designed to correct estimation bias caused by lack of detection of trees due to occlusion. Although this is an optional previous step for other  **FORTLS** functions (such as `metrics.variables` and `simulations`), its inclusion is highly recommended, especially when high rates of occlusion occur. Distance sampling methods are applied to all trees detected from 16 TLS single scans corresponding to plots located in La Rioja (a region of Spain): this is one of the examples included in the **FORTLS** package.
+```{r warning=FALSE}
+# Load 'Rioja.data' dataset (provided as example data in FORTLS)
+
+data(Rioja.data)
+
+# Select trees detected from TLS data contained in 'Rioja.data' dataset
+
+tree.list.tls <- Rioja.data$tree.list.tls
+
+# Apply distance sampling methods to all detected trees
+
+tree.ds <- distance.sampling(tree.list.tls)
+
+# Summary of distance sampling
+
+summary(tree.ds)
+
+# Detection probability for first two detected trees
+
+head(tree.ds$tree, 2)
 ```
