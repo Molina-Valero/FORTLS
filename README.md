@@ -99,12 +99,22 @@ tree.list.tls <- Rioja.data$tree.list.tls
 # Apply distance sampling methods to all detected trees
 
 tree.ds <- distance.sampling(tree.list.tls)
-
-# Summary of distance sampling
-
-summary(tree.ds)
-
-# Detection probability for first two detected trees
-
-head(tree.ds$tree, 2)
 ```
+## Field data not available
+
+Metrics and variables should be assessed after deciding the most appropriate plot designs based on further previous analysis. The best plot designs can be selected by means of the `estimation.plot.size` function when field data are not available.
+```{r warning=FALSE}
+# Plot empirical linear charts of density and basal area estimates as a
+# function of plot design parameters (radius, k and BAF)
+
+estimation.plot.size(tree.list.tls)
+
+# Plot for mean values
+
+estimation.plot.size(tree.list.tls, average = TRUE)
+
+# Comparing all plot designs
+
+estimation.plot.size(tree.list.tls, all.plot.designs = TRUE)
+```
+Considering the previous charts, plot design parameters within ranges in which estimated curves for density and basal area are stable can be selected. These ranges are 13-17 m, 12-36 trees and 1.2-1.6 BAF for density; and 13-17 m, 12-36 trees and 0.8-1.2 BAF for basal area. Thus, the following values can be chosen as plot design parameters: 15 m for radius, 24 for number of trees and 1 for BAF.
