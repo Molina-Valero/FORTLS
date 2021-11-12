@@ -127,5 +127,5 @@ Development of the `FORTLS` package is being possible thanks to the following fi
 
 * Modelling the effects of intensity of perturbation on the structure of natural forests and their carbon stocks by using data from the National Forestry Inventory project supported by:
 
-<img src="http://www.aei.gob.es/stfls/MICINN/AEI/ficheros/micin-uefeder-aei.pdf" width="600" align="center">
+<img src="http://www.aei.gob.es/stfls/MICINN/AEI/ficheros/micin-uefeder-aei.pdf" width="50" align="center">
 
