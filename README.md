@@ -36,7 +36,7 @@ dir.result <- getwd()
 
 download.file("https://www.dropbox.com/s/2c3d320o3srcawb/1.las?raw=1", destfile = file.path(dir.data, "1.las"), mode = "wb")
 
-download.file("https://www.dropbox.com/s/2c3d320o3srcawb/2.las?raw=1", destfile = file.path(dir.data, "2.las"), mode = "wb")
+download.file("https://www.dropbox.com/s/9k8zn5dt0xcxfof/2.las?raw=1", destfile = file.path(dir.data, "2.las"), mode = "wb")
 
 download.file("https://www.dropbox.com/s/j15lkv0rv2id69e/multiple.scans.las?raw=1", destfile = file.path(dir.data, "multi.scans.las"), mode = "wb")
 
