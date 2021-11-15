@@ -6,7 +6,7 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
                                       list(x.center = NULL, y.center = NULL,
                                            max.dist = NULL, min.height = NULL, max.height = NULL,
                                            algorithm.dtm = "tin", res.dtm = 0.2,
-                                           multiple.scans = NULL),
+                                           multi.scans = NULL),
 
                                     tree.detection.arguments =
 
@@ -15,6 +15,8 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
                                            ncr.threshold = 0.1,
 
                                            tls.resolution = list(),
+
+                                           tls.precision = NULL,
 
                                            breaks = c(1.0, 1.3, 1.6),
 
@@ -47,6 +49,16 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
   }
 
   # Tree detection arguments
+
+  if(is.null(tree.detection.arguments$tls.precision)){
+
+    .tls.precision <- NULL
+
+  } else {
+
+    .tls.precision <- tree.detection.arguments$tls.precision
+
+  }
 
   if(is.null(tree.detection.arguments$dbh.min)){
 
@@ -121,7 +133,6 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
     }
 
-
     .data <- normalize(las = las.list[[i]],
 
                        x.center = normalize.arguments$x.center,
@@ -138,13 +149,15 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
                        res.dtm = .res.dtm,
 
+                       multi.scans = normalize.arguments$multi.scans,
+
                        id = .id, file = .file,
 
                        dir.data = dir.data, save.result = save.result, dir.result = dir.result)
 
     message("Detecting trees")
 
-    if(is.null(normalize.arguments$multiple.scans)){
+    if(is.null(normalize.arguments$multi.scans)){
 
     .tree.list.tls.i <- tree.detection.single.scan(data = .data,
 
@@ -172,6 +185,8 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
                                                    breaks = .breaks,
 
                                                    ncr.threshold = .ncr.threshold,
+
+                                                   tls.precision = .tls.precision,
 
                                                    plot.attributes = tree.detection.arguments$plot.attributes,
 

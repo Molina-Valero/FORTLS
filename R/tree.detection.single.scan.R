@@ -581,7 +581,7 @@ tree.detection.single.scan <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.t
 
     # Obtaining reduced point cloud
     data <- data[data$prob.selec == 1, ]
-    data <- data[, c("x", "y", "z", "rho")]
+    data <- data[, c("id", "file", "x", "y", "z", "rho")]
 
     # Voronoi tessellation
     .voro <- .tree[ , c("tree", "center.x", "center.y"), drop = FALSE]
