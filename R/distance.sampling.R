@@ -83,7 +83,7 @@ distance.sampling <- function(tree.list.tls,
   .data$object <- c(1:nrow(.data))
 
   # Naming the rest of fields according to ddf() function
-  .data <- .data[, c("stratum", "id", "tree", "Effort", "horizontal.distance", "OBS", "object", "dbh"), drop = FALSE]
+  .data <- .data[, c("stratum", "id", "tree", "Effort", "h.dist", "OBS", "object", "dbh"), drop = FALSE]
   colnames(.data) <- c("Region.Label", "Sample.Label", "tree", "Effort", "distance", "OBS", "object", "dbh")
 
 
