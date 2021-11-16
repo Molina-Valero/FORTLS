@@ -1,12 +1,15 @@
 
-tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
+tree.detection.several.plots <- function(las.list, scan.approach = "single",
+
+                                         id = NULL, file = NULL,
 
                                     normalize.arguments =
 
                                       list(x.center = NULL, y.center = NULL,
+
                                            max.dist = NULL, min.height = NULL, max.height = NULL,
-                                           algorithm.dtm = "tin", res.dtm = 0.2,
-                                           multi.scans = NULL),
+
+                                           algorithm.dtm = "tin", res.dtm = 0.2),
 
                                     tree.detection.arguments =
 
@@ -149,7 +152,7 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
                        res.dtm = .res.dtm,
 
-                       multi.scans = normalize.arguments$multi.scans,
+                       scan.approach = scan.approach,
 
                        id = .id, file = .file,
 
@@ -157,7 +160,7 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
     message("Detecting trees")
 
-    if(is.null(normalize.arguments$multi.scans)){
+    if(scan.approach == "single"){
 
     .tree.list.tls.i <- tree.detection.single.scan(data = .data,
 
@@ -173,8 +176,9 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
                                        plot.attributes = tree.detection.arguments$plot.attributes,
 
-                                       save.result = FALSE, dir.result = dir.result)
-    } else {
+                                       save.result = FALSE, dir.result = dir.result)}
+
+    if(scan.approach == "multi"){
 
     .tree.list.tls.i <- tree.detection.multi.scans(data = .data,
 
