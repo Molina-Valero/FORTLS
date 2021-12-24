@@ -1,8 +1,7 @@
 
-<img src="https://github.com/Molina-Valero/FORTLS/blob/devel/man/figures/Hex%C3%A1gono%20fondo%20verde.png" align="right"/>
+FORTLS <img src="https://github.com/Molina-Valero/FORTLS/blob/devel/man/figures/Hex%C3%A1gono%20fondo%20verde.png" align="right"/>
 ======================================================================================================
 
-# FORTLS
 ![license](https://img.shields.io/badge/Licence-GPL--3-blue.svg)
 [![](https://www.r-pkg.org/badges/version/FORTLS)](https://CRAN.R-project.org/package=FORTLS)
 [![DOI](https://zenodo.org/badge/DOI/10.3390/IECF2020-08066.svg)](https://doi.org/10.3390/IECF2020-08066)
