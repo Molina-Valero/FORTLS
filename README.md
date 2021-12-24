@@ -1,5 +1,5 @@
 
-FORTLS <img src="https://github.com/Molina-Valero/FORTLS/blob/devel/man/figures/Hex%C3%A1gono%20fondo%20verde.png" align="right"/>
+FORTLS <img src="https://github.com/Molina-Valero/FORTLS/blob/devel/man/figures/Hex%C3%A1gono%20fondo%20verde.png" =50x50 align="right"/>
 ======================================================================================================
 
 ![license](https://img.shields.io/badge/Licence-GPL--3-blue.svg)
