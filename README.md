@@ -1,5 +1,5 @@
 
-FORTLS <img src="https://github.com/Molina-Valero/FORTLS/blob/devel/man/figures/Hex%C3%A1gono%20fondo%20verde.png" align="right"/>
+<img src="https://github.com/Molina-Valero/FORTLS/blob/devel/man/figures/Hex%C3%A1gono%20fondo%20verde.png" align="right"/>
 ======================================================================================================
 
 # FORTLS
