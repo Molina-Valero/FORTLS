@@ -128,6 +128,9 @@ Considering the previous charts, plot design parameters within ranges in which e
 
 Development of the `FORTLS` package is being possible thanks to the following projects:
 
-* Modelling the effects of intensity of perturbation on the structure of natural forests and their carbon stocks by using data from the National Forestry Inventory supported by:
+* Modelling the effects of intensity of perturbation on the structure of natural forests and their carbon stocks by using data from the National Forestry Inventory (AL2016-76769-C2-2-R) supported by the Spanish Ministry of Science and Innovation.
+* Development of the Galician continuous forest inventory (2020-CP031) supported by the Regional Government of Galicia.
+* Design of forest monitoring systems on a regional scale (ED431F 2020/02) supported by the Regional Government of Galicia.
 
 <img src="https://github.com/Molina-Valero/FORTLS/blob/devel/man/figures/MICINN_Gob_Web_AEI_2.jpg" align="left" width="400"/>
+
