@@ -1,5 +1,6 @@
 
-tree.detection.multi.scans <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.threshold = 0.1, tls.precision = NULL, breaks=c(1.0, 1.3, 1.6), plot.attributes = NULL,
+tree.detection.multi.scans <- function(data, dbh.min = 7.5, dbh.max = 200, h.min = 1.3,
+                                       ncr.threshold = 0.1, tls.precision = NULL, breaks=c(1.0, 1.3, 1.6), plot.attributes = NULL,
                                        save.result = TRUE, dir.result = NULL){
 
   # Obtaining working directory for saving files
@@ -510,7 +511,15 @@ tree.detection.multi.scans <- function(data, dbh.min = 7.5, dbh.max = 200, ncr.t
                  },
                  voro =.voro)
   .P99 <- data.frame(tree = names(.P99), P99.9 = .P99)
+
+  # Remove possible trees above "h.min" (1.3 m by default)
+
+  .P99 <- .P99[.P99$P99.9 >= h.min, ]
   .tree <- merge(.tree, .P99, by = "tree", all = FALSE)
+
+  # Numbering trees again
+
+  .tree$tree <- 1:nrow(.tree)
 
 
   # If plot identification (id) is not available

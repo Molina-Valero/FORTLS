@@ -13,7 +13,7 @@ tree.detection.several.plots <- function(las.list, scan.approach = "single",
 
                                     tree.detection.arguments =
 
-                                      list(dbh.min = 7.5, dbh.max = 200,
+                                      list(dbh.min = 7.5, dbh.max = 200, h.min = 1.3,
 
                                            ncr.threshold = 0.1,
 
@@ -82,6 +82,17 @@ tree.detection.several.plots <- function(las.list, scan.approach = "single",
     .dbh.max <- tree.detection.arguments$dbh.max
 
   }
+
+  if(is.null(tree.detection.arguments$h.min)){
+
+    .h.min <- 1.3
+
+  } else {
+
+    h.min <- tree.detection.arguments$h.min
+
+  }
+
 
   if(is.null(tree.detection.arguments$ncr.threshold)){
 
@@ -168,6 +179,8 @@ tree.detection.several.plots <- function(las.list, scan.approach = "single",
 
                                        dbh.max = .dbh.max,
 
+                                       h.min = .h.min,
+
                                        breaks = .breaks,
 
                                        ncr.threshold = .ncr.threshold,
@@ -185,6 +198,8 @@ tree.detection.several.plots <- function(las.list, scan.approach = "single",
                                                    dbh.min = .dbh.min,
 
                                                    dbh.max = .dbh.max,
+
+                                                   h.min = .h.min,
 
                                                    breaks = .breaks,
 
