@@ -130,4 +130,4 @@ Development of the `FORTLS` package is being possible thanks to the following pr
 
 * Modelling the effects of intensity of perturbation on the structure of natural forests and their carbon stocks by using data from the National Forestry Inventory supported by:
 
-<img src="https://raw.githubusercontent.com/Molina-Valero/FORTLS/devel/man/figures/MCI.png" align="right"/>
+<img src="https://github.com/Molina-Valero/FORTLS/blob/devel/man/figures/MCI.png" align="right"/>
