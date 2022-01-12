@@ -49,7 +49,7 @@ pcd.single.scan <- normalize(las = "1.las", dir.data = dir.data, dir.result = di
 
 # Normalizing a SLAM point cloud data without considering arguments
 
-pcd.multi.scans <- normalize(las = "multi.scans.las", scan.approach = "multi.scans", dir.data = dir.data, dir.result = dir.result)
+pcd.multi.scans <- normalize(las = "multi.scans.las", scan.approach = "multi", dir.data = dir.data, dir.result = dir.result)
 ```
 
 ## Tree detection
