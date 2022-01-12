@@ -132,7 +132,7 @@ Development of the `FORTLS` package is being possible thanks to the following pr
 * Development of the Galician continuous forest inventory (2020-CP031) supported by the Regional Government of Galicia.
 * Design of forest monitoring systems on a regional scale (ED431F 2020/02) supported by the Regional Government of Galicia.
 
-<img src="https://github.com/Molina-Valero/FORTLS/blob/devel/man/figures/MICINN_Gob_Web_AEI_2.jpg" align="left" width="300"/>
-<img src="https://github.com/Molina-Valero/FORTLS/blob/devel/man/figures/Conxelleria_Medio_Rural.png" align="center" width="300"/>
-<img src="https://github.com/Molina-Valero/FORTLS/blob/devel/man/figures/Conxelleria_Cultura_Educacion_Universidade.png" align="right" width="300"/>
+<img src="https://github.com/Molina-Valero/FORTLS/blob/devel/man/figures/MICINN_Gob_Web_AEI_2.jpg" align="left" width="250"/>
+<img src="https://github.com/Molina-Valero/FORTLS/blob/devel/man/figures/Conxelleria_Medio_Rural.png" align="center" width="250"/>
+<img src="https://github.com/Molina-Valero/FORTLS/blob/devel/man/figures/Conxelleria_Cultura_Educacion_Universidade.png" align="right" width="250"/>
 
