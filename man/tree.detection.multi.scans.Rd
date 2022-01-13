@@ -27,7 +27,7 @@ tree.detection,multiple.scans(data,
 
   \item{ncr.threshold}{Local surface variation (also known as normal change rate, NCR). By default it will be set as 0.1. For better understanding of this argument see \sQuote{Details}.}
 
-  \item{tls.precision}{Average point cloud precision in m.}
+  \item{tls.precision}{Average point cloud precision in cm.}
 
   \item{breaks}{Height above ground level (m) of slices considered for detecting trees. By default it will be 1.0, 1.3 and 1.6 m (+/- 5 cm).}
 
