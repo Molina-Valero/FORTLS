@@ -87,7 +87,7 @@ estimation.plot.size <- function(tree.list.tls,
     .tree.tls <- tree.list.tls[tree.list.tls$id == .i, , drop = FALSE]
 
     # Select only columns required for calculations below
-    .col.names <- c("stratum", "tree", "horizontal.distance", "dbh")
+    .col.names <- c("stratum", "tree", "h.dist", "dbh")
     .tree.tls <- .tree.tls[ , .col.names, drop = FALSE]
     rownames(.tree.tls) <- NULL
 
@@ -110,10 +110,10 @@ estimation.plot.size <- function(tree.list.tls,
 
       # Define minimum and maximum value for radius sequence according to
       # 'plot.parameters' argument, and horizontal distances in trees' database
-      .radius.min <- min(.customCeiling(.tree.tls[, "horizontal.distance"],
+      .radius.min <- min(.customCeiling(.tree.tls[, "h.dist"],
                                         Decimals = .num.dec))
       .radius.max <- min(plot.parameters$radius.max,
-                         max(.tree.tls[, "horizontal.distance"]))
+                         max(.tree.tls[, "h.dist"]))
       if (.radius.min > .radius.max) .radius.max <- .radius.min
 
       # Compute a radius sequence, select trees according to maximum radius,

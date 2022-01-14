@@ -64,7 +64,7 @@ normalize <- function(las,
 
   # Normalize
 
-  # .ws  <- seq(3,12, 4)
+  # .ws  <- seq(3, 12, 4)
   # .th  <- seq(0.1, 1.5, length.out = length(.ws))
   # .data <- lidR::classify_ground(.las, algorithm = lidR::pmf(.ws, .th), last_returns = FALSE)
 
