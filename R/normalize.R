@@ -31,13 +31,15 @@ normalize <- function(las,
 
   if(is.null(x.center)) {
 
-    x.center <- .las@header@PHB$`X offset`
+    # x.center <- .las@header@PHB$`X offset`
+    x.center <- 0
 
   }
 
   if(is.null(y.center)) {
 
-    y.center <- .las@header@PHB$`Y offset`
+    # y.center <- .las@header@PHB$`Y offset`
+    y.center <- 0
 
   }
 
