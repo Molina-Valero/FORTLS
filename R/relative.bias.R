@@ -427,10 +427,10 @@ relative.bias <- function(simulations,
                          V = "Volume (V, m<sup>3</sup>/ha)",
                          d = "Mean diameters (cm)",
                          h = "Mean heights (m)")
-        .subtitle <- paste("<br> <span style='font-size: 12px;'>",
-                           switch(.i, fixed.area.plot = "Fixed area",
-                                  k.tree.plot = "K-tree",
-                                  angle.count.plot = "Angle-count"),
+        .subtitle <- paste("<br> <span style='font-size: 20px;'>",
+                           switch(.i, fixed.area.plot = "Circular fixed area plot",
+                                  k.tree.plot = "K-tree plot",
+                                  angle.count.plot = "Angle-count plot"),
                            "</span>", sep ="")
         .xaxis <- switch(.i, fixed.area.plot = "Radius (m)",
                          k.tree.plot = "K-tree (trees)",
@@ -438,9 +438,9 @@ relative.bias <- function(simulations,
         .yaxis <- "Relative bias (%)"
         fig <-
           plotly::plot_ly(.RB.data.j, type = 'scatter', mode = 'lines') %>%
-          plotly::layout(title = paste(.title, .subtitle, sep = ""),
+          plotly::layout(title = paste(.title, .subtitle, sep = ""), font=list(size = 25),
                          xaxis = list(title = .xaxis),
-                         yaxis = list (title = .yaxis), margin = list(t = 50))
+                         yaxis = list(title = .yaxis), margin = list(t = 50))
 
         # Add traces
         for (.k in

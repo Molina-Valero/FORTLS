@@ -506,10 +506,10 @@ correlations <- function(simulations,
                    hg.0 = "Quadratic mean dominant height (hg.0, m)",
                    hgeom.0 = "Geometric mean dominant height (hgeom.0, m)",
                    hharm.0 = "Harmonic mean dominant height (hharm.0, m)")
-          .subtitle <- paste("<br> <span style='font-size: 12px;'>",
-                             switch(.i, fixed.area.plot = "Fixed area",
-                                    k.tree.plot = "K-tree",
-                                    angle.count.plot = "Angle-count"),
+          .subtitle <- paste("<br> <span style='font-size: 20px;'>",
+                             switch(.i, fixed.area.plot = "Circular fixed area plot",
+                                    k.tree.plot = "K-tree plot",
+                                    angle.count.plot = "Angle-count plot"),
                              "</span>", sep ="")
           .xaxis <- switch(.i, fixed.area.plot = "Radius (m)",
                            k.tree.plot = "K-tree (trees)",
@@ -518,7 +518,7 @@ correlations <- function(simulations,
                            spearman = "Spearman correlation")
           fig <-
             plotly::plot_ly(.cor.data.k, type = 'scatter', mode = 'lines') %>%
-              plotly::layout(title = paste(.title, .subtitle, sep = ""),
+              plotly::layout(title = paste(.title, .subtitle, sep = ""), font=list(size = 25),
                              xaxis = list(title = .xaxis),
                              yaxis = list (title = .yaxis),
                              margin = list(t = 50))

@@ -206,10 +206,10 @@ optimize.plot.design <- function(correlations,
       # Define title, subtitle, and axis names
       .title <- switch(.i, pearson = "Pearson correlation",
                        spearman = "Spearman correlation")
-      .subtitle <- paste("<br> <span style='font-size: 12px;'>",
-                         switch(.j, fixed.area.plot = "Fixed area",
-                                k.tree.plot = "K-tree",
-                                angle.count.plot = "Angle-count"),
+      .subtitle <- paste("<br> <span style='font-size: 20px;'>",
+                         switch(.j, fixed.area.plot = "Circular fixed area plot",
+                                k.tree.plot = "K-tree plot",
+                                angle.count.plot = "Angle-count plot"),
                          "</span>", sep ="")
       .xaxis <- switch(.j, fixed.area.plot = "Radius (m)",
                        k.tree.plot = "K-tree (trees)",
@@ -225,7 +225,7 @@ optimize.plot.design <- function(correlations,
                                                  "<br>Metric:", t(.opt.metric)),
                                            nrow = ncol(.opt.cor),
                                            ncol = nrow(.opt.cor))) %>%
-        plotly::layout(title = paste(.title, .subtitle, sep = ""),
+        plotly::layout(title = paste(.title, .subtitle, sep = ""), font=list(size = 25),
                        xaxis = list(title = .xaxis),
                        yaxis = list (title = .yaxis), margin = list(t = 50))
 
