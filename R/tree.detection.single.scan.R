@@ -584,6 +584,14 @@ tree.detection.single.scan <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
     data <- data[data$prob.selec == 1, ]
     data <- data[, c("id", "file", "x", "y", "z", "rho")]
 
+    # If only one tree is detected, Voronoi tessellation is not working
+
+    if(nrow(.tree) == 1){
+
+      .P99 <- data.frame(tree = .tree$tree, P99.9 = stats::quantile(data$z, prob = 0.999))
+
+    } else {
+
     # Voronoi tessellation
     .voro <- .tree[ , c("tree", "center.x", "center.y"), drop = FALSE]
     .voro <- ggvoronoi::voronoi_polygon(.voro, x = "center.x", y = "center.y", outline = NULL,
@@ -608,6 +616,8 @@ tree.detection.single.scan <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
                    },
                    voro =.voro)
     .P99 <- data.frame(tree = names(.P99), P99.9 = .P99)
+
+    }
 
     # Remove possible trees above "h.min" (1.3 m by default)
 
