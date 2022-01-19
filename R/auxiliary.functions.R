@@ -417,61 +417,78 @@
 }
 
 
-# LiDAR metrics: "media","max","min","desv.std","varianza","moda","kurtosis","skewness", "por_sobre_moda", "por_sobre_media", "weibull_c", "weibull_b"
+# LiDAR metrics: 'mean', 'max', 'min', 'sd', 'var', 'mode', 'kurtosis',
+# 'skewness', 'perc_on_mean', 'perc_on_mode', 'weibull_b', 'weibull_c'
 
 .getmode <- function(v) {
+  
   uniqv <- unique(v)
   uniqv[which.max(tabulate(match(v, uniqv)))]
+  
 }
 
-.c_function<-function(c, media, varianza){
-  varianza-(media^2)*(gamma(1+2/c)-(gamma(1+1/c))^2)/(gamma(1+1/c))^2
+.c_function <- function(c, media, varianza){
+  
+  varianza - (media^2) * (gamma(1 + 2 / c) -
+                            (gamma(1 + 1 / c))^2) / (gamma(1 + 1 / c))^2
+  
 }
 
-.points.metrics <- function(rho_seq, data){
+.points.metrics <- function(rho_seq, data, metr) {
   
-  .metricas<-data.frame(matrix(nrow=0, ncol=13))
+  # Restrict data
+  data <- data[data[, "z"] > 0.1, , drop = FALSE]
   
-  .data <- as.data.frame(data)
+  # Compute metrics
+  .metr <- lapply(rho_seq,
+                  function(rho, data, metr) {
+                    
+                    .sub <- data[data[, "rho"] <= rho, "z"]
+                    
+                    .metr <- rep(NA, length(metr))
+                    names(.metr) <- metr
+                    
+                    if ("mean" %in% names(.metr)) .metr["mean"] <- mean(.sub)
+                    if ("max" %in% names(.metr)) .metr["max"] <- max(.sub)
+                    if ("min" %in% names(.metr)) .metr["min"] <- min(.sub)
+                    if ("sd" %in% names(.metr)) .metr["sd"] <- sd(.sub)
+                    if ("var" %in% names(.metr)) .metr["var"] <- var(.sub)
+                    if ("mode" %in% names(.metr))
+                      .metr["mode"] <- .getmode(.sub)
+                    if ("kurtosis" %in% names(.metr))
+                      .metr["kurtosis"] <- moments::kurtosis(.sub)
+                    if ("skewness" %in% names(.metr))
+                      .metr["skewness"] <- moments::skewness(.sub)
+                    
+                    if ("perc_on_mode" %in% names(.metr))
+                      .metr["perc_on_mode"] <- mean(.sub > .metr["mode"]) * 100
+                    if ("perc_on_mean" %in% names(.metr))
+                      .metr["perc_on_mean"] <- mean(.sub > .metr["mean"]) * 100
+                    
+                    if ("weibull_c" %in% names(.metr)) {
+                      
+                      .metr["weibull_c"] <-
+                        stats::uniroot(.c_function, media = .metr["mean"],
+                                       varianza = .metr["var"],
+                                       interval = c(.metr["min"],
+                                                    .metr["max"]))$root
+                      
+                    }
+                    if ("weibull_b" %in% names(.metr)) {
+                      
+                      .metr["weibull_b"] <-
+                        .metr["mean"] / gamma(1 + 1 / .metr["weibull_c"])
+                      
+                    }
+                    
+                    return(.metr)
+                    
+                  },
+                  data = data, metr = metr)
   
-  ####
-  .data <- .data[which(.data$z > 0.1), ]
+  .metr <- do.call(rbind, .metr)
   
-  for (radio in rho_seq) {
-    
-    # .sub <- as.data.frame(data[data[, "rho"] <= radio,])
-    .sub <- .data[which(.data$rho <= radio), ]
-    
-    .metricas_i<-data.frame(
-      # radio,
-      mean(.sub[, "z"]),
-      max(.sub[, "z"]),
-      min(.sub[, "z"]),
-      sd(.sub[, "z"]),
-      var(.sub[, "z"]),
-      .getmode(.sub[, "z"]),
-      moments::kurtosis(.sub[, "z"]),
-      moments::skewness(.sub[, "z"]))
-    
-    names(.metricas_i)<-c("mean","max","min","sd","var","mode","kurtosis","skewness")
-    
-    .cuenta_moda<-dim(.sub[which(.sub$z>.metricas_i$mode),])[1]
-    .cuenta_media<-dim(.sub[which(.sub$z>.metricas_i$mean),])[1]
-    .c<-stats::uniroot(.c_function, media=.metricas_i$mean, varianza=.metricas_i$var, interval=c(min(.sub[, "z"]),max(.sub[, "z"])))$root
-    .b<-.metricas_i$mean/gamma(1+1/.c)
-    .metricas_i$perc_on_mean<-.cuenta_media*100/nrow(.sub)
-    .metricas_i$perc_on_mode<-.cuenta_moda*100/nrow(.sub)
-    .metricas_i$weibull_b<-.b
-    .metricas_i$weibull_c<-.c
-    .metricas<-rbind(.metricas,.metricas_i)
-    
-  }
-  
-  # .metricas <- .metricas[, 2:ncol(.metricas)]
-  
-  
-  
-  return(.metricas)
+  return(.metr)
   
 }
 
@@ -1605,10 +1622,12 @@
                        var.metr[[.j]][.var.metr[[.j]][.k, var.metr[[.j]]]]]
         if (length(.col.names) > 0) {
           
-          .pts.met <- .points.metrics(rho_seq = .rho.seq, data = .data.tls)
+          .pts.met <- .points.metrics(rho_seq = .rho.seq, data = .data.tls,
+                                      metr = .col.names)
           .stand[[.j]][[.k]] <- cbind(.stand[[.j]][[.k]],
-                                      .pts.met[, .col.names, drop = FALSE])
-          
+                                      .pts.met[rownames(.stand[[.j]][[.k]]),
+                                               .col.names, drop = FALSE])
+
         }
         
         
