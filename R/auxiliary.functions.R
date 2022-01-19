@@ -448,12 +448,20 @@
                     .metr <- rep(NA, length(metr))
                     names(.metr) <- metr
                     
-                    if ("mean" %in% names(.metr)) .metr["mean"] <- mean(.sub)
-                    if ("max" %in% names(.metr)) .metr["max"] <- max(.sub)
-                    if ("min" %in% names(.metr)) .metr["min"] <- min(.sub)
+                    if (any(c("mean", "perc_on_mean", "weibull_c", "weibull_b")
+                            %in% names(.metr)))
+                      .metr["mean"] <- mean(.sub)
+                    if (any(c("max", "weibull_c", "weibull_b") %in%
+                            names(.metr)))
+                      .metr["max"] <- max(.sub)
+                    if (any(c("min", "weibull_c", "weibull_b") %in%
+                            names(.metr)))
+                      .metr["min"] <- min(.sub)
                     if ("sd" %in% names(.metr)) .metr["sd"] <- sd(.sub)
-                    if ("var" %in% names(.metr)) .metr["var"] <- var(.sub)
-                    if ("mode" %in% names(.metr))
+                    if (any(c("var", "weibull_c","weibull_b") %in%
+                            names(.metr)))
+                      .metr["var"] <- var(.sub)
+                    if (any(c("mode", "perc_on_mode") %in% names(.metr)))
                       .metr["mode"] <- .getmode(.sub)
                     if ("kurtosis" %in% names(.metr))
                       .metr["kurtosis"] <- moments::kurtosis(.sub)
