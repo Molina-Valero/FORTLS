@@ -473,7 +473,7 @@
                     if ("perc_on_mean" %in% names(.metr))
                       .metr["perc_on_mean"] <- mean(.sub > .metr["mean"]) * 100
                     
-                    if (any(c("weibull_c", "weibull_b")) %in% names(.metr)) {
+                    if (any(c("weibull_c", "weibull_b") %in% names(.metr))) {
                       
                       .metr["weibull_c"] <-
                         stats::uniroot(.c_function, media = .metr["mean"],
