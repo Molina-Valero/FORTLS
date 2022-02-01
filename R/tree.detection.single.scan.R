@@ -628,12 +628,17 @@ tree.detection.single.scan <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
 
     .tree$tree <- 1:nrow(.tree)
 
+    # Compute volume (m3)
+
+    # Paraboloid
+    .tree$v <- pi * (.tree[, "P99.9"] ^ 2 / 2) * ((.tree[, "dbh"] / 200) ^ 2 / (.tree[, "P99.9"] - 1.3) ^ 2)
+
 
     # If plot identification (id) is not available
     if(is.null(data$id)){
 
-      .tree <- .tree[, c("tree", "center.x", "center.y", "center.phi", "phi.left", "phi.right", "horizontal.distance", "dbh", "P99.9", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion"), drop = FALSE]
-      colnames(.tree) <- c("tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion")
+      .tree <- .tree[, c("tree", "center.x", "center.y", "center.phi", "phi.left", "phi.right", "horizontal.distance", "dbh", "P99.9", "v", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion"), drop = FALSE]
+      colnames(.tree) <- c("tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "v", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion")
 
     } else{
 
@@ -642,8 +647,8 @@ tree.detection.single.scan <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
       .tree$id <- data$id[1]
       .tree$file <- data$file[1]
 
-      .tree <- .tree[, c("id", "file", "tree", "center.x", "center.y", "center.phi", "phi.left", "phi.right", "horizontal.distance", "dbh", "P99.9", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion"), drop = FALSE]
-      colnames(.tree) <- c("id", "file", "tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion")
+      .tree <- .tree[, c("id", "file", "tree", "center.x", "center.y", "center.phi", "phi.left", "phi.right", "horizontal.distance", "dbh", "P99.9", "v", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion"), drop = FALSE]
+      colnames(.tree) <- c("id", "file", "tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "v", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion")
 
     }
 
