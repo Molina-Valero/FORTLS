@@ -519,7 +519,7 @@ correlations <- function(simulations,
             plotly::layout(title = paste(.title, .subtitle, sep = ""), font = list(size = 25),
                            xaxis = list(title = .xaxis),
                            yaxis = list (title = .yaxis),
-                           margin = list(t = 50))
+                           margin = list(t = 100))
 
           # Add traces
           for (.l in colnames(.cor.data.k)[colnames(.cor.data.k) !=

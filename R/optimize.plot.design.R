@@ -228,7 +228,7 @@ optimize.plot.design <- function(correlations,
                                            ncol = nrow(.opt.cor))) %>%
         plotly::layout(title = paste(.title, .subtitle, sep = ""), font = list(size = 25),
                        xaxis = list(title = .xaxis),
-                       yaxis = list (title = .yaxis), margin = list(t = 50))
+                       yaxis = list (title = .yaxis), margin = list(t = 100))
 
       # Save heatmap
       suppressWarnings(

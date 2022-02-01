@@ -438,7 +438,7 @@ relative.bias <- function(simulations,
           plotly::plot_ly(.RB.data.j, type = 'scatter', mode = 'lines') %>%
           plotly::layout(title = paste(.title, .subtitle, sep = ""), font = list(size = 25),
                          xaxis = list(title = .xaxis),
-                         yaxis = list (title = .yaxis), margin = list(t = 50))
+                         yaxis = list (title = .yaxis), margin = list(t = 100))
 
         # Add traces
         for (.k in
