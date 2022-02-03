@@ -77,14 +77,12 @@ files <- list.files(pattern = "las$", path = dir.data)[1:2]
 
 tree.list.tls <- tree.detection.several.plots(las.list = files,
 
-                                              normalize.arguments = list(max.dist = 15,
-                                                                         algorithm.dtm = "knnidw",
-                                                                         res.dtm = 0.25),
+                                              max.dist = 15,
+                                              algorithm.dtm = "knnidw", res.dtm = 0.25,
 
-                                              tree.detection.arguments = list(dbh.min = 7.5, dbh.max = 100,
-                                                                              breaks = 1.3,
-                                                                              tls.resolution = list(point.dist = 7.67,
-                                                                                                    tls.dist = 10)),
+                                              dbh.min = 7.5, dbh.max = 100,
+                                              breaks = 1.3,
+                                              tls.resolution = list(point.dist = 7.67, tls.dist = 10),
 
                                               dir.data = dir.data, dir.result = dir.result)
 ```
