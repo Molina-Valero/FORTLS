@@ -8,8 +8,11 @@ estimation.plot.size <- function(tree.list.tls,
 
 
   # Define stratum as 1 (by default) when tree.list$stratum is missed
-  if (is.null(tree.list.tls$stratum) | all.plot.designs)
+  if(is.null(tree.list.tls$stratum) | all.plot.designs)
     tree.list.tls$stratum <- 1
+
+  if(is.character(tree.list.tls$stratum))
+    tree.list.tls$stratum <- 1:length(unique(tree.list.tls$stratum))
 
   # Call internal function
   .est <- .sim.calc(funct = "est", tree.list.tls = tree.list.tls,
