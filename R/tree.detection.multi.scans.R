@@ -23,7 +23,7 @@ tree.detection.multi.scans <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
                            center.phi = as.numeric(), center.rho = as.numeric(),
                            center.r = as.numeric(), center.theta = as.numeric(),
                            radius = as.numeric(),
-                           num.points = as.numeric(), num.points.hom = as.numeric(),
+                           n.pts = as.numeric(), n.pts.red = as.numeric(),
                            phi.left = as.numeric(), phi.right = as.numeric(),
                            circ = as.numeric(), arc.circ = as.numeric(), sec = as.numeric())
 
@@ -72,7 +72,7 @@ tree.detection.multi.scans <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
                           radius = as.numeric(),
 
                           # Number of points belonging to cluster (craw and after point cropping)
-                          num.points = as.numeric(), num.points.hom = as.numeric(),
+                          n.pts = as.numeric(), n.pts.red = as.numeric(),
 
                           # Circumference
                           circ = as.numeric(),
@@ -174,10 +174,10 @@ tree.detection.multi.scans <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
 
       if(nrow(.dat) < 1){next}
 
-      # Estimate points number for both the original cloud (.num.points) and the
-      # point cloud reduced by the point cropping process (.num.points.hom)
-      .num.points <- nrow(.dat)
-      .num.points.hom <- nrow(.dat[which(.dat$prob.selec == 1), , drop = FALSE])
+      # Estimate points number for both the original cloud (.n.pts) and the
+      # point cloud reduced by the point cropping process (.n.pts.red)
+      .n.pts <- nrow(.dat)
+      .n.pts.red <- nrow(.dat[which(.dat$prob.selec == 1), , drop = FALSE])
 
       # After this previous filtering, compute cluster centroid
 
@@ -305,7 +305,7 @@ tree.detection.multi.scans <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
 
       if(.n.w.ratio > 1 | is.nan(.n.w.ratio)){next}
 
-      .densidad_radio <- .num.points.hom / .radio
+      .densidad_radio <- .n.pts.red / .radio
 
 
       if(nrow(.dat) < 1)
@@ -321,7 +321,7 @@ tree.detection.multi.scans <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
 
                             radius = .radio,
 
-                            num.points = .num.points, num.points.hom = .num.points.hom,
+                            n.pts = .n.pts, n.pts.red = .n.pts.red,
 
                             circ = .circ, arc.circ = .arc.circ,
 
@@ -339,7 +339,7 @@ tree.detection.multi.scans <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
     .outliers <- .Q1 - 1.5 * (.Q3 - .Q1)
 
     # Minimum number of points
-    .filter$tree <- ifelse(.filter$num.points.hom > .outliers, 1, 0)
+    .filter$tree <- ifelse(.filter$n.pts.red > .outliers, 1, 0)
     .filter <- .filter[which(.filter$tree == 1), , drop = FALSE]
 
 
@@ -361,14 +361,14 @@ tree.detection.multi.scans <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
                                center.phi = as.numeric(), center.rho = as.numeric(),
                                center.r = as.numeric(), center.theta = as.numeric(),
                                radius = as.numeric(),
-                               num.points = as.numeric(), num.points.hom = as.numeric(),
+                               n.pts = as.numeric(), n.pts.red = as.numeric(),
                                circ = as.numeric(), arc.cir = as.numeric(), sec = as.numeric())
 
     } else{
 
       .filter1.0 <- .filter[, c("cluster",
                                 "center.x", "center.y", "center.phi", "center.rho", "center.r", "center.theta",
-                                "radius", "num.points", "num.points.hom", "circ", "arc.circ"), drop = FALSE]
+                                "radius", "n.pts", "n.pts.red", "circ", "arc.circ"), drop = FALSE]
       .filter1.0$sec <- cuts
 
     }
@@ -450,8 +450,8 @@ tree.detection.multi.scans <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
 
                       partial.occlusion = tapply(.filter$arc.circ, .filter$cluster, min, na.rm = TRUE),
 
-                      num.points = tapply(.filter$num.points, .filter$cluster, mean, na.rm = TRUE),
-                      num.points.hom = tapply(.filter$num.points.hom, .filter$cluster, mean, na.rm = TRUE))
+                      n.pts = tapply(.filter$n.pts, .filter$cluster, mean, na.rm = TRUE),
+                      n.pts.red = tapply(.filter$n.pts.red, .filter$cluster, mean, na.rm = TRUE))
 
   # Indicate trees with partial occlusions, those for which none of the sections
   # was identified as circumference arch (ArcCirc)
@@ -471,8 +471,8 @@ tree.detection.multi.scans <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
 
   # Estimate number of points by cluster, with and without point cropping
   # process, corresponding to radius 1 m
-  .filter2$points.radio <- .filter2$num.points / .filter2$radio
-  .filter2$points.radio.hom <- .filter2$num.points.hom / .filter2$radio
+  .filter2$points.radio <- .filter2$n.pts / .filter2$radio
+  .filter2$points.radio.hom <- .filter2$n.pts.red / .filter2$radio
 
   # Average points after point cropping by m of radius
   .tree$points.m <- mean(.filter2$points.radio)
@@ -480,8 +480,8 @@ tree.detection.multi.scans <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
 
   # Finally, compute number of points estimated for each tree according to
   # radius
-  .tree$num.points.est <- .tree$points.m * .tree$radius
-  .tree$num.points.hom.est <- .tree$points.m.hom * .tree$radius
+  .tree$n.pts.est <- .tree$points.m * .tree$radius
+  .tree$n.pts.red.est <- .tree$points.m.hom * .tree$radius
 
   # Obtaining reduced point cloud
   data <- data[data$prob.selec == 1, ]
@@ -535,8 +535,8 @@ tree.detection.multi.scans <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
   # If plot identification (id) is not available
   if(is.null(data$id)){
 
-    .tree <- .tree[, c("tree", "center.x", "center.y", "center.phi", "horizontal.distance", "dbh", "P99.9", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion"), drop = FALSE]
-    colnames(.tree) <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion")
+    .tree <- .tree[, c("tree", "center.x", "center.y", "center.phi", "horizontal.distance", "dbh", "P99.9", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion"), drop = FALSE]
+    colnames(.tree) <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
   } else{
 
@@ -545,8 +545,8 @@ tree.detection.multi.scans <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
     .tree$id <- data$id[1]
     .tree$file <- data$file[1]
 
-    .tree <- .tree[, c("id", "file", "tree", "center.x", "center.y", "center.phi", "horizontal.distance", "dbh", "P99.9", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion"), drop = FALSE]
-    colnames(.tree) <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "num.points", "num.points.hom", "num.points.est", "num.points.hom.est", "partial.occlusion")
+    .tree <- .tree[, c("id", "file", "tree", "center.x", "center.y", "center.phi", "horizontal.distance", "dbh", "P99.9", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion"), drop = FALSE]
+    colnames(.tree) <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
   }
 

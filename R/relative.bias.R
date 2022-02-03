@@ -28,8 +28,7 @@ relative.bias <- function(simulations,
     "N.pam",
 
     # Number of points
-    "num.points", "num.points.est", "num.points.hom",
-    "num.points.hom.est",
+    "n.pts", "n.pts.est", "n.pts.red", "n.pts.red.est",
 
     # Basal area (m2/ha)
     "G.tls", "G.hn", "G.hr", "G.hn.cov", "G.hr.cov", "G.sh",
