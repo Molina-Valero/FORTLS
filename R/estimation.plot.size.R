@@ -11,12 +11,11 @@ estimation.plot.size <- function(tree.list.tls,
   if(is.null(tree.list.tls$stratum) | all.plot.designs)
     tree.list.tls$stratum <- 1
 
-  if(is.character(tree.list.tls$stratum))
+  if(is.factor(tree.list.tls$stratum))
     tree.list.tls$stratum <- as.numeric(tree.list.tls$stratum)
 
-  if(is.character(tree.list.tls$stratum)){
-    tree.list.tls$stratum <- as.factor(tree.list.tls$stratum)
-    tree.list.tls$stratum <- as.numeric(tree.list.tls$stratum)}
+  if(is.character(tree.list.tls$stratum))
+    tree.list.tls$stratum <- as.numeric(as.factor(tree.list.tls$stratum))
 
 
 
