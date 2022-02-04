@@ -12,7 +12,13 @@ estimation.plot.size <- function(tree.list.tls,
     tree.list.tls$stratum <- 1
 
   if(is.character(tree.list.tls$stratum))
-    tree.list.tls$stratum <- 1:length(unique(tree.list.tls$stratum))
+    tree.list.tls$stratum <- as.numeric(tree.list.tls$stratum)
+
+  if(is.character(tree.list.tls$stratum)){
+    tree.list.tls$stratum <- as.factor(tree.list.tls$stratum)
+    tree.list.tls$stratum <- as.numeric(tree.list.tls$stratum)}
+
+
 
   # Call internal function
   .est <- .sim.calc(funct = "est", tree.list.tls = tree.list.tls,
