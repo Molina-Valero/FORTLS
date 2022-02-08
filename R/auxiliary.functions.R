@@ -439,7 +439,7 @@
   # Restrict data
   data <- data[data[, "z"] > 0.1, , drop = FALSE]
 
-  # Compute metrics
+  # Compute metrics for coordinate z
   .metr <- lapply(rho_seq,
                   function(rho, data, metr) {
 
@@ -448,44 +448,165 @@
                     .metr <- rep(NA, length(metr))
                     names(.metr) <- metr
 
-                    if (any(c("mean", "perc_on_mean", "weibull_c", "weibull_b")
+                    if (any(c("mean.z", "perc_on_mean.z", "weibull_c.z", "weibull_b.z")
                             %in% names(.metr)))
-                      .metr["mean"] <- mean(.sub)
-                    if (any(c("max", "weibull_c", "weibull_b") %in%
-                            names(.metr)))
-                      .metr["max"] <- max(.sub)
-                    if (any(c("min", "weibull_c", "weibull_b") %in%
-                            names(.metr)))
-                      .metr["min"] <- min(.sub)
-                    if ("sd" %in% names(.metr)) .metr["sd"] <- sd(.sub)
-                    if (any(c("var", "weibull_c","weibull_b") %in%
-                            names(.metr)))
-                      .metr["var"] <- var(.sub)
-                    if (any(c("mode", "perc_on_mode") %in% names(.metr)))
-                      .metr["mode"] <- .getmode(.sub)
-                    if ("kurtosis" %in% names(.metr))
-                      .metr["kurtosis"] <- moments::kurtosis(.sub)
-                    if ("skewness" %in% names(.metr))
-                      .metr["skewness"] <- moments::skewness(.sub)
+                      .metr["mean.z"] <- mean(.sub)
+                    if ("mean.q.z" %in% names(.metr))
+                      .metr["mean.q.z"] <- sqrt(mean(.sub ^ 2))
+                    if ("mean.g.z" %in% names(.metr))
+                      .metr["mean.g.z"] <- exp(mean(log(.sub[.sub>0])))
+                    if ("mean.h.z" %in% names(.metr))
+                      .metr["mean.h.z"] <- length(.sub) / sum(1 / .sub)
+                    if ("median.z" %in% names(.metr))
+                      .metr["median.z"] <- median(.sub)
+                    if (any(c("mode.z", "perc_on_mode.z") %in% names(.metr)))
+                      .metr["mode.z"] <- .getmode(.sub)
+                    if (any(c("max.z", "weibull_c.z", "weibull_b.z") %in% names(.metr)))
+                      .metr["max.z"] <- max(.sub)
+                    if (any(c("min.z", "weibull_c.z", "weibull_b.z") %in% names(.metr)))
+                      .metr["min.z"] <- min(.sub)
+                    if ("sd.z" %in% names(.metr))
+                      .metr["sd.z"] <- sd(.sub)
+                    if (any(c("var.z", "weibull_c.z","weibull_b.z") %in% names(.metr)))
+                      .metr["var.z"] <- var(.sub)
+                    if ("kurtosis.z" %in% names(.metr))
+                      .metr["kurtosis.z"] <- moments::kurtosis(.sub)
+                    if ("skewness.z" %in% names(.metr))
+                      .metr["skewness.z"] <- moments::skewness(.sub)
+                    if ("perc_on_mode.z" %in% names(.metr))
+                      .metr["perc_on_mode.z"] <- mean(.sub > .metr["mode.z"]) * 100
+                    if ("perc_on_mean.z" %in% names(.metr))
+                      .metr["perc_on_mean.z"] <- mean(.sub > .metr["mean.z"]) * 100
 
-                    if ("perc_on_mode" %in% names(.metr))
-                      .metr["perc_on_mode"] <- mean(.sub > .metr["mode"]) * 100
-                    if ("perc_on_mean" %in% names(.metr))
-                      .metr["perc_on_mean"] <- mean(.sub > .metr["mean"]) * 100
+                    if (any(c("weibull_c.z", "weibull_b.z") %in% names(.metr))) {
 
-                    if (any(c("weibull_c", "weibull_b") %in% names(.metr))) {
-
-                      .metr["weibull_c"] <-
-                        stats::uniroot(.c_function, media = .metr["mean"],
-                                       varianza = .metr["var"],
-                                       interval = c(.metr["min"],
-                                                    .metr["max"]))$root
+                      .metr["weibull_c.z"] <-
+                        stats::uniroot(.c_function, media = .metr["mean.z"],
+                                       varianza = .metr["var.z"],
+                                       interval = c(.metr["min.z"],
+                                                    .metr["max.z"]))$root
 
                     }
-                    if ("weibull_b" %in% names(.metr)) {
+                    if ("weibull_b.z" %in% names(.metr)) {
 
-                      .metr["weibull_b"] <-
-                        .metr["mean"] / gamma(1 + 1 / .metr["weibull_c"])
+                      .metr["weibull_b.z"] <-
+                        .metr["mean.z"] / gamma(1 + 1 / .metr["weibull_c.z"])
+
+                    }
+
+
+                    # Compute metrics for coordinate rho
+
+                    .sub <- data[data[, "rho"] <= rho, "rho"]
+
+                    if (any(c("mean.rho", "perc_on_mean.rho", "weibull_c.rho", "weibull_b.rho")
+                            %in% names(.metr)))
+                      .metr["mean.rho"] <- mean(.sub)
+                    if ("mean.q.rho" %in% names(.metr))
+                      .metr["mean.q.rho"] <- sqrt(mean(.sub ^ 2))
+                    if ("mean.g.rho" %in% names(.metr))
+                      .metr["mean.g.rho"] <- exp(mean(log(.sub[.sub>0])))
+                    if ("mean.h.rho" %in% names(.metr))
+                      .metr["mean.h.rho"] <- length(.sub) / sum(1 / .sub)
+                    if ("median.rho" %in% names(.metr))
+                      .metr["median.rho"] <- median(.sub)
+                    if (any(c("mode.rho", "perc_on_mode.rho") %in% names(.metr)))
+                      .metr["mode.rho"] <- .getmode(.sub)
+                    if (any(c("max.rho", "weibull_c.rho", "weibull_b.rho") %in% names(.metr)))
+                      .metr["max.rho"] <- max(.sub)
+                    if (any(c("min.rho", "weibull_c.rho", "weibull_b.rho") %in% names(.metr)))
+                      .metr["min.rho"] <- min(.sub)
+                    if ("sd.rho" %in% names(.metr)) .metr["sd.rho"] <- sd(.sub)
+                    if (any(c("var.rho", "weibull_c.rho","weibull_b.rho") %in%
+                            names(.metr)))
+                      .metr["var.rho"] <- var(.sub)
+                    if ("kurtosis.rho" %in% names(.metr))
+                      .metr["kurtosis.rho"] <- moments::kurtosis(.sub)
+                    if ("skewness.rho" %in% names(.metr))
+                      .metr["skewness.rho"] <- moments::skewness(.sub)
+
+                    if ("perc_on_mode.rho" %in% names(.metr))
+                      .metr["perc_on_mode.rho"] <- mean(.sub > .metr["mode.rho"]) * 100
+                    if ("perc_on_mean.rho" %in% names(.metr))
+                      .metr["perc_on_mean.rho"] <- mean(.sub > .metr["mean.rho"]) * 100
+
+                    if (any(c("weibull_c.rho", "weibull_b.rho") %in% names(.metr))) {
+
+                      .error <- try(stats::uniroot(.c_function, media = .metr["mean.rho"],
+                                                   varianza = .metr["var.rho"],
+                                                   interval = c(.metr["min.rho"],
+                                                                .metr["max.rho"]))$root)
+
+                      if(class(.error)[1] == "try-error"){
+
+                        .metr["weibull_c.rho"] <- NA
+                        .metr["weibull_b.rho"] <- NA
+
+                      } else {
+
+                      .metr["weibull_c.rho"] <-
+                        stats::uniroot(.c_function, media = .metr["mean.rho"],
+                                       varianza = .metr["var.rho"],
+                                       interval = c(.metr["min.rho"],
+                                                    .metr["max.rho"]))$root
+
+                    }
+                    if ("weibull_b.rho" %in% names(.metr)) {
+
+                      .metr["weibull_b.rho"] <-
+                        .metr["mean.rho"] / gamma(1 + 1 / .metr["weibull_c.rho"])}
+
+                    }
+
+
+                    # Compute metrics for coordinate r
+
+                    .sub <- data[data[, "rho"] <= rho, "r"]
+
+                    if (any(c("mean.r", "perc_on_mean.r", "weibull_c.r", "weibull_b.r")
+                            %in% names(.metr)))
+                      .metr["mean.r"] <- mean(.sub)
+                    if ("mean.q.r" %in% names(.metr))
+                      .metr["mean.q.r"] <- sqrt(mean(.sub ^ 2))
+                    if ("mean.g.r" %in% names(.metr))
+                      .metr["mean.g.r"] <- exp(mean(log(.sub[.sub>0])))
+                    if ("mean.h.r" %in% names(.metr))
+                      .metr["mean.h.r"] <- length(.sub) / sum(1 / .sub)
+                    if ("median.r" %in% names(.metr))
+                      .metr["median.r"] <- median(.sub)
+                    if (any(c("mode.r", "perc_on_mode.r") %in% names(.metr)))
+                      .metr["mode.r"] <- .getmode(.sub)
+                    if (any(c("max.r", "weibull_c.r", "weibull_b.r") %in% names(.metr)))
+                      .metr["max.r"] <- max(.sub)
+                    if (any(c("min.r", "weibull_c.r", "weibull_b.r") %in% names(.metr)))
+                      .metr["min.r"] <- min(.sub)
+                    if ("sd.r" %in% names(.metr)) .metr["sd.r"] <- sd(.sub)
+                    if (any(c("var.r", "weibull_c.r","weibull_b.r") %in%
+                            names(.metr)))
+                      .metr["var.r"] <- var(.sub)
+                    if ("kurtosis.r" %in% names(.metr))
+                      .metr["kurtosis.r"] <- moments::kurtosis(.sub)
+                    if ("skewness.r" %in% names(.metr))
+                      .metr["skewness.r"] <- moments::skewness(.sub)
+
+                    if ("perc_on_mode.r" %in% names(.metr))
+                      .metr["perc_on_mode.r"] <- mean(.sub > .metr["mode.r"]) * 100
+                    if ("perc_on_mean.r" %in% names(.metr))
+                      .metr["perc_on_mean.r"] <- mean(.sub > .metr["mean.r"]) * 100
+
+                    if (any(c("weibull_c.r", "weibull_b.r") %in% names(.metr))) {
+
+                      .metr["weibull_c.r"] <-
+                        stats::uniroot(.c_function, media = .metr["mean.r"],
+                                       varianza = .metr["var.r"],
+                                       interval = c(.metr["min.r"],
+                                                    .metr["max.r"]))$root
+
+                    }
+                    if ("weibull_b.r" %in% names(.metr)) {
+
+                      .metr["weibull_b.r"] <-
+                        .metr["mean.r"] / gamma(1 + 1 / .metr["weibull_c.r"])
 
                     }
 
@@ -585,9 +706,26 @@
                               paste, c(".tls", ".0.tls"), sep = "")),
                      paste("n.pts", c("", ".est", ".red", ".red.est"),
                            sep = ""),
-                     sprintf("P%02i", .prob), "mean", "max", "min", "sd", "var",
-                     "mode", "kurtosis", "skewness", "perc_on_mode",
-                     "perc_on_mean", "weibull_c", "weibull_b")
+                     sprintf("P%02i", .prob),
+
+                     # Z coordinate
+                     "mean.z", "mean.q.z", "mean.g.z", "mean.h.z", "median.z", "mode.z",
+                     "max.z", "min.z", "sd.z", "var.z",
+                     "kurtosis.z", "skewness.z", "perc_on_mode.z",
+                     "perc_on_mean.z", "weibull_c.z", "weibull_b.z",
+
+                     # Rho coordinate
+                     "mean.rho", "mean.q.rho", "mean.g.rho", "mean.h.rho", "median.rho", "mode.rho",
+                     "max.rho", "min.rho", "sd.rho", "var.rho",
+                     "kurtosis.rho", "skewness.rho", "perc_on_mode.rho",
+                     "perc_on_mean.rho", "weibull_c.rho", "weibull_b.rho",
+
+                     # R coordinate
+                     "mean.r", "mean.q.r", "mean.g.r", "mean.h.r", "median.r", "mode.r",
+                     "max.r", "min.r", "sd.r", "var.r",
+                     "kurtosis.r", "skewness.r", "perc_on_mode.r",
+                     "perc_on_mean.r", "weibull_c.r", "weibull_b.r")
+
   .var.metr$field <- c("N", "G", "V", names(.var.field.user),
                        t(sapply(names(c(.mean.d, .mean.h)), paste, c("", ".0"),
                                 sep = "")))
@@ -890,9 +1028,25 @@
     .col.mand[, colnames(.col.mand) %in%
                 c("stratum", "id", "tree", "h.dist", "dbh", "h")] <- TRUE
     .col.mand[rownames(.col.mand) %in%
-                c(sprintf("P%02i", .prob), "mean", "max", "min", "sd", "var",
-                  "mode", "kurtosis", "skewness", "perc_on_mode",
-                  "perc_on_mean", "weibull_c", "weibull_b"),
+                c(sprintf("P%02i", .prob),
+                  # Z coordinate
+                  "mean.z", "mean.q.z", "mean.g.z", "mean.h.z", "median.z", "mode.z",
+                  "max.z", "min.z", "sd.z", "var.z",
+                  "kurtosis.z", "skewness.z", "perc_on_mode.z",
+                  "perc_on_mean.z", "weibull_c.z", "weibull_b.z",
+
+                  # Rho coordinate
+                  "mean.rho", "mean.q.rho", "mean.g.rho", "mean.h.rho", "median.rho", "mode.rho",
+                  "max.rho", "min.rho", "sd.rho", "var.rho",
+                  "kurtosis.rho", "skewness.rho", "perc_on_mode.rho",
+                  "perc_on_mean.rho", "weibull_c.rho", "weibull_b.rho",
+
+                  # R coordinate
+                  "mean.r", "mean.q.r", "mean.g.r", "mean.h.r", "median.r", "mode.r",
+                  "max.r", "min.r", "sd.r", "var.r",
+                  "kurtosis.r", "skewness.r", "perc_on_mode.r",
+                  "perc_on_mean.r", "weibull_c.r", "weibull_b.r"),
+
               colnames(.col.mand) %in% "file"] <- TRUE
     .col.mand[rownames(.col.mand) %in% paste(c("N", "G", "V"), "sh", sep = "."),
               colnames(.col.mand) %in%
@@ -1417,7 +1571,7 @@
         # Read points' database
         .data.tls <-
           suppressMessages(vroom::vroom(file.path(dir.data, .id[.i, "file"]),
-                                        col_select = c("x", "y", "z", "rho"),
+                                        col_select = c("x", "y", "z", "rho", "r"),
                                         progress = FALSE))
 
         # Discard points according to 'max.dist'
@@ -1436,7 +1590,7 @@
         # below, and convert to matrix
         .data.tls <- as.matrix(.data.tls)[order(.data.tls[, "rho"],
                                                 decreasing = FALSE),
-                                          c("z", "rho"), drop = FALSE]
+                                          c("z", "rho", "r"), drop = FALSE]
 
       }
 
@@ -1622,9 +1776,25 @@
 
         # Compute descriptive statistics of z coordinate, percentage of points
         # above mode and mean, and parameters of fitted Weibull distribution
-        .col.names <- c("mean", "max", "min", "sd", "var", "mode", "kurtosis",
-                        "skewness", "perc_on_mode", "perc_on_mean", "weibull_c",
-                        "weibull_b")
+        .col.names <- c("mean.z", "mean.q.z", "mean.g.z", "mean.h.z", "median.z", "mode.z",
+                        "max.z", "min.z", "sd.z", "var.z", "kurtosis.z",
+                        "skewness.z", "perc_on_mode.z", "perc_on_mean.z",
+                        "weibull_c.z", "weibull_b.z",
+
+                        # Compute descriptive statistics of rho coordinate
+                        "mean.rho", "mean.q.rho", "mean.g.rho", "mean.h.rho", "median.rho", "mode.rho",
+                        "max.rho", "min.rho", "sd.rho", "var.rho",
+                        "kurtosis.rho", "skewness.rho",
+                        "perc_on_mode.rho", "perc_on_mean.rho",
+                        "weibull_c.rho", "weibull_b.rho",
+
+                        # Compute descriptive statistics of r coordinate
+                        "mean.r", "mean.q.r", "mean.g.r", "mean.h.r", "median.r", "mode.r",
+                        "max.r", "min.r", "sd.r", "var.r",
+                        "kurtosis.r", "skewness.r",
+                        "perc_on_mode.r", "perc_on_mean.r",
+                        "weibull_c.r", "weibull_b.r")
+
         .col.names <-
           .col.names[.col.names %in%
                        var.metr[[.j]][.var.metr[[.j]][.k, var.metr[[.j]]]]]

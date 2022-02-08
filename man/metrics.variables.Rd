@@ -128,18 +128,24 @@ Stratum, plot identification and radius:
 
       \itemize{
 
-      \item \code{num.points}, \code{num.points.est}, \code{num.points.hom},
-      \code{num.points.hom.est}: number of points and estimated number of
+      \item \code{n.pts}, \code{n.pts.est}, \code{n.pts.red}, \code{n.pts.red.est}: number of points and estimated number of
       points (points) belonging to trees normal sections (+/- 5 cm) in the
-      original point cloud (\code{num.points} and \code{num.points.est},
+      original point cloud (\code{n.pts} and \code{n.pts.est},
       respectively); and number of points and estimated number of points
       (points) belonging to trees normal sections (+/- 5 cm) in the reduced
-      point cloud (\code{num.points.hom} and \code{num.points.hom.est},
+      point cloud (\code{n.pts.red} and \code{n.pts.red.est},
       respectively).
       \item \code{P01}, \code{P05}, \code{P10}, \code{P20}, \code{P25},
       \code{P30}, \code{P40}, \code{P50}, \code{P60}, \code{P70}, \code{P75},
       \code{P80}, \code{P90}, \code{P95}, \code{P99}: height percentiles
-      derived from z coordinates of TLS point clouds relative to ground level (m).}}
+      derived from z coordinates of TLS point clouds relative to ground level (m).
+      \item \code{mean.arit.z}, \code{mean.qua.z}, \code{mean.geom.z}, \code{mean.harm.z},         \code{median.z}, \code{mode.z}, \code{max.z}, \code{min.z}: .
+      \item \code{var.z}, \code{sd.z}, \code{CV.z}, \code{D.z}, \code{ID.z}: .
+      \item \code{kurt.z}, \code{skw.z}: .
+      \item \code{L1.z}, \code{L2.z}, \code{L3.z}, \code{L4.z}, \code{L-CV.z}, \code{MAD-median.z}, \code{MAD-mode.z}: .
+      \item \code{PA.2m}, \code{PA.mean.z}, \code{PA.median.z}, \code{PA.mode.z}: .
+      \item \code{PB.2m}, \code{PB.mean.z}, \code{PB.median.z}, \code{PB.mode.z}: .
+      \item \code{weibull.b.z}, \code{weibull.c.z}: .}}
 
 
 \item{k.tree.plot}{If no value for \code{k.tree} is specified in the \code{plot.parameters} argument, \code{NULL}; otherwise, the data frame will include TLS metrics and variables estimated in the k-tree plot design (rows represent simulations). The data frame will include the following columns (same description and format as indicated in \code{fixed.area.plot} element):

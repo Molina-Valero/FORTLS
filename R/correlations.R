@@ -59,8 +59,23 @@ correlations <- function(simulations,
                        80, 90, 95, 99)),
 
     # Points metrics
-    "mean","max","min","sd","var","mode","kurtosis","skewness",
-    "perc_on_mode", "perc_on_mean", "weibull_c", "weibull_b")
+    # Z coordinate
+    "mean.z", "mean.q.z", "mean.g.z", "mean.h.z", "median.z", "mode.z",
+    "max.z", "min.z", "sd.z", "var.z",
+    "kurtosis.z", "skewness.z", "perc_on_mode.z",
+    "perc_on_mean.z", "weibull_c.z", "weibull_b.z",
+
+    # Rho coordinate
+    "mean.rho", "mean.q.rho", "mean.g.rho", "mean.h.rho", "median.rho", "mode.rho",
+    "max.rho", "min.rho", "sd.rho", "var.rho",
+    "kurtosis.rho", "skewness.rho", "perc_on_mode.rho",
+    "perc_on_mean.rho", "weibull_c.rho", "weibull_b.rho",
+
+    # R coordinate
+    "mean.r", "mean.q.r", "mean.g.r", "mean.h.r", "median.r", "mode.r",
+    "max.r", "min.r", "sd.r", "var.r",
+    "kurtosis.r", "skewness.r", "perc_on_mode.r",
+    "perc_on_mean.r", "weibull_c.r", "weibull_b.r")
 
   # Define a character vector containing the available correlation measurements
   .cor.method <- c("pearson", "spearman")
@@ -227,9 +242,23 @@ correlations <- function(simulations,
     # Heights
     .tls.color[.tls.color == "h"] <-
       grDevices::hcl.colors(sum(.tls.color == "h"), "Magenta")
+
     # Percentiles
     .tls.color[.tls.color == "P"] <-
       grDevices::gray.colors(sum(.tls.color == "P"))
+
+    # Means
+    .tls.color[.tls.color == "m"] <-
+      grDevices::hcl.colors(sum(.tls.color == "m"), "Reds2")
+
+    # Percentages
+    .tls.color[.tls.color == "p"] <-
+      grDevices::hcl.colors(sum(.tls.color == "p"), "Greens2")
+
+    # Weibull
+    .tls.color[.tls.color == "w"] <-
+      grDevices::hcl.colors(sum(.tls.color == "w"), "Blues2")
+
 
   }
 
