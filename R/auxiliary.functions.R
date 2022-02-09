@@ -596,17 +596,29 @@
 
                     if (any(c("weibull_c.r", "weibull_b.r") %in% names(.metr))) {
 
-                      .metr["weibull_c.r"] <-
-                        stats::uniroot(.c_function, media = .metr["mean.r"],
-                                       varianza = .metr["var.r"],
-                                       interval = c(.metr["min.r"],
-                                                    .metr["max.r"]))$root
+                      .error <- try(stats::uniroot(.c_function, media = .metr["mean.r"],
+                                                   varianza = .metr["var.r"],
+                                                   interval = c(.metr["min.r"],
+                                                                .metr["max.r"]))$root)
 
-                    }
-                    if ("weibull_b.r" %in% names(.metr)) {
+                      if(class(.error)[1] == "try-error"){
 
-                      .metr["weibull_b.r"] <-
-                        .metr["mean.r"] / gamma(1 + 1 / .metr["weibull_c.r"])
+                        .metr["weibull_c.r"] <- NA
+                        .metr["weibull_b.r"] <- NA
+
+                      } else {
+
+                        .metr["weibull_c.r"] <-
+                          stats::uniroot(.c_function, media = .metr["mean.r"],
+                                         varianza = .metr["var.r"],
+                                         interval = c(.metr["min.r"],
+                                                      .metr["max.r"]))$root
+
+                      }
+                      if ("weibull_b.r" %in% names(.metr)) {
+
+                        .metr["weibull_b.r"] <-
+                          .metr["mean.r"] / gamma(1 + 1 / .metr["weibull_c.r"])}
 
                     }
 
