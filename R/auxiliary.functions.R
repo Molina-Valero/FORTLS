@@ -481,10 +481,17 @@
 
                     if ("perc_on_mean.z" %in% names(.metr))
                       .metr["perc_on_mean.z"] <- mean(.sub > .metr["mean.z"]) * 100
-                    if ("perc_on_median.z" %in% names(.metr))
-                      .metr["perc_on_median.z"] <- mean(.sub > .metr["median.z"]) * 100
                     if ("perc_on_mode.z" %in% names(.metr))
                       .metr["perc_on_mode.z"] <- mean(.sub > .metr["mode.z"]) * 100
+                    if ("p.a.2m.z" %in% names(.metr))
+                      .metr["p.a.2m.z"] <- mean(.sub > 2) * 100
+
+                    if ("p.b.mean.z" %in% names(.metr))
+                      .metr["p.b.mean.z"] <- mean(.sub < .metr["mean.z"]) * 100
+                    if ("p.b.mode.z" %in% names(.metr))
+                      .metr["p.b.mode.z"] <- mean(.sub < .metr["mode.z"]) * 100
+                    if ("p.b.2m.z" %in% names(.metr))
+                      .metr["p.b.2m.z"] <- mean(.sub < 2) * 100
 
 
                     if (any(c("weibull_c.z", "weibull_b.z") %in% names(.metr))) {
@@ -539,11 +546,12 @@
 
                     if ("perc_on_mean.rho" %in% names(.metr))
                       .metr["perc_on_mean.rho"] <- mean(.sub > .metr["mean.rho"]) * 100
-                    if ("perc_on_median.rho" %in% names(.metr))
-                      .metr["perc_on_median.rho"] <- mean(.sub > .metr["median.rho"]) * 100
                     if ("perc_on_mode.rho" %in% names(.metr))
                       .metr["perc_on_mode.rho"] <- mean(.sub > .metr["mode.rho"]) * 100
-
+                    if ("p.b.mean.rho" %in% names(.metr))
+                      .metr["p.b.mean.rho"] <- mean(.sub < .metr["mean.rho"]) * 100
+                    if ("p.b.mode.rho" %in% names(.metr))
+                      .metr["p.b.mode.rho"] <- mean(.sub < .metr["mode.rho"]) * 100
 
 
                     if (any(c("weibull_c.rho", "weibull_b.rho") %in% names(.metr))) {
@@ -610,10 +618,13 @@
 
                     if ("perc_on_mean.r" %in% names(.metr))
                       .metr["perc_on_mean.r"] <- mean(.sub > .metr["mean.r"]) * 100
-                    if ("perc_on_median.r" %in% names(.metr))
-                      .metr["perc_on_median.r"] <- mean(.sub > .metr["median.r"]) * 100
                     if ("perc_on_mode.r" %in% names(.metr))
                       .metr["perc_on_mode.r"] <- mean(.sub > .metr["mode.r"]) * 100
+                    if ("p.b.mean.r" %in% names(.metr))
+                      .metr["p.b.mean.r"] <- mean(.sub < .metr["mean.r"]) * 100
+                    if ("p.b.mode.r" %in% names(.metr))
+                      .metr["p.b.mode.r"] <- mean(.sub < .metr["mode.r"]) * 100
+
 
 
                     if (any(c("weibull_c.r", "weibull_b.r") %in% names(.metr))) {
@@ -746,21 +757,24 @@
                      "mean.z", "mean.q.z", "mean.g.z", "mean.h.z", "median.z", "mode.z",
                      "max.z", "min.z", "var.z", "sd.z", "CV.z", "D.z",
                      "kurtosis.z", "skewness.z",
-                     "perc_on_mean.z", "perc_on_median.z", "perc_on_mode.z",
+                     "perc_on_mean.z", "perc_on_mode.z", "p.a.2m.z",
+                     "p.b.mean.z", "p.b.mode.z", "p.b.2m.z",
                      "weibull_c.z", "weibull_b.z",
 
                      # Rho coordinate
                      "mean.rho", "mean.q.rho", "mean.g.rho", "mean.h.rho", "median.rho", "mode.rho",
                      "max.rho", "min.rho", "var.rho", "sd.rho", "CV.rho", "D.rho",
                      "kurtosis.rho", "skewness.rho",
-                     "perc_on_mean.rho", "perc_on_median.rho", "perc_on_mode.rho",
+                     "perc_on_mean.rho", "perc_on_mode.rho",
+                     "p.b.mean.rho", "p.b.mode.rho",
                      "weibull_c.rho", "weibull_b.rho",
 
                      # R coordinate
                      "mean.r", "mean.q.r", "mean.g.r", "mean.h.r", "median.r", "mode.r",
                      "max.r", "min.r", "var.r", "sd.r", "CV.r", "D.r",
                      "kurtosis.r", "skewness.r",
-                     "perc_on_mean.r", "perc_on_median.r", "perc_on_mode.r",
+                     "perc_on_mean.r", "perc_on_mode.r",
+                     "p.b.mean.r", "p.b.mode.r",
                      "weibull_c.r", "weibull_b.r")
 
   .var.metr$field <- c("N", "G", "V", names(.var.field.user),
@@ -1070,21 +1084,24 @@
                   "mean.z", "mean.q.z", "mean.g.z", "mean.h.z", "median.z", "mode.z",
                   "max.z", "min.z", "var.z", "sd.z", "CV.z", "D.z",
                   "kurtosis.z", "skewness.z",
-                  "perc_on_mean.r", "perc_on_median.z", "perc_on_mode.z",
+                  "perc_on_mean.r", "perc_on_mode.z", "p.a.2m",
+                  "p.b.mean.z", "p.b.mode.z", "p.b.2m.z",
                   "weibull_c.z", "weibull_b.z",
 
                   # Rho coordinate
                   "mean.rho", "mean.q.rho", "mean.g.rho", "mean.h.rho", "median.rho", "mode.rho",
                   "max.rho", "min.rho", "var.rho", "sd.rho", "CV.rho", "D.rho",
                   "kurtosis.rho", "skewness.rho",
-                  "perc_on_mean.rho", "perc_on_median.rho", "perc_on_mode.rho",
+                  "perc_on_mean.rho", "perc_on_mode.rho",
+                  "p.b.mean.rho", "p.b.mode.rho",
                   "weibull_c.rho", "weibull_b.rho",
 
                   # R coordinate
                   "mean.r", "mean.q.r", "mean.g.r", "mean.h.r", "median.r", "mode.r",
                   "max.r", "min.r", "var.r", "sd.r", "CV.r", "D.r",
                   "kurtosis.r", "skewness.r",
-                  "perc_on_mean.r", "perc_on_median.r", "perc_on_mode.r",
+                  "perc_on_mean.r", "perc_on_mode.r",
+                  "p.b.mean.r", "p.b.mode.r",
                   "weibull_c.r", "weibull_b.r"),
 
               colnames(.col.mand) %in% "file"] <- TRUE
@@ -1819,21 +1836,24 @@
         .col.names <- c("mean.z", "mean.q.z", "mean.g.z", "mean.h.z", "median.z", "mode.z",
                         "max.z", "min.z", "var.z", "sd.z", "CV.z", "D.z",
                         "kurtosis.z", "skewness.z",
-                        "perc_on_mode.z", "perc_on_median.z", "perc_on_mean.z",
+                        "perc_on_mean.z", "perc_on_mode.z", "p.a.2m.z",
+                        "p.b.mean.z", "p.b.mode.z", "p.b.2m.z",
                         "weibull_c.z", "weibull_b.z",
 
                         # Compute descriptive statistics of rho coordinate
                         "mean.rho", "mean.q.rho", "mean.g.rho", "mean.h.rho", "median.rho", "mode.rho",
                         "max.rho", "min.rho", "var.rho", "sd.rho", "CV.rho", "D.rho",
                         "kurtosis.rho", "skewness.rho",
-                        "perc_on_mode.rho", "perc_on_median.rho", "perc_on_mean.rho",
+                        "perc_on_mean.rho", "perc_on_mode.rho",
+                        "p.b.mean.rho", "p.b.mode.rho",
                         "weibull_c.rho", "weibull_b.rho",
 
                         # Compute descriptive statistics of r coordinate
                         "mean.r", "mean.q.r", "mean.g.r", "mean.h.r", "median.r", "mode.r",
                         "max.r", "min.r", "var.r", "sd.r", "CV.r", "D.r",
                         "kurtosis.r", "skewness.r",
-                        "perc_on_mode.r", "perc_on_median.r", "perc_on_mean.r",
+                        "perc_on_mean.r", "perc_on_mode.r",
+                        "p.b.mean.r", "p.b.mode.r",
                         "weibull_c.r", "weibull_b.r")
 
         .col.names <-
