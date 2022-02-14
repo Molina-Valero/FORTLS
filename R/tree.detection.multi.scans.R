@@ -531,12 +531,18 @@ tree.detection.multi.scans <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
 
   .tree$tree <- 1:nrow(.tree)
 
+  # Compute volume (m3)
+
+  # Paraboloid
+  .tree$v <- pi * (.tree[, "P99.9"] ^ 2 / 2) * ((.tree[, "dbh"] / 200) ^ 2 / (.tree[, "P99.9"] - 1.3) ^ 2)
+
+
 
   # If plot identification (id) is not available
   if(is.null(data$id)){
 
-    .tree <- .tree[, c("tree", "center.x", "center.y", "center.phi", "horizontal.distance", "dbh", "P99.9", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion"), drop = FALSE]
-    colnames(.tree) <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+    .tree <- .tree[, c("tree", "center.x", "center.y", "center.phi", "horizontal.distance", "dbh", "P99.9", "v", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion"), drop = FALSE]
+    colnames(.tree) <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
   } else{
 
@@ -545,8 +551,8 @@ tree.detection.multi.scans <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
     .tree$id <- data$id[1]
     .tree$file <- data$file[1]
 
-    .tree <- .tree[, c("id", "file", "tree", "center.x", "center.y", "center.phi", "horizontal.distance", "dbh", "P99.9", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion"), drop = FALSE]
-    colnames(.tree) <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+    .tree <- .tree[, c("id", "file", "tree", "center.x", "center.y", "center.phi", "horizontal.distance", "dbh", "P99.9", "v", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion"), drop = FALSE]
+    colnames(.tree) <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "n.pts", "n.pts.red", "n.pts.est", "v", "n.pts.red.est", "partial.occlusion")
 
   }
 
