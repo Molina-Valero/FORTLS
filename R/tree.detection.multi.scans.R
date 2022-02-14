@@ -552,7 +552,7 @@ tree.detection.multi.scans <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
     .tree$file <- data$file[1]
 
     .tree <- .tree[, c("id", "file", "tree", "center.x", "center.y", "center.phi", "horizontal.distance", "dbh", "P99.9", "v", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion"), drop = FALSE]
-    colnames(.tree) <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "n.pts", "n.pts.red", "n.pts.est", "v", "n.pts.red.est", "partial.occlusion")
+    colnames(.tree) <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
   }
 
