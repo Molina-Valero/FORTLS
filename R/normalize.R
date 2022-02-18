@@ -5,7 +5,7 @@ normalize <- function(las,
                       algorithm.dtm = "tin", res.dtm = 0.2,
                       csf = list(cloth_resolution = 0.5),
                       scan.approach = "single",
-                      id = NULL, file=NULL,
+                      id = NULL, file = NULL,
                       dir.data = NULL, save.result = TRUE, dir.result = NULL){
 
   .pb <- progress::progress_bar$new(total = 11)

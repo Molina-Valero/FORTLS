@@ -209,16 +209,19 @@ tree.detection.multi.scans <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
       .center.r <- sqrt(.dat$sec[1] ^ 2 + .center.rho ^ 2)
       .center.theta <- atan2(.dat$sec[1], .center.rho)
 
-      # Radius value as the mean distance
-      .radio <- mean(raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE))
-
 
       # Distances between points and center
       .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)
 
+      # Radius value as the mean distance
+      # .dat <- .dat[order(.dat$dist, decreasing = FALSE), , drop = FALSE]
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25)])
+
+      # Coefficient of variation for distances among cluster points and the estimated center
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25)]) / .radio
+      if(.cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25)]) < 2){next}
 
       # At least 95 % of distances should be greater than .radio / 2
-      .dat <- .dat[order(.dat$dist, decreasing = FALSE), , drop = FALSE]
       if(stats::quantile(.dat$dist, prob = 0.05) < (.radio / 2)) {next}
 
 
@@ -295,10 +298,6 @@ tree.detection.multi.scans <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
 
       # plot(.dat$x, .dat$y, asp = 1, main = paste(.cluster, .circ, .arc.circ, sep = " "))
 
-      # Coefficient of variation for distances among cluster points and the estimated center
-      .cv <- stats::sd(raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)) / .radio
-
-      if(.cv > 0.1){next}
 
       # Zhang et al., (2019)
       .n.w.ratio <- stats::sd(.dat$z) / sqrt(stats::sd(.dat$x) ^ 2 + stats::sd(.dat$y) ^ 2)
@@ -308,8 +307,7 @@ tree.detection.multi.scans <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
       .densidad_radio <- .n.pts.red / .radio
 
 
-      if(nrow(.dat) < 1)
-        next
+      if(nrow(.dat) < 2){next}
 
 
       # Results
@@ -346,7 +344,7 @@ tree.detection.multi.scans <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
 
     .filter$tree <- ifelse(.filter$circ == 1 & .filter$density.radio > .outliers, 1,
                            ifelse(.filter$circ == 0 & .filter$arc.circ == 1 & .filter$density.radio > .outliers, 1,
-                           ifelse(.filter$arc.circ == 0 & .filter$occlusion > 0.975 & .filter$occlusion.sig < 0.05 & .filter$density.radio > .outliers, 1, 0)))
+                           ifelse(.filter$arc.circ == 0 & .filter$occlusion > 0.975 & .filter$density.radio > .outliers, 1, 0)))
     .filter <- .filter[which(.filter$tree == 1), , drop = FALSE]
 
     # Dbh maximum and minimum
@@ -566,7 +564,7 @@ tree.detection.multi.scans <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
   if(isTRUE(save.result)){
 
     utils::write.csv(.tree,
-                     file = file.path(dir.result, "tree.list.tls.csv"),
+                     file = file.path(dir.result, "tree.tls.csv"),
                      row.names = FALSE)
   }
 

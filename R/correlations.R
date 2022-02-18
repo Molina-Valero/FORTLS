@@ -5,6 +5,18 @@ correlations <- function(simulations,
                          method = c("pearson", "spearman"), save.result = TRUE,
                          dir.result = NULL) {
 
+  # Checking if id columns are characters or factors, and converting to numeric in that cases
+  if(!is.null(simulations$fixed.area) & is.character(simulations$fixed.area$id) | is.factor(simulations$fixed.area$id))
+    simulations$fixed.area$id <- as.numeric(as.factor(simulations$fixed.area$id))
+
+  if(!is.null(simulations$k.tree) & is.character(simulations$k.tree$id) | is.factor(simulations$k.tree$id))
+    simulations$k.tree$id <- as.numeric(as.factor(simulations$k.tree$id))
+
+  if(!is.null(simulations$angle.count) & is.character(simulations$angle.count$id) | is.factor(simulations$angle.count$id))
+    simulations$angle.count$id <- as.numeric(as.factor(simulations$angle.count$id))
+
+
+
   if("W" %in% colnames(simulations$fixed.area))
     variables = c(variables, "W")
 

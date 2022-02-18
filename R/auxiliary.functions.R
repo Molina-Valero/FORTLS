@@ -493,6 +493,16 @@
                     if ("p.b.2m.z" %in% names(.metr))
                       .metr["p.b.2m.z"] <- mean(.sub < 2) * 100
 
+                    if ("CRR.z" %in% names(.metr))
+                      .metr["CRR.z"] <- .metr["mean.z"] / .metr["max.z"]
+
+                    if ("L2.z" %in% names(.metr))
+                      .metr["L2.z"] <- mean(sum(.sub ^ 2))
+                    if ("L3.z" %in% names(.metr))
+                      .metr["L3.z"] <- mean(sum(.sub ^ 3))
+                    if ("L4.z" %in% names(.metr))
+                      .metr["L4.z"] <- mean(sum(.sub ^ 4))
+
 
                     if (any(c("weibull_c.z", "weibull_b.z") %in% names(.metr))) {
 
@@ -552,6 +562,16 @@
                       .metr["p.b.mean.rho"] <- mean(.sub < .metr["mean.rho"]) * 100
                     if ("p.b.mode.rho" %in% names(.metr))
                       .metr["p.b.mode.rho"] <- mean(.sub < .metr["mode.rho"]) * 100
+
+                    if ("CRR.rho" %in% names(.metr))
+                      .metr["CRR.rho"] <- .metr["mean.rho"] / .metr["max.rho"]
+
+                    if ("L2.rho" %in% names(.metr))
+                      .metr["L2.rho"] <- mean(sum(.sub ^ 2))
+                    if ("L3.rho" %in% names(.metr))
+                      .metr["L3.rho"] <- mean(sum(.sub ^ 3))
+                    if ("L4.rho" %in% names(.metr))
+                      .metr["L4.rho"] <- mean(sum(.sub ^ 4))
 
 
                     if (any(c("weibull_c.rho", "weibull_b.rho") %in% names(.metr))) {
@@ -625,6 +645,15 @@
                     if ("p.b.mode.r" %in% names(.metr))
                       .metr["p.b.mode.r"] <- mean(.sub < .metr["mode.r"]) * 100
 
+                    if ("CRR.r" %in% names(.metr))
+                      .metr["CRR.r"] <- .metr["mean.r"] / .metr["max.r"]
+
+                    if ("L2.r" %in% names(.metr))
+                      .metr["L2.r"] <- mean(sum(.sub ^ 2))
+                    if ("L3.r" %in% names(.metr))
+                      .metr["L3.r"] <- mean(sum(.sub ^ 3))
+                    if ("L4.r" %in% names(.metr))
+                      .metr["L4.r"] <- mean(sum(.sub ^ 4))
 
 
                     if (any(c("weibull_c.r", "weibull_b.r") %in% names(.metr))) {
@@ -669,7 +698,7 @@
 
 # Simulate plots and compute stand variables and metrics
 
-.sim.calc <- function(funct, tree.list.tls, tree.list.ds, tree.list.field,
+.sim.calc <- function(funct, tree.tls, tree.ds, tree.field,
                       plot.design, plot.parameters, scan.approach, var.metr,
                       v.calc, dbh.min, h.min, max.dist, dir.data, save.result,
                       dir.result) {
@@ -687,13 +716,13 @@
   # 'k.tree' and 'angle.count'
   .plot.design <- c(fixed.area = "radius", k.tree = "k", angle.count = "BAF")
 
-  # Define a list containing mandatory columns in 'tree.list.tls' argument
+  # Define a list containing mandatory columns in 'tree.tls' argument
   # associated to each available scan approach. Currently available scan
   # approaches: 'single' and 'multi'
   .scan.approach <- list(single = c("phi.left", "phi.right"),
                          multi = character())
 
-  # Define a character vector containing mandatory columns in 'tree.list.ds'
+  # Define a character vector containing mandatory columns in 'tree.ds'
   # argument associated to available distance sampling methodologies. Currently
   # available methodologies: 'hn' (half normal function), 'hn.cov' (half normal
   # function with dbh as covariate), 'hr' (half rate function) and 'hr.cov'
@@ -711,16 +740,16 @@
   # calculation
   .prob = c(1, 5, 10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90, 95, 99)
 
-  # Define a list containing mandatory columns in 'tree.list.field' argument
+  # Define a list containing mandatory columns in 'tree.field' argument
   # associated to each available field variables to be computed from optional
   # trees attributes provided by the user. Currently available field variables:
   # 'V.user' and 'W.user'
   .var.field.user <- list(V.user = "v.user", W.user = "w.user")
 
   # Define a list containing the available TLS variables and metrics according
-  # to 'function case', 'tree.list.ds' availability, scan approach and plot
+  # to 'function case', 'tree.ds' availability, scan approach and plot
   # design(s), and the available field variables according to 'function case'
-  # and trees variables provided by user in 'tree.list.field'.
+  # and trees variables provided by user in 'tree.field'.
   # Currently available:
   # - TLS variables and metrics (1): 'N.tls', 'N.hn' (2), 'N.hr' (2),
   #   'N.hn.cov' (2), 'N.hr.cov' (2), 'N.sh' (3), 'N.pam' (4); 'G.tls',
@@ -739,11 +768,11 @@
   #   'dharm.0'; 'h.0', 'hg.0', 'hgeom.0', 'hharm.0'.
   # Remarks. (1) For function case 'est' only 'N.tls' and 'G.tls' are computed.
   # (2) Only for circular fixed area and k-tree plot designs if scan approach is
-  # 'simple' and 'tree.list.ds' is not NULL. (3) Only for circular fixed area
+  # 'simple' and 'tree.ds' is not NULL. (3) Only for circular fixed area
   # and k-tree plot design if scan approach is 'simple'. (4) Only for
   # angle-count plot design if scan approach is 'simple'. (5) Only for function
   # case 'sim'. (6) Only if corresponding trees variable ('v.user' for 'V.user',
-  # 'w.user' for 'W.user') are provided by user in 'tree.list.field' argument.
+  # 'w.user' for 'W.user') are provided by user in 'tree.field' argument.
   .var.metr <- list(tls = NULL, field = NULL)
   .var.metr$tls <- c(sapply(c("N", "G", "V"), paste,
                             c("tls", names(.ds.meth), "sh", "pam"), sep = "."),
@@ -758,7 +787,8 @@
                      "max.z", "min.z", "var.z", "sd.z", "CV.z", "D.z",
                      "kurtosis.z", "skewness.z",
                      "perc_on_mean.z", "perc_on_mode.z", "p.a.2m.z",
-                     "p.b.mean.z", "p.b.mode.z", "p.b.2m.z",
+                     "p.b.mean.z", "p.b.mode.z", "p.b.2m.z", "CRR.z",
+                     "L2.z", "L3.z", "L4.z",
                      "weibull_c.z", "weibull_b.z",
 
                      # Rho coordinate
@@ -766,7 +796,8 @@
                      "max.rho", "min.rho", "var.rho", "sd.rho", "CV.rho", "D.rho",
                      "kurtosis.rho", "skewness.rho",
                      "perc_on_mean.rho", "perc_on_mode.rho",
-                     "p.b.mean.rho", "p.b.mode.rho",
+                     "p.b.mean.rho", "p.b.mode.rho", "CRR.rho",
+                     "L2.rho", "L3.rho", "L4.rho",
                      "weibull_c.rho", "weibull_b.rho",
 
                      # R coordinate
@@ -774,7 +805,8 @@
                      "max.r", "min.r", "var.r", "sd.r", "CV.r", "D.r",
                      "kurtosis.r", "skewness.r",
                      "perc_on_mean.r", "perc_on_mode.r",
-                     "p.b.mean.r", "p.b.mode.r",
+                     "p.b.mean.r", "p.b.mode.r", "CRR.r",
+                     "L2.r", "L3.r", "L4.r",
                      "weibull_c.r", "weibull_b.r")
 
   .var.metr$field <- c("N", "G", "V", names(.var.field.user),
@@ -860,14 +892,14 @@
   # Check argument 'var.metr' ----
 
   # Restrict available TLS variables and metrics according to 'function case',
-  # 'tree.list.ds', scan approach and plot design(s)
+  # 'tree.ds', scan approach and plot design(s)
   if (!"tls" %in% names(.funct[[funct]])) .var.metr$tls <- NULL
   else {
 
     if (funct %in% "est")
       .var.metr$tls <- .var.metr$tls[.var.metr$tls %in%
                                        paste(c("N", "G"), "tls", sep = ".")]
-    if (is.null(tree.list.ds))
+    if (is.null(tree.ds))
       .var.metr$tls <- .var.metr$tls[!.var.metr$tls %in%
                                        sapply(c("N", "G", "V"), paste,
                                               names(.ds.meth), sep = ".")]
@@ -891,16 +923,16 @@
   }
 
   # Restrict field variables according to 'function case' and trees variables
-  # provided by user in 'tree.list.field'
+  # provided by user in 'tree.field'
   if (!"field" %in% names(.funct[[funct]])) .var.metr$field <- NULL
   else {
 
-    if (!is.data.frame(tree.list.field) ||
-        any(!.var.field.user %in% colnames(tree.list.field)))
+    if (!is.data.frame(tree.field) ||
+        any(!.var.field.user %in% colnames(tree.field)))
       .var.metr$field <-
         .var.metr$field[!.var.metr$field %in%
                           names(.var.field.user)[!.var.field.user %in%
-                                                   colnames(tree.list.field)]]
+                                                   colnames(tree.field)]]
     .var.metr$field <- matrix(TRUE, nrow = length(plot.design),
                               ncol = length(.var.metr$field),
                               dimnames = list(plot.design, .var.metr$field))
@@ -1050,22 +1082,22 @@
   }
 
 
-  # Check 'tree.list.tls' argument ----
+  # Check 'tree.tls' argument ----
 
-  if (!"tls" %in% names(.funct[[funct]])) tree.list.tls <- NULL
+  if (!"tls" %in% names(.funct[[funct]])) tree.tls <- NULL
   else {
 
     # Define a logical value indicating if results will be computed by stratum
     # (only for function case 'metr' when 'stratum' column is included in
     # 'plot.parameters' argument) or if strata will be differentiated in charts
     # with different colours (only for function case 'est' when 'stratum' column
-    # is included in 'tree.list.tls' argument)
+    # is included in 'tree.tls' argument)
     .by.stratum.2 <- .by.stratum |
-      (funct %in% "est" & (is.data.frame(tree.list.tls) &
-                             "stratum" %in% colnames(tree.list.tls)))
+      (funct %in% "est" & (is.data.frame(tree.tls) &
+                             "stratum" %in% colnames(tree.tls)))
 
     # Define a logical matrix containing all possible mandatory columns in
-    # 'tree.list.tls' according to 'function case', '.by.stratum.2' and
+    # 'tree.tls' according to 'function case', '.by.stratum.2' and
     # 'var.metr'
     .col.mand <- c("id", "file", "tree", unlist(.scan.approach), "h.dist",
                    "dbh", "h",
@@ -1085,7 +1117,8 @@
                   "max.z", "min.z", "var.z", "sd.z", "CV.z", "D.z",
                   "kurtosis.z", "skewness.z",
                   "perc_on_mean.r", "perc_on_mode.z", "p.a.2m",
-                  "p.b.mean.z", "p.b.mode.z", "p.b.2m.z",
+                  "p.b.mean.z", "p.b.mode.z", "p.b.2m.z", "CRR.z",
+                  "L2.z", "L3.z", "L4.z",
                   "weibull_c.z", "weibull_b.z",
 
                   # Rho coordinate
@@ -1093,7 +1126,8 @@
                   "max.rho", "min.rho", "var.rho", "sd.rho", "CV.rho", "D.rho",
                   "kurtosis.rho", "skewness.rho",
                   "perc_on_mean.rho", "perc_on_mode.rho",
-                  "p.b.mean.rho", "p.b.mode.rho",
+                  "p.b.mean.rho", "p.b.mode.rho", "CRR.rho",
+                  "L2.rho", "L3.rho", "L4.rho",
                   "weibull_c.rho", "weibull_b.rho",
 
                   # R coordinate
@@ -1101,7 +1135,8 @@
                   "max.r", "min.r", "var.r", "sd.r", "CV.r", "D.r",
                   "kurtosis.r", "skewness.r",
                   "perc_on_mean.r", "perc_on_mode.r",
-                  "p.b.mean.r", "p.b.mode.r",
+                  "p.b.mean.r", "p.b.mode.r", "CRR.r",
+                  "L2.r", "L3.r", "L4.r",
                   "weibull_c.r", "weibull_b.r"),
 
               colnames(.col.mand) %in% "file"] <- TRUE
@@ -1114,23 +1149,23 @@
     .col.mand <- .col.mand[, apply(.col.mand, 2, any), drop = FALSE]
 
     # Define a character vector containing (if necessary) the class of all
-    # possible mandatory columns in 'tree.list.tls'
+    # possible mandatory columns in 'tree.tls'
     .col.class <- rep("numeric", ncol(.col.mand))
     names(.col.class) <- colnames(.col.mand)
     .col.class[names(.col.class) %in% c("stratum", "id", "file", "tree")] <- NA
     .col.class <- .col.class[!is.na(.col.class)]
 
-    # 'tree.list.tls' must be a data.frame with at least one row
-    tree.list.tls <- .check.class(x = tree.list.tls, x.class = "data.frame",
-                                  name = "tree.list.tls", n = Inf)
+    # 'tree.tls' must be a data.frame with at least one row
+    tree.tls <- .check.class(x = tree.tls, x.class = "data.frame",
+                                  name = "tree.tls", n = Inf)
 
     # Check mandatory columns existence, remove non necessary columns, check
     # mandatory columns classes and check all values are no-NA
-    tree.list.tls <- .check.col(x = tree.list.tls, x.mand = .col.mand,
-                                x.class = .col.class, name = "tree.list.tls")
+    tree.tls <- .check.col(x = tree.tls, x.mand = .col.mand,
+                                x.class = .col.class, name = "tree.tls")
 
     # Define code for plot IDs
-    .id <- unique(tree.list.tls[, "id", drop = FALSE])
+    .id <- unique(tree.tls[, "id", drop = FALSE])
     .id <- cbind(code = apply(.id, 1, .quot.past), .id)
 
     # Check strata
@@ -1140,19 +1175,19 @@
       # 'metr' when 'stratum' column is included in 'plot.parameters' argument)
       if (.by.stratum) {
 
-        .miss <- apply(unique(tree.list.tls[, "stratum", drop = FALSE]), 1,
+        .miss <- apply(unique(tree.tls[, "stratum", drop = FALSE]), 1,
                        .quot.past)
         .miss <- .miss[!.miss %in%
                          .stratum[.stratum[, "code"] %in% .miss, "code"]]
         if (length(.miss) > 0)
           stop("Stratum(strata) ", .quot.past(.miss, quot = ""), " in ",
-               "'tree.list.tls' argument is(are) missing in 'plot.parameters'",
+               "'tree.tls' argument is(are) missing in 'plot.parameters'",
                " argument.")
 
       }
 
       # Define code for unique pairs ('stratum', 'id')
-      .stratum.id <- unique(tree.list.tls[, c("stratum", "id"), drop = FALSE])
+      .stratum.id <- unique(tree.tls[, c("stratum", "id"), drop = FALSE])
       .stratum.id <- cbind(code = paste("(", apply(.stratum.id, 1, .quot.past),
                                         ")", sep = ""),
                            .stratum.id)
@@ -1161,23 +1196,23 @@
       .dupl <- unique(.stratum.id[duplicated(.stratum.id[, "id"]), "id"])
       if (length(.dupl) > 0)
         stop("Plot ID(s) ", .quot.past(.dupl), " has(have) several different ",
-             "strata associated in 'tree.list.tls' argument.")
+             "strata associated in 'tree.tls' argument.")
 
-      # Save code for pairs ('stratum', 'id'), and remove from 'tree.list.tls'
+      # Save code for pairs ('stratum', 'id'), and remove from 'tree.tls'
       .stratum.id <- .stratum.id[match(.id[, "id"], .stratum.id[, "id"]), ,
                                  drop = FALSE]
       .id <- cbind(.id, stratum.id.code = .stratum.id[, "code"],
                    stratum = .stratum.id[, "stratum"])
-      tree.list.tls <- tree.list.tls[, !colnames(tree.list.tls) %in% "stratum",
+      tree.tls <- tree.tls[, !colnames(tree.tls) %in% "stratum",
                                      drop = FALSE]
 
     }
 
     # Check TXT files
-    if ("file" %in% colnames(tree.list.tls)) {
+    if ("file" %in% colnames(tree.tls)) {
 
       # Define code for unique pairs ('id', 'file')
-      .id.file <- unique(tree.list.tls[, c("id", "file"), drop = FALSE])
+      .id.file <- unique(tree.tls[, c("id", "file"), drop = FALSE])
       .id.file <- cbind(code = paste("(", apply(.id.file, 1, .quot.past), ")",
                                      sep = ""),
                         .id.file)
@@ -1186,57 +1221,57 @@
       .dupl <- unique(.id.file[duplicated(.id.file[, "id"]), "id"])
       if (length(.dupl) > 0)
         stop("Plot ID(s) ", .quot.past(.dupl), " has(have) several different ",
-             "TXT files associated in 'tree.list.tls' argument.")
+             "TXT files associated in 'tree.tls' argument.")
 
       # Check each TXT file has an unique associated plot ID
       .dupl <- unique(.id.file[duplicated(.id.file[, "file"]), "file"])
       if (length(.dupl) > 0)
         stop("TXT file(s) ", .quot.past(.dupl), " has(have) several different ",
-             "plot IDs associated in 'tree.list.tls' argument.")
+             "plot IDs associated in 'tree.tls' argument.")
 
       # Check TXT files existence
       .miss <- .id.file[, "file"]
       .miss <- .miss[!file.exists(file.path(dir.data, .miss))]
       if (length(.miss) > 0)
-        stop("TXT file(s) ", .quot.past(.miss), " in 'tree.list.tls' argument ",
+        stop("TXT file(s) ", .quot.past(.miss), " in 'tree.tls' argument ",
              "does(do) not exists in the directory specified in 'dir.data' ",
              "argument.")
 
-      # Save code for pairs ('id', 'file'), and remove file from 'tree.list.tls'
+      # Save code for pairs ('id', 'file'), and remove file from 'tree.tls'
       .id.file <- .id.file[match(.id[, "id"], .id.file[, "id"]), , drop = FALSE]
       .id <- cbind(.id, id.file.code = .id.file[, "code"],
                    file = .id.file[, "file"])
-      tree.list.tls <- tree.list.tls[, !colnames(tree.list.tls) %in% "file",
+      tree.tls <- tree.tls[, !colnames(tree.tls) %in% "file",
                                      drop = FALSE]
 
     }
 
     # Define code for pairs ('id', 'tree') and check they are not duplicated
-    .id.tree <- tree.list.tls[, c("id", "tree"), drop = FALSE]
+    .id.tree <- tree.tls[, c("id", "tree"), drop = FALSE]
     .id.tree <- cbind(code = paste("(", apply(.id.tree, 1, .quot.past), ")",
                                    sep = ""),
                       .id.tree)
     .dupl <- unique(.id.tree[duplicated(.id.tree[, "code"]), "code"])
     if (length(.dupl) > 0)
-      stop("'tree.list.tls' argument has several different rows for the ",
+      stop("'tree.tls' argument has several different rows for the ",
            "pair(s) of plot ID and tree ", .quot.past(.dupl, quot = ""), ".")
 
     # Check 'dbh, 'h', 'n.pts', 'n.pts.red', 'n.pts.est' and/or
     # 'n.pts.red.est' are strictly positive
     .inval <- c("dbh", "h", paste("n.pts",
                                   c("", ".est", ".red", ".red.est"), sep = ""))
-    .inval <- colnames(tree.list.tls)[colnames(tree.list.tls) %in% .inval]
-    .inval <- .inval[!apply(tree.list.tls[, .inval, drop = FALSE] > 0, 2, all)]
+    .inval <- colnames(tree.tls)[colnames(tree.tls) %in% .inval]
+    .inval <- .inval[!apply(tree.tls[, .inval, drop = FALSE] > 0, 2, all)]
     if (length(.inval) > 0)
       stop("All values in column(s) ", .quot.past(.inval), " of ",
-           "'tree.list.tls' argument must be strictly positive.")
+           "'tree.tls' argument must be strictly positive.")
 
     # Check 'n.pts.red'/'n.pts.red.est' is greater or equal to
     # 'n.pts'/'n.pts.est'
     .inval <- t(sapply(paste("n.pts", c("", ".red"), sep = ""), paste,
                        c("", ".est"), sep = ""))
     .inval <- .inval[, apply(apply(.inval, 1:2, "%in%",
-                                   colnames(tree.list.tls)), 2, all),
+                                   colnames(tree.tls)), 2, all),
                      drop = FALSE]
     if (ncol(.inval) > 0) {
 
@@ -1244,11 +1279,11 @@
                                function(dat.par, dat) {
                                  any(dat[, dat.par[1]] < dat[, dat.par[2]])
                                },
-                               dat = tree.list.tls),
+                               dat = tree.tls),
                        drop = FALSE]
       if (ncol(.inval) > 0)
         stop(paste("All values in column(s) ", .quot.past(.inval[1, ]), " of ",
-                   "'tree.list.tls' argument must be greater or equal to the ",
+                   "'tree.tls' argument must be greater or equal to the ",
                    "corresponding ones in column(s) ", .quot.past(.inval[2, ]),
                    ". ", sep = ""))
 
@@ -1256,42 +1291,42 @@
 
     # Check 'h.dist' is positive
     .inval <- "h.dist"
-    .inval <- colnames(tree.list.tls)[colnames(tree.list.tls) %in% .inval]
-    .inval <- .inval[!apply(tree.list.tls[, .inval, drop = FALSE] >= 0, 2, all)]
+    .inval <- colnames(tree.tls)[colnames(tree.tls) %in% .inval]
+    .inval <- .inval[!apply(tree.tls[, .inval, drop = FALSE] >= 0, 2, all)]
     if (length(.inval) > 0)
       stop("All values in column(s) ", .quot.past(.inval), " of ",
-           "'tree.list.tls' argument must be positive.")
+           "'tree.tls' argument must be positive.")
 
     # Check 'phi.left' and 'phi.right' belong to the interval [0, 2 * pi]
     .inval <- unlist(.scan.approach)
-    .inval <- colnames(tree.list.tls)[colnames(tree.list.tls) %in% .inval]
-    .inval <- .inval[!apply(tree.list.tls[, .inval, drop = FALSE] >= 0 &
-                              tree.list.tls[, .inval, drop = FALSE] <= 2 * pi,
+    .inval <- colnames(tree.tls)[colnames(tree.tls) %in% .inval]
+    .inval <- .inval[!apply(tree.tls[, .inval, drop = FALSE] >= 0 &
+                              tree.tls[, .inval, drop = FALSE] <= 2 * pi,
                             2, all)]
     if (length(.inval) > 0)
       stop("All values in column(s) ", .quot.past(.inval), " of ",
-           "'tree.list.tls' argument must be in the interval [0, 2 * pi].")
+           "'tree.tls' argument must be in the interval [0, 2 * pi].")
 
     # Check 'partial.occlusion' is 0 or 1
     .inval <- "partial.occlusion"
-    .inval <- colnames(tree.list.tls)[colnames(tree.list.tls) %in% .inval]
-    .inval <- .inval[!apply(tree.list.tls[, .inval, drop = FALSE] == 0 |
-                              tree.list.tls[, .inval, drop = FALSE] == 1,
+    .inval <- colnames(tree.tls)[colnames(tree.tls) %in% .inval]
+    .inval <- .inval[!apply(tree.tls[, .inval, drop = FALSE] == 0 |
+                              tree.tls[, .inval, drop = FALSE] == 1,
                             2, all)]
     if (length(.inval) > 0)
       stop("All values in column(s) ", .quot.past(.inval), " of ",
-           "'tree.list.tls' argument must be 0 or 1.")
+           "'tree.tls' argument must be 0 or 1.")
 
   }
 
 
-  # Check 'tree.list.ds' argument ----
+  # Check 'tree.ds' argument ----
 
-  if (!"tls" %in% names(.funct[[funct]])) tree.list.ds <- NULL
-  else if (!is.null(tree.list.ds)) {
+  if (!"tls" %in% names(.funct[[funct]])) tree.ds <- NULL
+  else if (!is.null(tree.ds)) {
 
     # Define a logical matrix containing all possible mandatory columns in
-    # 'tree.list.ds' according to 'var.metr'
+    # 'tree.ds' according to 'var.metr'
     .col.mand <- c("id", "tree", .ds.meth)
     .col.mand <- matrix(FALSE, nrow = length(var.metr$tls),
                         ncol = length(.col.mand),
@@ -1303,98 +1338,98 @@
     .col.mand <- .col.mand[, apply(.col.mand, 2, any), drop = FALSE]
 
     # Define a character vector containing (if necessary) the class of all
-    # possible mandatory columns in 'tree.list.ds'
+    # possible mandatory columns in 'tree.ds'
     .col.class <- rep("numeric", ncol(.col.mand))
     names(.col.class) <- colnames(.col.mand)
     .col.class[names(.col.class) %in% c("id", "tree")] <- NA
     .col.class <- .col.class[!is.na(.col.class)]
 
-    # If there are no mandatory columns, 'tree.list.ds' is forced to be NULL;
+    # If there are no mandatory columns, 'tree.ds' is forced to be NULL;
     # otherwise, checking process is continued
-    if (ncol(.col.mand) == 0) tree.list.ds <- NULL
+    if (ncol(.col.mand) == 0) tree.ds <- NULL
     else {
 
-      # 'tree.list.ds' must be a list with at least an element named 'tree'
-      tree.list.ds <- .check.class(x = tree.list.ds, x.class = "list",
-                                   name = "tree.list.ds", n = Inf)
-      .miss <- c("tree")[!c("tree") %in% names(tree.list.ds)]
+      # 'tree.ds' must be a list with at least an element named 'tree'
+      tree.ds <- .check.class(x = tree.ds, x.class = "list",
+                                   name = "tree.ds", n = Inf)
+      .miss <- c("tree")[!c("tree") %in% names(tree.ds)]
       if (length(.miss) > 0)
         stop("Element(s) named ", .quot.past(.miss), " is(are) missing in ",
-             "'tree.list.ds' argument.")
-      tree.list.ds <- tree.list.ds$tree
+             "'tree.ds' argument.")
+      tree.ds <- tree.ds$tree
 
-      # 'tree.list.ds$tree' must be a data.frame with at least one row
-      tree.list.ds <- .check.class(x = tree.list.ds, x.class = "data.frame",
-                                   name = "tree.list.ds$tree", n = Inf)
+      # 'tree.ds$tree' must be a data.frame with at least one row
+      tree.ds <- .check.class(x = tree.ds, x.class = "data.frame",
+                                   name = "tree.ds$tree", n = Inf)
 
       # Check mandatory columns existence, remove non necessary columns, check
       # mandatory columns classes and check all values are no-NA
-      tree.list.ds <- .check.col(x = tree.list.ds, x.mand = .col.mand,
+      tree.ds <- .check.col(x = tree.ds, x.mand = .col.mand,
                                  x.class = .col.class,
-                                 name = "tree.list.ds$tree")
+                                 name = "tree.ds$tree")
 
-      # Discard rows corresponding to plot IDs not included in 'tree.list.tls'
-      .miss <- unique(tree.list.ds[!tree.list.ds[, "id"] %in% .id[, "id"],
+      # Discard rows corresponding to plot IDs not included in 'tree.tls'
+      .miss <- unique(tree.ds[!tree.ds[, "id"] %in% .id[, "id"],
                                    "id"])
       if (length(.miss) > 0) {
 
-        warning("Row(s) of 'tree.list.ds$tree' argument associated to plot ",
+        warning("Row(s) of 'tree.ds$tree' argument associated to plot ",
                 "ID(s) ", .quot.past(.miss, quot = ""), " was(were) discarded ",
                 "because this(these) plot(s) is(are) missing in ",
-                "'tree.list.tls' argument.", immediate. = TRUE)
-        tree.list.ds <- tree.list.ds[!tree.list.ds[, "id"] %in% .miss, ,
+                "'tree.tls' argument.", immediate. = TRUE)
+        tree.ds <- tree.ds[!tree.ds[, "id"] %in% .miss, ,
                                      drop = FALSE]
 
       }
 
-      # Check plot IDs included in 'tree.list.tls' are no missing
+      # Check plot IDs included in 'tree.tls' are no missing
       .miss <- .id[, "id"]
-      .miss <- .miss[!.miss %in% unique(tree.list.ds[, "id"])]
+      .miss <- .miss[!.miss %in% unique(tree.ds[, "id"])]
       if (length(.miss) > 0)
-        stop("Plot ID(s) ", .quot.past(.miss), " in 'tree.list.tls' ",
-             "argument is(are) missing in 'tree.list.ds$tree' argument.")
+        stop("Plot ID(s) ", .quot.past(.miss), " in 'tree.tls' ",
+             "argument is(are) missing in 'tree.ds$tree' argument.")
 
       # Check there are no duplicated pairs ('id', 'tree')
-      .dupl <- tree.list.ds[, c("id", "tree"), drop = FALSE]
+      .dupl <- tree.ds[, c("id", "tree"), drop = FALSE]
       .dupl <- paste("(", apply(.dupl, 1, .quot.past), ")", sep = "")
       .dupl <- unique(.dupl[duplicated(.dupl)])
       if (length(.dupl) > 0)
-        stop("'tree.list.ds$tree' argument has several different rows for the ",
+        stop("'tree.ds$tree' argument has several different rows for the ",
              "pair(s) of plot ID and tree ", .quot.past(.dupl, quot = ""), ".")
 
-      # Check pairs ('id', 'tree') in 'tree.list.tls' are included in
-      # 'tree.list.ds'
-      .miss <- tree.list.ds[, c("id", "tree"), drop = FALSE]
+      # Check pairs ('id', 'tree') in 'tree.tls' are included in
+      # 'tree.ds'
+      .miss <- tree.ds[, c("id", "tree"), drop = FALSE]
       .miss <- paste("(", apply(.miss, 1, .quot.past), ")", sep = "")
       .miss <- .id.tree[, "code"][!.id.tree[, "code"] %in% .miss]
       if (length(.miss) > 0)
         stop("Pair(s) of plot ID and tree ", .quot.past(.miss, quot = ""),
-             " in 'tree.list.tls' argument is(are) missing in ",
-             "'tree.list.ds$tree' argument.")
+             " in 'tree.tls' argument is(are) missing in ",
+             "'tree.ds$tree' argument.")
 
       # Check 'P.hn', 'P.hr', 'P.hn.cov' and 'P.hr.cov' belong to the interval
       # [0, 1]
       .inval <- .ds.meth
-      .inval <- colnames(tree.list.ds)[colnames(tree.list.ds) %in% .inval]
-      .inval <- .inval[!apply(tree.list.ds[, .inval, drop = FALSE] >= 0 &
-                                tree.list.ds[, .inval, drop = FALSE] <= 1,
+      .inval <- colnames(tree.ds)[colnames(tree.ds) %in% .inval]
+      .inval <- .inval[!apply(tree.ds[, .inval, drop = FALSE] >= 0 &
+                                tree.ds[, .inval, drop = FALSE] <= 1,
                               2, all)]
       if (length(.inval) > 0)
         stop("All values in column(s) ", .quot.past(.inval), " of ",
-             "'tree.list.ds$tree' argument must be in the interval [0, 1].")
+             "'tree.ds$tree' argument must be in the interval [0, 1].")
 
     }
 
   }
 
 
-  # Check 'tree.list.field' argument ----
+  # Check 'tree.field' argument ----
 
-  if (!"field" %in% names(.funct[[funct]])) tree.list.field <- NULL
+  if (!"field" %in% names(.funct[[funct]])) tree.field <- NULL
   else {
 
     # Define a logical matrix containing all possible mandatory columns in
-    # 'tree.list.field' according to 'var.metr'
+    # 'tree.field' according to 'var.metr'
     .col.mand <- c("id", "tree", "h.dist", "dbh", "h", unlist(.var.field.user))
     .col.mand <- matrix(FALSE, nrow = length(var.metr$field),
                         ncol = length(.col.mand),
@@ -1407,68 +1442,68 @@
     .col.mand <- .col.mand[, apply(.col.mand, 2, any), drop = FALSE]
 
     # Define a character vector containing (if necessary) the class of all
-    # possible mandatory columns in 'tree.list.field'
+    # possible mandatory columns in 'tree.field'
     .col.class <- rep("numeric", ncol(.col.mand))
     names(.col.class) <- colnames(.col.mand)
     .col.class[names(.col.class) %in% c("id", "tree")] <- NA
     .col.class <- .col.class[!is.na(.col.class)]
 
-    # 'tree.list.field' must be a data.frame with at least one row
-    tree.list.field <- .check.class(x = tree.list.field, x.class = "data.frame",
-                                    name = "tree.list.field", n = Inf)
+    # 'tree.field' must be a data.frame with at least one row
+    tree.field <- .check.class(x = tree.field, x.class = "data.frame",
+                                    name = "tree.field", n = Inf)
 
     # Check mandatory columns existence, remove non necessary columns, check
     # mandatory columns classes and check all values are no-NA
-    tree.list.field <- .check.col(x = tree.list.field, x.mand = .col.mand,
+    tree.field <- .check.col(x = tree.field, x.mand = .col.mand,
                                   x.class = .col.class,
-                                  name = "tree.list.field")
+                                  name = "tree.field")
 
-    # Discard rows corresponding to plot IDs not included in 'tree.list.tls'
-    .miss <- unique(tree.list.field[!tree.list.field[, "id"] %in% .id[, "id"],
+    # Discard rows corresponding to plot IDs not included in 'tree.tls'
+    .miss <- unique(tree.field[!tree.field[, "id"] %in% .id[, "id"],
                                     "id"])
     if (length(.miss) > 0) {
 
-      warning("Row(s) of 'tree.list.field' argument associated to plot ID(s) ",
+      warning("Row(s) of 'tree.field' argument associated to plot ID(s) ",
               .quot.past(.miss, quot = ""), " was(were) discarded because ",
-              "this(these) plot(s) is(are) missing in 'tree.list.tls' ",
+              "this(these) plot(s) is(are) missing in 'tree.tls' ",
               "argument.", immediate. = TRUE)
-      tree.list.field <- tree.list.field[!tree.list.field[, "id"] %in% .miss, ,
+      tree.field <- tree.field[!tree.field[, "id"] %in% .miss, ,
                                          drop = FALSE]
 
     }
 
-    # Check plot IDs included in 'tree.list.tls' are no missing
+    # Check plot IDs included in 'tree.tls' are no missing
     .miss <- .id[, "id"]
-    .miss <- .miss[!.miss %in% unique(tree.list.field[, "id"])]
+    .miss <- .miss[!.miss %in% unique(tree.field[, "id"])]
     if (length(.miss) > 0)
-      stop("Plot ID(s) ", .quot.past(.miss), " in 'tree.list.tls' ",
-           "argument is(are) missing in 'tree.list.field' argument.")
+      stop("Plot ID(s) ", .quot.past(.miss), " in 'tree.tls' ",
+           "argument is(are) missing in 'tree.field' argument.")
 
     # Check there are no duplicated pairs ('id', 'tree')
-    .dupl <- tree.list.field[, c("id", "tree"), drop = FALSE]
+    .dupl <- tree.field[, c("id", "tree"), drop = FALSE]
     .dupl <- paste("(", apply(.dupl, 1, .quot.past), ")", sep = "")
     .dupl <- unique(.dupl[duplicated(.dupl)])
     if (length(.dupl) > 0)
-      stop("'tree.list.field' argument has several different rows for the ",
+      stop("'tree.field' argument has several different rows for the ",
            "pair(s) of plot ID and tree ", .quot.past(.dupl, quot = ""), ".")
 
     # Check 'dbh, 'h', 'v.user' and/or 'w.user' are strictly positive
     .inval <- c("dbh", "h", unlist(.var.field.user))
-    .inval <- colnames(tree.list.field)[colnames(tree.list.field) %in% .inval]
-    .inval <- .inval[!apply(tree.list.field[, .inval, drop = FALSE] > 0, 2,
+    .inval <- colnames(tree.field)[colnames(tree.field) %in% .inval]
+    .inval <- .inval[!apply(tree.field[, .inval, drop = FALSE] > 0, 2,
                             all)]
     if (length(.inval) > 0)
       stop("All values in column(s) ", .quot.past(.inval), " of ",
-           "'tree.list.field' argument must be strictly positive.")
+           "'tree.field' argument must be strictly positive.")
 
     # Check 'h.dist' is positive
     .inval <- "h.dist"
-    .inval <- colnames(tree.list.field)[colnames(tree.list.field) %in% .inval]
-    .inval <- .inval[!apply(tree.list.field[, .inval, drop = FALSE] >= 0, 2,
+    .inval <- colnames(tree.field)[colnames(tree.field) %in% .inval]
+    .inval <- .inval[!apply(tree.field[, .inval, drop = FALSE] >= 0, 2,
                             all)]
     if (length(.inval) > 0)
       stop("All values in column(s) ", .quot.past(.inval), " of ",
-           "'tree.list.field' argument must be positive.")
+           "'tree.field' argument must be positive.")
 
   }
 
@@ -1498,7 +1533,7 @@
   # 'max.dist'
   for (.i in names(.funct[[funct]])) {
 
-    .tree <- get(paste("tree.list", .i, sep ="."))
+    .tree <- get(paste("tree", .i, sep ="."))
     .inval <- which(.tree[, "dbh"] < dbh.min | .tree[, "h"] < h.min |
                       .tree[, "h.dist"] > max.dist)
     if (length(.inval) > 0) {
@@ -1569,7 +1604,7 @@
       # Create trees' database (TLS and field data) ----
 
       # Select data corresponding to the plot from the complete trees' database
-      .tree <- get(paste("tree.list", .j, sep ="."))
+      .tree <- get(paste("tree", .j, sep ="."))
       .tree <- .tree[.tree[, "id"] %in% .id[.i, "id"], , drop = FALSE]
       rownames(.tree) <- NULL
 
@@ -1610,9 +1645,9 @@
       }
 
       # Add detection probability from distance sampling database (TLS data)
-      if (.j == "tls" & !is.null(tree.list.ds)) {
+      if (.j == "tls" & !is.null(tree.ds)) {
 
-        .ds <- tree.list.ds[tree.list.ds[, "id"] %in% .id[.i, "id"], ,
+        .ds <- tree.ds[tree.ds[, "id"] %in% .id[.i, "id"], ,
                             drop = FALSE]
         .tree <- cbind(.tree, .ds[match(.tree[, "tree"], .ds[, "tree"]),
                                   colnames(.ds) %in% .ds.meth, drop = FALSE])
@@ -1837,7 +1872,8 @@
                         "max.z", "min.z", "var.z", "sd.z", "CV.z", "D.z",
                         "kurtosis.z", "skewness.z",
                         "perc_on_mean.z", "perc_on_mode.z", "p.a.2m.z",
-                        "p.b.mean.z", "p.b.mode.z", "p.b.2m.z",
+                        "p.b.mean.z", "p.b.mode.z", "p.b.2m.z", "CRR.z",
+                        "L2.z", "L3.z", "L4.z",
                         "weibull_c.z", "weibull_b.z",
 
                         # Compute descriptive statistics of rho coordinate
@@ -1845,7 +1881,8 @@
                         "max.rho", "min.rho", "var.rho", "sd.rho", "CV.rho", "D.rho",
                         "kurtosis.rho", "skewness.rho",
                         "perc_on_mean.rho", "perc_on_mode.rho",
-                        "p.b.mean.rho", "p.b.mode.rho",
+                        "p.b.mean.rho", "p.b.mode.rho", "CRR.rho",
+                        "L2.rho", "L3.rho", "L4.rho",
                         "weibull_c.rho", "weibull_b.rho",
 
                         # Compute descriptive statistics of r coordinate
@@ -1853,7 +1890,8 @@
                         "max.r", "min.r", "var.r", "sd.r", "CV.r", "D.r",
                         "kurtosis.r", "skewness.r",
                         "perc_on_mean.r", "perc_on_mode.r",
-                        "p.b.mean.r", "p.b.mode.r",
+                        "p.b.mean.r", "p.b.mode.r", "CRR.r",
+                        "L2.r", "L3.r", "L4.r",
                         "weibull_c.r", "weibull_b.r")
 
         .col.names <-

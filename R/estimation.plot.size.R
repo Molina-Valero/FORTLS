@@ -1,5 +1,5 @@
 
-estimation.plot.size <- function(tree.list.tls,
+estimation.plot.size <- function(tree.tls,
                                  plot.parameters = data.frame(radius.max = 25,
                                                               k.max = 50,
                                                               BAF.max = 4),
@@ -8,20 +8,20 @@ estimation.plot.size <- function(tree.list.tls,
 
 
   # Define stratum as 1 (by default) when tree.list$stratum is missed
-  if(is.null(tree.list.tls$stratum) | all.plot.designs)
-    tree.list.tls$stratum <- 1
+  if(is.null(tree.tls$stratum) | all.plot.designs)
+    tree.tls$stratum <- 1
 
-  if(is.factor(tree.list.tls$stratum))
-    tree.list.tls$stratum <- as.numeric(tree.list.tls$stratum)
+  if(is.factor(tree.tls$stratum))
+    tree.tls$stratum <- as.numeric(tree.tls$stratum)
 
-  if(is.character(tree.list.tls$stratum))
-    tree.list.tls$stratum <- as.numeric(as.factor(tree.list.tls$stratum))
+  if(is.character(tree.tls$stratum))
+    tree.tls$stratum <- as.numeric(as.factor(tree.tls$stratum))
 
 
 
   # Call internal function
-  .est <- .sim.calc(funct = "est", tree.list.tls = tree.list.tls,
-                    tree.list.ds = NULL, tree.list.field = NULL,
+  .est <- .sim.calc(funct = "est", tree.tls = tree.tls,
+                    tree.ds = NULL, tree.field = NULL,
                     plot.design = c("fixed.area", "k.tree", "angle.count"),
                     plot.parameters = plot.parameters, scan.approach = "single",
                     var.metr = list(tls = c("N.tls", "G.tls")), v.calc = "parab",

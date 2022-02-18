@@ -1,6 +1,6 @@
 
 tree.detection.single.scan <- function(data, dbh.min = 7.5, dbh.max = 200, h.min = 1.3,
-                                       ncr.threshold = 0.1, tls.resolution = list(), breaks=c(1.0, 1.3, 1.6), plot.attributes = NULL,
+                                       ncr.threshold = 0.1, tls.resolution = NULL, breaks=c(1.0, 1.3, 1.6), plot.attributes = NULL,
                                        save.result = TRUE, dir.result = NULL){
 
   # Obtaining working directory for saving files
@@ -15,6 +15,10 @@ tree.detection.single.scan <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
 
   # Arguments of the TLS precision
   # If resolution is defined by points distance at a certain distance from TLS (mm/m):
+
+  if(is.null(tls.resolution))
+    stop("The argument tls.resolution must be defined")
+
   .point.dist <- tls.resolution$point.dist / 1000
   .tls.dist <- tls.resolution$tls.dist
 
@@ -313,19 +317,24 @@ tree.detection.single.scan <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
       .center.r <- sqrt(.dat$sec[1] ^ 2 + .center.rho ^ 2)
       .center.theta <- atan2(.dat$sec[1], .center.rho)
 
-      # Radius value as the mean distance
-      .radio <- mean(raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE))
-
 
       # Distances between points and center
       .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)
 
+      # Radius value as the mean distance
+      # .dat <- .dat[order(.dat$dist, decreasing = FALSE), , drop = FALSE]
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25)], na.rm = TRUE)
+
+
+      # Coefficient of variation for distances among cluster points and the estimated center
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25)], na.rm = TRUE) / .radio
+
+      if(.cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25)]) < 2) {next}
 
       # Center behind tree surface
       if(stats::quantile(.dat$rho, prob = 0.05) > .center.r) {next}
 
       # At least 95 % of distances should be greater than .radio / 2
-      .dat <- .dat[order(.dat$dist, decreasing = FALSE), , drop = FALSE]
       if(stats::quantile(.dat$dist, prob = 0.05) < (.radio / 2)) {next}
 
 
@@ -379,15 +388,13 @@ tree.detection.single.scan <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
       }
 
 
-      # Coefficient of variation for distances among cluster points and the estimated center
-      .cv <- stats::sd(raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)) / .radio
-
-      if(.cv > 0.1){next}
-
       # Zhang et al., (2019)
       .n.w.ratio <- stats::sd(.dat$z) / sqrt(stats::sd(.dat$x) ^ 2 + stats::sd(.dat$y) ^ 2)
 
       if(.n.w.ratio > 1 | is.nan(.n.w.ratio)){next}
+
+      if(nrow(.dat) < 2){next}
+
 
       # Results
       .salida <- data.frame(cluster = .dat$cluster[1],
@@ -413,7 +420,7 @@ tree.detection.single.scan <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
 
     # Arch of circumference or partial arch of circumference?
     .filter$tree <- ifelse(.filter$arc.circ == 1, 1,
-                           ifelse(.filter$arc.circ == 0 & .filter$occlusion > 0.995 & .filter$occlusion.sig < 0.05, 1, 0))
+                           ifelse(.filter$arc.circ == 0 & .filter$occlusion > 0.975, 1, 0))
     .filter <- .filter[which(.filter$tree == 1), , drop = FALSE]
 
     # Dbh maximum and minimum
@@ -664,7 +671,7 @@ tree.detection.single.scan <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
   if(isTRUE(save.result)){
 
     utils::write.csv(.tree,
-                     file = file.path(dir.result, "tree.list.tls.csv"),
+                     file = file.path(dir.result, "tree.tls.csv"),
                      row.names = FALSE)
   }
 
