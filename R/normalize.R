@@ -192,6 +192,8 @@ normalize <- function(las,
   # This is based on the principle that closer objects (with the same size and shape)
   # have more probability to recieve points
 
+  set.seed(12345)
+
   if(scan.approach == "single"){
 
     .data$prob <- (.data$r / max(.data$r)) ^ 2

@@ -73,21 +73,33 @@ correlations <- function(simulations,
     # Points metrics
     # Z coordinate
     "mean.z", "mean.q.z", "mean.g.z", "mean.h.z", "median.z", "mode.z",
-    "max.z", "min.z", "sd.z", "var.z",
-    "kurtosis.z", "skewness.z", "perc_on_mode.z",
-    "perc_on_mean.z", "weibull_c.z", "weibull_b.z",
+    "max.z", "min.z", "var.z", "sd.z", "CV.z", "D.z",
+    "kurtosis.z", "skewness.z",
+    "p.a.mean.z", "p.a.mode.z", "p.a.2m",
+    "p.b.mean.z", "p.b.mode.z", "p.b.2m.z", "CRR.z",
+    "L2.z", "L3.z", "L4.z",
+    "median.a.d.z", "mode.a.d.z",
+    "weibull_c.z", "weibull_b.z",
 
     # Rho coordinate
     "mean.rho", "mean.q.rho", "mean.g.rho", "mean.h.rho", "median.rho", "mode.rho",
-    "max.rho", "min.rho", "sd.rho", "var.rho",
-    "kurtosis.rho", "skewness.rho", "perc_on_mode.rho",
-    "perc_on_mean.rho", "weibull_c.rho", "weibull_b.rho",
+    "max.rho", "min.rho", "var.rho", "sd.rho", "CV.rho", "D.rho",
+    "kurtosis.rho", "skewness.rho",
+    "p.a.mean.rho", "p.a.mode.rho",
+    "p.b.mean.rho", "p.b.mode.rho", "CRR.rho",
+    "L2.rho", "L3.rho", "L4.rho",
+    "median.a.d.rho", "mode.a.d.rho",
+    "weibull_c.rho", "weibull_b.rho",
 
     # R coordinate
     "mean.r", "mean.q.r", "mean.g.r", "mean.h.r", "median.r", "mode.r",
-    "max.r", "min.r", "sd.r", "var.r",
-    "kurtosis.r", "skewness.r", "perc_on_mode.r",
-    "perc_on_mean.r", "weibull_c.r", "weibull_b.r")
+    "max.r", "min.r", "var.r", "sd.r", "CV.r", "D.r",
+    "kurtosis.r", "skewness.r",
+    "p.a.mean.r", "p.a.mode.r",
+    "p.b.mean.r", "p.b.mode.r", "CRR.r",
+    "L2.r", "L3.r", "L4.r",
+    "median.a.d.r", "mode.a.d.r",
+    "weibull_c.r", "weibull_b.r")
 
   # Define a character vector containing the available correlation measurements
   .cor.method <- c("pearson", "spearman")
