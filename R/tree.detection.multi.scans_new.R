@@ -1,7 +1,7 @@
 
 tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h.min = 1.3,
-                                       ncr.threshold = 0.1, tls.precision = NULL, breaks=c(1.0, 1.3, 1.6), plot.attributes = NULL,
-                                       save.result = TRUE, dir.result = NULL){
+                                           ncr.threshold = 0.1, tls.precision = NULL, breaks=c(1.0, 1.3, 1.6), plot.attributes = NULL,
+                                           save.result = TRUE, dir.result = NULL){
 
   # Obtaining working directory for saving files
   if(is.null(dir.result))
@@ -17,20 +17,28 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h
 
   # Detection of stem part without shrub vegetation and crown
 
-  # hist(data$z)
-  # stem <- data[data$prob.selec == 1, ]
-  # stem <- stem[stem$z > 0 & stem$z < 6, ]
-  # stem <- VoxR::vox(stem[, c("x", "y", "z")], res = 0.03)
-  # stem <- VoxR::project_voxels(stem)
+  # hist(stem$z)
+  stem <- data[data$prob.selec == 1, ]
+  stem <- stem[stem$z > 2 & stem$z < 6, ]
+  if(is.null(tls.precision)){
+  stem <- VoxR::vox(stem[, c("x", "y", "z")], res = 0.03)} else {
+    stem <- VoxR::vox(stem[, c("x", "y", "z")], res = tls.precision)}
+  stem <- VoxR::project_voxels(stem)
   # plot(stem$x, stem$y, col = "grey", asp = 1, pch = 19, cex = 0.5)
-  # stem <- stem[stem$npts > mean(stem$npts), ]
-  # points(stem$x, stem$y, pch = 19, cex = 0.5)
-  #
-  # stem <- data[plyr::round_any(data$x, 0.03) == plyr::round_any(stem$x, 0.03) &
-  #              plyr::round_any(data$y, 0.03) == plyr::round_any(stem$y, 0.03), ]
-  #
-  # stem <- data[data$z > 1.3 & data$z < 2, ]
-  # points(stem$x, stem$y, pch = 19, cex = 0.5, col = "red")
+  stem <- stem[stem$npts > mean(stem$npts), ]
+  # points(stem$x, stem$y, pch = 19, cex = 0.5, col = "black")
+
+  buf <- sp::SpatialPoints(cbind(stem$x,stem$y))
+  buf <- raster::buffer(buf, width = 25000, dissolve = TRUE)
+  # plot(buf, col = "red")
+
+  stem <- data[data$prob.selec == 1, ]
+  stem <- sp::SpatialPointsDataFrame(coords = cbind(stem$x,stem$y), data = stem)
+  stem <- raster::intersect(stem, buf)
+
+  stem <- stem@data
+
+  rm(buf)
 
 
   # .ncr.threshold <- .ncr.threshold.double(data)
@@ -49,7 +57,7 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h
 
     message("Computing section: ", cuts, " m")
 
-    .cut <- data[which(data$z > (cuts-0.15) & data$z < (cuts+0.15)), , drop = FALSE]
+    .cut <- stem[which(stem$z > (cuts-0.1) & stem$z < (cuts+0.1)), , drop = FALSE]
 
     .cut <- .ncr.remove.slice.double(.cut)
 
@@ -60,7 +68,7 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h
 
 
     # Restrict to slice corresponding to cuts m +/- 5 cm
-    .cut <- .cut[which(.cut$z > (cuts-0.1) & .cut$z < (cuts+0.1)), , drop = FALSE]
+    .cut <- .cut[which(.cut$z > (cuts-0.05) & .cut$z < (cuts+0.05)), , drop = FALSE]
 
     # Dbscan parameters
     if(is.null(tls.precision)){.eps <- .dbh.min} else {.eps <- tls.precision}
