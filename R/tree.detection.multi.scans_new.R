@@ -1,5 +1,5 @@
 
-tree.detection.multi.scans <- function(data, dbh.min = 7.5, dbh.max = 200, h.min = 1.3,
+tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h.min = 1.3,
                                        ncr.threshold = 0.1, tls.precision = NULL, breaks=c(1.0, 1.3, 1.6), plot.attributes = NULL,
                                        save.result = TRUE, dir.result = NULL){
 
@@ -14,7 +14,24 @@ tree.detection.multi.scans <- function(data, dbh.min = 7.5, dbh.max = 200, h.min
   .dbh.max <- dbh.max / 100
 
 
-  # Generation of homogenized point cloud
+
+  # Detection of stem part without shrub vegetation and crown
+
+  # hist(data$z)
+  # stem <- data[data$prob.selec == 1, ]
+  # stem <- stem[stem$z > 0 & stem$z < 6, ]
+  # stem <- VoxR::vox(stem[, c("x", "y", "z")], res = 0.03)
+  # stem <- VoxR::project_voxels(stem)
+  # plot(stem$x, stem$y, col = "grey", asp = 1, pch = 19, cex = 0.5)
+  # stem <- stem[stem$npts > mean(stem$npts), ]
+  # points(stem$x, stem$y, pch = 19, cex = 0.5)
+  #
+  # stem <- data[plyr::round_any(data$x, 0.03) == plyr::round_any(stem$x, 0.03) &
+  #              plyr::round_any(data$y, 0.03) == plyr::round_any(stem$y, 0.03), ]
+  #
+  # stem <- data[data$z > 1.3 & data$z < 2, ]
+  # points(stem$x, stem$y, pch = 19, cex = 0.5, col = "red")
+
 
   # .ncr.threshold <- .ncr.threshold.double(data)
 
