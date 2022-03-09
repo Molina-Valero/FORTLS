@@ -16,10 +16,37 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h
 
 
   # Detection of stem part without shrub vegetation and crown
-
-  # hist(stem$z)
   stem <- data[data$prob.selec == 1, ]
-  stem <- stem[stem$z > 2 & stem$z < 6, ]
+  # k <- hist(stem$z, breaks = "FD")
+  # hist(stem$z, ylim = c(-1000000,1000000))
+  # hist(stem$z, freq = F)
+  # lines(density(stem$z),lwd=2)
+  # lines(density(stem$z,bw=bw.ucv(stem$z)),col=2,lwd=2)
+  # lines(density(stem$z,bw=bw.SJ(stem$z)),col=4,lwd=2)
+  # k <- density(stem$z)
+  #
+  # den <- data.frame(x = k$x, y = k$y)
+  # den <- den[den$y > quantile(den$y, probs = 0.5), ]
+  #
+  # den$dev1 <- c(diff(den$y), 0)
+  # den$dev2 <- c(diff(den$dev1), 0)
+  #
+  # plot(den$x, den$y, ylim = c(-0.3,0.3))
+  # lines(den$x, den$dev1 * 10, col = 2)
+  # lines(den$x, den$dev2 * 10, col = 3)
+
+  # den$dev1 <- abs(den$dev1)
+  # den <- den[den$dev1 < quantile(den$dev1, probs = 0.5), ]
+  # points(den$x, den$dev1, col = "blue")
+
+
+
+  den <- .getStem(data)
+
+  stem <- stem[stem$z > min(den$x) & stem$z < max(den$x) + den[den$x == max(den$x), ]$diff, ]
+
+  rm(den)
+
   if(is.null(tls.precision)){
   stem <- VoxR::vox(stem[, c("x", "y", "z")], res = 0.03)} else {
     stem <- VoxR::vox(stem[, c("x", "y", "z")], res = tls.precision)}
@@ -37,6 +64,7 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h
   stem <- raster::intersect(stem, buf)
 
   stem <- stem@data
+
 
   rm(buf)
 

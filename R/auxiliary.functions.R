@@ -1,4 +1,52 @@
 
+
+# Select part of point cloud free of low vegetation and crown
+
+.getStem <- function(data){
+
+  k <- density(data$z)
+
+  den <- data.frame(x = k$x, y = k$y)
+  n.ini <- sum(den$y)
+
+  n <- sum(den[den$x < den[den$y == max(den$y), ]$x, ]$y)
+  if(n < n.ini / 2){
+    den <- den[den$x > den[den$y == max(den$y), ]$x, ]
+    den <- den[den$y > quantile(den$y, probs = 0.25), ]} else {
+      den <- den[den$x < den[den$y == max(den$y), ]$x, ]}
+
+
+  den$dev1 <- c(diff(den$y), 0)
+  # den$dev2 <- c(diff(den$dev1), 0)
+
+  plot(den$x, den$y, ylim = c(-0.3,0.3))
+  lines(den$x, den$dev1 * 10, col = 2)
+
+
+  # lines(den$x, den$dev2 * 10, col = 3)
+
+  den$dev1 <- abs(den$dev1)
+  den <- den[den$dev1 > quantile(den$dev1, probs = 0.5), ]
+  points(den$x, den$dev1, col = "blue")
+
+
+
+  # den <- data.frame(x = k$x, y = c(abs(diff(k$y)),0))
+  # den$lim <- ifelse(den$y < quantile(den$y, probs = 0.5), 1, 2)
+  # den <- den[den$y > quantile(den$y, probs = 0.25), ]
+  den$diff <- c(diff(den$x), 0)
+  den$cut <- ifelse(den$diff > .getmode(den$diff) + 0.01, 1, 0)
+  den <- den[den$cut == 1, ]
+  den <- den[den$diff == max(den$diff) | den$x < 1.3 & den$x + den$diff > 1.3, ]
+
+  return(den[, c("x", "diff")])
+
+}
+
+
+
+
+
 # Add quotes and paste a vector
 
 .quot.past <- function(x, quot = "'", sep = "", collapse = ", ") {
