@@ -37,7 +37,8 @@
   den$diff <- c(diff(den$x), 0)
   den$cut <- ifelse(den$diff > .getmode(den$diff) + 0.01, 1, 0)
   den <- den[den$cut == 1, ]
-  den <- den[den$diff == max(den$diff) | den$x < 1.3 & den$x + den$diff > 1.3, ]
+  den <- den[den$diff == max(den$diff), ]
+  # den <- den[den$diff == max(den$diff) | den$x < 1.3 & den$x + den$diff > 1.3, ]
 
   return(den[, c("x", "diff")])
 

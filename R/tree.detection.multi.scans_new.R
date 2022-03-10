@@ -41,7 +41,7 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h
 
 
 
-  den <- .getStem(data)
+  den <- .getStem(stem)
 
   stem <- stem[stem$z > min(den$x) & stem$z < max(den$x) + den[den$x == max(den$x), ]$diff, ]
 
@@ -59,12 +59,11 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h
   buf <- raster::buffer(buf, width = 25000, dissolve = TRUE)
   # plot(buf, col = "red")
 
-  stem <- data[data$prob.selec == 1, ]
+  stem <- data
   stem <- sp::SpatialPointsDataFrame(coords = cbind(stem$x,stem$y), data = stem)
   stem <- raster::intersect(stem, buf)
 
   stem <- stem@data
-
 
   rm(buf)
 
@@ -151,6 +150,8 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h
       if(nrow(.dat) < 10)
         next
 
+      # plot(.dat$x, .dat$y, asp = 1, main = i)
+
       # Generate mesh
 
       .x.rang <- max(.dat$x) - min(.dat$x)
@@ -231,6 +232,9 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h
 
       if(nrow(.dat) < 1){next}
 
+      # plot(.dat$x, .dat$y, asp = 1, main = i)
+
+
       # Estimate points number for both the original cloud (.n.pts) and the
       # point cloud reduced by the point cropping process (.n.pts.red)
       .n.pts <- nrow(.dat)
@@ -266,6 +270,10 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h
       .center.r <- sqrt(.dat$sec[1] ^ 2 + .center.rho ^ 2)
       .center.theta <- atan2(.dat$sec[1], .center.rho)
 
+      # points(.center.x, .center.y, col = "red", pch = 19)
+      # abline(h = .center.y)
+      # abline(v = .center.x)
+
 
       # Distances between points and center
       .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)
@@ -290,27 +298,27 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h
 
       .dat.2$alpha <- acos(-(.dat.2$a^2-.dat.2$b^2-.dat.2$c^2)/(2*.dat.2$b*.dat.2$c))
 
-      .dat.2$x2 <- .dat.2$c * cos(.dat.2$alpha)
-      .dat.2$y2 <- .dat.2$c * sin(.dat.2$alpha)
+      # .dat.2$x2 <- .dat.2$c * cos(.dat.2$alpha)
+      # .dat.2$y2 <- .dat.2$c * sin(.dat.2$alpha)
 
 
       # Select 1st percentil, if necessary for strange points
       # It remains to be seen what happens if cluster is located in 0 +/- phi
-      .pto.left <- stats::quantile(.dat.2$alpha, prob = 0.01)
-      .x.left <- mean(.dat.2$x2[which(.dat.2$alpha <= .pto.left)])
-      .y.left <- mean(.dat.2$y2[which(.dat.2$alpha <= .pto.left)])
+      # .pto.left <- stats::quantile(.dat.2$alpha, prob = 0.01)
+      # .x.left <- mean(.dat.2$x2[which(.dat.2$alpha <= .pto.left)])
+      # .y.left <- mean(.dat.2$y2[which(.dat.2$alpha <= .pto.left)])
 
       # Select 99th percentil, if necessary for strange points
-      .pto.right <- stats::quantile(.dat.2$alpha, prob = 0.99)
-      .x.right <- mean(.dat.2$x2[which(.dat.2$alpha >= .pto.right)])
-      .y.right <- mean(.dat.2$y2[which(.dat.2$alpha >= .pto.right)])
+      # .pto.right <- stats::quantile(.dat.2$alpha, prob = 0.99)
+      # .x.right <- mean(.dat.2$x2[which(.dat.2$alpha >= .pto.right)])
+      # .y.right <- mean(.dat.2$y2[which(.dat.2$alpha >= .pto.right)])
 
       # For points in section center, select those in half the angle aperture
       # phi +/- TLS aperture .alpha
-      .phi.cent <- max(.dat.2$alpha) - ((max(.dat.2$alpha) - min(.dat.2$alpha)) / 2)
-      .x.cent <- mean(.dat.2$x2[which(round(.dat.2$alpha, 1) >= round(.phi.cent, 1) & round(.dat.2$alpha, 1) <= round(.phi.cent, 1))])
-      .y.cent <- mean(.dat.2$y2[which(round(.dat.2$alpha, 1) >= round(.phi.cent, 1) & round(.dat.2$alpha, 1) <= round(.phi.cent, 1))])
-
+      # .phi.cent <- max(.dat.2$alpha) - ((max(.dat.2$alpha) - min(.dat.2$alpha)) / 2)
+      # .x.cent <- mean(.dat.2$x2[which(round(.dat.2$alpha, 1) >= round(.phi.cent, 1) & round(.dat.2$alpha, 1) <= round(.phi.cent, 1))])
+      # .y.cent <- mean(.dat.2$y2[which(round(.dat.2$alpha, 1) >= round(.phi.cent, 1) & round(.dat.2$alpha, 1) <= round(.phi.cent, 1))])
+      #
       # plot(.dat.2$x2, .dat.2$y2, asp = 1, main = .cluster)
       # points(.x.cent, .y.cent, col = "green", pch = 19)
       # points(.x.left, .y.left, col = "red", pch = 19)
@@ -318,17 +326,15 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h
 
       # if(is.nan(.rho.cent)){next}
 
-      # Check rho coordinates for ends are greater than center ones
-      # .circ <- ifelse(moments::skewness(.dat$rho) < -0.5, 1, 0)
-      .circ <- ifelse(min(.dat$x) < .center.x  - .radio * 0.75 & max(.dat$x) > .center.x + .radio * 0.75 &
-                      min(.dat$y) < .center.y  - .radio * 0.75 & max(.dat$y) > .center.y + .radio * 0.75, 1, 0)
+      # Checking if tree section belong to a full circumference
 
+      k1 <- ifelse(nrow(.dat[.dat$x > .center.x & .dat$y > .center.y, ]) > 0, 1, 0)
+      k2 <- ifelse(nrow(.dat[.dat$x > .center.x & .dat$y < .center.y, ]) > 0, 1, 0)
+      k3 <- ifelse(nrow(.dat[.dat$x < .center.x & .dat$y > .center.y, ]) > 0, 1, 0)
+      k4 <- ifelse(nrow(.dat[.dat$x < .center.x & .dat$y < .center.y, ]) > 0, 1, 0)
 
-      # Check rho coordinates for ends are greater than center ones
-      # .arc.circ <- ifelse(.c.left < .c.cent & .c.left > 0 & .c.right < .c.cent & .c.right > 0, 1, 0)
-      .arc.circ <- ifelse(.y.left < .y.cent & .y.right < .y.cent, 1, 0)
-      if(is.na(.arc.circ))
-        .arc.circ <- 0
+      .circ <- ifelse(sum(k1, k2, k3, k4) == 4, 1, 0)
+      .arc.circ <- ifelse(sum(k1, k2, k3, k4) == 3 | sum(k1, k2, k3, k4) == 2, 1, 0)
 
       # Convert original coordinates if cluster is located in 0 +/- phi
       # .phi.left <- ifelse(.phi.left > (2 * pi), .phi.left - (2 * pi), .phi.left)
@@ -343,7 +349,9 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h
       .dat.2 <- .dat.2[order(.dat.2$alpha, decreasing = F), ]
       .dat.2$n <- c(1:nrow(.dat.2))
       .cor <- try(stats::cor.test(x = .dat.2$n, y = .dat.2$alpha, method = 'pearson'), silent = TRUE) # cor function could be used instead
-      # .cor <- try(stats::cor.test(x = .dat2$n, y = .dat2$phi, method = 'spearman'))
+
+      # plot(.dat.2$n, .dat.2$alpha)
+      # .cor <- try(stats::cor.test(x = .dat.2$n, y = .dat.2$phi, method = 'spearman'))
 
       # If error, go to next iteration
       if(class(.cor) == "try-error"){next} else{
@@ -378,9 +386,7 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h
 
                             n.pts = .n.pts, n.pts.red = .n.pts.red,
 
-                            circ = .circ, arc.circ = .arc.circ,
-
-                            occlusion = .occlusion, occlusion.sig = .occlusion.sig,
+                            circ = .circ, arc.circ = .arc.circ, occlusion = .occlusion,
 
                             density.radio = .densidad_radio)
 
@@ -394,14 +400,12 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h
     .outliers <- .Q1 - 1.5 * (.Q3 - .Q1)
 
     # Minimum number of points
-    .filter$tree <- ifelse(.filter$n.pts.red > .outliers, 1, 0)
-    .filter <- .filter[which(.filter$tree == 1), , drop = FALSE]
-
-
+    # .filter$tree <- ifelse(.filter$n.pts.red > .outliers, 1, 0)
+    # .filter <- .filter[which(.filter$tree == 1), , drop = FALSE]
 
     .filter$tree <- ifelse(.filter$circ == 1 & .filter$density.radio > .outliers, 1,
-                           ifelse(.filter$circ == 0 & .filter$arc.circ == 1 & .filter$density.radio > .outliers, 1,
-                           ifelse(.filter$arc.circ == 0 & .filter$occlusion > 0.975 & .filter$density.radio > .outliers, 1, 0)))
+                           ifelse(.filter$arc.circ == 1 & .filter$occlusion > 0.95 & .filter$density.radio > .outliers, 1,
+                                  ifelse(.filter$circ == 0 & .filter$arc.circ == 0 & .filter$occlusion > 0.975 & .filter$density.radio > .outliers, 1, 0)))
     .filter <- .filter[which(.filter$tree == 1), , drop = FALSE]
 
     # Dbh maximum and minimum
