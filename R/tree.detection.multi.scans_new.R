@@ -17,6 +17,9 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h
 
   # Detection of stem part without shrub vegetation and crown
   stem <- data[data$prob.selec == 1, ]
+  if(!is.null(stem$GLI))
+    stem <- stem[stem$GLI <= 0, ]
+  stem <- stem[!is.na(stem$x) & !is.na(stem$y) & !is.na(stem$z), ]
   # k <- hist(stem$z, breaks = "FD")
   # hist(stem$z, ylim = c(-1000000,1000000))
   # hist(stem$z, freq = F)
@@ -43,23 +46,29 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h
 
   den <- .getStem(stem)
 
-  stem <- stem[stem$z > min(den$x) & stem$z < max(den$x) + den[den$x == max(den$x), ]$diff, ]
+  stem <- stem[stem$z > den$x & stem$z < den$x + den$diff, ]
 
   rm(den)
 
   if(is.null(tls.precision)){
   stem <- VoxR::vox(stem[, c("x", "y", "z")], res = 0.03)} else {
     stem <- VoxR::vox(stem[, c("x", "y", "z")], res = tls.precision)}
+
   stem <- VoxR::project_voxels(stem)
   # plot(stem$x, stem$y, col = "grey", asp = 1, pch = 19, cex = 0.5)
   stem <- stem[stem$npts > mean(stem$npts), ]
   # points(stem$x, stem$y, pch = 19, cex = 0.5, col = "black")
 
   buf <- sp::SpatialPoints(cbind(stem$x,stem$y))
-  buf <- raster::buffer(buf, width = 25000, dissolve = TRUE)
-  # plot(buf, col = "red")
+  # buf <- sp::SpatialPointsDataFrame(coords = cbind(stem$x,stem$y), data = stem[, c("x", "y", "z")])
+
+  buf <- raster::buffer(buf, width = 50000, dissolve = TRUE)
+  # sp::plot(buf, col = "red")
 
   stem <- data
+  if(!is.null(stem$GLI))
+    stem <- stem[stem$GLI <= 0, ]
+  stem <- stem[!is.na(stem$x) & !is.na(stem$y) & !is.na(stem$z), ]
   stem <- sp::SpatialPointsDataFrame(coords = cbind(stem$x,stem$y), data = stem)
   stem <- raster::intersect(stem, buf)
 
@@ -347,6 +356,8 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h
       # numeration and phi must be found when they are ordered with respect to phi
 
       .dat.2 <- .dat.2[order(.dat.2$alpha, decreasing = F), ]
+      # .cv <- stats::sd(diff(.dat.2$alpha)) / mean(diff(.dat.2$alpha))
+      # if(.cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25)]) < 2){next}
       .dat.2$n <- c(1:nrow(.dat.2))
       .cor <- try(stats::cor.test(x = .dat.2$n, y = .dat.2$alpha, method = 'pearson'), silent = TRUE) # cor function could be used instead
 

@@ -7,27 +7,26 @@
   k <- density(data$z)
 
   den <- data.frame(x = k$x, y = k$y)
+
   n.ini <- sum(den$y)
 
   n <- sum(den[den$x < den[den$y == max(den$y), ]$x, ]$y)
   if(n < n.ini / 2){
     den <- den[den$x > den[den$y == max(den$y), ]$x, ]
-    den <- den[den$y > quantile(den$y, probs = 0.25), ]} else {
+    den <- den[den$y > stats::quantile(den$y, probs = 0.25), ]} else {
       den <- den[den$x < den[den$y == max(den$y), ]$x, ]}
 
 
   den$dev1 <- c(diff(den$y), 0)
   # den$dev2 <- c(diff(den$dev1), 0)
 
-  plot(den$x, den$y, ylim = c(-0.3,0.3))
-  lines(den$x, den$dev1 * 10, col = 2)
-
-
-  # lines(den$x, den$dev2 * 10, col = 3)
+  # plot(den$x, den$y, ylim = c(-0.3,0.3))
+  # lines(den$x, den$dev1 * 10, col = 2)
+  #lines(den$x, den$dev2 * 10, col = 3)
 
   den$dev1 <- abs(den$dev1)
-  den <- den[den$dev1 > quantile(den$dev1, probs = 0.5), ]
-  points(den$x, den$dev1, col = "blue")
+  den <- den[den$dev1 > stats::quantile(den$dev1, probs = 0.5), ]
+  # points(den$x, den$dev1, col = "blue")
 
 
 
@@ -523,6 +522,9 @@
                       .metr["CV.z"] <- .metr["sd.z"] / .metr["mean.z"]
                     if ("D.z" %in% names(.metr))
                       .metr["D.z"] <- .metr["max.z"] - .metr["min.z"]
+                    if ("ID.z" %in% names(.metr))
+                      .metr["ID.z"] <- stats::quantile(.sub, prob = 0.75) - stats::quantile(.sub, prob = 0.25)
+
                     if ("kurtosis.z" %in% names(.metr))
                       .metr["kurtosis.z"] <- moments::kurtosis(.sub)
                     if ("skewness.z" %in% names(.metr))
@@ -603,6 +605,9 @@
                       .metr["CV.rho"] <- .metr["sd.rho"] / .metr["mean.rho"]
                     if ("D.rho" %in% names(.metr))
                       .metr["D.rho"] <- .metr["max.rho"] - .metr["min.rho"]
+                    if ("ID.rho" %in% names(.metr))
+                      .metr["ID.rho"] <- stats::quantile(.sub, prob = 0.75) - stats::quantile(.sub, prob = 0.25)
+
                     if ("kurtosis.rho" %in% names(.metr))
                       .metr["kurtosis.rho"] <- moments::kurtosis(.sub)
                     if ("skewness.rho" %in% names(.metr))
@@ -691,6 +696,9 @@
                       .metr["CV.r"] <- .metr["sd.r"] / .metr["mean.r"]
                     if ("D.r" %in% names(.metr))
                       .metr["D.r"] <- .metr["max.r"] - .metr["min.r"]
+                    if ("ID.r" %in% names(.metr))
+                      .metr["ID.r"] <- stats::quantile(.sub, prob = 0.75) - stats::quantile(.sub, prob = 0.25)
+
                     if ("kurtosis.r" %in% names(.metr))
                       .metr["kurtosis.r"] <- moments::kurtosis(.sub)
                     if ("skewness.r" %in% names(.metr))
@@ -849,7 +857,7 @@
 
                      # Z coordinate
                      "mean.z", "mean.q.z", "mean.g.z", "mean.h.z", "median.z", "mode.z",
-                     "max.z", "min.z", "var.z", "sd.z", "CV.z", "D.z",
+                     "max.z", "min.z", "var.z", "sd.z", "CV.z", "D.z", "ID.z",
                      "kurtosis.z", "skewness.z",
                      "p.a.mean.z", "p.a.mode.z", "p.a.2m.z",
                      "p.b.mean.z", "p.b.mode.z", "p.b.2m.z", "CRR.z",
@@ -859,7 +867,7 @@
 
                      # Rho coordinate
                      "mean.rho", "mean.q.rho", "mean.g.rho", "mean.h.rho", "median.rho", "mode.rho",
-                     "max.rho", "min.rho", "var.rho", "sd.rho", "CV.rho", "D.rho",
+                     "max.rho", "min.rho", "var.rho", "sd.rho", "CV.rho", "D.rho", "ID.rho",
                      "kurtosis.rho", "skewness.rho",
                      "p.a.mean.rho", "p.a.mode.rho",
                      "p.b.mean.rho", "p.b.mode.rho", "CRR.rho",
@@ -869,7 +877,7 @@
 
                      # R coordinate
                      "mean.r", "mean.q.r", "mean.g.r", "mean.h.r", "median.r", "mode.r",
-                     "max.r", "min.r", "var.r", "sd.r", "CV.r", "D.r",
+                     "max.r", "min.r", "var.r", "sd.r", "CV.r", "D.r", "ID.r",
                      "kurtosis.r", "skewness.r",
                      "p.a.mean.r", "p.a.mode.r",
                      "p.b.mean.r", "p.b.mode.r", "CRR.r",
@@ -1182,7 +1190,7 @@
                 c(sprintf("P%02i", .prob),
                   # Z coordinate
                   "mean.z", "mean.q.z", "mean.g.z", "mean.h.z", "median.z", "mode.z",
-                  "max.z", "min.z", "var.z", "sd.z", "CV.z", "D.z",
+                  "max.z", "min.z", "var.z", "sd.z", "CV.z", "D.z", "ID.z",
                   "kurtosis.z", "skewness.z",
                   "p.a.mean.z", "p.a.mode.z", "p.a.2m",
                   "p.b.mean.z", "p.b.mode.z", "p.b.2m.z", "CRR.z",
@@ -1192,7 +1200,7 @@
 
                   # Rho coordinate
                   "mean.rho", "mean.q.rho", "mean.g.rho", "mean.h.rho", "median.rho", "mode.rho",
-                  "max.rho", "min.rho", "var.rho", "sd.rho", "CV.rho", "D.rho",
+                  "max.rho", "min.rho", "var.rho", "sd.rho", "CV.rho", "D.rho", "ID.rho",
                   "kurtosis.rho", "skewness.rho",
                   "p.a.mean.rho", "p.a.mode.rho",
                   "p.b.mean.rho", "p.b.mode.rho", "CRR.rho",
@@ -1202,7 +1210,7 @@
 
                   # R coordinate
                   "mean.r", "mean.q.r", "mean.g.r", "mean.h.r", "median.r", "mode.r",
-                  "max.r", "min.r", "var.r", "sd.r", "CV.r", "D.r",
+                  "max.r", "min.r", "var.r", "sd.r", "CV.r", "D.r", "ID.r",
                   "kurtosis.r", "skewness.r",
                   "p.a.mean.r", "p.a.mode.r",
                   "p.b.mean.r", "p.b.mode.r", "CRR.r",
@@ -1940,7 +1948,7 @@
         # Compute descriptive statistics of z coordinate, percentage of points
         # above mode and mean, and parameters of fitted Weibull distribution
         .col.names <- c("mean.z", "mean.q.z", "mean.g.z", "mean.h.z", "median.z", "mode.z",
-                        "max.z", "min.z", "var.z", "sd.z", "CV.z", "D.z",
+                        "max.z", "min.z", "var.z", "sd.z", "CV.z", "D.z", "ID.z",
                         "kurtosis.z", "skewness.z",
                         "p.a.mean.z", "p.a.mode.z", "p.a.2m.z",
                         "p.b.mean.z", "p.b.mode.z", "p.b.2m.z", "CRR.z",
@@ -1950,7 +1958,7 @@
 
                         # Compute descriptive statistics of rho coordinate
                         "mean.rho", "mean.q.rho", "mean.g.rho", "mean.h.rho", "median.rho", "mode.rho",
-                        "max.rho", "min.rho", "var.rho", "sd.rho", "CV.rho", "D.rho",
+                        "max.rho", "min.rho", "var.rho", "sd.rho", "CV.rho", "D.rho", "ID.rho",
                         "kurtosis.rho", "skewness.rho",
                         "p.a.mean.rho", "p.a.mode.rho",
                         "p.b.mean.rho", "p.b.mode.rho", "CRR.rho",
@@ -1960,7 +1968,7 @@
 
                         # Compute descriptive statistics of r coordinate
                         "mean.r", "mean.q.r", "mean.g.r", "mean.h.r", "median.r", "mode.r",
-                        "max.r", "min.r", "var.r", "sd.r", "CV.r", "D.r",
+                        "max.r", "min.r", "var.r", "sd.r", "CV.r", "D.r", "ID.r",
                         "kurtosis.r", "skewness.r",
                         "p.a.mean.r", "p.a.mode.r",
                         "p.b.mean.r", "p.b.mode.r", "CRR.r",

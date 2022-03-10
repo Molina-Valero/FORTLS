@@ -1,8 +1,8 @@
 
-normalize <- function(las,
+normalize <- function(las, RGB = NULL,
                       x.center = NULL, y.center = NULL,
                       max.dist = NULL, min.height = NULL, max.height = NULL,
-                      algorithm.dtm = "tin", res.dtm = 0.2,
+                      algorithm.dtm = "knnidw", res.dtm = 0.2,
                       csf = list(cloth_resolution = 0.5),
                       scan.approach = "single",
                       id = NULL, file = NULL,
@@ -23,7 +23,10 @@ normalize <- function(las,
 
   # Loading input (LAS file)
 
-  .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyz")))
+  if(is.null(RGB)){
+  .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyz")))} else {
+    .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyzRGB")))}
+
 
   .pb$tick()
 
@@ -118,6 +121,8 @@ normalize <- function(las,
 
   }
 
+  rm(.las)
+
   .pb$tick()
 
 
@@ -125,11 +130,15 @@ normalize <- function(las,
 
   .data <- suppressWarnings(suppressMessages(lidR::normalize_height(.data, .dtm, add_lasattribute = FALSE, na.rm = TRUE)))
 
+  rm(.dtm)
+
   .pb$tick()
 
   # Assigning slope to point cloud
 
   .data <- lidR::merge_spatial(.data, .slope, "slope")
+
+  rm(.slope)
 
   .pb$tick()
 
@@ -145,8 +154,11 @@ normalize <- function(las,
 
   # Extracting coordinates values
 
+  if(is.null(RGB)){
   .data <- .data[, c("X", "Y", "Z", "slope"), drop = FALSE]
-  colnames(.data) <- c("x", "y", "z", "slope")
+  colnames(.data) <- c("x", "y", "z", "slope")} else {
+    .data <- .data[, c("X", "Y", "Z", "slope", "R", "G", "B"), drop = FALSE]
+    colnames(.data) <- c("x", "y", "z", "slope", "R", "G", "B")}
 
 
   # Low point filtering
@@ -185,6 +197,10 @@ normalize <- function(las,
   .data$theta <- atan2(.data$z, .data$rho)
 
   .data$point <- (1:nrow(.data))
+
+  # Green intensity
+  if(!is.null(RGB))
+    .data$GLI <- (2 * .data$G - .data$R - .data$B) / (2 * .data$R + .data$G + .data$B)
 
 
   # Point crooping process
@@ -230,8 +246,9 @@ normalize <- function(las,
 
   }
 
-
-  .data <- .data[, c("id", "file", "point", "x", "y", "z", "rho", "phi", "r", "theta", "slope", "prob", "prob.selec"), drop = FALSE]
+  if(is.null(RGB)){
+  .data <- .data[, c("id", "file", "point", "x", "y", "z", "rho", "phi", "r", "theta", "slope", "prob", "prob.selec"), drop = FALSE]} else {
+    .data <- .data[, c("id", "file", "point", "x", "y", "z", "rho", "phi", "r", "theta", "slope", "prob", "prob.selec", "GLI"), drop = FALSE]}
 
   .pb$tick()
 
