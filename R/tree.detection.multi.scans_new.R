@@ -89,6 +89,7 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h
                            circ = as.numeric(), arc.circ = as.numeric(), sec = as.numeric())
 
 
+
   for(cuts in breaks){
 
     message("Computing section: ", cuts, " m")

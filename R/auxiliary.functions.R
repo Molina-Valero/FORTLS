@@ -20,13 +20,13 @@
   den$dev1 <- c(diff(den$y), 0)
   # den$dev2 <- c(diff(den$dev1), 0)
 
-  # plot(den$x, den$y, ylim = c(-0.3,0.3))
-  # lines(den$x, den$dev1 * 10, col = 2)
+  plot(den$x, den$y, ylim = c(-0.3,0.3))
+  lines(den$x, den$dev1 * 10, col = 2)
   #lines(den$x, den$dev2 * 10, col = 3)
 
   den$dev1 <- abs(den$dev1)
   den <- den[den$dev1 > stats::quantile(den$dev1, probs = 0.5), ]
-  # points(den$x, den$dev1, col = "blue")
+  points(den$x, den$dev1, col = "blue")
 
 
 
