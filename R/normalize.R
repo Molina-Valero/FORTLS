@@ -1,7 +1,7 @@
 
 normalize <- function(las, RGB = NULL,
                       x.center = NULL, y.center = NULL,
-                      max.dist = NULL, min.height = NULL, max.height = NULL,
+                      max.dist = NULL, min.height = NULL, max.height = 50,
                       algorithm.dtm = "knnidw", res.dtm = 0.2,
                       csf = list(cloth_resolution = 0.5),
                       scan.approach = "single",

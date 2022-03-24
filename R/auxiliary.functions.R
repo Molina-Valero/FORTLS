@@ -1,5 +1,190 @@
 
 
+.calc.volume <- function(data){
+
+  dbh0.est <- data.frame(tree = as.numeric(), sec = as.numeric(), dbh = as.numeric())
+
+  for (i in unique(data$tree)){
+    reg <- lm(data[data$tree == i,]$dbh ~ data[data$tree == i,]$sec)
+    reg <- summary(reg)
+    intercept <- reg$coefficients[1,1]
+
+    diameter <- data.frame(tree = i, sec = 0, dbh = intercept)
+
+    dbh0.est <- rbind(dbh0.est, diameter)
+
+  }
+
+  data <- merge(data, dbh0.est, all = TRUE)
+
+
+  logs.v <- data.frame(tree = as.numeric(), sec = as.numeric(), v = as.numeric(),
+                       l = as.numeric())
+
+  j <- 1
+  k <- j+2
+
+  for (i in 1:nrow(data)) {
+
+    dat <- data[j:k, ]
+
+    if(j == nrow(data) +1){break}
+
+    if(is.na(dat$sec[2])){
+      dat[2,]$sec <- 0
+    }
+    if(is.na(dat$sec[3])){
+      dat[3,]$sec <- 0
+    }
+
+    if(round(dat$sec[2] - dat$sec[1], digits = 1) == round(dat$sec[3] - dat$sec[2], digits = 1)){
+      # forumla de Newton: tres diametros consecutivos cada 0.3m
+      l <- dat$sec[3] - dat$sec[1]
+
+      d0 <- dat$dbh[1]/100
+      dm <- dat$dbh[2]/100
+      d1 <- dat$dbh[3]/100
+
+      log <- data.frame(tree = dat$tree[1], sec = dat$sec[1],
+                        v = pi/24 *l*(d0^2 + d1^2 + 4*dm^2), l = l)
+
+      logs.v <- rbind(logs.v, log)
+
+      j <- j+2
+      k <- j+2
+
+    } else if(dat$sec[2]-dat$sec[1] < 0){
+      # forumla para calcular el conus
+      l <- dat$sec[2] - dat$sec[1]
+
+      h <- dat$P99.9[1] - dat$sec[1]
+      d0 <- dat$dbh[1]/100
+
+      log <- data.frame(tree = dat$tree[1], sec = dat$sec[1],
+                        v = 1/3*pi*h*(d0/2)^2, l = l)
+
+      logs.v <- rbind(logs.v, log)
+
+      j <- j+1
+      k <- j+2
+
+    } else {
+      # forumla de Smalian: volumen entre dos secciones
+      l <- dat$sec[2] - dat$sec[1]
+
+      d0 <- dat$dbh[1]/100
+      d1 <- dat$dbh[2]/100
+
+      log <- data.frame(tree = dat$tree[1], sec = dat$sec[1],
+                        v = pi/8 *l*(d0^2 + d1^2), l = l)
+
+      logs.v <- rbind(logs.v, log)
+
+      j <- j+1
+      k <- j+2
+    }
+  }
+
+  #grouped <- dplyr::group_by(logs.v, tree)
+  #volume <- dplyr::summarise(grouped, v = sum(v))
+
+  volume <- data.frame(tree = as.numeric(), v = as.numeric())
+
+  for (i in unique(logs.v$tree)){
+    v <- sum(logs.v[logs.v$tree == i,]$v)
+
+    vol <- data.frame(tree = i, v = v)
+
+    volume <- rbind(volume, vol)
+
+  }
+
+  return(volume)
+}
+
+
+.stem.axis <- function(data){
+
+
+  data <- data[data$prob > 0.99, ]
+
+  if(nrow(data) < 50 | min(data$z) > 2){
+    eje <- data.frame(tree = as.numeric(), sec = as.numeric(), x = as.numeric(), y = as.numeric())
+
+    } else {
+
+  eje <- data.frame(tree = unique(data$tree), sec = seq(0, round(max(data$z)), by = 0.1))
+
+
+  dbscan <- dbscan::dbscan(data[, c("x", "z"), drop = FALSE], eps = 0.25)
+  data$cluster <- dbscan$cluster
+  # plot(data$z, data$x, col = data$cluster, asp =1)
+
+  cluster <- data.frame(table(data$cluster))
+  cluster <- cluster[cluster$Freq == max(cluster$Freq),]$Var1
+  cluster <- as.numeric(as.character(cluster))
+  data <- data[data$cluster == cluster,]
+
+  mod.x <- lm(data = data, x ~ z)
+  mod.y <- lm(data = data, y ~ z)
+
+  eje$x <- coef(mod.x)[1] + coef(mod.x)[2] * eje$sec
+  eje$y <- coef(mod.y)[1] + coef(mod.y)[2] * eje$sec
+
+  #plot(data$z, data$rho, asp = 1)
+  #plot(data$z, data$phi, asp = 1)
+  # plot(data$z, data$x, asp = 1, main = data$tree[1])
+  # abline(mod.x, col = 2)
+  # plot(data$z, data$y, asp = 1, main = data$tree[1])
+  # abline(mod.y, col = 2)
+  }
+
+  return(eje)
+}
+
+
+
+# .stem.axis <- function(data){
+#
+#   dat <- as.matrix(cov(data[, c("x", "y", "z")]))
+#   out <- eigen(dat)
+#
+#   pca <- prcomp(data[, c("x", "y", "z")], scale. = TRUE)
+#   #
+#   # x <- pca$center[1]
+#   # y <- pca$center[2]
+#   # z <- pca$center[3]
+#   #
+#   #
+#   x.inc <- pca$scale[1]
+#   y.inc <- pca$scale[2]
+#   z.inc <- pca$scale[3]
+#
+#
+#
+#   x <- c(mean(data$x), mean(data$x) + out$vectors[1, 1])
+#   y <- c(mean(data$y), mean(data$y) + out$vectors[2, 1])
+#   z <- c(mean(data$z), mean(data$z) + out$vectors[3, 1])
+#
+#   out <- data.frame(tree = data$tree[1],
+#                     x = x[1], x.inc = x[2] - x[1],
+#                     y = y[1], y.inc = y[2] - y[1],
+#                     z = z[1], z.inc = z[2] - z[1])
+#
+#   # out <- data.frame(tree = data$tree[1],
+#   #                   x = x, x.inc = x.inc,
+#   #                   y = y, y.inc = y.inc,
+#   #                   z = z, z.inc = z.inc)
+#
+#   out$alpha.x <- atan2(out$x.inc, out$z.inc)
+#   out$alpha.y <- atan2(out$y.inc, out$z.inc)
+#
+#
+#   return(out)
+#
+# }
+
+
 # Select part of point cloud free of low vegetation and crown
 
 .getStem <- function(data){
@@ -20,13 +205,13 @@
   den$dev1 <- c(diff(den$y), 0)
   # den$dev2 <- c(diff(den$dev1), 0)
 
-  plot(den$x, den$y, ylim = c(-0.3,0.3))
-  lines(den$x, den$dev1 * 10, col = 2)
-  #lines(den$x, den$dev2 * 10, col = 3)
+  # plot(den$x, den$y, ylim = c(-0.3,0.3))
+  # lines(den$x, den$dev1 * 10, col = 2)
+  # lines(den$x, den$dev2 * 10, col = 3)
 
   den$dev1 <- abs(den$dev1)
-  den <- den[den$dev1 > stats::quantile(den$dev1, probs = 0.5), ]
-  points(den$x, den$dev1, col = "blue")
+  den <- den[den$dev1 > stats::quantile(den$dev1, probs = 0.75), ]
+  # points(den$x, den$dev1, col = "blue")
 
 
 
