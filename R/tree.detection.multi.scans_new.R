@@ -54,7 +54,7 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h
   # sp::plot(buf, col = "red")
 
 
-  stem <- data[data$prob > 0.5, ]
+  stem <- data[data$prob.selec == 1, ]
   if(!is.null(stem$GLI))
     stem <- stem[stem$GLI <= 0, ]
   stem <- stem[!is.na(stem$x) & !is.na(stem$y) & !is.na(stem$z), ]
@@ -67,9 +67,9 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h
   # plot(stem$x, stem$y, col = stem$tree, asp = 1)
 
   # Breaks argument
-  if(is.null(breaks))
+  if(is.null(breaks)){
     breaks <- seq(from = 0.1, to = max(stem$z), by = 0.3)
-    breaks <- breaks[-length(breaks)]
+    breaks <- breaks[-length(breaks)]}
 
 
   # Defining stem axis
@@ -302,7 +302,7 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h
       # Radius value as the mean distance
       # .dat <- .dat[order(.dat$dist, decreasing = FALSE), , drop = FALSE]
       # plot(.dat$x, .dat$y, asp = 1)
-      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5)])
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25)])
       if(.radio < 0){next}
       # xyc4<-conicfit::calculateCircle(.center.x,.center.y,.radio)
       # points(xyc4[,1],xyc4[,2],col='red',type='l')
@@ -312,7 +312,7 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h
       # xyc4<-conicfit::calculateCircle(c4[1],c4[2],c4[3])
       # points(xyc4[,1],xyc4[,2],col='cyan',type='l')
       # .radio2 <- c4[3]
-      .radio2 <- .radio
+      .radio2 <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25) & .dat$dist<stats::quantile(.dat$dist, prob = 0.9)])
 
       # Coefficient of variation for distances among cluster points and the estimated center
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25)]) / .radio
