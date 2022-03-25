@@ -519,9 +519,11 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h
 
   for (i in unique(.filteraux$tree)) {
 
-    .filt <- .filteraux[.filteraux$tree == i & .filteraux$dist < 2 * mean(.filteraux$radius, na.rm = TRUE), ]
+    .filt <- .filteraux[.filteraux$tree == i, ]
 
-    if(nrow(.filt) < 2)
+    .filt <- .filt[.filt$dist < 2 * mean(.filt$radius, na.rm = TRUE), ]
+
+    if(nrow(.filt) < 1)
       next
 
     .filt$dif <- c(0, abs(diff(.filt$radius)))
@@ -537,6 +539,7 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 7.5, dbh.max = 200, h
 
   }
 
+  if(nrow(.filter) < 1) stop("No tree was detected")
 
   # .filter <- .filteraux
   rm(.filteraux)
