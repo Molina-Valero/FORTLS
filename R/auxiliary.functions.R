@@ -1,15 +1,106 @@
 
+.volume <- function(data){
+
+  # colnames(data) <- c("tree", "hi", "x", "y", "dhi", "dhi2", "h", "dbh")
+
+  datos <- data.frame(hi = as.numeric(), dhi = as.numeric(), h = as.numeric(), dbh = as.numeric())
+
+
+  for (i in unique(data$tree)) {
+
+    tree <- data[data$tree == i, ]
+    tree <- tree[tree$hi < tree$h, ]
+
+    if(nrow(tree) < 2 | min(abs(diff(tree$dhi))) > 10){
+      datos <- rbind(datos, tree[tree$hi == 1.3, c("hi", "dhi", "h", "dbh")])
+
+    } else {
+
+    tree$dif <- c(diff(tree$dhi), tree$dhi[nrow(tree)]-tree$dhi[nrow(tree)-1])
+
+      while (max(tree$dif) > 1 | min(tree$dif) < -5) {
+
+        tree$filter <- ifelse(tree$dif > 1 | tree$dif < -5, 0, 1)
+        tree <- tree[tree$filter == 1, ]
+        tree$dif <- c(diff(tree$dhi), tree$dhi[nrow(tree)]-tree$dhi[nrow(tree)-1])
+
+
+      }
+
+      plot(tree$dhi~tree$hi, col = "grey", main = i)
+
+
+      ajuste <- nls(dhi~dbh*((h-hi)/(h-1.3))**b1, data=tree, start=c(b1=1))
+      R2<-1-sum(resid(ajuste)**2)/sum((tree$dhi-mean(tree$dhi))**2)
+      print(R2)
+
+      datos <- rbind(datos, tree[, c("hi", "dhi", "h", "dbh")])
+
+    }
+
+  }
+
+
+  plot(datos$dhi~datos$hi, col = "grey",
+       xlab = "Altura del árbol (m)",
+       ylab = "Diámetro (cm)",
+       main = "Función de perfil",
+       cex.main = 2, cex.lab = 1.5)
+  lines(lowess(datos$hi, datos$dhi), col='red')
+  loes <- lowess(datos$hi, datos$dhi)
+  loes <- data.frame(hi = loes$x, dhi.mean = loes$y)
+  loes <- loes[!duplicated(loes), ]
+  datos <- merge(datos, loes, all = FALSE)
+  datos$sep <- abs(datos$dhi - datos$dhi.mean)
+  datos <- datos[datos$sep < stats::quantile(datos$sep, prob = 0.5), ]
+
+  ajuste<-nls(dhi~dbh*((h-hi)/(h-1.3))**b1, data=datos, start=c(b1=1), max)
+  R2<-1-sum(resid(ajuste)**2)/sum((datos$dhi-mean(datos$dhi))**2)
+
+  b1<-coef(ajuste)[1]
+
+  x <- seq(from = 0, to = 25, by = 0.1)
+  y <- mean(datos$dbh)*((max(datos$h)-x)/(max(datos$h)-1.3))**b1
+  # y <- tree$dbh[1]*((tree$h[1]-x)/(tree$h[1]-1.3))**b1
+
+  # lines(y~x, col = "blue", lwd = 2)
+
+  # Altura a la que se alcanza un cierto diametro limite (d_limite)
+
+  # h_d_limite_m<-function(dbh,h,d_limite){
+  #   return(h-((d_limite*(h-1.3)**b2)/dbh)**(1/b2))
+  # }
+
+  # volumen entre dos alturas
+  vol_m3<-function(dbh,h,hinf,hsup, b1){
+    return(pi*(dbh**2)*(((h-hinf)**(2*b1+1))-((h-hsup)**(2*b1+1)))/(40000*((h-1.3)**(2*b1))*(2*b1+1)))
+  }
+
+  volume <- data.frame(tree = as.numeric(), v = as.numeric())
+
+  for (i in unique(data$tree)) {
+
+    tree <- data[data$tree == i, ]
+
+    volume.i <- data.frame(tree = i, v = vol_m3(tree$dbh[1], tree$h[1], 0, tree$h[1], b1))
+    volume <- rbind(volume, volume.i)
+
+  }
+
+  return(volume)
+
+}
 
 .calc.volume <- function(data){
 
-  dbh0.est <- data.frame(tree = as.numeric(), sec = as.numeric(), dbh = as.numeric())
+  dbh0.est <- data.frame(tree = as.numeric(), sec = as.numeric(), dh = as.numeric())
 
   for (i in unique(data$tree)){
-    reg <- lm(data[data$tree == i,]$dbh ~ data[data$tree == i,]$sec)
+    reg <- lm(data[data$tree == i,]$dh ~ data[data$tree == i,]$sec)
     reg <- summary(reg)
     intercept <- reg$coefficients[1,1]
 
-    diameter <- data.frame(tree = i, sec = 0, dbh = intercept)
+    diameter <- data.frame(tree = i, sec = 0, dh = intercept)
 
     dbh0.est <- rbind(dbh0.est, diameter)
 
@@ -41,9 +132,9 @@
       # forumla de Newton: tres diametros consecutivos cada 0.3m
       l <- dat$sec[3] - dat$sec[1]
 
-      d0 <- dat$dbh[1]/100
-      dm <- dat$dbh[2]/100
-      d1 <- dat$dbh[3]/100
+      d0 <- dat$dh[1]/100
+      dm <- dat$dh[2]/100
+      d1 <- dat$dh[3]/100
 
       log <- data.frame(tree = dat$tree[1], sec = dat$sec[1],
                         v = pi/24 *l*(d0^2 + d1^2 + 4*dm^2), l = l)
@@ -57,8 +148,8 @@
       # forumla para calcular el conus
       l <- dat$sec[2] - dat$sec[1]
 
-      h <- dat$P99.9[1] - dat$sec[1]
-      d0 <- dat$dbh[1]/100
+      h <- dat$h[1] - dat$sec[1]
+      d0 <- dat$dh[1]/100
 
       log <- data.frame(tree = dat$tree[1], sec = dat$sec[1],
                         v = 1/3*pi*h*(d0/2)^2, l = l)
@@ -72,8 +163,8 @@
       # forumla de Smalian: volumen entre dos secciones
       l <- dat$sec[2] - dat$sec[1]
 
-      d0 <- dat$dbh[1]/100
-      d1 <- dat$dbh[2]/100
+      d0 <- dat$dh[1]/100
+      d1 <- dat$dh[2]/100
 
       log <- data.frame(tree = dat$tree[1], sec = dat$sec[1],
                         v = pi/8 *l*(d0^2 + d1^2), l = l)
@@ -105,7 +196,6 @@
 
 .stem.axis <- function(data){
 
-
   data <- data[data$prob > 0.99, ]
 
   if(nrow(data) < 50 | min(data$z) > 2){
@@ -113,7 +203,7 @@
 
     } else {
 
-  eje <- data.frame(tree = unique(data$tree), sec = seq(0, round(max(data$z)), by = 0.1))
+  eje <- data.frame(tree = unique(data$tree), sec = seq(0, round(max(data$z), 1), by = 0.1))
 
 
   dbscan <- dbscan::dbscan(data[, c("x", "z"), drop = FALSE], eps = 0.25)
@@ -385,8 +475,9 @@
 # Compute radius, k and BAF, and tree variables according to plot design(s) and
 # 'tree.var'. Currently available tree variables: basal area (g) and volume (v)
 
-.tree.calc <- function(tree, plot.design, tree.var,
-                       v.calc = c("coeff", "parab")[2]) {
+.tree.calc <- function(tree, plot.design, tree.var
+                       # v.calc = c("coeff", "parab")[2]
+                       ) {
 
   # Create data.frame where results will be saved
   .col.names <- plot.design
@@ -425,23 +516,25 @@
   if ("g" %in% colnames(tree)) tree[, "g"] <- (pi / 4) * tree[, "dbh"] ^ 2
 
   # Compute volume (m3)
-  if ("v" %in% colnames(tree)) {
+  if ("v" %in% colnames(tree)) tree[, "v"] <- tree[, "v"]
 
-    if (v.calc == "coeff") {
-
-      # Coefficient of 0.45
-      tree[, "v"] <- (pi / 4) * tree[, "dbh"] ^ 2 * tree[, "h"] * 0.45
-
-    } else if (v.calc == "parab") {
-
-      # Paraboloid
-      tree[, "v"] <- pi * (tree[, "h"] ^ 2 / 2) *
-        ((tree[, "dbh"] / 2) ^ 2 / (tree[, "h"] - 1.3) ^ 2)
-
-    } else
-      stop("Argument for tree volume calculation must be 'coeff' or 'parab'.")
-
-  }
+  # if ("v" %in% colnames(tree)) {
+  #
+  #   if (v.calc == "coeff") {
+  #
+  #     # Coefficient of 0.45
+  #     tree[, "v"] <- (pi / 4) * tree[, "dbh"] ^ 2 * tree[, "h"] * 0.45
+  #
+  #   } else if (v.calc == "parab") {
+  #
+  #     # Paraboloid
+  #     tree[, "v"] <- pi * (tree[, "h"] ^ 2 / 2) *
+  #       ((tree[, "dbh"] / 2) ^ 2 / (tree[, "h"] - 1.3) ^ 2)
+  #
+  #   } else
+  #     stop("Argument for tree volume calculation must be 'coeff' or 'parab'.")
+  #
+  # }
 
   return(tree)
 
@@ -985,8 +1078,7 @@
   # available methodologies: 'hn' (half normal function), 'hn.cov' (half normal
   # function with dbh as covariate), 'hr' (half rate function) and 'hr.cov'
   # (half rate function with dbh as covariate)
-  .ds.meth <- c(hn = "P.hn", hr = "P.hr", hn.cov = "P.hn.cov",
-                hr.cov = "P.hr.cov")
+  .ds.meth <- c(hn = "P.hn", hr = "P.hr", hn.cov = "P.hn.cov", hr.cov = "P.hr.cov")
 
   # Define character vectors containing the mean function to be used for each
   # mean diameter/height computation. Currently available means: arithmetic,
@@ -1076,7 +1168,7 @@
 
   # Define available calculations for trees volume. Currently available
   # calculations: 'coeff' and 'parab'
-  .v.calc <- c("coeff", "parab")
+  # .v.calc <- c("coeff", "parab")
 
   # Define values by default for certain columns in 'plot.parameters'
   .plot.parameters <- data.frame(radius.incr = 0.1, k.incr = 1, BAF.incr = 0.1,
@@ -1103,8 +1195,8 @@
                                 val = names(.scan.approach))
 
   # 'v.calc' must be a character string indicating how to calculate trees volume
-  v.calc <- .check.class(x = v.calc, x.class = "character", name = "v.calc",
-                         n = 1, val = .v.calc)
+  # v.calc <- .check.class(x = v.calc, x.class = "character", name = "v.calc",
+  #                        n = 1, val = .v.calc)
 
   # 'dbh.min', 'h.min' and 'max.dist' must be positive numeric values
   for (.i in c("dbh.min", "h.min", "max.dist")) {
@@ -1361,7 +1453,7 @@
     # 'tree.tls' according to 'function case', '.by.stratum.2' and
     # 'var.metr'
     .col.mand <- c("id", "file", "tree", unlist(.scan.approach), "h.dist",
-                   "dbh", "h",
+                   "dbh", "h", "v",
                    paste("n.pts", c("", ".est", ".red", ".red.est"),
                          sep = ""),
                    "partial.occlusion")
@@ -1370,7 +1462,7 @@
                         ncol = length(.col.mand),
                         dimnames = list(var.metr$tls, .col.mand))
     .col.mand[, colnames(.col.mand) %in%
-                c("stratum", "id", "tree", "h.dist", "dbh", "h")] <- TRUE
+                c("stratum", "id", "tree", "h.dist", "dbh", "h", "v")] <- TRUE
     .col.mand[rownames(.col.mand) %in%
                 c(sprintf("P%02i", .prob),
                   # Z coordinate
@@ -1892,7 +1984,8 @@
                 colnames(.col.mand) %in% "v"] <- TRUE
       .col.mand <- colnames(.col.mand)[apply(.col.mand, 2, any)]
       .tree <- .tree.calc(tree = .tree, plot.design = .plot.design[plot.design],
-                          tree.var = .col.mand, v.calc = v.calc)
+                          tree.var = .col.mand)
+                          # v.calc = v.calc)
 
       # Compute angular aperture (TLS data)
       if (.j == "tls" & all(c("phi.left", "phi.right") %in% colnames(.tree))) {
