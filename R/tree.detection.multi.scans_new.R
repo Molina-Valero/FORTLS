@@ -702,6 +702,8 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 4, dbh.max = 200, h.m
 
   rm(.filteraux)
 
+  # Numbering trees from 1 to n trees
+  .tree$tree <- 1:nrow(.tree)
 
   # Indicate trees with partial occlusions, those for which none of the sections
   # was identified as circumference arch (ArcCirc)
@@ -763,10 +765,11 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 4, dbh.max = 200, h.m
   # setwd("F:/TLS/Huelva/Latizal_con_gestion")
   # .tree <- read.csv("tree.tls.csv")
   .tree.2 <- .tree[ , c("tree", "x", "y"), drop = FALSE]
+  .tree.2$tree <- 1:nrow(.tree.2)
   # colnames(.tree) <- c("tree", "center.x", "center.y")
 
   # data <- read.table("1.txt", header = TRUE, sep = ",")
-  .voro <- data[data$prob > 0.75, ]
+  # .voro <- data[data$prob > 0.75, ]
   .voro <- data[, c("x", "y", "z")]
   .voro <- sf::st_as_sf(.voro, coords = c("x", "y"))
 
@@ -794,6 +797,7 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 4, dbh.max = 200, h.m
 
   .voro$tree <- .tree.2$tree
 
+
   rm(freq, .tree.2)
 
   # Compute height percentile P99.9
@@ -819,9 +823,6 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 4, dbh.max = 200, h.m
 
   rm(.P99)
 
-  # Numbering trees again
-
-  .tree$tree <- 1:nrow(.tree)
 
   # Assigning dbh to stem dataset
 

@@ -24,15 +24,7 @@
         tree <- tree[tree$filter == 1, ]
         tree$dif <- c(diff(tree$dhi), tree$dhi[nrow(tree)]-tree$dhi[nrow(tree)-1])
 
-
       }
-
-      plot(tree$dhi~tree$hi, col = "grey", main = i)
-
-
-      ajuste <- nls(dhi~dbh*((h-hi)/(h-1.3))**b1, data=tree, start=c(b1=1))
-      R2<-1-sum(resid(ajuste)**2)/sum((tree$dhi-mean(tree$dhi))**2)
-      print(R2)
 
       datos <- rbind(datos, tree[, c("hi", "dhi", "h", "dbh")])
 
@@ -41,18 +33,19 @@
   }
 
 
-  plot(datos$dhi~datos$hi, col = "grey",
-       xlab = "Altura del árbol (m)",
-       ylab = "Diámetro (cm)",
-       main = "Función de perfil",
-       cex.main = 2, cex.lab = 1.5)
-  lines(lowess(datos$hi, datos$dhi), col='red')
+  # plot(datos$dhi~datos$hi, col = "grey",
+  #      xlab = "Altura del árbol (m)",
+  #      ylab = "Diámetro (cm)",
+  #      main = "Función de perfil",
+  #      cex.main = 2, cex.lab = 1.5)
+  # lines(lowess(datos$hi, datos$dhi), col='red')
+
   loes <- lowess(datos$hi, datos$dhi)
   loes <- data.frame(hi = loes$x, dhi.mean = loes$y)
   loes <- loes[!duplicated(loes), ]
   datos <- merge(datos, loes, all = FALSE)
   datos$sep <- abs(datos$dhi - datos$dhi.mean)
-  datos <- datos[datos$sep < stats::quantile(datos$sep, prob = 0.5), ]
+  datos <- datos[datos$sep < stats::quantile(datos$sep, prob = 0.9), ]
 
   ajuste<-nls(dhi~dbh*((h-hi)/(h-1.3))**b1, data=datos, start=c(b1=1), max)
   R2<-1-sum(resid(ajuste)**2)/sum((datos$dhi-mean(datos$dhi))**2)
@@ -63,6 +56,13 @@
   y <- mean(datos$dbh)*((max(datos$h)-x)/(max(datos$h)-1.3))**b1
   # y <- tree$dbh[1]*((tree$h[1]-x)/(tree$h[1]-1.3))**b1
 
+  # plot(datos$dhi~datos$hi, col = "grey",
+  #      xlim = c(0, max(datos$h)), ylim = c(0, max(datos$dhi)),
+  #      xlab = "Altura del árbol (m)",
+  #      ylab = "Diámetro (cm)",
+  #      main = "Función de perfil",
+  #      cex.main = 2, cex.lab = 1.5)
+  #
   # lines(y~x, col = "blue", lwd = 2)
 
   # Altura a la que se alcanza un cierto diametro limite (d_limite)
