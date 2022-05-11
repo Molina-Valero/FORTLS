@@ -456,7 +456,7 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 4, dbh.max = 200, h.m
                                center.r = as.numeric(), center.theta = as.numeric(),
                                radius = as.numeric(), radius2 = as.numeric(),
                                n.pts = as.numeric(), n.pts.red = as.numeric(),
-                               circ = as.numeric(), arc.cir = as.numeric(), sec = as.numeric())
+                               circ = as.numeric(), arc.circ = as.numeric(), sec = as.numeric())
 
     } else{
 

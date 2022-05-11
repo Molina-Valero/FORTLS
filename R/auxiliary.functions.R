@@ -2395,6 +2395,11 @@
   .x = seq(min(.data$x), max(.data$x))
   .y = seq(min(.data$y), max(.data$y))
 
+  if(length(.x) < 2 | length(.y) < 2){
+
+    data$ncr <- NA
+    .data <- data} else{
+
   # Empty data frame where coordinates neccesaries for
   # creating grid will be saved
 
@@ -2461,6 +2466,8 @@
   .data <- merge(data, .ncr, by = "point", all = TRUE)
 
   .data <- .data[!duplicated(.data), ]
+
+  }
 
   return(.data)
 
