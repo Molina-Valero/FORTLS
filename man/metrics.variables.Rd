@@ -277,26 +277,19 @@ dir.result <- getwd()
 # Loading example data included in FORTLS
 
 data("Rioja.data")
-tree.list.tls <- Rioja.data$tree.list.tls
+tree.tls <- Rioja.data$tree.tls
 
 # Download example of TXT file corresponding to plot 1 from Rioja data set
 
-download.file(url = "https://www.dropbox.com/s/w4fgcyezr2olj9m/1.txt?raw=1",
+download.file(url = "https://www.dropbox.com/s/w4fgcyezr2olj9m/1.txt?dl=1",
               destfile = file.path(dir.data, "1.txt"), mode = "wb")
 
 
-# Without considering distance sampling methods
+# Considering distance sampling methods (only for single-scan approaches)
 
-met.var.TLS <- metrics.variables(tree.list.tls = tree.list.tls,
-                                 plot.parameters = data.frame(radius = 10, k.tree = 10, BAF = 2),
-                                 dir.data = dir.data, dir.result = dir.result)
+ds <- distance.sampling(tree.tls)
 
-
-# Considering distance sampling methods
-
-ds <- distance.sampling(tree.list.tls)
-
-met.var.TLS <- metrics.variables(tree.list.tls = tree.list.tls,
+met.var.TLS <- metrics.variables(tree.tls = tree.tls,
                                  distance.sampling = ds,
                                  plot.parameters = data.frame(radius = 10, k.tree = 10, BAF = 2),
                                  dir.data = dir.data, dir.result = dir.result)
@@ -313,17 +306,18 @@ tree.list.tls <- merge(tree.list.tls, plot.attributes, by = "id")
 
 # Download example of TXT file corresponding to strata 2 (plot 9) from Rioja data set
 
-download.file(url = "https://www.dropbox.com/s/5rwmbyn8tmqc48m/9.txt?raw=1",
+download.file(url = "https://www.dropbox.com/s/sghmw3zud424s11/2.txt?dl=1",
               destfile = file.path(dir.data, "9.txt"), mode = "wb")
 
 plot.parameters <- data.frame(radius = c(10, 15), k.tree = c(8, 12), BAF = c(1.5, 2),
 num.trees = c(100, 75))
 
-met.var.TLS <- metrics.variables(tree.list.tls = tree.list.tls,
+met.var.TLS <- metrics.variables(tree.tls = tree.tls,
                                  distance.sampling = ds,
                                  plot.parameters = plot.parameters,
                                  dir.data = dir.data, dir.result = dir.result)
 
-}}
+  }
+}
 
 

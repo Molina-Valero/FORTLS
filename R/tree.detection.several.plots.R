@@ -1,23 +1,26 @@
 
-tree.detection.several.plots <- function(las.list, scan.approach = "single",
+tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
-                                         id = NULL, file = NULL,
+
+                                         scan.approach = "single",
 
 
                                          x.center = NULL, y.center = NULL,
 
                                          max.dist = NULL, min.height = NULL, max.height = NULL,
 
-                                         algorithm.dtm = "tin", res.dtm = 0.2,
+                                         algorithm.dtm = "knnidw", res.dtm = 0.2, csf = list(cloth_resolution = 0.5),
 
 
-                                         dbh.min = 7.5, dbh.max = 200, h.min = 1.3,
+                                         dbh.min = 4, dbh.max = 200, h.min = 1.3,
 
                                          ncr.threshold = 0.1,
 
                                          tls.resolution = NULL, tls.precision = NULL,
 
-                                         breaks = c(1.0, 1.3, 1.6),
+                                         breaks = NULL, stem.section = NULL,
+
+                                         d.top = NULL,
 
 
                                          plot.attributes = NULL,
@@ -64,15 +67,13 @@ tree.detection.several.plots <- function(las.list, scan.approach = "single",
 
     .data <- normalize(las = las.list[[i]],
 
-                       x.center = x.center, y.center = y.center,
+                       x.center = x.center[i], y.center = y.center[i],
 
                        max.dist = max.dist,
 
                        min.height = min.height, max.height = max.height,
 
-                       algorithm.dtm = algorithm.dtm,
-
-                       res.dtm = res.dtm,
+                       algorithm.dtm = algorithm.dtm, res.dtm = res.dtm, csf = csf,
 
                        scan.approach = scan.approach,
 
@@ -86,17 +87,15 @@ tree.detection.several.plots <- function(las.list, scan.approach = "single",
 
     .tree.tls.i <- tree.detection.single.scan(data = .data,
 
-                                              dbh.min = dbh.min,
-
-                                              dbh.max = dbh.max,
-
-                                              h.min = h.min,
-
-                                              breaks = breaks,
+                                              dbh.min = dbh.min, dbh.max = dbh.max, h.min = h.min,
 
                                               ncr.threshold = ncr.threshold,
 
                                               tls.resolution = tls.resolution,
+
+                                              breaks = breaks, stem.section = stem.section,
+
+                                              d.top = d.top,
 
                                               plot.attributes = plot.attributes,
 
@@ -104,23 +103,21 @@ tree.detection.several.plots <- function(las.list, scan.approach = "single",
 
     if(scan.approach == "multi"){
 
-    .tree.tls.i <- tree.detection.multi.scans(data = .data,
+    .tree.tls.i <- tree.detection.multi.scan(data = .data,
 
-                                              dbh.min = dbh.min,
+                                             dbh.min = dbh.min, dbh.max = dbh.max, h.min = h.min,
 
-                                              dbh.max = dbh.max,
+                                             ncr.threshold = ncr.threshold,
 
-                                              h.min = h.min,
+                                             tls.precision = tls.precision,
 
-                                              breaks = breaks,
+                                             breaks = breaks, stem.section = stem.section,
 
-                                              ncr.threshold = ncr.threshold,
+                                             d.top = d.top,
 
-                                              tls.precision = tls.precision,
+                                             plot.attributes = plot.attributes,
 
-                                              plot.attributes = plot.attributes,
-
-                                              save.result = FALSE, dir.result = dir.result)
+                                             save.result = FALSE, dir.result = dir.result)
 
     }
 

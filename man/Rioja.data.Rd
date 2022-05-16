@@ -7,8 +7,8 @@
 
 The elements of the list are as follows:
 \enumerate{
-    \item \code{tree.list.tls}: data frame that includes the list of trees detected with \code{\link{tree.detection}} for 16 TLS single-scans. The following
-variables are provided for each tree (see \code{\link{tree.detection}} \sQuote{Value} for more details):
+    \item \code{tree.tls}: data frame that includes the list of trees detected with \code{\link{tree.detection.single.scan}} for 16 TLS single-scan sampling points. The following
+variables are provided for each tree (see \code{\link{tree.detection.single.scan}} \sQuote{Value} for more details):
 
 \tabular{rlll}{
 [,1] \tab id   \tab character/numeric\cr

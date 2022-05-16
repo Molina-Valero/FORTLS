@@ -4,25 +4,40 @@
 
 \alias{tree.detection.several.plots}
 
-\title{Tree Detection and Cross Section Estimation for Several Plots}
+\title{Tree-Level Variables Estimation for Several Plots}
 
-\description{This function integrates both, the \code{\link{normalize}} and \code{\link{tree.detection.single.scan}} or \code{\link{tree.detection.multiple.scans}} functions, generating the same \sQuote{Output Files} as indicated for these, and it returs the same \sQuote{Value} as described for \code{\link{tree.detection}}. However, this function is designed for working with several plots, producing a list of all scans considered automatically from LAS files.}
+\description{This function integrates both, the \code{\link{normalize}} and \code{\link{tree.detection.single.scan}} or \code{\link{tree.detection.multi.scans}} functions, generating the same \sQuote{Output Files} as indicated for these, and it returs the same \sQuote{Value} as described for \code{\link{tree.detection.single.scan}} or \code{\link{tree.detection.multi.scans}} respectively. However, this function is designed for working with several plots, producing a list of all scans considered automatically from LAS files.}
 
 \usage{
-tree.detection.multiple(las.list, id = NULL, file = NULL,
-                        normalize.arguments = list(max.dist = NULL,
-                                                   min.height = NULL,
-                                                   max.height = NULL,
-                                                   algorithm.dtm = "tin",
-                                                   res.dtm = 0.2,
-                                                   multi.scans = NULL),
-                        tree.detection.arguments = list(dbh.min = 7.5,
-                                                        dbh.max = 200,
-                                                        ncr.threshold = 0.1,
-                                                        tls.resolution = list(),
-                                                        breaks = c(1.0, 1.3, 1.6),
-                                                        plot.attributes = NULL),
-                        dir.data = NULL, save.result = TRUE, dir.result = NULL)}
+tree.detection.several.plots(las.list, id = NULL, file = NULL,
+
+
+                             scan.approach = "single",
+
+
+                             x.center = NULL, y.center = NULL,
+
+                             max.dist = NULL, min.height = NULL, max.height = NULL,
+
+                             algorithm.dtm = "tin", res.dtm = 0.2, csf = list(cloth_resolution = 0.5),
+
+
+
+                             dbh.min = 4, dbh.max = 200, h.min = 1.3,
+
+                             ncr.threshold = 0.1,
+
+                             tls.resolution = NULL, tls.precision = NULL,
+
+                             breaks = NULL, stem.section = NULL,
+
+                             d.top = NULL,
+
+
+                             plot.attributes = NULL,
+
+
+                             dir.data = NULL, save.result = TRUE, dir.result = NULL)}
 
 \arguments{
 
@@ -32,18 +47,20 @@ tree.detection.multiple(las.list, id = NULL, file = NULL,
 
   \item{file}{Optional vector containing files name identification encoded as character string or numeric value. If it is null, file will be encoded as \code{id} by default.}
 
-  \item{normalize.arguments}{Optional list including the following arguments related to the normalization process (see \code{\link{normalize}}):}
+  \item{scan.approach}{Character parameter indicating TLS single-scan (\sQuote{single}) or TLS multi-scan approach or SLAM point clouds (\sQuote{multi}) approaches. If this argument is not specified by the user, it will be set to \sQuote{multi} approach.}
+
+  \item{Normalize:}
 
   \itemize{
 
-    \item \code{max.dist}, \code{min.height}, \code{max.height}, \code{algorithm.dtm}, \code{res.dtm}: same description and format as indicated for same named \code{\link{normalize}} arguments, \code{multi.scans}: same description and format as indicated for same named \code{\link{normalize}} arguments}
+    \item \code{max.dist}, \code{min.height}, \code{max.height}, \code{algorithm.dtm}, \code{res.dtm}, \code{csf}, \code{RGB}: same description and format as indicated for same named \code{\link{normalize}} arguments.}
 
 
-  \item{tree.detection.arguments}{Optional list including the following arguments related to tree detection process (see \code{\link{tree.detection}}):}
+  \item{Tree detection:}
 
   \itemize{
 
-    \item \code{dbh.min}, \code{dbh.max}, \code{ncr.threshold}, \code{tls.resolution}, \code{breaks}, \code{plot.attributes}: same description and format as indicated for same named \code{\link{tree.detection}} arguments}
+    \item \code{dbh.min}, \code{dbh.max}, \code{h.min}, \code{ncr.threshold}, \code{tls.resolution}, \code{tls.precision}, \code{breaks}, \code{stem.section}, \code{d.top}, \code{plot.attributes}: same description and format as indicated for same named \code{\link{tree.detection.single.scan}} and \code{\link{tree.detection.multi.scan}} arguments}
 
   \item{dir.data}{Optional character string naming the absolute path of the directory where LAS files containing TLS point clouds are located. \code{.Platform$file.sep} must be used as the path separator in \code{dir.dat}. If this argument is not specified by the user, it will be set to \code{NULL} by default and, as consequence, the current working directory of the \R process will be assigned to \code{dir.dat} during the execution.}
 
@@ -54,9 +71,9 @@ tree.detection.multiple(las.list, id = NULL, file = NULL,
 
 \details{
 
-See \code{\link{normalize}} and \code{\link{tree.detection}} for further details.}
+See \code{\link{normalize}}, \code{\link{tree.detection.single.scan}} and \code{\link{tree.detection.multi.scan}} for further details.}
 
-\value{Data frame with the same description and format as \code{\link{tree.detection}} \sQuote{Value}. In this case, the \code{id} of plots will be encoded with correlative numbers from 1 to n, where n is the number of LAS files included in \code{files} argument, and \code{file} column will be encoded as \code{id}, but including .las extension.}
+\value{Data frame with the same description and format as \code{\link{tree.detection.single.scan}} and \code{\link{tree.detection.multi.scan}} \sQuote{Values}. In this case, the \code{id} of plots will be encoded with correlative numbers from 1 to n, where n is the number of LAS files included in \code{files} argument, and \code{file} column will be encoded as \code{id}, but including .las extension.}
 
 
 \section{Output Files}{
@@ -70,17 +87,11 @@ This function has been developed for working with several plots, which will be t
 
 
 \author{
-Juan Alberto Molina-Valero,
-María José Ginzo Villamayor,
-Manuel Antonio Novo Pérez,
-Adela Martínez-Calvo,
-Juan Gabriel Álvarez-González,
-Fernando Montes and
-César Pérez-Cruzado.}
+Juan Alberto Molina-Valero
+and Adela Martínez-Calvo.}
 
 \seealso{
-\code{\link{normalize}}, \code{\link{tree.detection}}, \code{\link{distance.sampling}}, \code{\link{estimation.plot.size}}, \code{\link{simulations}},
-\code{\link{metrics.variables}}.}
+\code{\link{normalize}}, \code{\link{tree.detection.single.scan}},\code{\link{tree.detection.multi.scan}}, \code{\link{distance.sampling}}, \code{\link{estimation.plot.size}}, \code{\link{simulations}}, \code{\link{metrics.variables}}.}
 
 \examples{
 
@@ -92,34 +103,33 @@ César Pérez-Cruzado.}
 dir.data <- getwd()
 dir.result <- getwd()
 
-# Loading example data (LAS files) to dir.data
+# Loading example data (LAZ files) to dir.data
 
-download.file("https://www.dropbox.com/s/2c3d320o3srcawb/1.las?raw=1",
-              destfile = file.path(dir.data, "1.las"), mode = "wb")
+download.file("https://www.dropbox.com/s/iaf4sf9z6w4ga14/Pinus_radiata_multi_scan.laz?dl=1",
+              destfile = file.path(dir.data, "Pinus_radiata_multi_scan.laz"),
+              mode = "wb")
 
-download.file("https://www.dropbox.com/s/9k8zn5dt0xcxfof/2.las?raw=1",
-              destfile = file.path(dir.data, "2.las"), mode = "wb")
+download.file("https://www.dropbox.com/s/ypar7fwqcht8aw6/Fagus_sylvatica_SLAM.laz?dl=1",
+              destfile = file.path(dir.data, "Fagus_sylvatica_SLAM.laz"),
+              mode = "wb")
 
 
-# Obtaining a vector with names of LAS files located in dir.data
+# Obtaining a vector with names of LAZ files located in dir.data
 
-files <- list.files(pattern = "las$", path = dir.data)
+files <- list.files(pattern = "laz$", path = dir.data)
 
 
 # Tree detection
 
-tree.list.tls <- tree.detection.multiple(las.list = files,
-                                         normalize.arguments = list(max.dist = 15,
-                                                                    min.height = 0.25,
-                                                                    max.height = 25),
-                                         tree.detection.arguments = list(dbh.min = 7.5,
-                                                                         dbh.max = 50,
-                                                                         breaks = 1.3,
-                                         tls.resolution = list(point.dist = 7.67,
-                                                               tls.dist = 10)),
-                                         dir.data = dir.data, dir.result = dir.result)
+tree.tls <- tree.detection.several.plots(las.list = files[1:2],
 
+                                         id = c("Pinus_radiata_multi_scan",
+                                                "Fagus_sylvatica_SLAM"),
 
+                                         scan.approach = "multi",
 
-}}
+                                         breaks = 1.3, stem.section = c(1,5))
+
+  }
+}
 

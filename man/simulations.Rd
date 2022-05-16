@@ -35,10 +35,10 @@ simulations(tree.list.tls, distance.sampling = NULL, tree.list.field,
 
 \arguments{
 
-  \item{tree.list.tls}{
+  \item{tree.tls}{
   Data frame with information about trees detected from TLS point cloud data. The
   structure and format must be analogous to output  returned by
-  \code{\link{tree.detection}} and \code{\link{tree.detection.multiple}} functions. In particular, each row must
+  \code{\link{tree.detection.single.scan}} and \code{\link{tree.detection.multi.scan}} (or \code{\link{tree.detection.several.plots}}) functions. In particular, each row must
   correspond to a (plot, tree) pair, and it must include at least the following columns:
     \itemize{
       \item \code{id}, \code{file}, \code{tree}, \code{x}, \code{y},
@@ -46,7 +46,7 @@ simulations(tree.list.tls, distance.sampling = NULL, tree.list.field,
       \code{dbh}, \code{num.points}, \code{num.points.hom},
       \code{num.points.est}, \code{num.points.hom.est},
       \code{partial.occlusion}: same description and format as indicated for the
-      same named columns in \code{\link{tree.detection}} \sQuote{Value}.
+      same named columns in \code{\link{tree.detection.single.scan}} \sQuote{Value}.
     }
   }
 
@@ -460,7 +460,7 @@ Fernando Montes and César Pérez-Cruzado.
 
 
 \seealso{
-\code{\link{tree.detection}}, \code{\link{tree.detection.multiple}}, \code{\link{distance.sampling}},
+\code{\link{tree.detection.single.scan}}, \code{\link{tree.detection.multi.scan}}, \code{\link{tree.detection.several.plots}}, \code{\link{distance.sampling}},
 \code{\link{normalize}}.
 }
 

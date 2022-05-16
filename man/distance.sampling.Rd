@@ -15,11 +15,11 @@ distance.sampling(tree.list.tls,
 
 \arguments{
 
-  \item{tree.list.tls}{Data frame with a list of trees detected and their \emph{dbh} and horizontal distances from TLS with the same structure and format as \code{\link{tree.detection}} and \code{\link{tree.detection.multiple}} \sQuote{Value}.}
+  \item{tree.tls}{Data frame with a list of trees detected and their \emph{dbh} and horizontal distances from TLS with the same structure and format as \code{\link{tree.detection.single.scan}} and \code{\link{tree.detection.several.plots}} \sQuote{Value}.}
 
   \item{id.plots}{Optional vector with plot identification encoded as character string or numeric for the plots considered. In this case, \code{tree.list.tls} argument must include a common column named \sQuote{id}. If this argument is not specified by the user, it will be set to NULL by default, and as a consequence, all plots will be considered.}
 
-  \item{strata.attributes}{Optional data frame inluding plot radius considered at strata level. It must contain a column named \sQuote{stratum} (numeric) with encoding coinciding with that used in previous functions (\code{\link{normalize}}, \code{\link{tree.detection}} and \code{\link{tree.detection.multiple}}) for identifying strata. Therefore, strata must heve been included previously in \sQuote{tree.list.tls}. Another column named \sQuote{plot.radius} (numeric) will be required to set maximum horizontal distance (m) considered for fitting detection probability functions. If this argument is not specified by the user, it will be set to NULL by default, and as a consequence, all trees will be included.}}
+  \item{strata.attributes}{Optional data frame inluding plot radius considered at strata level. It must contain a column named \sQuote{stratum} (numeric) with encoding coinciding with that used in previous functions (\code{\link{normalize}}, \code{\link{tree.detection.single.scan}} and \code{\link{tree.detection.several.plots}}) for identifying strata. Therefore, strata must heve been included previously in \sQuote{tree.list.tls}. Another column named \sQuote{plot.radius} (numeric) will be required to set maximum horizontal distance (m) considered for fitting detection probability functions. If this argument is not specified by the user, it will be set to NULL by default, and as a consequence, all trees will be included.}}
 
 \details{All internal functions related to distance sampling methodologies are fitted with the \code{\link[Distance]{ds}} function included in the \CRANpkg{Distance} package.
 
@@ -98,16 +98,11 @@ Marques, F. F., & Buckland, S. T. (2003). Incorporating covariates into standard
 Miller, D. L., & Thomas, L. (2015). Mixture models for distance sampling detection functions. \emph{PloS one}, \bold{10(3)}, e0118726. \doi{https://doi.org/10.1371/journal.pone.0118726}.}
 
 \author{
-Juan Alberto Molina-Valero,
-María José Ginzo Villamayor,
-Manuel Antonio Novo Pérez,
-Adela Martínez-Calvo,
-Juan Gabriel Álvarez-González,
-Fernando Montes and
-César Pérez-Cruzado.}
+Juan Alberto Molina-Valero
+and Adela Martínez-Calvo.}
 
 \seealso{
-\code{\link{tree.detection}}, \code{\link{tree.detection.multiple}}, \code{\link{metrics.variables}}, \code{\link{simulations}}.
+\code{\link{tree.detection.single.scan}}, \code{\link{tree.detection.several.plots}}, \code{\link{metrics.variables}}, \code{\link{simulations}}.
 
 \code{\link{ds}} in \CRANpkg{Distance} package.
 }

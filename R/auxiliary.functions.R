@@ -1,5 +1,5 @@
 
-.volume <- function(data){
+.volume <- function(data, d.top = NULL){
 
   # colnames(data) <- c("tree", "hi", "x", "y", "dhi", "dhi2", "h", "dbh")
 
@@ -67,23 +67,44 @@
 
   # Altura a la que se alcanza un cierto diametro limite (d_limite)
 
-  # h_d_limite_m<-function(dbh,h,d_limite){
-  #   return(h-((d_limite*(h-1.3)**b2)/dbh)**(1/b2))
-  # }
+  h_d_limite_m<-function(dbh,h,d_limite){
+    return(h-((d_limite*(h-1.3)**b1)/dbh)**(1/b1))
+  }
 
   # volumen entre dos alturas
   vol_m3<-function(dbh,h,hinf,hsup, b1){
     return(pi*(dbh**2)*(((h-hinf)**(2*b1+1))-((h-hsup)**(2*b1+1)))/(40000*((h-1.3)**(2*b1))*(2*b1+1)))
   }
 
-  volume <- data.frame(tree = as.numeric(), v = as.numeric())
+  if (is.null(d.top)){
+
+    volume <- data.frame(tree = as.numeric(), v = as.numeric())
+
+    for (i in unique(data$tree)) {
+
+      tree <- data[data$tree == i, ]
+
+      volume.i <- data.frame(tree = i,
+                             v = vol_m3(tree$dbh[1], tree$h[1], 0, tree$h[1], b1))
+
+      volume <- rbind(volume, volume.i)}
+
+
+    } else {
+
+  volume <- data.frame(tree = as.numeric(), v = as.numeric(), v.com = as.numeric())
 
   for (i in unique(data$tree)) {
 
     tree <- data[data$tree == i, ]
 
-    volume.i <- data.frame(tree = i, v = vol_m3(tree$dbh[1], tree$h[1], 0, tree$h[1], b1))
-    volume <- rbind(volume, volume.i)
+    h.lim <- h_d_limite_m(tree$dbh[1], tree$h[1], d.lim)
+
+    volume.i <- data.frame(tree = i,
+                           v = vol_m3(tree$dbh[1], tree$h[1], 0, tree$h[1], b1),
+                           v.com = vol_m3(tree$dbh[1], tree$h[1], 0, h.lim, b1))
+
+    volume <- rbind(volume, volume.i)}
 
   }
 
@@ -91,112 +112,14 @@
 
 }
 
-.calc.volume <- function(data){
 
-  dbh0.est <- data.frame(tree = as.numeric(), sec = as.numeric(), dh = as.numeric())
+.stem.axis <- function(data, scan.approach = "single"){
 
-  for (i in unique(data$tree)){
-    reg <- lm(data[data$tree == i,]$dh ~ data[data$tree == i,]$sec)
-    reg <- summary(reg)
-    intercept <- reg$coefficients[1,1]
+  if(scan.approach == "multi"){
+    data <- data[data$prob > 0.9, ]} else {
 
-    diameter <- data.frame(tree = i, sec = 0, dh = intercept)
+    data <- data[data$prob < 0.1 | data$prob > 0.9, ]}
 
-    dbh0.est <- rbind(dbh0.est, diameter)
-
-  }
-
-  data <- merge(data, dbh0.est, all = TRUE)
-
-
-  logs.v <- data.frame(tree = as.numeric(), sec = as.numeric(), v = as.numeric(),
-                       l = as.numeric())
-
-  j <- 1
-  k <- j+2
-
-  for (i in 1:nrow(data)) {
-
-    dat <- data[j:k, ]
-
-    if(j == nrow(data) +1){break}
-
-    if(is.na(dat$sec[2])){
-      dat[2,]$sec <- 0
-    }
-    if(is.na(dat$sec[3])){
-      dat[3,]$sec <- 0
-    }
-
-    if(round(dat$sec[2] - dat$sec[1], digits = 1) == round(dat$sec[3] - dat$sec[2], digits = 1)){
-      # forumla de Newton: tres diametros consecutivos cada 0.3m
-      l <- dat$sec[3] - dat$sec[1]
-
-      d0 <- dat$dh[1]/100
-      dm <- dat$dh[2]/100
-      d1 <- dat$dh[3]/100
-
-      log <- data.frame(tree = dat$tree[1], sec = dat$sec[1],
-                        v = pi/24 *l*(d0^2 + d1^2 + 4*dm^2), l = l)
-
-      logs.v <- rbind(logs.v, log)
-
-      j <- j+2
-      k <- j+2
-
-    } else if(dat$sec[2]-dat$sec[1] < 0){
-      # forumla para calcular el conus
-      l <- dat$sec[2] - dat$sec[1]
-
-      h <- dat$h[1] - dat$sec[1]
-      d0 <- dat$dh[1]/100
-
-      log <- data.frame(tree = dat$tree[1], sec = dat$sec[1],
-                        v = 1/3*pi*h*(d0/2)^2, l = l)
-
-      logs.v <- rbind(logs.v, log)
-
-      j <- j+1
-      k <- j+2
-
-    } else {
-      # forumla de Smalian: volumen entre dos secciones
-      l <- dat$sec[2] - dat$sec[1]
-
-      d0 <- dat$dh[1]/100
-      d1 <- dat$dh[2]/100
-
-      log <- data.frame(tree = dat$tree[1], sec = dat$sec[1],
-                        v = pi/8 *l*(d0^2 + d1^2), l = l)
-
-      logs.v <- rbind(logs.v, log)
-
-      j <- j+1
-      k <- j+2
-    }
-  }
-
-  #grouped <- dplyr::group_by(logs.v, tree)
-  #volume <- dplyr::summarise(grouped, v = sum(v))
-
-  volume <- data.frame(tree = as.numeric(), v = as.numeric())
-
-  for (i in unique(logs.v$tree)){
-    v <- sum(logs.v[logs.v$tree == i,]$v)
-
-    vol <- data.frame(tree = i, v = v)
-
-    volume <- rbind(volume, vol)
-
-  }
-
-  return(volume)
-}
-
-
-.stem.axis <- function(data){
-
-  data <- data[data$prob > 0.99, ]
 
   if(nrow(data) < 50 | min(data$z) > 2){
     eje <- data.frame(tree = as.numeric(), sec = as.numeric(), x = as.numeric(), y = as.numeric())
@@ -512,11 +435,14 @@
     tree[, plot.design["angle.count"]] <- 2500 / (tree[, "h.dist"] /
                                                     tree[, "dbh"]) ^ 2
 
-  # Compute basal area (m2)
+  # Compute basal area (m^2)
   if ("g" %in% colnames(tree)) tree[, "g"] <- (pi / 4) * tree[, "dbh"] ^ 2
 
-  # Compute volume (m3)
+  # Compute volume (m^3)
   if ("v" %in% colnames(tree)) tree[, "v"] <- tree[, "v"]
+
+  # Compute comercial volume (m^3)
+  # if ("v.com" %in% colnames(tree)) tree[, "v.com"] <- tree[, "v.com"]
 
   # if ("v" %in% colnames(tree)) {
   #
@@ -630,7 +556,7 @@
   for (.i in c("N", "G", "V"))
     .col.names[c(sapply(.i, paste, c("tls", names(ds.meth), "sh", "pam"),
                         sep = "."), .i), "var"] <-
-    switch(.i, N = "n", G = "g", V = "v")
+    switch(.i, N = "n", G = "g", V = "v", V.com = "v.com")
   for (.i in names(var.field.user))
     .col.names[.i, "var"] <- var.field.user[[.i]]
   .col.names[c(paste(c("N", "G", "V"), "tls", sep = "."), "N", "G", "V",

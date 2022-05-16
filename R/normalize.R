@@ -1,9 +1,10 @@
 
-normalize <- function(las, RGB = NULL,
+normalize <- function(las,
                       x.center = NULL, y.center = NULL,
                       max.dist = NULL, min.height = NULL, max.height = 50,
                       algorithm.dtm = "knnidw", res.dtm = 0.2,
                       csf = list(cloth_resolution = 0.5),
+                      RGB = NULL,
                       scan.approach = "single",
                       id = NULL, file = NULL,
                       dir.data = NULL, save.result = TRUE, dir.result = NULL){
@@ -56,13 +57,13 @@ normalize <- function(las, RGB = NULL,
 
   # Data filtering at horizontal distances larger than max_dist m in the horizontal plane
 
-  if(!is.null(max.dist)) {
-
-    .las <- lidR::clip_circle(.las, 0, 0, max.dist)
-
-  }
-
-  .pb$tick()
+  # if(!is.null(max.dist)) {
+  #
+  #   .las <- lidR::clip_circle(.las, 0, 0, max.dist)
+  #
+  # }
+  #
+  # .pb$tick()
 
 
   # Normalize
@@ -134,6 +135,18 @@ normalize <- function(las, RGB = NULL,
 
   .pb$tick()
 
+
+  # Data filtering at horizontal distances larger than max_dist m in the horizontal plane
+
+  if(!is.null(max.dist)) {
+
+    .data <- lidR::clip_circle(.data, 0, 0, max.dist)
+
+  }
+
+  .pb$tick()
+
+
   # Assigning slope to point cloud
 
   .data <- lidR::merge_spatial(.data, .slope, "slope")
@@ -198,9 +211,9 @@ normalize <- function(las, RGB = NULL,
 
   .data$point <- (1:nrow(.data))
 
-  # Green intensity
+  # Green Leaf Algorithm (GLA) (Louhaichi et al., (2001))
   if(!is.null(RGB))
-    .data$GLI <- (2 * .data$G - .data$R - .data$B) / (2 * .data$R + .data$G + .data$B)
+    .data$GLA <- (2 * .data$G - .data$R - .data$B) / (2 * .data$G + .data$R + .data$B)
 
 
   # Point crooping process
@@ -248,7 +261,7 @@ normalize <- function(las, RGB = NULL,
 
   if(is.null(RGB)){
   .data <- .data[, c("id", "file", "point", "x", "y", "z", "rho", "phi", "r", "theta", "slope", "prob", "prob.selec"), drop = FALSE]} else {
-    .data <- .data[, c("id", "file", "point", "x", "y", "z", "rho", "phi", "r", "theta", "slope", "prob", "prob.selec", "GLI"), drop = FALSE]}
+    .data <- .data[, c("id", "file", "point", "x", "y", "z", "rho", "phi", "r", "theta", "slope", "GLA", "prob", "prob.selec"), drop = FALSE]}
 
   .pb$tick()
 

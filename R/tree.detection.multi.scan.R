@@ -1,8 +1,11 @@
 
-tree.detection.multi.scans_new <- function(data, dbh.min = 4, dbh.max = 200, h.min = 1.3,
-                                           ncr.threshold = 0.1, tls.precision = NULL, breaks = NULL,
-                                           plot.attributes = NULL, stem.section = NULL,
-                                           save.result = TRUE, dir.result = NULL){
+tree.detection.multi.scan <- function(data,
+                                      dbh.min = 4, dbh.max = 200, h.min = 1.3,
+                                      ncr.threshold = 0.1, tls.precision = NULL,
+                                      stem.section = NULL, breaks = NULL,
+                                      d.top = NULL,
+                                      plot.attributes = NULL,
+                                      save.result = TRUE, dir.result = NULL){
 
   # Obtaining working directory for saving files
   if(is.null(dir.result))
@@ -16,12 +19,19 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 4, dbh.max = 200, h.m
 
 
   # Detection of stem part without shrub vegetation and crown
-  stem <- data[data$prob.selec == 1, ]
-  if(!is.null(stem$GLI))
-    stem <- stem[stem$GLI <= 0, ]
-  stem <- stem[!is.na(stem$x) & !is.na(stem$y) & !is.na(stem$z), ]
+
+  stem <- data[data$prob.selec == 0, ]
+
+  if(!is.null(data$GLA)){
+    stem <- data[data$GLA <= 0, ]
+    stem <- stem[!is.na(stem$x) & !is.na(stem$y) & !is.na(stem$z), ]} else {
+
+      stem <- stem
+
+    }
 
 
+  # Defining the vertical section in which trees are detected
   if(is.null(stem.section)){
 
     den <- .getStem(stem)
@@ -53,27 +63,35 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 4, dbh.max = 200, h.m
   buf <- sp::SpatialPolygons(buf)
   # sp::plot(buf, col = "red")
 
+  # Detection of stem part without shrub vegetation and crown
 
-  stem <- data[data$prob.selec == 1, ]
-  if(!is.null(stem$GLI))
-    stem <- stem[stem$GLI <= 0, ]
-  stem <- stem[!is.na(stem$x) & !is.na(stem$y) & !is.na(stem$z), ]
-  # stem <- stem[stem$z > den$x & stem$z < den$x + den$diff, ]
+  stem <- data[data$prob.selec == 0, ]
 
+  if(!is.null(data$GLA)){
+    stem <- data[data$GLA <= 0, ]
+    stem <- stem[!is.na(stem$x) & !is.na(stem$y) & !is.na(stem$z), ]} else {
+
+      stem <- stem
+
+    }
+
+
+
+  # Assigning points to trees previously detected
 
   stem$tree <- sp::over(sp::SpatialPoints(coords = cbind(stem$x,stem$y,stem$z)), buf, returnlist=TRUE)
-
   stem <- stem[!is.na(stem$tree), ]
   # plot(stem$x, stem$y, col = stem$tree, asp = 1)
 
   # Breaks argument
+
   if(is.null(breaks)){
     breaks <- seq(from = 0.1, to = max(stem$z), by = 0.3)
     breaks <- breaks[-length(breaks)]}
 
 
   # Defining stem axis
-
+  scan.approach <- "multi"
   stem.i <- split(stem, stem$tree)
   eje <- do.call(rbind, lapply(stem.i, .stem.axis))
   eje <- eje[eje$sec %in% as.character(breaks) & !is.na(eje$x), ]
@@ -83,8 +101,14 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 4, dbh.max = 200, h.m
 
   # write.csv(eje, "ejes.csv")
 
+  # Estimating NCR threshold when RGB are available
 
-  # .ncr.threshold <- .ncr.threshold.double(data)
+  if(!is.null(stem$GLA)){
+  ncr <- data[data$GLA > 0, ]
+  ncr <- as.matrix(ncr[, c("point", "x", "y", "z")])
+  ncr.threshold <- ncr_point_cloud_double(ncr[1:10000, ])
+  ncr.threshold <- mean(ncr.threshold$ncr, na.rm = TRUE)}
+
 
   .filteraux <- data.frame(cluster = as.numeric(),
                            center.x = as.numeric(), center.y = as.numeric(),
@@ -110,9 +134,6 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 4, dbh.max = 200, h.m
     .cut <- .ncr.remove.slice.double(.cut)
 
     .cut <- .cut[which(.cut$ncr < ncr.threshold | is.na(.cut$ncr)), , drop = FALSE]
-
-
-    # vroom::vroom_write(.cut, path = file.path(dir.result, paste(cuts, ".txt", sep = "")), delim = ",", progress = FALSE)
 
 
     # Restrict to slice corresponding to cuts m +/- 5 cm
@@ -401,7 +422,7 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 4, dbh.max = 200, h.m
       # Zhang et al., (2019)
       .n.w.ratio <- stats::sd(.dat$z) / sqrt(stats::sd(.dat$x) ^ 2 + stats::sd(.dat$y) ^ 2)
 
-      if(.n.w.ratio > 1 | is.nan(.n.w.ratio)){next}
+      if(.n.w.ratio > 1 | .n.w.ratio < 0.1 | is.nan(.n.w.ratio)){next}
 
       .densidad_radio <- .n.pts.red / .radio
 
@@ -474,7 +495,38 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 4, dbh.max = 200, h.m
   .filter <- .filteraux
   rm(.filteraux)
 
-  if(nrow(.filter) < 1) stop("No tree was detected")
+  if(nrow(.filter) < 1) {
+
+    # Generate a warning and create empty data.frame to be returned, if no row
+    # was included in .filter
+
+    if(is.null(data$id)){
+
+      # If plot identification (id) is not available
+
+      warning("No tree was detected")
+
+      .colnames <- c("tree", "x", "y", "phi",
+                     "horizontal.distance", "dbh", "n.pts",
+                     "n.pts.red", "n.pts.est", "n.pts.red.est",
+                     "partial.occlusion")
+    } else {
+
+      # If plot identification (id) is available
+
+      warning("No tree was detected for plot ", data$id[1])
+
+      .colnames <- c("id", "file", "tree", "x", "y", "phi",
+                     "horizontal.distance", "dbh", "n.pts",
+                     "n.pts.red", "n.pts.est", "n.pts.red.est",
+                     "partial.occlusion")
+    }
+
+    .tree <- data.frame(matrix(nrow = 0, ncol = length(.colnames),
+                               dimnames = list(NULL, .colnames)))
+  }
+
+  else {
 
 
   # Assigning sections to tree axis
@@ -750,26 +802,10 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 4, dbh.max = 200, h.m
   } else {
 
   # Voronoi tessellation
-  # .voro <- .tree[ , c("tree", "x", "y"), drop = FALSE]
-  # .voro <- ggvoronoi::voronoi_polygon(.voro, x = "x", y = "y", outline = NULL,
-  #                                     data.frame = FALSE)
-  #
-  # sp::coordinates(data) <- ~ x + y + z
-  # .voro <- sp::over(data, .voro)
-  # .voro <- sp::SpatialPointsDataFrame(data, .voro)
-  #
-  # .voro <- as.data.frame(.voro, stringsAsFactors = FALSE)
-  # .voro <- .voro[!is.na(.voro$tree), , drop = FALSE]
 
-
-  # setwd("F:/TLS/Huelva/Latizal_con_gestion")
-  # .tree <- read.csv("tree.tls.csv")
   .tree.2 <- .tree[ , c("tree", "x", "y"), drop = FALSE]
   .tree.2$tree <- 1:nrow(.tree.2)
-  # colnames(.tree) <- c("tree", "center.x", "center.y")
 
-  # data <- read.table("1.txt", header = TRUE, sep = ",")
-  # .voro <- data[data$prob > 0.75, ]
   .voro <- data[, c("x", "y", "z")]
   .voro <- sf::st_as_sf(.voro, coords = c("x", "y"))
 
@@ -779,10 +815,6 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 4, dbh.max = 200, h.m
 
   .voro$tree <- unlist(sf::st_intersects(.voro, .voronoi))
   freq <- table(.voro$tree)
-
-
-  # data$pol <- pols[unlist(sf::st_intersects(data, pols))]
-  # data$tree <- sf::st_intersects(data, pols)
 
 
   .tree.2 <- data.frame(tree = as.numeric())
@@ -836,17 +868,26 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 4, dbh.max = 200, h.m
   .stem <- merge(.stem, .tree[, c("tree", "dbh")], by = "tree", all.x = TRUE)
   colnames(.stem) <- c("tree", "hi", "x", "y", "dhi", "dhi2", "h", "dbh")
 
+  # Cheking the trees h
+  .stem <- merge(.stem[, c("tree", "hi", "x", "y", "dhi", "dhi2", "dbh")],
+                 data.frame(tree = unique(.stem$tree),
+                            h = do.call(rbind, lapply(split(.stem[, c("hi", "h")], .stem$tree), max))),
+                 all.x = TRUE, by = "tree")
 
   # Compute volume (m3)
 
-  # .stem <- read.csv("stem.csv")
-
-  if(length(table(.stem$hi)) > 3){
+  if(length(table(.stem$hi)) > 3 & is.null(d.top)){
 
   # Stem curve
 
   stem.v <- .volume(.stem)
   .tree <- merge(.tree, stem.v, all = TRUE)
+
+  } else if (length(table(.stem$hi)) > 3 & !is.null(d.top)) {
+
+    stem.v <- .volume(.stem, d.top)
+    .tree <- merge(.tree, stem.v, all = TRUE)
+
 
   } else {
 
@@ -865,12 +906,18 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 4, dbh.max = 200, h.m
 
 
   # If plot identification (id) is not available
-  if(is.null(data$id)){
+  if(is.null(data$id) & is.null(.tree$v.com)){
 
     .tree <- .tree[, c("tree", "x", "y", "phi", "horizontal.distance", "dbh", "dbh2", "h", "v", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion"), drop = FALSE]
     colnames(.tree) <- c("tree", "x", "y", "phi", "h.dist", "dbh", "dbh2", "h", "v", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
-  } else{
+  } else if (is.null(data$id) & !is.null(.tree$v.com)) {
+
+    .tree <- .tree[, c("tree", "x", "y", "phi", "horizontal.distance", "dbh", "dbh2", "h", "v", "v.com", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion"), drop = FALSE]
+    colnames(.tree) <- c("tree", "x", "y", "phi", "h.dist", "dbh", "dbh2", "h", "v", "v.com", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+
+
+  } else if (!is.null(data$id) & is.null(.tree$v.com)) {
 
     # If plot identification (id) is available
 
@@ -880,13 +927,21 @@ tree.detection.multi.scans_new <- function(data, dbh.min = 4, dbh.max = 200, h.m
     .tree <- .tree[, c("id", "file", "tree", "x", "y", "phi", "horizontal.distance", "dbh", "dbh2", "h", "v", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion"), drop = FALSE]
     colnames(.tree) <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "dbh2", "h", "v", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
+  } else {
+
+    # If plot identification (id) is available
+
+    .tree$id <- data$id[1]
+    .tree$file <- data$file[1]
+
+    .tree <- .tree[, c("id", "file", "tree", "x", "y", "phi", "horizontal.distance", "dbh", "dbh2", "h", "v", "v.com", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion"), drop = FALSE]
+    colnames(.tree) <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "dbh2", "h", "v", "v.com", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+
   }
 
-  # .tree$id <- as.integer(.tree$id)
-
-
-
   rm(.stem)
+
+  }
 
   # Lastly, aggregate attributes table
   if(!is.null(plot.attributes))

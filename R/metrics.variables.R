@@ -5,7 +5,7 @@ metrics.variables <- function(tree.tls, tree.ds = NULL, tree.field = NULL,
                               plot.parameters = data.frame(radius = 25,
                                                            k = 50, BAF = 4),
                               scan.approach = "single", var.metr = NULL,
-                              dbh.min = 7.5, h.min = 1.3,
+                              dbh.min = 4, h.min = 1.3,
                               max.dist = Inf, dir.data = NULL,
                               save.result = TRUE, dir.result = NULL) {
 
