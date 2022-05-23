@@ -1,5 +1,5 @@
 ---
-title: "Vignette Title"
+title: "Tree-level"
 author: "Vignette Author"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
