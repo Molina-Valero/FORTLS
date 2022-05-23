@@ -4,24 +4,47 @@
 
 \alias{metrics.variables}
 
-\title{Compute Metrics and Variables for TLS Plots}
+\title{Compute Metrics and Variables for Terrestrial-Based Technologies Point Clouds}
 
-\description{This function computes a set of TLS-based metrics and variables from the TLS point cloud data, which have a high potential to be related or used as direct estimates (in the case of TLS-based variables) of forest attributes at plot level. These can be obtained for different plot designs (circular fixed area, k-tree and angle-count plots). This function also includes methodologies for correcting occlusions generated in TLS point clouds.}
+\description{This function computes a set of metrics and variables from the Terrestrial-Based Technologies point cloud data, which have a high potential to be related or used as direct estimates (in the case of variables) of forest attributes at plot level. These can be obtained for different plot designs (circular fixed area, k-tree and angle-count plots). This function also includes methodologies for correcting occlusions generated in TLS single-scan point clouds.}
 
 \usage{
-metrics.variables(tree.list.tls,
-                  distance.sampling = NULL,
-                  multiple.scans = NULL,
-                  plot.parameters,
-                  dir.data = NULL, save.result = TRUE, dir.result = NULL)}
+metrics.variables(tree.tls, tree.ds = NULL, tree.field = NULL,
+                  plot.design = c("fixed.area", "k.tree", "angle.count"),
+                  plot.parameters = data.frame(radius = 25, k = 50, BAF = 4),
+                  scan.approach = "single", var.metr = NULL,
+                  dbh.min = 4, h.min = 1.3,
+                  max.dist = Inf, dir.data = NULL,
+                  save.result = TRUE, dir.result = NULL)}
 
 \arguments{
 
-  \item{tree.list.tls}{Data frame with information about trees detected from TLS point clouds data in the same format as \code{\link{tree.detection}} \sQuote{Value}.}
+  \item{tree.tls}{Data frame with information about trees detected from terrestrial-based technologies point clouds data in the same format as \code{\link{tree.detection.single.scan}} or \code{\link{tree.detection.milti.scan}} \sQuote{Values}.}
 
-  \item{distance.sampling}{Optional list containing detection probabilities of trees with distance sampling methods. The format must be the same as the \sQuote{Value} obtained with \code{\link{distance.sampling}}. If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, TLS metrics using distance sampling based correction will not be calculated for circular fixed area and k-tree plot designs.}
+  \item{tree.ds}{Optional list containing detection probabilities of trees with distance sampling methods. The format must be the same as the \sQuote{Value} obtained with \code{\link{distance.sampling}}. If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, TLS metrics using distance sampling based correction will not be calculated for circular fixed area and k-tree plot designs.}
 
-  \item{multiple.scans}{Logical parameter indicating single scans (NULL) or multiple scans (TRUE).}
+    \item{tree.field}{
+  Data frame with information about trees measured in the field plots. Each
+  row must correspond to a (plot, tree) pair, and it must include at least the
+  following columns:
+    \itemize{
+      \item \code{id}: plot identification encoded as character string or
+      numeric. Plot identifications must coincide with those
+      included in \code{id} column of the \code{tree.tls} argument.
+      \item \code{tree}: trees numbering.
+      \item \code{h.dist}: horizontal distance (m) from plot
+      centre to tree centre. Centres of the field plots must coincide with
+      centres of their corresponding Terrestrial-based technologies plots.
+      \item \code{dbh}: tree diameter (cm) at breast height (1.3 m).
+      \item \code{h}: tree total height (m).
+      \item \code{h.blc}: height based live crown (m) (optional).
+      \item \code{h.bdc}: height based dead crown (m) (optional).
+      \item \code{v.user}: tree volume (m^3) (optional).
+      \item \code{w.user}: tree biomass (Mg) (optional).
+      \item \code{dead}: integer value indicating for each tree if it is dead
+      (1) or not (NA).
+    }
+  }
 
   \item{plot.parameters}{Data frame containing parameters for circular fixed area, k-tree and angle-count plot designs. If there is a \code{stratum} column in the \code{tree.list.tls} argument, it must have the same number of rows as strata values and they must be named using strata encoding. If plot parameters are not specified, the corresponding plot designs will not be considered in the function. If no parameter is specified, the function will stop giving an error message! The parameters are as follows:}
 
@@ -34,6 +57,16 @@ metrics.variables(tree.list.tls,
 \item{\code{BAF}}: basal area factor (\eqn{{m}^{2}/ha}{m^2/ha}) considered for angle-count plots. Absence of this argument rules out this plot design.
 
 \item{\code{num.trees}}: number of dominant trees per ha (tree/ha), i.e. those with largest \emph{dbh}, considered for calculating dominant diameters and heights. In the absence of this argument, the number will be assumed to be 100 trees/ha.}
+
+  \item{scan.approach}{Character parameter indicating TLS single-scan (\sQuote{single}) or TLS multi-scan approach or SLAM point clouds (\sQuote{multi}) approaches. If this argument is not specified by the user, it will be set to \sQuote{multi} approach.}
+
+  \item{var.metr}{Optional vector containing all the metrics and variables of interest. By default it will be set as NULL and thus, all the metrics and variables available will be generated.}
+
+  \item{dbh.min}{Optional minimum \emph{dbh} (cm) considered for detecting trees. By default it will be set at 4 cm.}
+
+  \item{h.min}{Optional minimum \emph{h} (m) considered for detecting trees. By default it will be set at 1.3 m.}
+
+  \item{max.dist}{Optional argument to specify the maximum horizontal distance considered in which trees will be included.}
 
   \item{dir.data}{Optional character string naming the absolute path of the directory where TXT
   files containing TLS point clouds are located. \code{.Platform$file.sep} must
@@ -82,7 +115,7 @@ Stratum, plot identification and radius:
       \code{distance.sampling} argument.
       \item \code{radius}: radius (m) of the simulated plot.}
 
-      TLS variables:
+      Terrestrial-Based Technologies variables:
 
       \itemize{
 
@@ -124,7 +157,7 @@ Stratum, plot identification and radius:
       \code{hharm.0.tls}: dominant mean tree heights (m), calculated from the arithmetic
       mean, quadratic mean, geometric mean and harmonic mean, respectively.}
 
-      TLS metrics:
+      Terrestrial-Based Technologies metrics:
 
       \itemize{
 
@@ -139,13 +172,14 @@ Stratum, plot identification and radius:
       \code{P30}, \code{P40}, \code{P50}, \code{P60}, \code{P70}, \code{P75},
       \code{P80}, \code{P90}, \code{P95}, \code{P99}: height percentiles
       derived from z coordinates of TLS point clouds relative to ground level (m).
-      \item \code{mean.arit.z}, \code{mean.qua.z}, \code{mean.geom.z}, \code{mean.harm.z},         \code{median.z}, \code{mode.z}, \code{max.z}, \code{min.z}: .
-      \item \code{var.z}, \code{sd.z}, \code{CV.z}, \code{D.z}, \code{ID.z}: .
-      \item \code{kurt.z}, \code{skw.z}: .
-      \item \code{L1.z}, \code{L2.z}, \code{L3.z}, \code{L4.z}, \code{L-CV.z}, \code{MAD-median.z}, \code{MAD-mode.z}: .
-      \item \code{PA.2m}, \code{PA.mean.z}, \code{PA.median.z}, \code{PA.mode.z}: .
-      \item \code{PB.2m}, \code{PB.mean.z}, \code{PB.median.z}, \code{PB.mode.z}: .
-      \item \code{weibull.b.z}, \code{weibull.c.z}: .}}
+      \item \code{mean.arit.z/rho/phi}, \code{mean.qua.z/rho/phi}, \code{mean.geom.z/rho/phi}, \code{mean.harm.z/rho/phi}, \code{median.z/rho/phi}, \code{mode.z/rho/phi}: estadísticos de tendencias centrales en la distribución de las coordenadas z, rho (distancia horizontal) y r (distancia euclídea) (medias aritmética, cuadrática, geométrica, armónica, mediana, moda).
+      \item \code{max.z/rho/phi}, \code{min.z/rho/phi}.
+      \item \code{var.z/rho/phi}, \code{sd.z/rho/phi}, \code{CV.z/rho/phi}, \code{D.z/rho/phi}, \code{ID.z/rho/phi}.
+      \item \code{kurt.z/rho/phi}, \code{skw.z/rho/phi}: .
+      \item \code{L1.z/rho/phi}, \code{L2.z/rho/phi}, \code{L3.z/rho/phi}, \code{L4.z/rho/phi}, \code{L-CV.z/rho/phi}, \code{MAD-median.z/rho/phi}, \code{MAD-mode.z/rho/phi}.
+      \item \code{PA.2m}, \code{PA.mean.z}, \code{PA.median.z}, \code{PA.mode.z}.
+      \item \code{PB.2m}, \code{PB.mean.z}, \code{PB.median.z}, \code{PB.mode.z}.
+      \item \code{weibull.b.z/rho/phi}, \code{weibull.c.z/rho/phi}.}}
 
 
 \item{k.tree.plot}{If no value for \code{k.tree} is specified in the \code{plot.parameters} argument, \code{NULL}; otherwise, the data frame will include TLS metrics and variables estimated in the k-tree plot design (rows represent simulations). The data frame will include the following columns (same description and format as indicated in \code{fixed.area.plot} element):

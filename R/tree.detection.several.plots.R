@@ -67,7 +67,7 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
     .data <- normalize(las = las.list[[i]],
 
-                       x.center = x.center[i], y.center = y.center[i],
+                       x.center = x.center, y.center = y.center,
 
                        max.dist = max.dist,
 

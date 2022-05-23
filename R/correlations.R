@@ -73,31 +73,34 @@ correlations <- function(simulations,
     # Points metrics
     # Z coordinate
     "mean.z", "mean.q.z", "mean.g.z", "mean.h.z", "median.z", "mode.z",
-    "max.z", "min.z", "var.z", "sd.z", "CV.z", "D.z",
+    "max.z", "min.z", "var.z", "sd.z", "CV.z", "D.z", "ID.z",
     "kurtosis.z", "skewness.z",
-    "p.a.mean.z", "p.a.mode.z", "p.a.2m",
+    "p.a.mean.z", "p.a.mode.z", "p.a.2m.z",
     "p.b.mean.z", "p.b.mode.z", "p.b.2m.z", "CRR.z",
-    "L2.z", "L3.z", "L4.z",
+    "L2.z", "L3.z", "L4.z", "L3.mu.z", "L4.mu.z",
+    "L.CV.z",
     "median.a.d.z", "mode.a.d.z",
     "weibull_c.z", "weibull_b.z",
 
     # Rho coordinate
     "mean.rho", "mean.q.rho", "mean.g.rho", "mean.h.rho", "median.rho", "mode.rho",
-    "max.rho", "min.rho", "var.rho", "sd.rho", "CV.rho", "D.rho",
+    "max.rho", "min.rho", "var.rho", "sd.rho", "CV.rho", "D.rho", "ID.rho",
     "kurtosis.rho", "skewness.rho",
     "p.a.mean.rho", "p.a.mode.rho",
     "p.b.mean.rho", "p.b.mode.rho", "CRR.rho",
-    "L2.rho", "L3.rho", "L4.rho",
+    "L2.rho", "L3.rho", "L4.rho", "L3.mu.rho", "L4.mu.rho",
+    "L.CV.rho",
     "median.a.d.rho", "mode.a.d.rho",
     "weibull_c.rho", "weibull_b.rho",
 
     # R coordinate
     "mean.r", "mean.q.r", "mean.g.r", "mean.h.r", "median.r", "mode.r",
-    "max.r", "min.r", "var.r", "sd.r", "CV.r", "D.r",
+    "max.r", "min.r", "var.r", "sd.r", "CV.r", "D.r", "ID.r",
     "kurtosis.r", "skewness.r",
     "p.a.mean.r", "p.a.mode.r",
     "p.b.mean.r", "p.b.mode.r", "CRR.r",
-    "L2.r", "L3.r", "L4.r",
+    "L2.r", "L3.r", "L4.r", "L3.mu.r", "L4.mu.r",
+    "L.CV.r",
     "median.a.d.r", "mode.a.d.r",
     "weibull_c.r", "weibull_b.r")
 

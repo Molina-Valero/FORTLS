@@ -50,6 +50,8 @@ Slices determined by \code{breaks} argument are clustered using the DBSCAN algor
 
 \emph{dbh} is directly estimated for the section of 1.3 m above ground level, and estimated from other sections using \emph{dbh}~\emph{breaks} linear regression. Finally, the mean value of all estimates is provided in \sQuote{Value} as the \emph{dbh} of the tree section.
 
+Volume is estimated modelling stem profile as a paraboloid and calculating the volumes of revolution; where trees \emph{dbh} are estimated in \code{\link{tree.detection}}, and total heights are estimated as percentile 99 of z coordinate of points delimited by Voronoi polygons.
+
 The number of points corresponding to a normal section (+/- 5 cm) is estimated in proportion to \emph{dbh}, using the average number of points per radius unit as reference. In this respect, only tree sections fully visible at 1.3 m above ground level will be considered for estimating the average number of points.
 
 Local surface variation (also known as normal change rate ,NCR), is a quantitative measure of curvature feature (Pauly et al., 2002). This is useful for distinguishing points belonging to fine branches and foliage (e.g. leaves, shrubs) and stem points (e.g. Jin et al., 2016; Zhang et al., 2019). Just as we considered 5 cm as suitable for calculating local surface variation for the stem separation in forests, according to other authors (Ma et al., 2015; Xia et al., 2015), we also established the NCR threshold as 0.1, according to Zhang et al. (2019). However, this argument (\code{ncr.threshold}) may be modified in order to use more appropriate values.}

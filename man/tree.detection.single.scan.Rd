@@ -22,7 +22,7 @@ tree.detection.single.scan(data,
 
   \item{data}{Data frame with same description and format as indicated for \code{\link{normalize}} \sQuote{Value}.}
 
-  \item{dbh.min}{Optional minimum \emph{dbh} (cm) considered for detecting trees. By default it will be set at 7.5 cm.}
+  \item{dbh.min}{Optional minimum \emph{dbh} (cm) considered for detecting trees. By default it will be set at 4 cm.}
 
   \item{dbh.max}{Optional maximum \emph{dbh} (cm) considered for detecting trees. By default it will be set at 200 cm.}
 

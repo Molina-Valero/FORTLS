@@ -91,9 +91,8 @@ tree.detection.multi.scan <- function(data,
 
 
   # Defining stem axis
-  scan.approach <- "multi"
   stem.i <- split(stem, stem$tree)
-  eje <- do.call(rbind, lapply(stem.i, .stem.axis))
+  eje <- do.call(rbind, lapply(stem.i, .stem.axis, scan.approach = "multi"))
   eje <- eje[eje$sec %in% as.character(breaks) & !is.na(eje$x), ]
 
   rm(stem.i)
@@ -545,9 +544,14 @@ tree.detection.multi.scan <- function(data,
                            circ = as.numeric(), arc.cir = as.numeric())
 
   for (i in unique(.filter$tree)) {
-    for (j in unique(.filter$sec)) {
+    # for (j in unique(.filter$sec)) {
 
-      .filt <- .filter[.filter$tree == i & .filter$sec == j, ]
+    # .filt <- .filter[.filter$tree == i & .filter$sec == j, ]
+    .filt.tree <- .filter[.filter$tree == i, ]
+
+    for (j in unique(.filt.tree$sec)) {
+
+      .filt <- .filt.tree[.filt.tree$sec == j, ]
       .filt <- .filt[.filt$dist == min(.filt$dist), ]
       .filt <- .filt[, c("tree", "sec", "dist",
                          "center.x", "center.y", "center.phi", "center.rho", "center.r", "center.theta",
@@ -754,7 +758,8 @@ tree.detection.multi.scan <- function(data,
 
   rm(.filteraux)
 
-  # Numbering trees from 1 to n trees
+  # Ordering by distance and numbering trees from 1 to n trees
+  .tree <- .tree[order(.tree$rho), ]
   .tree$tree <- 1:nrow(.tree)
 
   # Indicate trees with partial occlusions, those for which none of the sections

@@ -11,7 +11,7 @@
     tree <- data[data$tree == i, ]
     tree <- tree[tree$hi < tree$h, ]
 
-    if(nrow(tree) < 2 | min(abs(diff(tree$dhi))) > 10){
+    if(nrow(tree) < 2 | min(abs(diff(tree$dhi))) > 1){
       datos <- rbind(datos, tree[tree$hi == 1.3, c("hi", "dhi", "h", "dbh")])
 
     } else {
@@ -22,13 +22,14 @@
 
         tree$filter <- ifelse(tree$dif > 1 | tree$dif < -5, 0, 1)
         tree <- tree[tree$filter == 1, ]
+        if(nrow(tree) == 1)
+          next
         tree$dif <- c(diff(tree$dhi), tree$dhi[nrow(tree)]-tree$dhi[nrow(tree)-1])
 
       }
+    }
 
       datos <- rbind(datos, tree[, c("hi", "dhi", "h", "dbh")])
-
-    }
 
   }
 
@@ -52,8 +53,8 @@
 
   b1<-coef(ajuste)[1]
 
-  x <- seq(from = 0, to = 25, by = 0.1)
-  y <- mean(datos$dbh)*((max(datos$h)-x)/(max(datos$h)-1.3))**b1
+  # x <- seq(from = 0, to = 25, by = 0.1)
+  # y <- mean(datos$dbh)*((max(datos$h)-x)/(max(datos$h)-1.3))**b1
   # y <- tree$dbh[1]*((tree$h[1]-x)/(tree$h[1]-1.3))**b1
 
   # plot(datos$dhi~datos$hi, col = "grey",
@@ -758,6 +759,15 @@
                     if ("L4.z" %in% names(.metr))
                       .metr["L4.z"] <- mean(sum(.sub ^ 4))
 
+
+                    if ("L3.mu.z" %in% names(.metr))
+                      .metr["L3.mu.z"] <- .metr["L3.z"] - 3 * .metr["mean.z"] * .metr["L2.z"] + 2 * .metr["mean.z"] ^ 3
+                    if ("L4.mu.z" %in% names(.metr))
+                      .metr["L4.mu.z"] <- .metr["L4.z"] - 4 * .metr["mean.z"] * .metr["L3.z"] + 6 * .metr["mean.z"] ^ 2 * .metr["L2.z"] - 3 * .metr["mean.z"] ^ 4
+
+                    if ("L.CV.z" %in% names(.metr))
+                      .metr["L.CV.z"] <- .metr["mean.z"] / .metr["L2.z"]
+
                     if ("median.a.d.z" %in% names(.metr))
                       .metr["median.a.d.z"] <- median(abs(.sub - .metr["mean.z"]))
                     if ("mode.a.d.z" %in% names(.metr))
@@ -835,6 +845,14 @@
                       .metr["L3.rho"] <- mean(sum(.sub ^ 3))
                     if ("L4.rho" %in% names(.metr))
                       .metr["L4.rho"] <- mean(sum(.sub ^ 4))
+
+                    if ("L3.mu.rho" %in% names(.metr))
+                      .metr["L3.mu.rho"] <- .metr["L3.rho"] - 3 * .metr["mean.rho"] * .metr["L2.rho"] + 2 * .metr["mean.rho"] ^ 3
+                    if ("L4.mu.rho" %in% names(.metr))
+                      .metr["L4.mu.rho"] <- .metr["L4.rho"] - 4 * .metr["mean.rho"] * .metr["L3.rho"] + 6 * .metr["mean.rho"] ^ 2 * .metr["L2.rho"] - 3 * .metr["mean.rho"] ^ 4
+
+                    if ("L.CV.rho" %in% names(.metr))
+                      .metr["L.CV.rho"] <- .metr["mean.rho"] / .metr["L2.rho"]
 
                     if ("median.a.d.rho" %in% names(.metr))
                       .metr["median.a.d.rho"] <- median(abs(.sub - .metr["mean.rho"]))
@@ -926,6 +944,14 @@
                       .metr["L3.r"] <- mean(sum(.sub ^ 3))
                     if ("L4.r" %in% names(.metr))
                       .metr["L4.r"] <- mean(sum(.sub ^ 4))
+
+                    if ("L3.mu.r" %in% names(.metr))
+                      .metr["L3.mu.r"] <- .metr["L3.r"] - 3 * .metr["mean.r"] * .metr["L2.r"] + 2 * .metr["mean.r"] ^ 3
+                    if ("L4.mu.r" %in% names(.metr))
+                      .metr["L4.mu.r"] <- .metr["L4.r"] - 4 * .metr["mean.r"] * .metr["L3.r"] + 6 * .metr["mean.r"] ^ 2 * .metr["L2.r"] - 3 * .metr["mean.r"] ^ 4
+
+                    if ("L.CV.r" %in% names(.metr))
+                      .metr["L.CV.r"] <- .metr["mean.r"] / .metr["L2.r"]
 
                     if ("median.a.d.r" %in% names(.metr))
                       .metr["median.a.d.r"] <- median(abs(.sub - .metr["mean.r"]))
@@ -1064,7 +1090,8 @@
                      "kurtosis.z", "skewness.z",
                      "p.a.mean.z", "p.a.mode.z", "p.a.2m.z",
                      "p.b.mean.z", "p.b.mode.z", "p.b.2m.z", "CRR.z",
-                     "L2.z", "L3.z", "L4.z",
+                     "L2.z", "L3.z", "L4.z", "L3.mu.z", "L4.mu.z",
+                     "L.CV.z",
                      "median.a.d.z", "mode.a.d.z",
                      "weibull_c.z", "weibull_b.z",
 
@@ -1074,7 +1101,8 @@
                      "kurtosis.rho", "skewness.rho",
                      "p.a.mean.rho", "p.a.mode.rho",
                      "p.b.mean.rho", "p.b.mode.rho", "CRR.rho",
-                     "L2.rho", "L3.rho", "L4.rho",
+                     "L2.rho", "L3.rho", "L4.rho", "L3.mu.rho", "L4.mu.rho",
+                     "L.CV.rho",
                      "median.a.d.rho", "mode.a.d.rho",
                      "weibull_c.rho", "weibull_b.rho",
 
@@ -1084,7 +1112,8 @@
                      "kurtosis.r", "skewness.r",
                      "p.a.mean.r", "p.a.mode.r",
                      "p.b.mean.r", "p.b.mode.r", "CRR.r",
-                     "L2.r", "L3.r", "L4.r",
+                     "L2.r", "L3.r", "L4.r", "L3.mu.r", "L4.mu.r",
+                     "L.CV.r",
                      "median.a.d.r", "mode.a.d.r",
                      "weibull_c.r", "weibull_b.r")
 
@@ -1397,7 +1426,8 @@
                   "kurtosis.z", "skewness.z",
                   "p.a.mean.z", "p.a.mode.z", "p.a.2m",
                   "p.b.mean.z", "p.b.mode.z", "p.b.2m.z", "CRR.z",
-                  "L2.z", "L3.z", "L4.z",
+                  "L2.z", "L3.z", "L4.z", "L3.mu.z", "L4.mu.z",
+                  "L.CV.z",
                   "median.a.d.z", "mode.a.d.z",
                   "weibull_c.z", "weibull_b.z",
 
@@ -1407,7 +1437,8 @@
                   "kurtosis.rho", "skewness.rho",
                   "p.a.mean.rho", "p.a.mode.rho",
                   "p.b.mean.rho", "p.b.mode.rho", "CRR.rho",
-                  "L2.rho", "L3.rho", "L4.rho",
+                  "L2.rho", "L3.rho", "L4.rho", "L3.mu.rho", "L4.mu.rho",
+                  "L.CV.rho",
                   "median.a.d.rho", "mode.a.d.rho",
                   "weibull_c.rho", "weibull_b.rho",
 
@@ -1417,7 +1448,8 @@
                   "kurtosis.r", "skewness.r",
                   "p.a.mean.r", "p.a.mode.r",
                   "p.b.mean.r", "p.b.mode.r", "CRR.r",
-                  "L2.r", "L3.r", "L4.r",
+                  "L2.r", "L3.r", "L4.r", "L3.mu.r", "L4.mu.r",
+                  "L.CV.r",
                   "median.a.d.z", "mode.a.d.z",
                   "weibull_c.r", "weibull_b.r"),
 
@@ -2156,7 +2188,8 @@
                         "kurtosis.z", "skewness.z",
                         "p.a.mean.z", "p.a.mode.z", "p.a.2m.z",
                         "p.b.mean.z", "p.b.mode.z", "p.b.2m.z", "CRR.z",
-                        "L2.z", "L3.z", "L4.z",
+                        "L2.z", "L3.z", "L4.z", "L3.mu.z", "L4.mu.z",
+                        "L.CV.z",
                         "median.a.d.z", "mode.a.d.z",
                         "weibull_c.z", "weibull_b.z",
 
@@ -2166,7 +2199,8 @@
                         "kurtosis.rho", "skewness.rho",
                         "p.a.mean.rho", "p.a.mode.rho",
                         "p.b.mean.rho", "p.b.mode.rho", "CRR.rho",
-                        "L2.rho", "L3.rho", "L4.rho",
+                        "L2.rho", "L3.rho", "L4.rho", "L3.mu.rho", "L4.mu.rho",
+                        "L.CV.rho",
                         "median.a.d.rho", "mode.a.d.rho",
                         "weibull_c.rho", "weibull_b.rho",
 
@@ -2176,7 +2210,8 @@
                         "kurtosis.r", "skewness.r",
                         "p.a.mean.r", "p.a.mode.r",
                         "p.b.mean.r", "p.b.mode.r", "CRR.r",
-                        "L2.r", "L3.r", "L4.r",
+                        "L2.r", "L3.r", "L4.r", "L3.mu.r", "L4.mu.r",
+                        "L.CV.r",
                         "median.a.d.r", "mode.a.d.r",
                         "weibull_c.r", "weibull_b.r")
 
