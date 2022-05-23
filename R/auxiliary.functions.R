@@ -1,4 +1,372 @@
 
+
+
+.sections.single.scan <- function(cut, .cut, .alpha.v, .alpha.h, .dbh.min, .dbh.max){
+
+  .filter <- data.frame(cluster = as.numeric(),
+
+                        # Center coordinates
+                        center.x = as.numeric(), center.y = as.numeric(),
+                        center.phi = as.numeric(), center.rho = as.numeric(),
+                        center.r = as.numeric(), center.theta = as.numeric(),
+
+                        # Radius
+                        radius = as.numeric(),
+
+                        # Number of points belonging to cluster (craw and after point cropping)
+                        n.pts = as.numeric(), n.pts.red = as.numeric(),
+
+                        # Phi coordinates of left and right
+                        phi.left = as.numeric(), phi.right = as.numeric(),
+
+                        # Circumference arc
+                        arc.circ = as.numeric(),
+
+                        # Partial occlusion
+                        sec = as.numeric())
+
+
+  # Select cluster i
+  .dat <- cut
+
+  # First filter
+  .n <- (0.1 / (tan(.alpha.v / 2) * (mean(.dat$r) / cos(mean(cut$slope, na.rm = TRUE))) * 2))
+
+  if(nrow(.dat) < .n){return(.filter)}
+
+  # Second filter
+
+  .h <- (tan(.alpha.h / 2) * (mean(.dat$r) / cos(mean(cut$slope, na.rm = TRUE))) * 2)
+
+  # Compute rho coordinates for section ends
+
+  if((max(.dat$phi) - min(.dat$phi)) < pi){
+
+    .dat.2 <- .dat[order(.dat$phi, decreasing = F), ]
+
+  } else {
+
+    .dat.2 <- .dat
+    .dat.2$phi <- ifelse(.dat.2$phi < 1, .dat.2$phi + (2 * pi), .dat.2$phi)
+    .dat.2 <- .dat.2[order(.dat.2$phi, decreasing = F), ]
+
+  }
+
+  .dist <- sqrt((.dat.2$x[2:nrow(.dat.2)]-.dat.2$x[1:nrow(.dat.2)-1])^2+(.dat.2$y[2:nrow(.dat.2)]-.dat.2$y[1:nrow(.dat.2)-1])^2)
+  .dist <- sd(.dist) / .h
+
+  if(.dist > 1){return(.filter)}
+
+  # Generate mesh
+
+  .x.rang <- max(.dat$x) - min(.dat$x)
+  .y.rang <- max(.dat$y) - min(.dat$y)
+
+  # Compute centroids coordinates with respect to TLS
+
+  .x.cent <- (.x.rang / 2) + min(.dat$x)
+  .y.cent <- (.y.rang / 2) + min(.dat$y)
+
+  # Obtain width for mesh to be applied in the cluster
+  .ancho.malla <- (max(.x.rang, .y.rang) / 2) * 1.5
+
+  # Maximal and minimal mesh coordinates
+  .xmin <- .x.cent - .ancho.malla
+  .ymin <- .y.cent - .ancho.malla
+  .xmax <- .x.cent + .ancho.malla
+  .ymax <- .y.cent + .ancho.malla
+
+
+  # Filter
+  .h <- 2 * (tan(.alpha.h / 2) * (mean(.dat$r) / cos(mean(cut$slope, na.rm = TRUE))) * 2)
+
+  .x.values <- seq(from = .xmin, to = .xmax, by = .h)
+  .y.values <- seq(from = .ymin, to = .ymax, by = .h)
+
+  .h <- .h / 2
+
+  .density <- matrix(0, ncol = length(.x.values), nrow = length(.y.values))
+
+  for(i in 1:length(.x.values)){
+    for(j in 1:length(.y.values)){
+
+      .den <- .dat[which(.dat$x <= ((.x.values[i]) + .h) &
+                           .dat$x > ((.x.values[i]) - .h) &
+                           .dat$y <= ((.y.values[j]) + .h) &
+                           .dat$y > ((.y.values[j]) - .h)), , drop = FALSE]
+
+      # Discard cells with less than 2 points for computing mean points
+      # density by cell
+      .density[j, i] <- ifelse(nrow(.den) < 1, NA, nrow(.den))
+
+    }
+
+  }
+
+
+  # Estimate mean density by cell
+  .threeshold <- median(.density, na.rm = TRUE)
+
+  if(is.nan(.threeshold) | is.na(.threeshold)){return(.filter)}
+
+  .density <- matrix(0, ncol = length(.x.values), nrow = length(.y.values))
+  .remove <- data.frame(point = as.numeric())
+
+  for(i in 1:length(.x.values)){
+    for(j in 1:length(.y.values)){
+
+      .den <- .dat[which(.dat$x <= ((.x.values[i]) + .h) &
+                           .dat$x > ((.x.values[i]) - .h) &
+                           .dat$y <= ((.y.values[j]) + .h) &
+                           .dat$y > ((.y.values[j]) - .h)), , drop = FALSE]
+
+      # Discard cells with less than 2 points for computing mean density by
+      # cell
+      .density[j, i] <- ifelse(nrow(.den) < 1, NA, nrow(.den))
+
+      if(nrow(.den) > .threeshold){
+
+        .rem <- data.frame(point = .den$point)
+        .remove <- rbind(.remove, .rem)
+
+      }
+
+    }
+
+  }
+
+  .dat <- merge(.dat, .remove, by = "point", all.y = TRUE)
+
+  if(nrow(.dat) < 1){return(.filter)}
+
+  if(is.nan(mean(.dat$slope, na.rm = TRUE))){
+
+    .n <- (0.1 / (tan(.alpha.v / 2) * (mean(.dat$r) / cos(mean(cut$slope, na.rm = TRUE))) * 2))
+
+  } else {
+
+    .n <- (0.1 / (tan(.alpha.v / 2) * (mean(.dat$r) / cos(mean(cut$slope, na.rm = TRUE))) * 2))
+
+  }
+
+  # Ratio points
+
+  if(mean(cut$slope, na.rm = TRUE) > 0.5){.n <- 0.7 * .n}
+
+
+  # Obtain phi and rho coordinates corresponding to mesh intersections
+  .x2.values <- seq(from = min(.dat$phi), to = max(.dat$phi), by = .alpha.h)
+
+  # Define matrix where points number by cell will be stored
+  .density <- vector(length = length(.x2.values))
+
+  .remove <- data.frame(point = as.numeric())
+
+  for(i in 1:length(.x2.values)){
+
+    .den <- .dat[which(.dat$phi <= ((.x2.values[i]) + (.alpha.h/2)) &
+                         .dat$phi >  ((.x2.values[i]) - (.alpha.h/2))), ]
+
+    # Aquellas celdas con menos de 2 puntos no las tengo en cuenta
+    # para luego m?s tarde calcular la densidad media por celda
+    .density[i] <- ifelse(nrow(.den) < 1, NA, nrow(.den))
+
+
+    if(nrow(.den) > 1){
+
+      .rem <- data.frame(point = .den$point)
+      .remove <- rbind(.remove, .rem)
+
+    }
+
+  }
+
+
+  # Estimate mean density by cell
+  .density <- ifelse(is.nan(.density), NA, .density)
+
+  if(is.nan(mean(.density, na.rm = TRUE))){return(.filter)}
+
+  if(max(.density[which(!is.na(.density))], na.rm = T) < floor(.n)){return(.filter)}
+
+  # Remove cells containing only 1 point
+  .dat <- merge(.dat, .remove, by = "point", all.y = TRUE)
+
+  # If no points remain in .dat after removing, go to next iteration
+  if(nrow(.dat) < 1){return(.filter)}
+
+  # Estimate points number for both the original cloud (.n.pts) and the
+  # point cloud reduced by the point cropping process (.n.pts.red)
+  .n.pts <- nrow(.dat)
+  .n.pts.red <- nrow(.dat[which(.dat$prob.selec == 1), , drop = FALSE])
+
+  # After this previous filtering, compute cluster centroid
+
+  .x.values <- seq(from = .xmin, to = .xmax, by = 0.01)
+  .y.values <- seq(from = .ymin, to = .ymax, by = 0.01)
+
+  # Create an empty matrix where, for each mesh intersection, variance of
+  # distances between points and corresponding intersection will be stored
+  .matriz <- matrix(0, ncol = length(.x.values), nrow = length(.y.values))
+
+  for(i in 1:length(.x.values)){
+    for(j in 1:length(.y.values)){
+
+      .variance <- stats::var(raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[i], .y.values[j]), lonlat=FALSE))
+      .matriz[j, i] <- .variance
+
+    }
+  }
+
+  # Consider as section center the intesection where variance is minimal
+  .a <- which(.matriz == min(.matriz), arr.ind = TRUE)
+
+  .center.x <- .x.values[.a[2]]
+  .center.y <- .y.values[.a[1]]
+
+  .center.phi <- atan2(.center.y, .center.x)
+  .center.phi <- ifelse(.center.phi < 0, .center.phi + (2 * pi), .center.phi)
+  .center.rho <- sqrt(.center.x ^ 2 + .center.y ^ 2)
+  .center.r <- sqrt(.dat$sec[1] ^ 2 + .center.rho ^ 2)
+  .center.theta <- atan2(.dat$sec[1], .center.rho)
+
+
+  # Distances between points and center
+  .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)
+
+  # Radius value as the mean distance
+  # .dat <- .dat[order(.dat$dist, decreasing = FALSE), , drop = FALSE]
+  .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25) & .dat$dist<stats::quantile(.dat$dist, prob = 0.9)])
+  if(.radio < 0 | is.na(.radio)){return(.filter)}
+
+  # Coefficient of variation for distances among cluster points and the estimated center
+  .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25)], na.rm = TRUE) / .radio
+
+  if(.cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25)]) < 2) {return(.filter)}
+
+  # Center behind tree surface
+  if(stats::quantile(.dat$rho, prob = 0.05) > .center.r) {return(.filter)}
+
+  # At least 95 % of distances should be greater than .radio / 2
+  if(stats::quantile(.dat$dist, prob = 0.05) < (.radio / 2)) {return(.filter)}
+
+
+  # Evaluamos aqui el ratio
+
+  # .ratio <- nrow(.dat.2) / (.n * ((max(.dat.2$phi) - min(.dat.2$phi)) / .alpha.h))
+  # if(.ratio < 0.5){next}
+
+
+  # Select 1st percentil, if necessary for strange points
+  # It remains to be seen what happens if cluster is located in 0 +/- phi
+  .pto.left <- stats::quantile(.dat.2$phi, prob = 0.01)
+  .rho.left <- mean(.dat.2$rho[which(.dat.2$phi <= .pto.left)])
+  .phi.left <- mean(.dat.2$phi[which(.dat.2$phi <= .pto.left)])
+
+  # Select 99th percentil, if necessary for strange points
+  .pto.right <- stats::quantile(.dat.2$phi, prob = 0.99)
+  .rho.right <- mean(.dat.2$rho[which(.dat.2$phi >= .pto.right)])
+  .phi.right <- mean(.dat.2$phi[which(.dat.2$phi >= .pto.right)])
+
+  # For points in section center, select those in half the angle aperture
+  # phi +/- TLS aperture .alpha
+  .phi.cent <- max(.dat.2$phi) - ((max(.dat.2$phi) - min(.dat.2$phi)) / 2)
+  .rho.cent <- mean(.dat.2$rho[which(round(.dat.2$phi, 3) >= round(.phi.cent - .alpha.h, 3) & round(.dat.2$phi, 3) <= round(.phi.cent + .alpha.h, 3))])
+
+  if(is.nan(.rho.cent)){return(.filter)}
+
+  # Check rho coordinates for ends are greater than center ones
+  .arc.circ <- ifelse(.rho.left > .rho.cent & .rho.right > .rho.cent, 1, 0)
+
+  # Convert original coordinates if cluster is located in 0 +/- phi
+  .phi.left <- ifelse(.phi.left > (2 * pi), .phi.left - (2 * pi), .phi.left)
+  .phi.right <- ifelse(.phi.right > (2 * pi), .phi.right - (2 * pi), .phi.right)
+
+  # If the complete circumference arc is not detected (so previous criterion
+  # is not satisfied), check if there is a partial occlusion.
+  # If they belong to a tree section, they are found with a systematic
+  # regularity so very high correlations between their correlative
+  # numeration and phi must be found when they are ordered with respect to
+  # phi
+  .dat.2$n <- c(1:nrow(.dat.2))
+  .cor <- try(stats::cor.test(x = .dat.2$n, y = .dat.2$phi, method = 'pearson'), silent = TRUE) # cor function could be used instead
+  # .cor <- try(stats::cor.test(x = .dat2$n, y = .dat2$phi, method = 'spearman'))
+
+  # If error, go to next iteration
+  if(class(.cor) == "try-error"){return(.filter)} else{
+
+    .occlusion <- .cor[[4]]
+
+  }
+
+
+  # Zhang et al., (2019)
+  .n.w.ratio <- stats::sd(.dat$z) / sqrt(stats::sd(.dat$x) ^ 2 + stats::sd(.dat$y) ^ 2)
+
+  if(.n.w.ratio > 1 | is.nan(.n.w.ratio)){return(.filter)}
+
+  if(nrow(.dat) < 2){return(.filter)}
+
+
+  # Results
+  .filter <- data.frame(cluster = .dat$cluster[1],
+
+                        center.x = .center.x, center.y = .center.y,
+                        center.phi = .center.phi, center.rho = .center.rho,
+                        center.r = .center.r, center.theta = .center.theta,
+
+                        radius = .radio,
+
+                        n.pts = .n.pts, n.pts.red = .n.pts.red,
+
+                        phi.left = .phi.left, phi.right = .phi.right,
+
+                        arc.circ = .arc.circ, occlusion = .occlusion)
+
+
+  # Arch of circumference or partial arch of circumference?
+  .filter$tree <- ifelse(.filter$arc.circ == 1, 1,
+                         ifelse(.filter$arc.circ == 0 & .filter$occlusion > 0.975, 1, 0))
+  .filter <- .filter[which(.filter$tree == 1), , drop = FALSE]
+
+  # Dbh maximum and minimum
+  .filter$tree <- ifelse(.filter$radius > (.dbh.max / 2) | .filter$radius < (.dbh.min / 2), 0, 1)
+  .filter <- subset(.filter, .filter$tree == 1)
+
+
+  if(nrow(.filter) < 1){
+
+    .filter1.0 <- data.frame(cluster = as.numeric(),
+                             center.x = as.numeric(), center.y = as.numeric(),
+                             center.phi = as.numeric(), center.rho = as.numeric(),
+                             center.r = as.numeric(), center.theta = as.numeric(),
+                             radius = as.numeric(),
+                             n.pts = as.numeric(), n.pts.red = as.numeric(),
+                             phi.left = as.numeric(), phi.right = as.numeric(),
+                             arc.cir = as.numeric(), sec = as.numeric())
+
+  } else{
+
+    .filter1.0 <- .filter[, c("cluster",
+                              "center.x", "center.y", "center.phi", "center.rho", "center.r", "center.theta",
+                              "radius", "n.pts", "n.pts.red", "phi.left", "phi.right", "arc.circ"), drop = FALSE]
+    .filter1.0$sec <- cut$sec[1]
+
+  }
+
+  return(.filter1.0)
+
+}
+
+
+
+
+
+
+
+
+
+
 .volume <- function(data, d.top = NULL){
 
   # colnames(data) <- c("tree", "hi", "x", "y", "dhi", "dhi2", "h", "dbh")
