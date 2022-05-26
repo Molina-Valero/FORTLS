@@ -387,7 +387,6 @@
                         occlusion = as.numeric())
 
 
-  cut <- .cut[.cut$cluster == 10, ]
   .dat <- cut
 
   if(nrow(.dat) < 10){return(.filter)}
