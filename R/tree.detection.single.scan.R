@@ -94,7 +94,7 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
   # Breaks argument
 
   if(is.null(breaks)){
-    breaks <- seq(from = 0.1, to = max(stem$z), by = 0.3)
+    breaks <- seq(from = 0.4, to = max(stem$z), by = 0.3)
     breaks <- breaks[-length(breaks)]}
 
   rm(stem)
@@ -102,12 +102,11 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
 
   # Estimating NCR threshold when RGB are available
 
-  if(!is.null(data$GLA)){
-    ncr <- data[data$GLA > 0, ]
-    ncr <- as.matrix(ncr[, c("point", "x", "y", "z")])
-
-    ncr.threshold <- ncr_point_cloud_double(ncr[1:10000, ])
-    ncr.threshold <- mean(ncr.threshold$ncr, na.rm = TRUE)}
+  # if(!is.null(data$GLA)){
+  #   ncr <- data[data$GLA > 0, ]
+  #   ncr <- as.matrix(ncr[, c("point", "x", "y", "z")])
+  #   ncr.threshold <- ncr_point_cloud_double(ncr[1:10000, ])
+  #   ncr.threshold <- mean(ncr.threshold$ncr, na.rm = TRUE)}
 
 
   # Remove green parts
@@ -223,11 +222,11 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
 
 
     # Assigning sections to tree axis
-    kk <- data.frame(sec = table(.filter$sec[.filter$sec >= stem.section[1] & .filter$sec <=stem.section[2]]))
+    kk <- data.frame(sec = table(.filter$sec[.filter$sec >= stem.section[1] & .filter$sec <= stem.section[2]]))
     kk <- data.frame(sec = table(.filter$sec[.filter$arc.circ == 1]))
     kk <- kk[kk[,2] == max(kk[,2]), ]
-    eje <- .filter[.filter$sec < as.numeric(as.character(kk[, 1])) + 0.6 &
-                   .filter$sec > as.numeric(as.character(kk[, 1])) - 0.6,
+    eje <- .filter[.filter$sec < as.numeric(as.character(kk[, 1])) + 1 &
+                   .filter$sec > as.numeric(as.character(kk[, 1])) - 1,
                    c("center.x", "center.y", "center.rho", "center.phi", "radius", "sec")]
     .dbscan <- dbscan::dbscan(eje[, c("center.x", "center.y"), drop = FALSE], eps = mean(eje$radius), minPts = 1)
     eje$tree <- .dbscan$cluster
@@ -259,6 +258,7 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
 
 
     eje$sec <- as.character(eje$sec)
+    .filter$cluster <- 1:nrow(.filter)
     .filter$sec <- as.character(.filter$sec)
     .filter <- merge(eje, .filter, by = "sec", all.y = TRUE)
     .filter$dist <- sqrt((.filter$center.x - .filter$x) ^ 2 + (.filter$center.y - .filter$y) ^ 2)

@@ -387,6 +387,7 @@
                         occlusion = as.numeric())
 
 
+  cut <- .cut[.cut$cluster == 10, ]
   .dat <- cut
 
   if(nrow(.dat) < 10){return(.filter)}
@@ -594,7 +595,7 @@
   .densidad_radio <- .n.pts.red / .radio
 
 
-  if(nrow(.dat) < 10){return(.filter)}
+  if(nrow(.dat) < 15){return(.filter)}
 
 
   # Results
@@ -675,20 +676,25 @@ if(nrow(.filter) < 1){
     tree <- data[data$tree == i, ]
     tree <- tree[tree$hi < tree$h, ]
 
-    if(nrow(tree) < 2 | min(abs(diff(tree$dhi))) > 1){
+    if(nrow(tree) < 2 | suppressWarnings(min(abs(diff(tree$dhi)))) > 10){
+
       datos <- rbind(datos, tree[tree$hi == 1.3, c("hi", "dhi", "h", "dbh")])
 
     } else {
 
+    tree$dif.sec <- c(abs(diff(tree$hi)), 0)
     tree$dif <- c(diff(tree$dhi), tree$dhi[nrow(tree)]-tree$dhi[nrow(tree)-1])
+    tree$dif <- ifelse(tree$dif.sec > 1, tree$dif / tree$dif.sec, tree$dif)
 
-      while (max(tree$dif) > 1 | min(tree$dif) < -5) {
+      while (max(abs(tree$dif)) > 10) {
 
-        tree$filter <- ifelse(tree$dif > 1 | tree$dif < -5, 0, 1)
+        tree$filter <- ifelse(tree$dif > 10 | tree$dif < -10, 0, 1)
         tree <- tree[tree$filter == 1, ]
-        if(nrow(tree) == 1)
-          next
+        if(nrow(tree) == 1){next}
+
+        tree$dif.sec <- c(abs(diff(tree$hi)), 0)
         tree$dif <- c(diff(tree$dhi), tree$dhi[nrow(tree)]-tree$dhi[nrow(tree)-1])
+        tree$dif <- ifelse(tree$dif.sec > 1, tree$dif / tree$dif.sec, tree$dif)
 
       }
     }

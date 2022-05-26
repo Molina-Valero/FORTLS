@@ -28,7 +28,7 @@ tree.detection.multi.scan <- function(data,
   stem <- data[data$prob.selec == 1, ]
 
   if(!is.null(data$GLA)){
-    stem <- stem[data$GLA <= 0, ]
+    stem <- stem[stem$GLA <= 0, ]
     stem <- stem[!is.na(stem$x) & !is.na(stem$y) & !is.na(stem$z), ]} else {stem <- stem}
 
 
@@ -59,7 +59,7 @@ tree.detection.multi.scan <- function(data,
   # points(stem$x, stem$y, pch = 19, cex = 0.5, col = "black")
 
   buf <- sp::SpatialPoints(cbind(stem$x,stem$y))
-  buf <- raster::buffer(buf, width = 37500, dissolve = TRUE)
+  buf <- suppressWarnings(raster::buffer(buf, width = 37500, dissolve = TRUE))
   buf <- buf@polygons[[1]]@Polygons
   buf <- lapply(seq_along(buf), function(i) sp::Polygons(list(buf[[i]]), ID = i))
   buf <- sp::SpatialPolygons(buf)
@@ -84,7 +84,7 @@ tree.detection.multi.scan <- function(data,
   # Breaks argument
 
   if(is.null(breaks)){
-    breaks <- seq(from = 0.1, to = max(stem$z), by = 0.3)
+    breaks <- seq(from = 0.4, to = max(stem$z), by = 0.3)
     breaks <- breaks[-length(breaks)]}
 
 
@@ -98,11 +98,11 @@ tree.detection.multi.scan <- function(data,
 
   # Estimating NCR threshold when RGB is available
 
-  if(!is.null(data$GLA)){
-    ncr <- data[data$GLA > 0, ]
-    ncr <- as.matrix(ncr[, c("point", "x", "y", "z")])
-    ncr.threshold <- ncr_point_cloud_double(ncr[1:10000, ])
-    ncr.threshold <- mean(ncr.threshold$ncr, na.rm = TRUE)}
+  # if(!is.null(data$GLA)){
+  #   ncr <- data[data$GLA > 0, ]
+  #   ncr <- as.matrix(ncr[, c("point", "x", "y", "z")])
+  #   ncr.threshold <- ncr_point_cloud_double(ncr[1:10000, ])
+  #   ncr.threshold <- mean(ncr.threshold$ncr, na.rm = TRUE)}
 
 
   # Remove green parts
@@ -174,6 +174,7 @@ tree.detection.multi.scan <- function(data,
 
   }# End of cuts loop
 
+
   .filter <- .filteraux
   rm(.filteraux)
 
@@ -236,6 +237,8 @@ tree.detection.multi.scan <- function(data,
   .filter$dist.rho <- abs(.filter$center.rho - .filter$rho)
   .filter$dist.phi <- abs(.filter$center.phi - .filter$phi)
   .filter$sec <- as.numeric(.filter$sec)
+
+  .filter <- .filter[!is.na(.filter$dist) | !is.na(.filter$dist.rho) | !is.na(.filter$dist.phi), ]
 
   .filteraux <- data.frame(tree = as.numeric(), sec = as.numeric(),
                            center.x = as.numeric(), center.y = as.numeric(),
@@ -505,6 +508,9 @@ tree.detection.multi.scan <- function(data,
   .tree$n.pts.est <- .tree$points.m * .tree$radius
   .tree$n.pts.red.est <- .tree$points.m.hom * .tree$radius
 
+
+  #### Estimating tree heights ####
+
   # Obtaining reduced point cloud
   data <- data[data$prob > 0.75, ]
   data <- data[, c("id", "file", "x", "y", "z", "rho")]
@@ -571,6 +577,8 @@ tree.detection.multi.scan <- function(data,
 
   rm(.P99)
 
+
+  #### Estimating stem volume ####
 
   # Assigning dbh to stem dataset
 
