@@ -4,6 +4,8 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
                                          scan.approach = "single",
 
+                                         pcd.red = NULL, normalized = NULL,
+
 
                                          x.center = NULL, y.center = NULL,
 
@@ -65,7 +67,7 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
     }
 
-    .data <- normalize(las = las.list[[i]],
+    .data <- normalize(las = las.list[[i]], normalized = normalized,
 
                        x.center = x.center, y.center = y.center,
 
@@ -80,6 +82,9 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
                        id = .id, file = .file,
 
                        dir.data = dir.data, save.result = save.result, dir.result = dir.result)
+
+    if(!is.null(pcd.red))
+      .data <- .data[.data$prob.selec == 1, ]
 
     message("Detecting trees")
 

@@ -1,5 +1,5 @@
 
-normalize <- function(las,
+normalize <- function(las, normalized = NULL,
                       x.center = NULL, y.center = NULL,
                       max.dist = NULL, min.height = NULL, max.height = 50,
                       algorithm.dtm = "knnidw", res.dtm = 0.2,
@@ -9,7 +9,10 @@ normalize <- function(las,
                       id = NULL, file = NULL,
                       dir.data = NULL, save.result = TRUE, dir.result = NULL){
 
-  .pb <- progress::progress_bar$new(total = 11)
+  if(is.null(normalized)){
+  .pb <- progress::progress_bar$new(total = 12)} else {
+    .pb <- progress::progress_bar$new(total = 6)}
+
   .pb$tick()
 
 
@@ -35,13 +38,13 @@ normalize <- function(las,
 
   if(is.null(x.center)) {
 
-    x.center <- .las@header@PHB$`X offset`
+    x.center <- mean(.las@bbox[1, ])
 
   }
 
   if(is.null(y.center)) {
 
-    y.center <- .las@header@PHB$`Y offset`
+    y.center <- mean(.las@bbox[2, ])
 
   }
 
@@ -54,17 +57,24 @@ normalize <- function(las,
   .las@header@PHB[["Y scale factor"]] <- 0.001
   .las@header@PHB[["Z scale factor"]] <- 0.001
 
+  .pb$tick()
 
   # Data filtering at horizontal distances larger than max_dist m in the horizontal plane
 
-  # if(!is.null(max.dist)) {
-  #
-  #   .las <- lidR::clip_circle(.las, 0, 0, max.dist)
-  #
-  # }
-  #
-  # .pb$tick()
+  if(!is.null(normalized)) {
 
+    if(!is.null(max.dist))
+      .data <- lidR::clip_circle(.las, 0, 0, max.dist)
+
+    .data <- data.frame(.data@data)
+
+    # .data <- subset(.data, .data$Classification == 1)
+
+    .data$slope = 0
+
+    .pb$tick()
+
+  } else {
 
   # Normalize
 
@@ -142,7 +152,7 @@ normalize <- function(las,
 
     .data <- lidR::clip_circle(.data, 0, 0, max.dist)
 
-  }
+    }
 
   .pb$tick()
 
@@ -163,6 +173,8 @@ normalize <- function(las,
   # Removing points classified as ground
 
   .data <- subset(.data, .data$Classification == 1)
+
+  }
 
 
   # Extracting coordinates values

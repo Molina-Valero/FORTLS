@@ -172,14 +172,14 @@ Stratum, plot identification and radius:
       \code{P30}, \code{P40}, \code{P50}, \code{P60}, \code{P70}, \code{P75},
       \code{P80}, \code{P90}, \code{P95}, \code{P99}: height percentiles
       derived from z coordinates of TLS point clouds relative to ground level (m).
-      \item \code{mean.arit.z/rho/phi}, \code{mean.qua.z/rho/phi}, \code{mean.geom.z/rho/phi}, \code{mean.harm.z/rho/phi}, \code{median.z/rho/phi}, \code{mode.z/rho/phi}: estadísticos de tendencias centrales en la distribución de las coordenadas z, rho (distancia horizontal) y r (distancia euclídea) (medias aritmética, cuadrática, geométrica, armónica, mediana, moda).
-      \item \code{max.z/rho/phi}, \code{min.z/rho/phi}.
-      \item \code{var.z/rho/phi}, \code{sd.z/rho/phi}, \code{CV.z/rho/phi}, \code{D.z/rho/phi}, \code{ID.z/rho/phi}.
-      \item \code{kurt.z/rho/phi}, \code{skw.z/rho/phi}: .
-      \item \code{L1.z/rho/phi}, \code{L2.z/rho/phi}, \code{L3.z/rho/phi}, \code{L4.z/rho/phi}, \code{L-CV.z/rho/phi}, \code{MAD-median.z/rho/phi}, \code{MAD-mode.z/rho/phi}.
-      \item \code{PA.2m}, \code{PA.mean.z}, \code{PA.median.z}, \code{PA.mode.z}.
-      \item \code{PB.2m}, \code{PB.mean.z}, \code{PB.median.z}, \code{PB.mode.z}.
-      \item \code{weibull.b.z/rho/phi}, \code{weibull.c.z/rho/phi}.}}
+      \item \code{mean.arit.z/rho/phi}, \code{mean.qua.z/rho/phi}, \code{mean.geom.z/rho/phi}, \code{mean.harm.z/rho/phi}, \code{median.z/rho/phi}, \code{mode.z/rho/phi}: central tendency statistics for z, rho (horizontal distance) and r (euclidean distance) coordinates (arithmetic, quadratic, geometrical and harmonic means, median and mode, respectively).
+      \item \code{var.z/rho/phi}, \code{sd.z/rho/phi}, \code{CV.z/rho/phi}, \code{D.z/rho/phi}, \code{ID.z/rho/phi}, \code{max.z/rho/phi}, \code{min.z/rho/phi}: dispersion tendency statistics for z, rho and r coordinates (variance, standar deviation, coefficient of variation, range, interquartile range, maximum and minimum, respectively).
+      \item \code{kurt.z/rho/phi}, \code{skw.z/rho/phi}: curtosis and skewness, respectively.
+      \item \code{L1.z/rho/phi}, \code{L2.z/rho/phi}, \code{L3.z/rho/phi}, \code{L4.z/rho/phi}, \code{L-CV.z/rho/phi}, \code{MAD-median.z/rho/phi}, \code{MAD-mode.z/rho/phi}: L-moments of order 2, 3 and 4, median of the absolute deviations from the overall median and mode of the absolute deviations from the overall mode, respectively.
+      \item \code{L3.mu.z/rho/phi}, \code{L4.mu.z/rho/phi}: third and fourth central moments, respectively.
+      \item \code{PA.2m}, \code{PA.mean.z}, \code{PA.mode.z}: percentage of laser returns above 2 m, mean and mode, respectively.
+      \item \code{PB.2m}, \code{PB.mean.z}, \code{PB.median.z}, \code{PB.mode.z}: percentage of laser returns below 2 m, mean and mode, respectively.
+      \item \code{weibull.b.z/rho/phi}, \code{weibull.c.z/rho/phi}: scale and shape parameters, respectively, for Weibull distribution fitted for z coordinates of TLS point clouds relative to ground level.}}
 
 
 \item{k.tree.plot}{If no value for \code{k.tree} is specified in the \code{plot.parameters} argument, \code{NULL}; otherwise, the data frame will include TLS metrics and variables estimated in the k-tree plot design (rows represent simulations). The data frame will include the following columns (same description and format as indicated in \code{fixed.area.plot} element):
@@ -193,7 +193,7 @@ Stratum, plot identification and k:
       \code{distance.sampling} argument.
       \item \code{k}: number of trees in the simulated plot.}
 
-      TLS variables:
+      Terrestrial-Based Technologies variables:
     \itemize{
       \item \code{N.tls}, \code{N.hn}, \code{N.hr}, \code{N.hn.cov},
       \code{N.hr.cov}, \code{N.sh}, \cr
@@ -205,7 +205,7 @@ Stratum, plot identification and k:
       \code{dgeom.0.tls}, \code{dharm.0.tls}, \cr \code{h.0.tls}, \code{hg.0.tls},
       \code{hgeom.0.tls}, \code{hharm.0.tls}}
 
-    TLS metrics:
+    Terrestrial-Based Technologies metrics:
     \itemize{
       \item \code{num.points},
       \code{num.points.est}, \code{num.points.hom}, \code{num.points.hom.est}, \cr          \code{P01},\code{P05},
@@ -225,7 +225,7 @@ Stratum, plot identification and BAF:
       \item \code{BAF}: BAF (\eqn{{m}^{2}/ha}{m^2/ha}) of the simulated plot.}
 
 
-TLS variables:
+Terrestrial-Based Technologies variables:
     \itemize{
       \item \code{N.tls}: same description and format as indicated in the
       \code{fixed.area.plot} element.
@@ -245,7 +245,7 @@ TLS variables:
       \code{d.0.tls}, \code{dg.0.tls}, \code{dgeom.0.tls}, \code{dharm.0.tls}, \cr
       \code{h.0.tls}, \code{hg.0.tls}, \code{hgeom.0.tls}, \code{hharm.0.tls}}
 
-      TLS metrics:
+      Terrestrial-Based Technologies metrics:
     \itemize{
       \item \code{num.points}, \code{num.points.est}, \code{num.points.hom},
       \code{num.points.hom.est}, \cr
