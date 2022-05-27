@@ -38,13 +38,13 @@ normalize <- function(las, normalized = NULL,
 
   if(is.null(x.center)) {
 
-    x.center <- mean(.las@bbox[1, ])
+    x.center <- mean(c(.las@header@PHB$`Max X`, .las@header@PHB$`Min X`))
 
   }
 
   if(is.null(y.center)) {
 
-    y.center <- mean(.las@bbox[2, ])
+    y.center <- mean(c(.las@header@PHB$`Max Y`, .las@header@PHB$`Min Y`))
 
   }
 

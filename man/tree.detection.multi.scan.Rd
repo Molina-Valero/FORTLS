@@ -32,7 +32,7 @@ tree.detection.multi.scan(data,
 
   \item{tls.precision}{Average point cloud precision in cm.}
 
-  \item{breaks}{Height above ground level (m) of slices considered for detecting trees. By default it will be considered all possible sections from 0.1 m to maximum height by 0.3 m intervals (+/- 5 cm).}
+  \item{breaks}{Height above ground level (m) of slices considered for detecting trees. By default it will be considered all possible sections from 0.4 m to maximum height by 0.3 m intervals (+/- 5 cm).}
 
   \item{stem.section}{Section free of noise (shurb, branches, etc.) considered to detect trees. If not specified, an automatic internal algorithm will be applied (see \sQuote{Details}).}
 

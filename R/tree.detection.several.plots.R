@@ -1,32 +1,19 @@
 
 tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
-
+                                         pcd.red = NULL, normalized = NULL,
+                                         x.center = NULL, y.center = NULL,
+                                         max.dist = NULL, min.height = NULL, max.height = 50,
+                                         algorithm.dtm = "knnidw", res.dtm = 0.2, csf = list(cloth_resolution = 0.5),
+                                         RGB = NULL,
                                          scan.approach = "single",
 
-                                         pcd.red = NULL, normalized = NULL,
-
-
-                                         x.center = NULL, y.center = NULL,
-
-                                         max.dist = NULL, min.height = NULL, max.height = NULL,
-
-                                         algorithm.dtm = "knnidw", res.dtm = 0.2, csf = list(cloth_resolution = 0.5),
-
-
                                          dbh.min = 4, dbh.max = 200, h.min = 1.3,
-
                                          ncr.threshold = 0.1,
-
                                          tls.resolution = NULL, tls.precision = NULL,
-
-                                         breaks = NULL, stem.section = NULL,
-
+                                         stem.section = NULL, breaks = NULL,
                                          d.top = NULL,
-
-
                                          plot.attributes = NULL,
-
 
                                          dir.data = NULL, save.result = TRUE, dir.result = NULL){
 
@@ -67,15 +54,15 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
     }
 
-    .data <- normalize(las = las.list[[i]], normalized = normalized,
+    .data <- normalize(las = las.list[i], normalized = normalized,
 
                        x.center = x.center, y.center = y.center,
 
-                       max.dist = max.dist,
-
-                       min.height = min.height, max.height = max.height,
+                       max.dist = max.dist, min.height = min.height, max.height = max.height,
 
                        algorithm.dtm = algorithm.dtm, res.dtm = res.dtm, csf = csf,
+
+                       RGB = RGB,
 
                        scan.approach = scan.approach,
 
@@ -98,7 +85,7 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
                                               tls.resolution = tls.resolution,
 
-                                              breaks = breaks, stem.section = stem.section,
+                                              stem.section = stem.section, breaks = breaks,
 
                                               d.top = d.top,
 
@@ -116,7 +103,7 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
                                              tls.precision = tls.precision,
 
-                                             breaks = breaks, stem.section = stem.section,
+                                             stem.section = stem.section, breaks = breaks,
 
                                              d.top = d.top,
 

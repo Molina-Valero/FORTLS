@@ -12,8 +12,10 @@
 tree.detection.several.plots(las.list, id = NULL, file = NULL,
 
 
-                             scan.approach = "single",
+                             scan.approach = "single", pcd.red = NULL,
 
+
+                             normalized = NULL,
 
                              x.center = NULL, y.center = NULL,
 
@@ -49,18 +51,67 @@ tree.detection.several.plots(las.list, id = NULL, file = NULL,
 
   \item{scan.approach}{Character parameter indicating TLS single-scan (\sQuote{single}) or TLS multi-scan approach or SLAM point clouds (\sQuote{multi}) approaches. If this argument is not specified by the user, it will be set to \sQuote{multi} approach.}
 
-  \item{Normalize:}
+  \item{pcd.red}{Optional argument to indicate if point cloud density must be reduced to detect trees.}
+
+  \item{normalized}{Optional argument to establish as \code{TRUE} when point cloud is already normalized.}
+
+  \item{x.center}{Planimetric x center coordinate of point cloud data.}
+
+  \item{y.center}{Planimetric y center coordinate of point cloud data.}
+
+  \item{max.dist}{Optional maximum horizontal distance (m) considered from the plot centre. All points farther than \code{max.dist} will be discarded after the normalization process. If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, all points will be used in processing, with \code{max.dist} representing the farthest point.}
+
+  \item{min.height}{Optional minimum height (m) considered from ground level. All points below \code{min.height} will be discarded after the normalization process. If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, all points will be used in processing, with \code{min.height} representing the lowest point.}
+
+  \item{max.height}{Optional maximum height (m) considered from ground level. All points above \code{max.height} will be discarded after the normalization process. If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, all points will be used in processing, with \code{max.height} representing the highest point.}
+
+    \item{algorithm.dtm}{Algorithm used to generate the digital terrain model (DTM) from the TLS point cloud. There are two posible options based on spatial interpolation: \sQuote{tin} and \sQuote{knnidw} (see \sQuote{Details}). If this argument is not specified by the user, it will be set to \sQuote{knnidw} algorithm.}
+
+    \item{res.dtm}{Numeric parameter. Resolution of the DTM generated to normalize point cloud (see \sQuote{Details}). If this argument is not specified by the user, it will be set to 0.2 m.}
+
+    \item{csf}{List containing parameters of CSF algorithm:}
+
+\itemize{
+
+  \item {\code{cloth_resolution}}: by default 0.5.}
+
+  \item{scan.approach}{Character parameter indicating TLS single-scan (\sQuote{single}) or TLS multi-scan approach or SLAM point clouds (\sQuote{multi}) approaches. If this argument is not specified by the user, it will be set to \sQuote{multi} approach.}
+
+  \item{RGB}{Logical parameter useful when point clouds are colorized, thus including values of RGB colors. It is based on the Green Leaf Algorithm (GLA) (see \sQuote{Details}).}
+
+  \item{dbh.min}{Optional minimum \emph{dbh} (cm) considered for detecting trees. By default it will be set at 4 cm.}
+
+  \item{dbh.max}{Optional maximum \emph{dbh} (cm) considered for detecting trees. By default it will be set at 200 cm.}
+
+  \item{h.min}{Optional minimum \emph{h} (m) considered for detecting trees. By default it will be set at 1.3 m.}
+
+  \item{tls.resolution}{List containing parameters of TLS resolution. This can be defined by the angle aperture:}
+
+\itemize{
+
+  \item {\code{horizontal.angle}}: horizontal angle aperture (degrees).
+
+  \item {\code{vertical.angle}}: vertical angle aperture (degrees).}
+
+  \item{}{or separation between two consecutive points at a certain distance from TLS:}
 
   \itemize{
 
-    \item \code{max.dist}, \code{min.height}, \code{max.height}, \code{algorithm.dtm}, \code{res.dtm}, \code{csf}, \code{RGB}: same description and format as indicated for same named \code{\link{normalize}} arguments.}
+  \item {\code{point.dist}}: distance (mm) between two consecutive points.
 
+  \item {\code{tls.dist}}: distance (m) from TLS at which two consecutive points are separated by \code{point.dist}.
 
-  \item{Tree detection:}
+  If this argument is not specified by the user, it will be set to NULL by default and, as a consequence the function will stop giving an error message.}
 
-  \itemize{
+  \item{tls.precision}{Optional argument indicating the average point cloud precision in cm.}
 
-    \item \code{dbh.min}, \code{dbh.max}, \code{h.min}, \code{ncr.threshold}, \code{tls.resolution}, \code{tls.precision}, \code{breaks}, \code{stem.section}, \code{d.top}, \code{plot.attributes}: same description and format as indicated for same named \code{\link{tree.detection.single.scan}} and \code{\link{tree.detection.multi.scan}} arguments}
+  \item{breaks}{Height above ground level (m) of slices considered for detecting trees. By default it will be considered all possible sections from 0.1 m to maximum height by 0.3 m intervals (+/- 5 cm).}
+
+  \item{stem.section}{Section free of noise (shurb, branches, etc.) considered to detect trees. If not specified, an automatic internal algorithm will be applied (see \sQuote{Details}).}
+
+  \item{d.top}{Top stem diameter (cm) considered to estimate commercial timber volume.}
+
+  \item{plot.attributes}{Data frame with attributes at plot level. It must contain a column named \code{id} (character string or numeric value) with encoding coinciding with that used in \code{id} argument of \code{\link{normalize}} for identifying plots. If there are strata, another column named \sQuote{stratum} (numeric) will be required for other functionalities of \pkg{FORTLS} (see, for instance, \code{\link{estimation.plot.size}} or \code{\link{metrics.variables}}). If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, the function will not add these possible plot attributes.}
 
   \item{dir.data}{Optional character string naming the absolute path of the directory where LAS files containing TLS point clouds are located. \code{.Platform$file.sep} must be used as the path separator in \code{dir.dat}. If this argument is not specified by the user, it will be set to \code{NULL} by default and, as consequence, the current working directory of the \R process will be assigned to \code{dir.dat} during the execution.}
 

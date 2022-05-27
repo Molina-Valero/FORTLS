@@ -9,7 +9,7 @@
 \description{This function obtains coordinates relative to the plot centre for Terrestrial Laser Scanner (TLS) and Simultaneous Localization and Mapping (SLAM) point clouds (supplied as LAS files) derived from single scans (with TLS scanner point as plot centre). In addition, the point cropping process developed by Molina-Valero et al., (2019) is applied as a criterion for reducing point density homogeneously in space and proportionally to object size.}
 
 \usage{
-normalize(las,
+normalize(las, normalized = NULL,
           x.center = NULL, y.center = NULL,
           max.dist = NULL, min.height = NULL, max.height = NULL,
           algorithm.dtm = "knnidw", res.dtm = 0.2,
@@ -22,6 +22,8 @@ normalize(las,
 \arguments{
 
   \item{las}{Character string containing the name of LAS file belonging to TLS point cloud, including .las extension (see \sQuote{Examples}). Planimetric coordinates of point cloud data must be in local, representing TLS scan point the origin with Cartesian coordinates x and y as (0, 0).}
+
+  \item{normalized}{Optional argument to establish as \code{TRUE} when point cloud is already normalized.}
 
   \item{x.center}{Planimetric x center coordinate of point cloud data.}
 
