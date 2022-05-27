@@ -1,5 +1,5 @@
 ---
-title: "Tree-level"
+title: "Tree level"
 #author: "Authors"
 #date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -16,43 +16,165 @@ knitr::opts_chunk$set(
 )
 ```
 
-FORTLS is used for processing of TLS data. TLS data must be provided as .las or .laz files. The first obligatory step is the normalization of the point cloud applying the function `normalize`. The obtained normalized point clouds serve as input data for the tree detection functions i.e. `tree.detection.single.scan`, `tree.detection.multi.scan` and `tree.detection.several.plots`. The function `tree.detection.single.scan` detects trees from normalized TLS single-scan data and `tree.detection.multi.scan` from normalized TLS multi-scan data. If data from more than one plot is to be analyzed automatically, the function `tree.detection.several.plots` should be used. It includes both the normalization and the tree detection functions and executes these functions on each input plot sequentially. 
+FORTLS is used for processing of TLS data. TLS data must be provided as .las or .laz files. The first obligatory step is the normalization of the point cloud applying the function `normalize`. The obtained normalized point clouds serve as input data for the tree detection functions i.e. `tree.detection.single.scan`, `tree.detection.multi.scan` and `tree.detection.several.plots`. The function `tree.detection.single.scan` detects trees from normalized TLS single-scan data and `tree.detection.multi.scan` from normalized TLS multi-scan data. If data from more than one plot is to be analyzed automatically, the function `tree.detection.several.plots` should be used, which includes both the normalization and the tree detection functions and executes these functions on each input plot sequentially. 
 
 ## Normalization
 
-The aim of the normalization process is to calculate the coordinates of each point relative to the center of the point cloud. In this process, the functions `readLAS`, `clip_circle`, `classify_ground`, `grid_terrain` and `normalize_height` from the `lidR` package are used. The following steps are executed:
+The aim of the normalization process is to calculate the coordinates of each point relative to the center of the point cloud and the ground level. In this process, the functions `readLAS`, `clip_circle`, `classify_ground`, `grid_terrain` and `normalize_height` from the [lidR](https://cran.r-project.org/web/packages/lidR/index.html) package are used (Roussel et al., 2020^[Roussel, J.R., Auty, D., Coops, N.C., Tompalski, P., Goodbody, T.R.H., Sanchez Meador, A., Bourdon, J.F., de Boissieu, F., Achim, A., 2020. lidR: an R package for analysis of Airborne Laser Scanning (ALS) data. Remote Sens. Environ. 251, 112061 https://doi.org/10.1016/j.rse.2020.112061.]). The following steps are executed:
 
-- Classification of points as "ground" or "not ground" by the cloth simulation filter (CSF) algorithm
-- Generation of a digital terrain model (DTM) by spatial interpolation of the points classified as "ground". Two methods can be applied for the spatial interpolation, either the Delaunay triangulation (`tin`, by default) or a k-nearest neighbour approach with inverse-distance weighting (`knnidw`)
+- Classification of points as "ground" or "not ground" by the cloth simulation filter (CSF) algorithm (Zhang et al., 2016^[Zhang, W., Qi, J., Wan, P., Wang, H., Xie, D., Wang, X., Yan, G., 2016. An easy-to-use airborne LiDAR data filtering method based on Cloth simulation. Rem. Sens. 8 (6), 501. https://doi.org/10.3390/rs8060501.])
+- Generation of a digital terrain model (DTM) by spatial interpolation of the points classified as "ground"
 - Normalization of the point cloud by subtracting the DTM and computation of the Cartesian, cylindrical and spherical coordinates 
-- Reduction of the density of the point cloud by the point cropping (PCP) algorithm
+- Reduction of the density of the point cloud by the point cropping (PCP) algorithm (Molina-Valero et al., 2019^[Molina Valero, J.A., Ginzo Villamayor, M.J., Novo Pérez, M.A., Álvarez-González, J.G., Pérez-Cruzado, C., 2019. Estimación del área basimétrica en masas maduras de Pinus sylvestris en base a una única medición del escáner láser terrestre (TLS). Cuad. Soc. Esp. Cienc. For. 45 (3), 97–116. https://doi.org/10.31167/csecfv0i45.19887.])
+
+#### The arguments of `normalize`
+
+```{r include=FALSE}
+dir.data <- "~/Desktop/USC-Internship/FORTLS/Vignettes"
+dir.result <- "~/Desktop/USC-Internship/FORTLS/Vignettes"
+#remotes::install_github("Molina-Valero/FORTLS", ref = "devel", dependencies = TRUE)
+library(FORTLS)
+```
 
 The `normalize` function is applied as follows:
 
 ```{r eval=FALSE, include=TRUE}
-pcd <- normalize(las = "example_data.las", 
-                 x.center = NULL, y.center = NULL,
+pcd.single <- normalize(las = "Pinus_radiata_single_scan.laz", 
+                 x.center = 0, y.center = 0,
                  max.dist = NULL, min.height = NULL, max.height = NULL, 
-                 algorithm.dtm = "tin", res.dtm = 0.2,
+                 algorithm.dtm = "knnidw", res.dtm = 0.2,
                  csf = list(cloth_resolution = 0.5),
-                 multiple.scans = NULL,
-                 id = NULL, file = NULL,
-                 dir.data = NULL, save.result = TRUE, dir.result = NULL)
+                 RGB = TRUE,
+                 scan.approach = "single",
+                 id = NULL, file = "single.txt",
+                 dir.data = dir.data, save.result = TRUE, dir.result = dir.result)
 ```
 
-The name of the .las or .laz file containing the TLS data is introduced in `las = ` and must include the .las/.laz extension.
+The name of the .las or .laz file containing the TLS data is introduced in `las` and must include the .las/.laz extension.
 
 The planimetric coordinates $x$ and $y$ of the center are by default `x.center = 0` and `y.center = 0`. If this does not coincide with the point cloud data, the coordinates of the plot center can be specified by `x.center` and `y.center`. 
 
-Furthermore the size of the point cloud can optionally be reduced by the arguments `max.dist`, `min.height` and `max.height`. If the maximal horizontal distance in meter to the plot center(`max.dist`) is set, points that are further away are discarded. Similarly, the minimal and maximal height in meters (`min.height`, `max.height` respectively) can optionally define the point cloud. Those points that are lower than the minimal height or higher than the maximal height relative to the ground level are discarded. The default value for all three arguments is `NULL`. Hence, no points are discarded from the point cloud after normalization.
+Furthermore the size of the point cloud can optionally be reduced by the arguments `max.dist`, `min.height` and `max.height`. If the maximal horizontal distance in meter to the plot center (`max.dist`) is set, points that are further away are discarded. Similarly, the minimal and maximal height in meters (`min.height`, `max.height` respectively) defines which points are discarded, i.e. those below the minimal height and those above the maximal height relative to the ground level. The default value for all three arguments is `NULL`. Hence, no points are discarded from the point cloud after normalization.
 
-In order to generate the DTM, two different algorithms can be applied, which is specified by `algorithm.dtm = `. 
+In order to generate the DTM, two different algorithms can be applied, which is specified by `algorithm.dtm`. Spatial interpolation based on a k-nearest neighbor approach with inverse-distance weighting (`knnidw`) is selected by default. The second method is the Delaunay triangulation (`tin`). The resolution of the DTM (`res.dtm``) is set to 0.2 m by default but can be adjusted manually. 
 
-## Tree.detection
+To manually adjust the CSF algorithm, a list with parameters (e.g. the cloth resolution which is set to 0.5 by default) is introduced in `csf`.
 
-### Tree.detection.single.scan
+Furthermore the scanning approach applied for data collection can be specified in `scan.approach` with `single` indicating the TLS single-scan approach and `multi` (set by default) indicating the TLS multi-scan and SLAM point clouds approach.
 
-### Tree.detection.multi.scan
+When the point clouds are colorized, the RGB values can be used to improve the normalization and tree detection process. The colors serve to distinguish leafs from ground and trunk points by the Green Leaf Algorithm (GLA, Louhaichi et al., 2001^[Louhaichi, M., Borman, M. M., & Johnson, D. E. (2001). Spatially located platform and aerial photography for documentation of grazing impacts on wheat. Geocarto International, 16(1), 65-70. doi:10.1080/10106040108542184]). If the GLA algorithm should be applied to remove some points from the point cloud (i.e. leaf points), it must be indicated by `RGB = TRUE`.
 
-### Tree.detection.several.plots
+Optionally, the plot identification number (`id`) and the file name (`file`) can be defined. Both are set to `NULL` by default, which assigns `1` to the plot identification number and `1.txt` to the file name (same name as identification number).
+
+The directory of the input .las/.laz files and the output file can be specified in `dir.data` and `dir.result` respectively. If not further specified, the current working directory is used. The output .txt files contain the reduced point clouds and are saved if not specified in `save.result`.
+
+#### The output
+
+The `normalize` function generates a data frame shown below. Each row corresponds to one point of the point cloud of the input data. The columns `id`, `file` and `point` indicate the plot identification number (by default set to 1), the file name and the point number respectively. The following columns contain the normalized Cartesian, cylindrical and spherical coordinates `x` (distance on x axis in m), `y` (distance on y axis in m), `z` (height relative to ground level in m), `rho` (horizontal distance in m), `phi` (angle in rad), `r` (radial distance in m) and `theta` (polar angle in rad). The column `slope` displays the slope of the terrain given in rad. If the GLA algorithm was used, the column `GLA` shows the results of that algorithm. Furthermore, a selection probability is assigned to each point by applying the PCP algorithm (`prob`) and the column `prob.select` shows the selected plots (indicated with 1) and discarded points (indicated with 0).
+
+```{r eval = FALSE, include=TRUE}
+head(pcd.single)
+```
+
+The .txt file saved to the directory indicated by `dir.result` (if `save.result = TRUE`) contains a similar data frame to that shown above. However, the data frame will only include the reduced point cloud, i.e. only the selected points (`prob.select = 1`). The data frame is saved without row names as .txt file by using the `vroom_write` function of the [vroom](https://cran.r-project.org/web/packages/vroom/index.html) package.
+
+## Tree detection
+
+The tree detection functions include algorithms to detect as many trees as possible in the point clouds. Additionally, the diameter at 1.3 m above ground level (diameter at breast height, $dbh$) is estimated and the coordinates of the tree's center are calculated for each detected tree. There are different functions depending on the TLS approach.
+
+### Data from TLS single-scan approach
+
+When the single-scan approach was used to collect the data, the function `tree.detection.single.scan` can be applied as follows:
+
+```{r eval=FALSE, message=FALSE, warning=FALSE, include=TRUE}
+tls.resolution = list(point.dist = 6.34, tls.dist = 10)
+
+tree.list.single.tls <- tree.detection.single.scan(data = pcd.single,
+                           dbh.min = 4, dbh.max = 200, h.min = 1.3,
+                           ncr.threshold = 0.1,
+                           tls.resolution = tls.resolution,
+                           breaks = c(1.0, 1.3, 1.6), stem.section = c(1,5),
+                           d.top = NULL,
+                           plot.attributes = NULL,
+                           save.result = TRUE, dir.result = dir.result)
+```
+
+The normalized and reduced point cloud, i.e. the output of the `normalize` function is the input data frame for the this function. Several different arguments can be specified:
+
+With `dbh.min` and `dbh.max`, the range of possible tree diameters can be specified. Hence, only  cluster of points with a bigger diameter than `dbh.min` and a smaller diameter than `dbh.max` will be considered as possible trees. Additionally, `min.height` defines the minimal height a possible tree or point cluster should have to be considered as a tree. If not manually specified, the values are set to `dbh.min = 4`, `dbh.max = 200` (values in cm) and `h.min = 1.3` (value in m).
+
+NCR
+
+The resolution of the TLS scan (`tls.resolution`) can be defined either by the aperture angle or the distance between to consecutive points. The aperture angle is determined by the horizontal and vertical aperture angle (`horizontal.angle` and `vertical.angle`). When choosing the angle to define the TLS resolution, both elements must be part of the list required in `tls.resolution = list(horizontal.angle, vertical.angle)`. The second option to determine the resolution is by the distance of two consecutive points (`point.dist`) at a certain distance from the TLS device (`tls.dist`) as it is shown in the example above.
+
+In order to improve the detection of trees, the point cloud is reduced by removing parts of it with no trees. The argument `stem.section` serves to identify the part of the point cloud, i.e. a range of the coordinate z, which contains less bushes, branches or other disruptive points. Hence, a range of the coordinate z and therefore a belt-like area is selected, either by defining the range manually or by an internal algorithm, that include predominantly the trunks of the trees. Within this horizontal area, point clusters with higher density are chosen, which are supposedly the trunks of the trees. Applying a buffer around the trunks, vertical cylinders are created, which contain the trunks. In the following algorithm only these vertical cylindrical parts of the point cloud are used to detect trees.
+
+After the cylinders have been selected from the point cloud, `breaks` defines the height (in m) of the horizontal slices on which the tree detection algorithms are applied. If not otherwise specified, slices are taken every 0.3 m starting at a height of 0.1 m until reaching the maximal height. The slices have a extension of 0.1 m (height of slice +/- 5 cm). On each slice the following algowithms are applied 
+
+- Removal of branches and foliage
+- Detection of point clusters that belong to the tree sections
+- Classification of clusters as detected trees or not 
+                           
+The argument `d.top` defines the top stem diameter (in cm), which is used for the calculation of the commercial stem volume.
+
+plot.attributes
+
+#### The output data frame
+
+```{r eval = FALSE,  include=TRUE}
+tree.list.single.tls
+```
+
+The data frame shown above is the output of the `tree.detect.single.scan` function. Each row represents a detected tree (consecutivly numbered in the column `tree`). The columns `id` and `file` display the plot identification number and the file name respectively equal to the columns in the `normalize` output table. The coordinates of the detected trees are given as Cartesian coordinates of the tree's center (`x` and `y`, in m) and azimuthal angles of the center (`phi` in rad), the left border (`phi.left` in rad), the right border (`phi.right` in rad) and the horizontal distance from the tree's center to the plot's center (`h.dist` in m).
+
+Furthermore, the tree attributes `dbh` (diameter at breast height in cm), `h` (total height in m), `v` (tree stem volume in m^3) are estimated. If `d.top` was defined as argument, the volume of the stem from the ground to the height given in `d.top` is estimated (commercial stem volume, `v.com` in m^3). 
+
+For each tree, the number of points of a normal section of the original point cloud and the reduced point cloud (`n.pts` and `n.pts.red` respectively) are calculated and also estimated (`n.pts.est` and `n.pts.red.est` respectively). The column `partial.occlusion` describes whether the the detected tree is partially occluded (1) or not (0).
+
+The data frame is saved as .csv file without row names using the \code{\link[utils]{write.csv}} function from the \pkg{utils} package.
+
+### Data from TLS multi-scan approach
+
+When multiple scans were performed in the same sampling plot (multi-scan approach) or SLAM devices were used, the function `tree.detection.multi.scan` can be applied as follows below. Additionally, the function `normalize` must be adjusted by specifying `scan.approach = "multi"`.
+
+```{r eval=FALSE, include=TRUE}
+pcd.multi <- normalize(las = "Pinus_radiata_multi_scan.laz", 
+                 x.center = 0, y.center = 0, RGB = TRUE,
+                 scan.approach = "multi", file = "multi.txt",
+                 dir.data = dir.data, dir.result = dir.result)
+
+tree.list.multi.tls <- tree.detection.multi.scan(data = pcd.multi,
+                          dbh.min = 4, dbh.max = 200, h.min = 1.3,
+                          ncr.threshold = 0.1,
+                          tls.precision = 0.1,
+                          breaks = c(1.0, 1.3, 1.6), stem.section = c(1,5),
+                          d.top = NULL,
+                          plot.attributes = NULL,
+                          save.result = TRUE, dir.result = dir.result)
+```
+
+The function `tree.detection.multi.scan` comes along with the same arguments as the function `tree.detection.single.scan`, which are described in "Data from TLS single-scan approach". However, instead of specifying the resolution, the precision of the TLS (in cm) must be defined in `tls.precision`. The procedure remains the same and the output data frame contains the all the columns explained above:
+
+```{r eval=FALSE, include=TRUE}
+tree.list.multi.tls
+```
+
+### Automatic normalization and tree detection of several plots
+
+```{r eval=FALSE, include=TRUE}
+tree.lists.sev.tls <- tree.detection.several.plots(las.list, 
+                            id = NULL, file = NULL,
+                            scan.approach = "single",
+                            x.center = NULL, y.center = NULL,
+                            max.dist = NULL, min.height = NULL, max.height = NULL,
+                            algorithm.dtm = "knnidw", res.dtm = 0.2, 
+                            csf = list(cloth_resolution = 0.5),
+                            
+                            dbh.min = 4, dbh.max = 200, h.min = 1.3,
+                            ncr.threshold = 0.1,
+                            tls.resolution = NULL, tls.precision = NULL,
+                            breaks = NULL, stem.section = NULL,
+                            d.top = NULL, plot.attributes = NULL,
+                            dir.data = dir.data, save.result = TRUE, dir.result = dir.result)
+```
 
