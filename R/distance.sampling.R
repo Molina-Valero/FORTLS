@@ -1,11 +1,11 @@
 
-distance.sampling <- function(tree.list.tls,
+distance.sampling <- function(tree.tls,
                               id.plots = NULL,
                               strata.attributes = NULL){
 
   # Funciona con el data frame que se obtiene de la funci?n tree_detection()
   # El argumento plot.radius se refiere al radio de la parcela considerado
-  .data <- tree.list.tls
+  .data <- tree.tls
 
   # Convert dbh (cm) to International System of Units (m)
   .data$dbh <- .data$dbh / 100

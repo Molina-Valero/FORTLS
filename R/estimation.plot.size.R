@@ -3,7 +3,7 @@ estimation.plot.size <- function(tree.tls,
                                  plot.parameters = data.frame(radius.max = 25,
                                                               k.max = 50,
                                                               BAF.max = 4),
-                                 dbh.min = 7.5, average = FALSE,
+                                 dbh.min = 4, average = FALSE,
                                  all.plot.designs = FALSE) {
 
 

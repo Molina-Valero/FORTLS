@@ -13,7 +13,7 @@ tree.detection.multi.scan(data,
                           dbh.min = 4, dbh.max = 200, h.min = 1.3,
                           ncr.threshold = 0.1,
                           tls.precision = NULL,
-                          breaks = NULL, stem.section = NULL,
+                          stem.section = NULL, breaks = NULL,
                           d.top = NULL,
                           plot.attributes = NULL,
                           save.result = TRUE, dir.result = NULL)}
@@ -50,7 +50,7 @@ Slices determined by \code{breaks} argument are clustered using the DBSCAN algor
 
 \emph{dbh} is directly estimated for the section of 1.3 m above ground level, and estimated from other sections using \emph{dbh}~\emph{breaks} linear regression. Finally, the mean value of all estimates is provided in \sQuote{Value} as the \emph{dbh} of the tree section.
 
-Volume is estimated modelling stem profile as a paraboloid and calculating the volumes of revolution; where trees \emph{dbh} are estimated in \code{\link{tree.detection}}, and total heights are estimated as percentile 99 of z coordinate of points delimited by Voronoi polygons.
+Volume is estimated modelling stem profile as a paraboloid and calculating the volumes of revolution; where trees \emph{dbh} are estimated in \code{\link{tree.detection.single.scan}}, and total heights are estimated as percentile 99 of z coordinate of points delimited by Voronoi polygons.
 
 The number of points corresponding to a normal section (+/- 5 cm) is estimated in proportion to \emph{dbh}, using the average number of points per radius unit as reference. In this respect, only tree sections fully visible at 1.3 m above ground level will be considered for estimating the average number of points.
 
@@ -102,7 +102,7 @@ At the end of the tree detection process, if the \code{save.result} argument is 
 
 
 \note{
-Although \code{tree.detection} also works with reduced point clouds, thus reducing the computing time, use of the original point cloud is recommended in order to detect more trees. This will also depend on forest conditions, especially those related to visibility. The more distant the trees are, the lower the density of points will be, and using reduced point clouds will therefore complicate detection of the most distant trees.
+Although \code{tree.detection.multi.scan} also works with reduced point clouds, thus reducing the computing time, use of the original point cloud is recommended in order to detect more trees. This will also depend on forest conditions, especially those related to visibility. The more distant the trees are, the lower the density of points will be, and using reduced point clouds will therefore complicate detection of the most distant trees.
 
 Note that \code{dbh.min} and \code{dbh.max} are important for avoiding outlier values when inventory data are used for reference purposes. Otherwise, knowledge about the autoecology of species could be used for filtering anomalous values of \emph{dbh}.
 
@@ -127,7 +127,7 @@ Juan Alberto Molina-Valero
 and Adela Martínez-Calvo.}
 
 \seealso{
-\code{\link{normalize}}, \code{\link{tree.detection.multiple}}, \code{\link{distance.sampling}}, \code{\link{estimation.plot.size}}, \code{\link{simulations}}, \code{\link{metrics.variables}}
+\code{\link{normalize}}, \code{\link{tree.detection.single.scan}}, \code{\link{tree.detection.several.plots}}, \code{\link{distance.sampling}}, \code{\link{estimation.plot.size}}, \code{\link{simulations}}, \code{\link{metrics.variables}}
 }
 
 \examples{
@@ -143,17 +143,19 @@ dir.result <- getwd()
 
 # Loading example data of TLS multi-scan approach point cloud (LAZ file) to dir.data
 
-download.file("https://www.dropbox.com/s/iaf4sf9z6w4ga14/Pinus_radiata_multi_scan.laz?dl=1",
-              destfile = file.path(dir.data, "Pinus_radiata_multi_scan.laz"),
+download.file("https://www.dropbox.com/s/j48chrbngwoma6y/Galicia_multi_scan.laz?dl=1",
+              destfile = file.path(dir.data, "Galicia_multi_scan.laz"),
               mode = "wb")
 
 # Normalizing the whole point cloud data without considering arguments
 
-pcd <- normalize(las = "Pinus_radiata_multi_scan.laz",
+pcd <- normalize(las = "Galicia_multi_scan.laz",
 
-                 id = "Pinus_radiata_multi_scan",
+                 id = "Gaicia_multi_scan",
 
-                 scan.approach = "multi"
+                 scan.approach = "multi",
+
+                 max.dist = 15,
 
                  dir.data = dir.data, dir.result = dir.result)
 

@@ -19,7 +19,7 @@ metrics.variables(tree.tls, tree.ds = NULL, tree.field = NULL,
 
 \arguments{
 
-  \item{tree.tls}{Data frame with information about trees detected from terrestrial-based technologies point clouds data in the same format as \code{\link{tree.detection.single.scan}} or \code{\link{tree.detection.milti.scan}} \sQuote{Values}.}
+  \item{tree.tls}{Data frame with information about trees detected from terrestrial-based technologies point clouds data in the same format as \code{\link{tree.detection.single.scan}} or \code{\link{tree.detection.multi.scan}} \sQuote{Values}.}
 
   \item{tree.ds}{Optional list containing detection probabilities of trees with distance sampling methods. The format must be the same as the \sQuote{Value} obtained with \code{\link{distance.sampling}}. If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, TLS metrics using distance sampling based correction will not be calculated for circular fixed area and k-tree plot designs.}
 
@@ -45,6 +45,8 @@ metrics.variables(tree.tls, tree.ds = NULL, tree.field = NULL,
       (1) or not (NA).
     }
   }
+
+  \item{plot.design}{Vector containing the plot designs considered. By default, all plot designs will be considered (circular fixed area, k-tree and angle-count plots).}
 
   \item{plot.parameters}{Data frame containing parameters for circular fixed area, k-tree and angle-count plot designs. If there is a \code{stratum} column in the \code{tree.list.tls} argument, it must have the same number of rows as strata values and they must be named using strata encoding. If plot parameters are not specified, the corresponding plot designs will not be considered in the function. If no parameter is specified, the function will stop giving an error message! The parameters are as follows:}
 
@@ -96,7 +98,7 @@ At this stage, three plot designs are available:
     specified in the \code{plot.parameters} argument.
   }
 
-Volume is estimated modelling stem profile as a paraboloid and calculating the volumes of revolution; where trees \emph{dbh} are estimated in \code{\link{tree.detection}}, and total heights are estimated as percentile 99 of z coordinate of points delimited by Voronoi polygons.
+Volume is estimated modelling stem profile as a paraboloid and calculating the volumes of revolution; where trees \emph{dbh} are estimated in \code{\link{tree.detection.single.scan}} and \code{\link{tree.detection.multi.scan}}, and total heights are estimated as percentile 99 of z coordinate of points delimited by Voronoi polygons.
 
 Regarding occlusion corrections for estimating variables, apart from distance sampling methods considered in \code{\link{distance.sampling}}, another occlusion corection based on correcting the shadowing effect (Seidel & Ammer, 2014) has been included to estimate some variables in circular fixed area and k-tree plots. In the case of angle-count plots, occlusion corrections are based on gap probability attenuation with distance to TLS depending on Poisson model (Strahler et al., 2008; Lovell et al., 2011).}
 
@@ -293,7 +295,7 @@ Fernando Montes and
 César Pérez-Cruzado.}
 
 \seealso{
-\code{\link{tree.detection}}, \code{\link{tree.detection.multiple}}, \code{\link{distance.sampling}},
+\code{\link{tree.detection.single.scan}}, \code{\link{tree.detection.multi.scan}}, \code{\link{tree.detection.several.plots}}, \code{\link{distance.sampling}},
 \code{\link{normalize}}.
 }
 

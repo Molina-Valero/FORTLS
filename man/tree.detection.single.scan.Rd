@@ -143,7 +143,7 @@ Juan Alberto Molina-Valero
 and Adela Martínez-Calvo.}
 
 \seealso{
-\code{\link{normalize}}, \code{\link{tree.detection.multiple}}, \code{\link{distance.sampling}}, \code{\link{estimation.plot.size}}, \code{\link{simulations}}, \code{\link{metrics.variables}}
+\code{\link{normalize}}, \code{\link{tree.detection.multi.scan}}, \code{\link{tree.detection.several.plots}}, \code{\link{distance.sampling}}, \code{\link{estimation.plot.size}}, \code{\link{simulations}}, \code{\link{metrics.variables}}
 }
 
 \examples{
@@ -159,16 +159,16 @@ dir.result <- getwd()
 
 # Loading example data (LAZ file) to dir.data
 
-download.file("https://www.dropbox.com/s/ihr2tk0a9vuwixf/Pinus_radiata_single_scan.laz?dl=1",
-              destfile = file.path(dir.data, "Pinus_radiata_single_scan.laz"),
+download.file("https://www.dropbox.com/s/v9tomu358xgho25/Galicia_single_scan.laz?dl=1",
+              destfile = file.path(dir.data, "Galicia_single_scan.laz"),
               mode = "wb")
 
 
 # Normalizing the whole point cloud data without considering arguments
 
-pcd <- normalize(las = "Pinus_radiata_single_scan.laz",
+pcd <- normalize(las = "Galicia_single_scan.laz",
 
-                 id = "Pinus_radiata_single_scan",
+                 id = "Galicia_single_scan",
 
                  dir.data = dir.data, dir.result = dir.result)
 

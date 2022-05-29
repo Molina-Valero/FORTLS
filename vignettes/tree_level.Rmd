@@ -39,7 +39,7 @@ library(FORTLS)
 The `normalize` function is applied as follows:
 
 ```{r eval=FALSE, include=TRUE}
-pcd.single <- normalize(las = "Pinus_radiata_single_scan.laz", 
+pcd.single <- normalize(las = "Galicia_single_scan.laz", 
                  x.center = 0, y.center = 0,
                  max.dist = NULL, min.height = NULL, max.height = NULL, 
                  algorithm.dtm = "knnidw", res.dtm = 0.2,
@@ -138,7 +138,7 @@ The data frame is saved as .csv file without row names using the \code{\link[uti
 When multiple scans were performed in the same sampling plot (multi-scan approach) or SLAM devices were used, the function `tree.detection.multi.scan` can be applied as follows below. Additionally, the function `normalize` must be adjusted by specifying `scan.approach = "multi"`.
 
 ```{r eval=FALSE, include=TRUE}
-pcd.multi <- normalize(las = "Pinus_radiata_multi_scan.laz", 
+pcd.multi <- normalize(las = "Galicia_multi_scan.laz", 
                  x.center = 0, y.center = 0, RGB = TRUE,
                  scan.approach = "multi", file = "multi.txt",
                  dir.data = dir.data, dir.result = dir.result)

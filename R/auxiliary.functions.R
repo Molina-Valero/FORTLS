@@ -105,7 +105,7 @@
 
 
   # Estimate mean density by cell
-  .threeshold <- median(.density, na.rm = TRUE)
+  .threeshold <- stats::median(.density, na.rm = TRUE)
 
   if(is.nan(.threeshold) | is.na(.threeshold)){return(.filter)}
 
@@ -439,7 +439,7 @@
 
 
   # Estimate mean density by cell
-  .threeshold <- median(.density, na.rm = T)
+  .threeshold <- stats::median(.density, na.rm = T)
 
   if(is.nan(.threeshold) | is.na(.threeshold)){return(.filter)}
 
@@ -717,8 +717,8 @@ if(nrow(.filter) < 1){
   datos$sep <- abs(datos$dhi - datos$dhi.mean)
   datos <- datos[datos$sep < stats::quantile(datos$sep, prob = 0.9), ]
 
-  ajuste<-nls(dhi~dbh*((h-hi)/(h-1.3))**b1, data=datos, start=c(b1=1), max)
-  R2<-1-sum(resid(ajuste)**2)/sum((datos$dhi-mean(datos$dhi))**2)
+  ajuste <- stats::nls(dhi~dbh*((h-hi)/(h-1.3))**b1, data=datos, start=c(b1=1), max)
+  # R2<-1-sum(stats::resid(ajuste)**2)/sum((datos$dhi-mean(datos$dhi))**2)
 
   b1<-coef(ajuste)[1]
 
@@ -768,7 +768,7 @@ if(nrow(.filter) < 1){
 
     tree <- data[data$tree == i, ]
 
-    h.lim <- h_d_limite_m(tree$dbh[1], tree$h[1], d.lim)
+    h.lim <- h_d_limite_m(tree$dbh[1], tree$h[1], d.top)
 
     volume.i <- data.frame(tree = i,
                            v = vol_m3(tree$dbh[1], tree$h[1], 0, tree$h[1], b1),
@@ -809,11 +809,11 @@ if(nrow(.filter) < 1){
   cluster <- as.numeric(as.character(cluster))
   data <- data[data$cluster == cluster,]
 
-  mod.x <- lm(data = data, x ~ z)
-  mod.y <- lm(data = data, y ~ z)
+  mod.x <- stats::lm(data = data, x ~ z)
+  mod.y <- stats::lm(data = data, y ~ z)
 
-  eje$x <- coef(mod.x)[1] + coef(mod.x)[2] * eje$sec
-  eje$y <- coef(mod.y)[1] + coef(mod.y)[2] * eje$sec
+  eje$x <- stats::coef(mod.x)[1] + coef(mod.x)[2] * eje$sec
+  eje$y <- stats::coef(mod.y)[1] + coef(mod.y)[2] * eje$sec
 
   #plot(data$z, data$rho, asp = 1)
   #plot(data$z, data$phi, asp = 1)
@@ -873,7 +873,7 @@ if(nrow(.filter) < 1){
 
 .getStem <- function(data){
 
-  k <- density(data$z)
+  k <- stats::density(data$z)
 
   den <- data.frame(x = k$x, y = k$y)
 

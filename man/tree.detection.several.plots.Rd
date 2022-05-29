@@ -6,38 +6,27 @@
 
 \title{Tree-Level Variables Estimation for Several Plots}
 
-\description{This function integrates both, the \code{\link{normalize}} and \code{\link{tree.detection.single.scan}} or \code{\link{tree.detection.multi.scans}} functions, generating the same \sQuote{Output Files} as indicated for these, and it returs the same \sQuote{Value} as described for \code{\link{tree.detection.single.scan}} or \code{\link{tree.detection.multi.scans}} respectively. However, this function is designed for working with several plots, producing a list of all scans considered automatically from LAS files.}
+\description{This function integrates both, the \code{\link{normalize}} and \code{\link{tree.detection.single.scan}} or \code{\link{tree.detection.multi.scan}} functions, generating the same \sQuote{Output Files} as indicated for these, and it returs the same \sQuote{Value} as described for \code{\link{tree.detection.single.scan}} or \code{\link{tree.detection.multi.scan}} respectively. However, this function is designed for working with several plots, producing a list of all scans considered automatically from LAS files.}
 
 \usage{
 tree.detection.several.plots(las.list, id = NULL, file = NULL,
 
-
                              scan.approach = "single", pcd.red = NULL,
 
-
                              normalized = NULL,
-
                              x.center = NULL, y.center = NULL,
-
                              max.dist = NULL, min.height = NULL, max.height = NULL,
-
-                             algorithm.dtm = "tin", res.dtm = 0.2, csf = list(cloth_resolution = 0.5),
-
-
+                             algorithm.dtm = "tin", res.dtm = 0.2,
+                             csf = list(cloth_resolution = 0.5),
+                             RGB = NULL,
 
                              dbh.min = 4, dbh.max = 200, h.min = 1.3,
-
                              ncr.threshold = 0.1,
-
                              tls.resolution = NULL, tls.precision = NULL,
-
                              breaks = NULL, stem.section = NULL,
-
                              d.top = NULL,
 
-
                              plot.attributes = NULL,
-
 
                              dir.data = NULL, save.result = TRUE, dir.result = NULL)}
 
@@ -75,8 +64,6 @@ tree.detection.several.plots(las.list, id = NULL, file = NULL,
 
   \item {\code{cloth_resolution}}: by default 0.5.}
 
-  \item{scan.approach}{Character parameter indicating TLS single-scan (\sQuote{single}) or TLS multi-scan approach or SLAM point clouds (\sQuote{multi}) approaches. If this argument is not specified by the user, it will be set to \sQuote{multi} approach.}
-
   \item{RGB}{Logical parameter useful when point clouds are colorized, thus including values of RGB colors. It is based on the Green Leaf Algorithm (GLA) (see \sQuote{Details}).}
 
   \item{dbh.min}{Optional minimum \emph{dbh} (cm) considered for detecting trees. By default it will be set at 4 cm.}
@@ -84,6 +71,8 @@ tree.detection.several.plots(las.list, id = NULL, file = NULL,
   \item{dbh.max}{Optional maximum \emph{dbh} (cm) considered for detecting trees. By default it will be set at 200 cm.}
 
   \item{h.min}{Optional minimum \emph{h} (m) considered for detecting trees. By default it will be set at 1.3 m.}
+
+  \item{ncr.threshold}{Local surface variation (also known as normal change rate, NCR). By default it will be set as 0.1. For better understanding of this argument see \sQuote{Details}.}
 
   \item{tls.resolution}{List containing parameters of TLS resolution. This can be defined by the angle aperture:}
 
@@ -129,7 +118,7 @@ See \code{\link{normalize}}, \code{\link{tree.detection.single.scan}} and \code{
 
 \section{Output Files}{
 
-At the end of the tree detection process, if the \code{save.result} argument is \code{TRUE}, the function will save both, the reduced point clouds as TXT files encoded according to \code{file} column of \sQuote{Value}; and the data frame with the tree list described in \sQuote{Value} as CSV file (see \code{\link{normalize}} and \code{\link{tree.detection}} \sQuote{Output files}). All outputs are written without row names in the \code{dir.result} directory using \code{\link{vroom_write}} function from \CRANpkg{vroom} package.}
+At the end of the tree detection process, if the \code{save.result} argument is \code{TRUE}, the function will save both, the reduced point clouds as TXT files encoded according to \code{file} column of \sQuote{Value}; and the data frame with the tree list described in \sQuote{Value} as CSV file (see \code{\link{normalize}} and \code{\link{tree.detection.single.scan}} or \code{\link{tree.detection.multi.scan}} \sQuote{Output files}). All outputs are written without row names in the \code{dir.result} directory using \code{\link{vroom_write}} function from \CRANpkg{vroom} package.}
 
 
 \note{
@@ -156,12 +145,12 @@ dir.result <- getwd()
 
 # Loading example data (LAZ files) to dir.data
 
-download.file("https://www.dropbox.com/s/iaf4sf9z6w4ga14/Pinus_radiata_multi_scan.laz?dl=1",
-              destfile = file.path(dir.data, "Pinus_radiata_multi_scan.laz"),
+download.file("https://www.dropbox.com/s/j48chrbngwoma6y/Galicia_multi_scan.laz?dl=1",
+              destfile = file.path(dir.data, "Galicia_multi_scan.laz"),
               mode = "wb")
 
-download.file("https://www.dropbox.com/s/ypar7fwqcht8aw6/Fagus_sylvatica_SLAM.laz?dl=1",
-              destfile = file.path(dir.data, "Fagus_sylvatica_SLAM.laz"),
+download.file("https://www.dropbox.com/s/ypar7fwqcht8aw6/Go_Fagus_SLAM.laz?dl=1",
+              destfile = file.path(dir.data, "Go_Fagus_SLAM.laz"),
               mode = "wb")
 
 
@@ -174,8 +163,8 @@ files <- list.files(pattern = "laz$", path = dir.data)
 
 tree.tls <- tree.detection.several.plots(las.list = files[1:2],
 
-                                         id = c("Pinus_radiata_multi_scan",
-                                                "Fagus_sylvatica_SLAM"),
+                                         id = c("Galicia_multi_scan",
+                                                "Go_sylvatica_SLAM"),
 
                                          scan.approach = "multi",
 

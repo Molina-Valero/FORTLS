@@ -26,9 +26,11 @@ TLS point clouds.
 
 
 \usage{
-simulations(tree.list.tls, distance.sampling = NULL, tree.list.field,
-            plot.parameters = list(radius.max = 25, k.tree.max = 50,
-                                   BAF.max = 4),
+simulations(tree.tls, tree.ds = NULL, tree.field,
+            plot.design = c("fixed.area", "k.tree", "angle.count"),
+            plot.parameters = data.frame(radius.max = 25, k.max = 50, BAF.max = 4),
+            scan.approach = "single", var.metr = list(tls = NULL, field = NULL),
+            dbh.min = 4, h.min = 1.3, max.dist = Inf,
             dir.data = NULL, save.result = TRUE, dir.result = NULL)
 }
 
@@ -65,7 +67,7 @@ simulations(tree.list.tls, distance.sampling = NULL, tree.list.field,
           indicated for same named columns of \code{tree} in \code{\link{distance.sampling}} \sQuote{Value}. In addition, plot
           identification and tree numbering included in \code{id} and
           \code{tree} columns must coincide with those included in the same
-          named columns of \code{tree.list.tls} argument.
+          named columns of \code{tree.tls} argument.
         }
 
   If this argument is not specified by the user, it will be set to \code{NULL} by
@@ -73,14 +75,14 @@ simulations(tree.list.tls, distance.sampling = NULL, tree.list.field,
   correction will not be calculated for a circular fixed area or k-tree plot designs.
 }}
 
-  \item{tree.list.field}{
+  \item{tree.field}{
   Data frame with information about trees measured in the field plots. Each
   row must correspond to a (plot, tree) pair, and it must include at least the
   following columns:
     \itemize{
       \item \code{id}: plot identification encoded as character string or
       numeric. Plot identifications must coincide with those
-      included in \code{id} column of the \code{tree.list.tls} argument.
+      included in \code{id} column of the \code{tree.tls} argument.
       \item \code{tree}: trees numbering.
       \item \code{horizontal.distance}: horizontal distance (m) from plot
       centre to tree centre. Centres of the field plots must coincide with
@@ -223,7 +225,7 @@ following main steps:
     \itemize{
       \item \code{id}: plot identification encoded as a character string or
       numeric. It will coincide with those included in the \code{id}
-      column of \code{tree.list.tls}, \code{tree.list.field} or, if applicable,
+      column of \code{tree.tls}, \code{tree.field} or, if applicable,
       \code{distance.sampling} arguments.
       \item \code{radius}: radius (m) of the simulated plot.
     }
@@ -311,7 +313,7 @@ following main steps:
     \itemize{
       \item \code{id}: plot identification encoded as character string or
       numeric. The \code{id} will coincide with those included in the \code{id}
-      column of \code{tree.list.tls}, \code{tree.list.field} or, if applicable,
+      column of \code{tree.tls}, \code{tree.field} or, if applicable,
       \code{distance.sampling} arguments.
       \item \code{k}: number of trees (trees) in the simulated plot.
     }
@@ -351,7 +353,7 @@ following main steps:
     \itemize{
       \item \code{id}: plot identification encoded as character string or
       numeric. The \code{id} will coincide with those included in the \code{id}
-      column of \code{tree.list.tls} and \code{tree.list.field}.
+      column of \code{tree.tls} and \code{tree.field}.
       \item \code{BAF}: BAF (\eqn{{m}^{2}/ha}{m^2/ha}) of the simulated plot.
     }
   Estimated variables based on simulated field plots:
@@ -472,7 +474,7 @@ Fernando Montes and César Pérez-Cruzado.
 # plot 1 from Rioja data set
 
 data("Rioja.data")
-example.tls <- subset(Rioja.data$tree.list.tls, id == 1)
+example.tls <- subset(Rioja.data$tree.tls, id == 1)
 
 # Compute detection probabilities using distance sampling methods
 
@@ -481,7 +483,7 @@ example.ds <- distance.sampling(example.tls)
 # Load information of trees measured in field plots corresponding to plot 1 from
 # Rioja data set
 
-example.field <- subset(Rioja.data$tree.list.field, id == 1)
+example.field <- subset(Rioja.data$tree.field, id == 1)
 
 # Establish directory where TXT file containing TLS point cloud corresponding to
 # plot 1 from Rioja data set is located. For instance, current working directory
@@ -502,15 +504,15 @@ dir.result <- getwd()
 # to plot 1 from Rioja data set
 # Without occlusion correction based on distance sampling methods
 
-sim <- simulations(tree.list.tls = example.tls, tree.list.field = example.field,
+sim <- simulations(tree.tls = example.tls, tree.field = example.field,
                    plot.parameters = list(radius.max = 20, k.tree.max = 30,
                                           BAF.max = 4),
                    dir.data = dir.data, dir.result = dir.result)
 
 # With occlusion correction based on distance sampling methods
 
-sim <- simulations(tree.list.tls = example.tls, distance.sampling = example.ds,
-                   tree.list.field = example.field,
+sim <- simulations(tree.tls = example.tls, distance.sampling = example.ds,
+                   tree.field = example.field,
                    plot.parameters = list(radius.max = 20, k.tree.max = 30,
                                           BAF.max = 4),
                    dir.data = dir.data,
@@ -518,8 +520,8 @@ sim <- simulations(tree.list.tls = example.tls, distance.sampling = example.ds,
 # Only circular fixed area plot design with non-default parameters, and with occlusion
 # correction based on distance sampling methods
 
-sim <- simulations(tree.list.tls = example.tls, distance.sampling = example.ds,
-                   tree.list.field = example.field,
+sim <- simulations(tree.tls = example.tls, distance.sampling = example.ds,
+                   tree.field = example.field,
                    plot.parameters <- list(radius.max = 20,
                                            radius.increment = .25,
                                            num.trees = 50),
@@ -527,15 +529,15 @@ sim <- simulations(tree.list.tls = example.tls, distance.sampling = example.ds,
 # Only k-tree plot design with non-default parameters, and with occlusion
 # correction based on distance sampling methods
 
-sim <- simulations(tree.list.tls = example.tls, distance.sampling = example.ds,
-                   tree.list.field = example.field,
+sim <- simulations(tree.tls = example.tls, distance.sampling = example.ds,
+                   tree.field = example.field,
                    plot.parameters <- list(k.tree.max = 30, num.trees = 50),
                    dir.data = dir.data, dir.result = dir.result)
 # Only angle-count plot design with non-default parameters, and with occlusion
 # correction based on distance sampling methods
 
-sim <- simulations(tree.list.tls = example.tls, distance.sampling = example.ds,
-                   tree.list.field = example.field,
+sim <- simulations(tree.tls = example.tls, distance.sampling = example.ds,
+                   tree.field = example.field,
                    plot.parameters <- list(BAF.max = 5, BAF.increment = 0.5,
                                            num.trees = 50),
                    dir.data = dir.data, dir.result = dir.result)

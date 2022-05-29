@@ -10,17 +10,18 @@
 different plot designs can be compared if specified in the arguments, producing one size-estimation chart per variable (\emph{N} and \emph{G}).}
 
 \usage{
-estimation.plot.size(tree.list.tls,
-                     plot.parameters = list(radius.max = 25,
-                                            k.tree.max = 50,
-                                            BAF.max = 4),
+estimation.plot.size(tree.tls,
+                     plot.parameters = data.frame(radius.max = 25,
+                                                  k.max = 50,
+                                                  BAF.max = 4),
+                     dbh.min = 4,
                      average = FALSE, all.plot.designs = FALSE)}
 
 \arguments{
 
-  \item{tree.list.tls}{Data frame with information of trees detected from TLS point cloud data in the same format as \code{\link{tree.detection}} \sQuote{Value}.}
+  \item{tree.tls}{Data frame with information of trees detected from TLS point cloud data in the same format as \code{\link{tree.detection.single.scan}} and \code{\link{tree.detection.multi.scan}} \sQuote{Value}.}
 
-  \item{plot.parameters}{Optional list containing parameters for circular fixed area, k-tree and angle-count plot designs. The parameters are as follows:}
+  \item{plot.parameters}{Optional data frame containing parameters for circular fixed area, k-tree and angle-count plot designs. The parameters are as follows:}
 
   \itemize{
 
@@ -30,13 +31,15 @@ estimation.plot.size(tree.list.tls,
 
 \item{\code{BAF.max}}: maximum basal area factor (\eqn{{m}^{2}/ha}{m^2/ha}) considered for angle-count plots. By default, \code{BAF.max} is 4.}
 
+  \item{dbh.min}{Optional minimum \emph{dbh} (cm) considered for detecting trees. By default it will be set at 4 cm.}
+
   \item{average}{Logical; if \code{TRUE}, plot means values and standard deviation of estimations will be represented. By default, it will be set as \code{FALSE}.}
 
   \item{all.plot.designs}{Logical; if \code{TRUE}, charts for each plot design are drawn together. By default, it will be set as \code{FALSE}.}}
 
-\details{If there are strata in the \code{tree.list.tls} argument, they will be differentiated in charts with different colours. Strata must be specified in a numeric column named \code{stratum}.
+\details{If there are strata in the \code{tree.tls} argument, they will be differentiated in charts with different colours. Strata must be specified in a numeric column named \code{stratum}.
 
-The \code{all.plot.designs} argument only works for single strata, and therefore if there are additional strata in the \code{tree.list.tls} argument, they will be considered equal.
+The \code{all.plot.designs} argument only works for single strata, and therefore if there are additional strata in the \code{tree.tls} argument, they will be considered equal.
 
 The outputs of this function are inspired by Fig. 3 of Brunner and Gizachew (2014).}
 
@@ -59,7 +62,7 @@ César Pérez-Cruzado.}
 Note that this is an option for choosing the best plot design when  field data are not available. Otherwise, using \code{\link{correlations}}, \code{\link{relative.bias}} and \code{\link{optimize.plot.design}} will be more desirable for obtaining the best possible plot design.}
 
 \seealso{
-\code{\link{tree.detection}}, \code{\link{tree.detection.multiple}}
+\code{\link{tree.detection.single.scan}}, \code{\link{tree.detection.multi.scan}}, \code{\link{tree.detection.several.plots}}
 }
 
 \examples{
@@ -69,16 +72,16 @@ Note that this is an option for choosing the best plot design when  field data a
 
 data("Rioja.data")
 
-tree.list.tls <- Rioja.data$tree.list.tls
+tree.tls <- Rioja.data$tree.tls
 
 
 # Without strata and plot parameters by default
 
-estimation.plot.size(tree.list.tls)
+estimation.plot.size(tree.tls)
 
-estimation.plot.size(tree.list.tls, average = TRUE)
+estimation.plot.size(tree.tls, average = TRUE)
 
-estimation.plot.size(tree.list.tls, all.plot.designs = TRUE)
+estimation.plot.size(tree.tls, all.plot.designs = TRUE)
 
 
 # Considering two strata and different parameters
@@ -90,17 +93,17 @@ plot.attributes <- Rioja.data$plot.attributes
 
 # Merging the plot.attributes data set with strata information
 
-tree.list.tls <- merge(tree.list.tls, plot.attributes, by = "id")
+tree.tls <- merge(tree.tls, plot.attributes, by = "id")
 
 
-estimation.plot.size(tree.list.tls,
+estimation.plot.size(tree.tls,
                      plot.parameters = list(radius.max = 10, k.tree.max = 10, BAF.max = 2))
 
-estimation.plot.size(tree.list.tls, ,
+estimation.plot.size(tree.tls, ,
                      plot.parameters = list(radius.max = 15, k.tree.max = 20, BAF.max = 4),
                      average = TRUE)
 
-estimation.plot.size(tree.list.tls,
+estimation.plot.size(tree.tls,
                      plot.parameters = list(radius.max = 20, k.tree.max = 30, BAF.max = 2),
                      all.plot.designs = TRUE)
 
