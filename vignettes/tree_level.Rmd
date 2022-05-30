@@ -27,12 +27,11 @@ The aim of the normalization process is to calculate the coordinates of each poi
 - Normalization of the point cloud by subtracting the DTM and computation of the Cartesian, cylindrical and spherical coordinates 
 - Reduction of the density of the point cloud by the point cropping (PCP) algorithm (Molina-Valero et al., 2019^[Molina Valero, J.A., Ginzo Villamayor, M.J., Novo Pérez, M.A., Álvarez-González, J.G., Pérez-Cruzado, C., 2019. Estimación del área basimétrica en masas maduras de Pinus sylvestris en base a una única medición del escáner láser terrestre (TLS). Cuad. Soc. Esp. Cienc. For. 45 (3), 97–116. https://doi.org/10.31167/csecfv0i45.19887.])
 
-#### The arguments of `normalize`
+### The arguments of `normalize`
 
 ```{r include=FALSE}
 dir.data <- "~/Desktop/USC-Internship/FORTLS/Vignettes"
 dir.result <- "~/Desktop/USC-Internship/FORTLS/Vignettes"
-#remotes::install_github("Molina-Valero/FORTLS", ref = "devel", dependencies = TRUE)
 library(FORTLS)
 ```
 
@@ -50,25 +49,27 @@ pcd.single <- normalize(las = "Galicia_single_scan.laz",
                  dir.data = dir.data, save.result = TRUE, dir.result = dir.result)
 ```
 
-The name of the .las or .laz file containing the TLS data is introduced in `las` and must include the .las/.laz extension.
+The name of the .las or .laz file containing the TLS data is introduced in **`las`** and must include the .las/.laz extension. Optionally, the plot identification number (**`id`**) and the file name (**`file`**) can be defined. Both are set to `NULL` by default, which assigns `1` to the plot identification number and `1.txt` to the file name (same name as the identification number).
 
-The planimetric coordinates $x$ and $y$ of the center are by default `x.center = 0` and `y.center = 0`. If this does not coincide with the point cloud data, the coordinates of the plot center can be specified by `x.center` and `y.center`. 
+The directory of the input .las/.laz files and the output file can be specified in **`dir.data`** and **`dir.result`** respectively. If not further specified, the current working directory is used. The output .txt files contain the reduced point clouds and are saved if not specified in **`save.result`**.
 
-Furthermore the size of the point cloud can optionally be reduced by the arguments `max.dist`, `min.height` and `max.height`. If the maximal horizontal distance in meter to the plot center (`max.dist`) is set, points that are further away are discarded. Similarly, the minimal and maximal height in meters (`min.height`, `max.height` respectively) defines which points are discarded, i.e. those below the minimal height and those above the maximal height relative to the ground level. The default value for all three arguments is `NULL`. Hence, no points are discarded from the point cloud after normalization.
+Furthermore the scanning approach applied for data collection should be specified in **`scan.approach`** with `"single"` indicating the TLS single-scan approach and `"multi"` (set by default) indicating the TLS multi-scan and SLAM point clouds approach.
 
-In order to generate the DTM, two different algorithms can be applied, which is specified by `algorithm.dtm`. Spatial interpolation based on a k-nearest neighbor approach with inverse-distance weighting (`knnidw`) is selected by default. The second method is the Delaunay triangulation (`tin`). The resolution of the DTM (`res.dtm``) is set to 0.2 m by default but can be adjusted manually. 
+#### Defining the point cloud
 
-To manually adjust the CSF algorithm, a list with parameters (e.g. the cloth resolution which is set to 0.5 by default) is introduced in `csf`.
+The planimetric coordinates $x$ and $y$ of the center are by default `x.center = 0` and `y.center = 0`. If this does not coincide with the point cloud data, the coordinates of the plot center must be specified by **`x.center`** and **`y.center`**. 
 
-Furthermore the scanning approach applied for data collection can be specified in `scan.approach` with `single` indicating the TLS single-scan approach and `multi` (set by default) indicating the TLS multi-scan and SLAM point clouds approach.
+Furthermore the size of the point cloud can be reduced by the arguments **`max.dist`**, **`min.height`** and **`max.height`**. If the maximum horizontal distance in meter to the plot center (`max.dist`) is set, points that are further away are discarded. Similarly, the minimum and maximum height in meters (`min.height`, `max.height` respectively) defines which points are discarded, i.e. those below the minimum height and those above the maximum height relative to the ground level. The default value for all three arguments is `NULL`. Hence, no points are discarded from the point cloud after normalization.
 
-When the point clouds are colorized, the RGB values can be used to improve the normalization and tree detection process. The colors serve to distinguish leafs from ground and trunk points by the Green Leaf Algorithm (GLA, Louhaichi et al., 2001^[Louhaichi, M., Borman, M. M., & Johnson, D. E. (2001). Spatially located platform and aerial photography for documentation of grazing impacts on wheat. Geocarto International, 16(1), 65-70. doi:10.1080/10106040108542184]). If the GLA algorithm should be applied to remove some points from the point cloud (i.e. leaf points), it must be indicated by `RGB = TRUE`.
+#### Adjusting the algorithms applied in `normalize` function
 
-Optionally, the plot identification number (`id`) and the file name (`file`) can be defined. Both are set to `NULL` by default, which assigns `1` to the plot identification number and `1.txt` to the file name (same name as identification number).
+In order to generate the DTM, two different algorithms can be applied specified by **`algorithm.dtm`**. Spatial interpolation based on a k-nearest neighbor approach with inverse-distance weighting (`knnidw`) is selected by default. The second method is the Delaunay triangulation (`tin`). The resolution of the DTM (`res.dtm``) is set to 0.2 m by default but can be adjusted manually. 
 
-The directory of the input .las/.laz files and the output file can be specified in `dir.data` and `dir.result` respectively. If not further specified, the current working directory is used. The output .txt files contain the reduced point clouds and are saved if not specified in `save.result`.
+To manually adjust the CSF algorithm, a list with parameters (e.g. the cloth resolution which is set to 0.5 by default) is introduced in **`csf`**.
 
-#### The output
+When the point clouds are colorized, the RGB values can be used to improve the normalization and tree detection process (**`RGB`**). The colors serve to distinguish leafs from ground and stem points by the Green Leaf Algorithm (GLA, Louhaichi et al., 2001^[Louhaichi, M., Borman, M. M., & Johnson, D. E. (2001). Spatially located platform and aerial photography for documentation of grazing impacts on wheat. Geocarto International, 16(1), 65-70. doi:10.1080/10106040108542184]). If the GLA algorithm should be applied to remove some points from the point cloud (i.e. leaf points), it must be indicated by `RGB = TRUE`.
+
+### The output
 
 The `normalize` function generates a data frame shown below. Each row corresponds to one point of the point cloud of the input data. The columns `id`, `file` and `point` indicate the plot identification number (by default set to 1), the file name and the point number respectively. The following columns contain the normalized Cartesian, cylindrical and spherical coordinates `x` (distance on x axis in m), `y` (distance on y axis in m), `z` (height relative to ground level in m), `rho` (horizontal distance in m), `phi` (angle in rad), `r` (radial distance in m) and `theta` (polar angle in rad). The column `slope` displays the slope of the terrain given in rad. If the GLA algorithm was used, the column `GLA` shows the results of that algorithm. Furthermore, a selection probability is assigned to each point by applying the PCP algorithm (`prob`) and the column `prob.select` shows the selected plots (indicated with 1) and discarded points (indicated with 0).
 
@@ -80,7 +81,7 @@ The .txt file saved to the directory indicated by `dir.result` (if `save.result 
 
 ## Tree detection
 
-The tree detection functions include algorithms to detect as many trees as possible in the point clouds. Additionally, the diameter at 1.3 m above ground level (diameter at breast height, $dbh$) is estimated and the coordinates of the tree's center are calculated for each detected tree. There are different functions depending on the TLS approach.
+The tree detection functions include algorithms to detect as many trees as possible in the point clouds. Additionally, the diameter at 1.3 m above ground level (diameter at breast height, $dbh$) is estimated and the coordinates of the tree's center are calculated for each detected tree. Depending on the TLS approach, different tree detection functions should be used.
 
 ### Data from TLS single-scan approach
 
@@ -93,31 +94,49 @@ tree.list.single.tls <- tree.detection.single.scan(data = pcd.single,
                            dbh.min = 4, dbh.max = 200, h.min = 1.3,
                            ncr.threshold = 0.1,
                            tls.resolution = tls.resolution,
-                           breaks = c(1.0, 1.3, 1.6), stem.section = c(1,5),
                            d.top = NULL,
                            plot.attributes = NULL,
+                           breaks = c(1.0, 1.3, 1.6), stem.section = c(1,5),
                            save.result = TRUE, dir.result = dir.result)
 ```
 
-The normalized and reduced point cloud, i.e. the output of the `normalize` function is the input data frame for the this function. Several different arguments can be specified:
+The normalized and reduced point cloud, i.e. the output of the `normalize` function is the input data frame for this function (**`data`**). The different arguments that can be specified are explained below.
 
-With `dbh.min` and `dbh.max`, the range of possible tree diameters can be specified. Hence, only  cluster of points with a bigger diameter than `dbh.min` and a smaller diameter than `dbh.max` will be considered as possible trees. Additionally, `min.height` defines the minimal height a possible tree or point cluster should have to be considered as a tree. If not manually specified, the values are set to `dbh.min = 4`, `dbh.max = 200` (values in cm) and `h.min = 1.3` (value in m).
+#### Defining the range of diameters and heights of possible trees
 
-NCR
+With **`dbh.min`** and **`dbh.max`**, the range of possible tree diameters can be specified. Hence, only  cluster of points with a bigger diameter than `dbh.min` and a smaller diameter than `dbh.max` will be considered as possible trees. Additionally, **`min.height`** defines the minimum height of a possible tree or point cluster to be considered as a tree. If not manually specified, the values are set to `dbh.min = 4`, `dbh.max = 200` (values in cm) and `h.min = 1.3` (value in m).
 
-The resolution of the TLS scan (`tls.resolution`) can be defined either by the aperture angle or the distance between to consecutive points. The aperture angle is determined by the horizontal and vertical aperture angle (`horizontal.angle` and `vertical.angle`). When choosing the angle to define the TLS resolution, both elements must be part of the list required in `tls.resolution = list(horizontal.angle, vertical.angle)`. The second option to determine the resolution is by the distance of two consecutive points (`point.dist`) at a certain distance from the TLS device (`tls.dist`) as it is shown in the example above.
+#### Resolution of the TLS 
 
-In order to improve the detection of trees, the point cloud is reduced by removing parts of it with no trees. The argument `stem.section` serves to identify the part of the point cloud, i.e. a range of the coordinate z, which contains less bushes, branches or other disruptive points. Hence, a range of the coordinate z and therefore a belt-like area is selected, either by defining the range manually or by an internal algorithm, that include predominantly the trunks of the trees. Within this horizontal area, point clusters with higher density are chosen, which are supposedly the trunks of the trees. Applying a buffer around the trunks, vertical cylinders are created, which contain the trunks. In the following algorithm only these vertical cylindrical parts of the point cloud are used to detect trees.
+The resolution of the TLS scan (**`tls.resolution`**) can be defined either by the aperture angle or the distance between to consecutive points. The aperture angle is determined by the horizontal and vertical aperture angles (`horizontal.angle` and `vertical.angle`). When choosing the angle to define the TLS resolution, both elements must be part of the list required in `tls.resolution = list(horizontal.angle, vertical.angle)`. The second option to determine the resolution is by the distance of two consecutive points (`point.dist`) at a certain distance from the TLS device (`tls.dist`) as it is shown in the example above.
 
-After the cylinders have been selected from the point cloud, `breaks` defines the height (in m) of the horizontal slices on which the tree detection algorithms are applied. If not otherwise specified, slices are taken every 0.3 m starting at a height of 0.1 m until reaching the maximal height. The slices have a extension of 0.1 m (height of slice +/- 5 cm). On each slice the following algowithms are applied 
+#### Integrate further information about the plots
 
-- Removal of branches and foliage
-- Detection of point clusters that belong to the tree sections
-- Classification of clusters as detected trees or not 
-                           
-The argument `d.top` defines the top stem diameter (in cm), which is used for the calculation of the commercial stem volume.
+In **`plot.attributes`** a data frame with attributesa at plot level (e.g., strata) can be inserted for additional information. This data frame must contain a column named `id` coinciding with that used in the `id` argument of the function `normalize`. If there are strata, the column specifying the strata must be named `stratum` (numeric) for other functionalities (e.g., `estimation.plot.size` or `metrics.variables`). If this argument is not specified, it will be set to NULL by default and the function will not add possible plot attributes.
 
-plot.attributes
+#### Algorithm to distinguish stem points and foliage points
+
+In order to distinguish stem points from points belonging to thin branches or foliage, the local surface variation, also known as normal change rate (NCR) is calculated for each point. This is a quantitative measure of the curvature feature (Pauly et al., 2002^[Pauly, M., Gross, M., & Kobbelt, L. P., (2002). Efficient simplification of point-sampled surfaces. In IEEE Conference on Visualization. (pp. 163-170). Boston, USA. https://doi.org/10.1109/VISUAL.2002.1183771]). For each point, the NCR index is estimated in a local neighborhood with a radius of 5 cm. This radius is considered as suitable for the stem separation in forests (Ma et al. 2015^[Ma, L., Zheng, G., Eitel, J. U., Moskal, L. M., He, W., & Huang, H. (2015). Improved salient feature-based approach for automatically separating photosynthetic and nonphotosynthetic components within terrestrial lidar point cloud data of forest canopies. IEEE Transactions Geoscience Remote Sensing, 54(2), 679-696. https://doi.org/10.1109/TGRS.2015.2459716]; Xia et al., 2015^[Xia, S., Wang, C., Pan, F., Xi, X., Zeng, H., & Liu, H. (2015). Detecting stems in dense and homogeneous forest using single-scan TLS. Forests. 6(11), 3923-3945. https://doi.org/10.3390/f6113923]). Higher NCR values indicate more curved surfaces e.g. branches and foliage. Therefore, a threshold (**`ncr.threshold`**) is established, which can be modified manually. By defalut it is set to 0.1 according to Zhang et al. (2019^[Zhang, W., Wan, P., Wang, T., Cai, S., Chen, Y., Jin, X., & Yan, G. (2019). A novel approach for the detection of standing tree stems from plot-level terrestrial laser scanning data. Remote Sens. 11(2), 211. https://doi.org/10.3390/rs11020211]), meaning that points with a higher NCR value than the threshold are discarded. 
+
+#### Algorithms for identification of trees
+
+In order to improve the detection of trees, the point cloud is reduced by removing parts of it with no trees. The argument **`stem.section`** serves to identify the part of the point cloud, i.e. a range of the coordinate z, which contains less bushes, branches or other disruptive points. Hence, a range of the coordinate z and therefore a belt-like area is selected, either by defining the range manually or by an internal algorithm, that include predominantly the stems of the trees. Within this horizontal area, point clusters with higher density are chosen, which are supposedly the stems of the trees. Applying a buffer around the stems, vertical cylinders are created, which contain the stems. In the following algorithm only these vertical cylindrical parts of the point cloud are used to detect trees.
+
+After the cylinders have been selected from the point cloud, **`breaks`** defines the height (in m) of horizontal slices on which the tree detection algorithms are applied. If not otherwise specified, slices are taken every 0.3 m starting at a height of 0.4 m until reaching the maximum height. The slices have a extension of 0.1 m (height of slice +/- 5 cm). On each slice the following algorithms are applied:
+
+- **Removal of branches and foliage:** The NCR values are calculated for each point and only those points are kept as stem points with a NCR value lower than the predefined threshold (`ncr.threshold`)
+- **Clustering of the points:** The clustering process is applied on the horizontal projection of the point's Cartesian coordinates i.e., only their $x$ and $y$ coordinates are considered. The Density-Based Spatial Clustering of Applications based on the Noise (DBSCAN) method (Ester et al., 1996^[Ester, M., Kriegel, H.P., Sander, J., Xu, X., (1996). A density-based algorithm for discovering clusters in large spatial databases with noise. In Kdd 96 (34), 226–231.]) implemented by the `dbscan` function of the [dbscan](https://cran.r-project.org/web/packages/dbscan/) package is used to perform the clustering. The radius of the epsilon neighborhood (`eps`) is defined as the minimum distance between two consecutive points at the furthest distance from the plot center in the respective horizontal slice
+- **Removing of points belonging to remaining branches and foliage:** Two characteristics are used to distinguish stem and branch clusters. First, the density of stem sections is higher than of branch and foliage sections. And second, stem points should have a predominant vertical distribution. Hence, when the point cloud is vertical projected and dissected into a grid, cells over stems have a higher point density than cells over leafs or branches. Points in cells with a lower density than the median density are removed from the point cloud
+- **Calculation of the center of the potential tree section:** The center is considered as the point in which the variance of the distances between all cluster points and the potential center point reaches its lowest value
+- **Classification of clusters:** In order to decide whether the clusters belong to a tree section, different geometric features are considered. The calculated center of the tree section must be located behind the stem point clusters relative to the TLS position. No points should be located behind the tree surface relative to the TLS position. The clusters should form an arc i.e., extreme points should lay further away from the TLS than center points.
+
+As explained above, these algorithms are applied on all horizontal slices (defined by `breaks`). Thus, tree sections are identified at different heights. Those sections that belong to the same tree are joined by applying the DBSCAN algorithm on the horizontal projection of the different sections. Thereafter, tree attributes can be estimated.
+
+#### Estimation of tree attributes
+
+The diameter of the detected trees (dbh) is obtained at 1.3 m as the double of radius. If the tree is not detected at 1.3 m the dbh is estimated by fitting a linear taper function with radius as response variable and the section heights as explanatory variables. Thus, the radius at 1.3 m can be calculated and the dbh is twice the calculated radius.
+
+The argument **`d.top`** defines the top stem diameter (in cm), which is used for the calculation of the commercial stem volume. If this argument is not specified, the commercial stem volume (`v.com`) is not calculated.
 
 #### The output data frame
 
@@ -125,13 +144,13 @@ plot.attributes
 tree.list.single.tls
 ```
 
-The data frame shown above is the output of the `tree.detect.single.scan` function. Each row represents a detected tree (consecutivly numbered in the column `tree`). The columns `id` and `file` display the plot identification number and the file name respectively equal to the columns in the `normalize` output table. The coordinates of the detected trees are given as Cartesian coordinates of the tree's center (`x` and `y`, in m) and azimuthal angles of the center (`phi` in rad), the left border (`phi.left` in rad), the right border (`phi.right` in rad) and the horizontal distance from the tree's center to the plot's center (`h.dist` in m).
+The data frame shown above is the output of the `tree.detect.single.scan` function. Each row represents a detected tree (consecutively numbered in the column `tree`). The columns `id` and `file` display the plot identification number and the file name respectively equal to the columns in the `normalize` output table. The coordinates of the detected trees are given as Cartesian coordinates of the tree's center (`x` and `y`, in m) and azimuthal angles of the center (`phi` in rad), the left border (`phi.left` in rad), the right border (`phi.right` in rad) and the horizontal distance from the tree's center to the plot's center (`h.dist` in m).
 
 Furthermore, the tree attributes `dbh` (diameter at breast height in cm), `h` (total height in m), `v` (tree stem volume in m^3) are estimated. If `d.top` was defined as argument, the volume of the stem from the ground to the height given in `d.top` is estimated (commercial stem volume, `v.com` in m^3). 
 
-For each tree, the number of points of a normal section of the original point cloud and the reduced point cloud (`n.pts` and `n.pts.red` respectively) are calculated and also estimated (`n.pts.est` and `n.pts.red.est` respectively). The column `partial.occlusion` describes whether the the detected tree is partially occluded (1) or not (0).
+For each tree, the number of points of the normal section slice (1.3 m +/- 0.05 m) of the original point cloud and the reduced point cloud (`n.pts` and `n.pts.red` respectively) are calculated and also estimated (`n.pts.est` and `n.pts.red.est` respectively). The column `partial.occlusion` describes whether the the detected tree is partially occluded (1) or not (0).
 
-The data frame is saved as .csv file without row names using the \code{\link[utils]{write.csv}} function from the \pkg{utils} package.
+The data frame is saved as .csv file without row names using the `write.csv` function from the [utils](https://cran.rstudio.com/web/packages/R.utils/index.html) package.
 
 ### Data from TLS multi-scan approach
 
@@ -161,9 +180,14 @@ tree.list.multi.tls
 
 ### Automatic normalization and tree detection of several plots
 
+If data from multiple plots are to be analysed, the function `tree.detection.several.plots` can be used. This function conducts both normalization and tree detection for each plot automatically. The result tables (as explained above) are stored directly and separately for each plot. Hence, if an error occurs in one plot, the results of the previously analysed plots are stored. 
+
+In the function, the arguments for both the `normalize` and `tree.detection` functions must be specified as explained above. The function is applied as follows:
+
 ```{r eval=FALSE, include=TRUE}
 tree.lists.sev.tls <- tree.detection.several.plots(las.list, 
                             id = NULL, file = NULL,
+                            
                             scan.approach = "single",
                             x.center = NULL, y.center = NULL,
                             max.dist = NULL, min.height = NULL, max.height = NULL,
@@ -177,4 +201,8 @@ tree.lists.sev.tls <- tree.detection.several.plots(las.list,
                             d.top = NULL, plot.attributes = NULL,
                             dir.data = dir.data, save.result = TRUE, dir.result = dir.result)
 ```
+
+The names of the .las files have to be introduced as a character vector in **`las.list`**. Optionally, vectors with the plot identification numbers and the file names can be specified in **`id`** and **`file`**. If not specified, the plots will be named with correspondent numbers from 1 to n plots (`id`) and their respective `id` in "id.txt" as file names. The other arguments can be specified as explained in the sections above. 
+
+The insert files i.e., the plots are analysed successively. After finishing the analysis of one plot, the reduced point cloud as .txt file and the tree list as .csv file are saved to the directory indicated in **`dir.results`**. 
 
