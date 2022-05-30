@@ -710,7 +710,7 @@ if(nrow(.filter) < 1){
   #      cex.main = 2, cex.lab = 1.5)
   # lines(lowess(datos$hi, datos$dhi), col='red')
 
-  loes <- lowess(datos$hi, datos$dhi)
+  loes <- stats::lowess(datos$hi, datos$dhi)
   loes <- data.frame(hi = loes$x, dhi.mean = loes$y)
   loes <- loes[!duplicated(loes), ]
   datos <- merge(datos, loes, all = FALSE)
@@ -720,7 +720,7 @@ if(nrow(.filter) < 1){
   ajuste <- stats::nls(dhi~dbh*((h-hi)/(h-1.3))**b1, data=datos, start=c(b1=1), max)
   # R2<-1-sum(stats::resid(ajuste)**2)/sum((datos$dhi-mean(datos$dhi))**2)
 
-  b1<-coef(ajuste)[1]
+  b1<-stats::coef(ajuste)[1]
 
   # x <- seq(from = 0, to = 25, by = 0.1)
   # y <- mean(datos$dbh)*((max(datos$h)-x)/(max(datos$h)-1.3))**b1
@@ -812,8 +812,8 @@ if(nrow(.filter) < 1){
   mod.x <- stats::lm(data = data, x ~ z)
   mod.y <- stats::lm(data = data, y ~ z)
 
-  eje$x <- stats::coef(mod.x)[1] + coef(mod.x)[2] * eje$sec
-  eje$y <- stats::coef(mod.y)[1] + coef(mod.y)[2] * eje$sec
+  eje$x <- stats::coef(mod.x)[1] + stats::coef(mod.x)[2] * eje$sec
+  eje$y <- stats::coef(mod.y)[1] + stats::coef(mod.y)[2] * eje$sec
 
   #plot(data$z, data$rho, asp = 1)
   #plot(data$z, data$phi, asp = 1)
@@ -1382,7 +1382,7 @@ if(nrow(.filter) < 1){
                     if ("mean.h.z" %in% names(.metr))
                       .metr["mean.h.z"] <- length(.sub) / sum(1 / .sub)
                     if ("median.z" %in% names(.metr))
-                      .metr["median.z"] <- median(.sub)
+                      .metr["median.z"] <- stats::median(.sub)
                     if (any(c("mode.z", "p.a.mode.z") %in% names(.metr)))
                       .metr["mode.z"] <- .getmode(.sub)
                     if (any(c("max.z", "weibull_c.z", "weibull_b.z") %in% names(.metr)))
@@ -1439,7 +1439,7 @@ if(nrow(.filter) < 1){
                       .metr["L.CV.z"] <- .metr["mean.z"] / .metr["L2.z"]
 
                     if ("median.a.d.z" %in% names(.metr))
-                      .metr["median.a.d.z"] <- median(abs(.sub - .metr["mean.z"]))
+                      .metr["median.a.d.z"] <- stats::median(abs(.sub - .metr["mean.z"]))
                     if ("mode.a.d.z" %in% names(.metr))
                       .metr["mode.a.d.z"] <- .getmode(abs(.sub - .metr["mean.z"]))
 
@@ -1474,7 +1474,7 @@ if(nrow(.filter) < 1){
                     if ("mean.h.rho" %in% names(.metr))
                       .metr["mean.h.rho"] <- length(.sub) / sum(1 / .sub)
                     if ("median.rho" %in% names(.metr))
-                      .metr["median.rho"] <- median(.sub)
+                      .metr["median.rho"] <- stats::median(.sub)
                     if (any(c("mode.rho", "p.a.mode.rho") %in% names(.metr)))
                       .metr["mode.rho"] <- .getmode(.sub)
                     if (any(c("max.rho", "weibull_c.rho", "weibull_b.rho") %in% names(.metr)))
@@ -1525,7 +1525,7 @@ if(nrow(.filter) < 1){
                       .metr["L.CV.rho"] <- .metr["mean.rho"] / .metr["L2.rho"]
 
                     if ("median.a.d.rho" %in% names(.metr))
-                      .metr["median.a.d.rho"] <- median(abs(.sub - .metr["mean.rho"]))
+                      .metr["median.a.d.rho"] <- stats::median(abs(.sub - .metr["mean.rho"]))
                     if ("mode.a.d.rho" %in% names(.metr))
                       .metr["mode.a.d.rho"] <- .getmode(abs(.sub - .metr["mean.rho"]))
 
@@ -1573,7 +1573,7 @@ if(nrow(.filter) < 1){
                     if ("mean.h.r" %in% names(.metr))
                       .metr["mean.h.r"] <- length(.sub) / sum(1 / .sub)
                     if ("median.r" %in% names(.metr))
-                      .metr["median.r"] <- median(.sub)
+                      .metr["median.r"] <- stats::median(.sub)
                     if (any(c("mode.r", "p.a.mode.r") %in% names(.metr)))
                       .metr["mode.r"] <- .getmode(.sub)
                     if (any(c("max.r", "weibull_c.r", "weibull_b.r") %in% names(.metr)))
@@ -1624,7 +1624,7 @@ if(nrow(.filter) < 1){
                       .metr["L.CV.r"] <- .metr["mean.r"] / .metr["L2.r"]
 
                     if ("median.a.d.r" %in% names(.metr))
-                      .metr["median.a.d.r"] <- median(abs(.sub - .metr["mean.r"]))
+                      .metr["median.a.d.r"] <- stats::median(abs(.sub - .metr["mean.r"]))
                     if ("mode.a.d.r" %in% names(.metr))
                       .metr["mode.a.d.r"] <- .getmode(abs(.sub - .metr["mean.r"]))
 
