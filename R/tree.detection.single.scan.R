@@ -564,52 +564,41 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
 
       # Voronoi tessellation
 
-      .tree.2 <- .tree[ , c("tree", "x", "y"), drop = FALSE]
+      .tree.2 <- .tree[ , c("tree", "sec.x", "sec.y"), drop = FALSE]
+      colnames(.tree.2) <- c("tree", "x", "y")
       .tree.2$tree <- 1:nrow(.tree.2)
 
-      .voro <- data[ , c("x", "y", "z")]
+      .sec <- .tree[ , c("tree", "sec.max"), drop = FALSE]
+      .sec$tree <- 1:nrow(.sec)
+
+      .voro <- data[, c("x", "y", "z")]
       .voro <- sf::st_as_sf(.voro, coords = c("x", "y"))
 
-      .tree.2 <- sf::st_as_sf(.tree, coords = c("x", "y"))
+      .tree.2 <- sf::st_as_sf(.tree.2, coords = c("x", "y"))
       .voronoi <- sf::st_collection_extract(sf::st_voronoi(do.call(c, sf::st_geometry(.tree.2))))
-      id <- sf::st_intersects(.voronoi, .tree.2)
-
-      # .voro <- sf::st_intersection(.voro, .voronoi)
+      .tree.3 <- sf::st_intersects(.voronoi, .tree.2)
+      .tree.3 <- data.frame(id = 1:length(.tree.3),
+                            tree = unlist(.tree.3, recursive = TRUE, use.names = TRUE))
+      .tree.3 <- merge(.tree.3, .sec, by = "tree")
       .voro$tree <- unlist(sf::st_intersects(.voro, .voronoi))
 
-      freq <- table(.voro$tree)
-
-
-      .tree.2 <- data.frame(tree = as.numeric())
-
-      for (i in 1:nrow(freq)) {
-
-        tre <- data.frame(tree = rep(id[[i]], each = freq[i]))
-        .tree.2 <- rbind(.tree.2, tre)
-
-      }
-
-
-      .voro$tree <- .tree.2$tree
-
-
-      rm(freq, .tree.2)
 
       # Compute height percentile P99.9
-      .P99 <- sapply(sort(unique(.voro$tree)),
-                     function(tree, voro) {
-                       z <- voro$z[voro$tree == tree]
+      .P99 <- sapply(sort(unique(.tree.3$id)),
+                     function(id, voro, tree.3) {
+                       sec.max <- .tree.3[.tree.3$id == id, "sec.max"]
+                       z <- voro$z[voro$tree == id & voro$z > sec.max]
                        P99 <-
                          height_perc_cpp(rho_seq = Inf, z = z, rho = z)[, "P99.9"]
-                       names(P99) <- tree
+                       names(P99) <- tree.3[tree.3$id == id, "tree"]
                        return(P99)
                      },
-                     voro =.voro)
+                     voro = .voro, tree.3 = .tree.3)
       .P99 <- data.frame(tree = names(.P99), h = .P99)
 
     }
 
-    rm(.voro)
+    rm(.tree.2, .tree.3, .voro)
 
     # Remove possible trees above "h.min" (1.3 m by default)
 
