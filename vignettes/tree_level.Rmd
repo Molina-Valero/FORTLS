@@ -20,12 +20,12 @@ FORTLS is used for processing of point cloud data derived from terrestrial-based
 
 ## Normalization
 
-The aim of the normalization process is obtaining the coordinates relative to plot center and ground level. In this process, the functions `readLAS`, `clip_circle`, `classify_ground`, `grid_terrain` and `normalize_height` from the [lidR](https://cran.r-project.org/web/packages/lidR/index.html) package are internally used (Roussel et al., 2020^[Roussel, J.R., Auty, D., Coops, N.C., Tompalski, P., Goodbody, T.R.H., Sanchez Meador, A., Bourdon, J.F., de Boissieu, F., Achim, A., 2020. lidR: an R package for analysis of Airborne Laser Scanning (ALS) data. Remote Sens. Environ. 251, 112061 https://doi.org/10.1016/j.rse.2020.112061.]). The following steps are executed:
+The aim of the normalization process is obtaining the coordinates relative to the plot's center and the ground level. In this process, the functions `readLAS`, `clip_circle`, `classify_ground`, `grid_terrain` and `normalize_height` from the [lidR](https://cran.r-project.org/web/packages/lidR/index.html) package are used internally (Roussel et al., 2020^[Roussel, J.R., Auty, D., Coops, N.C., Tompalski, P., Goodbody, T.R.H., Sanchez Meador, A., Bourdon, J.F., de Boissieu, F., Achim, A., 2020. lidR: an R package for analysis of Airborne Laser Scanning (ALS) data. Remote Sens. Environ. 251, 112061 https://doi.org/10.1016/j.rse.2020.112061.]). The following steps are executed:
 
 - Classification of points as "ground" or "not ground" by the cloth simulation filter (CSF) algorithm (Zhang et al., 2016^[Zhang, W., Qi, J., Wan, P., Wang, H., Xie, D., Wang, X., Yan, G., 2016. An easy-to-use airborne LiDAR data filtering method based on Cloth simulation. Rem. Sens. 8 (6), 501. https://doi.org/10.3390/rs8060501.])
 - Generation of a digital terrain model (DTM) by spatial interpolation of the points classified as "ground"
 - Normalization of the point cloud by subtracting the DTM and computation of the Cartesian, cylindrical and spherical coordinates 
-- Reduction of the density of the point cloud by the point cropping (PCP) algorithm (Molina-Valero et al., 2019^[Molina Valero, J.A., Ginzo Villamayor, M.J., Novo Pérez, M.A., Álvarez-González, J.G., Pérez-Cruzado, C., 2019. Estimación del área basimétrica en masas maduras de Pinus sylvestris en base a una única medición del escáner láser terrestre (TLS). Cuad. Soc. Esp. Cienc. For. 45 (3), 97–116. https://doi.org/10.31167/csecfv0i45.19887.]) in the case of single-scan approach. For multi-scan approaches, point density reduction will be based on random points selection
+- Reduction of the density of the point cloud. In case of single-scan approach data, the densitiy is reduced by the point cropping (PCP) algorithm (Molina-Valero et al., 2019^[Molina Valero, J.A., Ginzo Villamayor, M.J., Novo Pérez, M.A., Álvarez-González, J.G., Pérez-Cruzado, C., 2019. Estimación del área basimétrica en masas maduras de Pinus sylvestris en base a una única medición del escáner láser terrestre (TLS). Cuad. Soc. Esp. Cienc. For. 45 (3), 97–116. https://doi.org/10.31167/csecfv0i45.19887.]) and in the case of multi-scan approach data, the point density reduction is based on random selection of points
 
 ### The arguments of `normalize`
 
@@ -49,7 +49,7 @@ pcd.single <- normalize(las = "Galicia_single_scan.laz",
                  dir.data = dir.data, save.result = TRUE, dir.result = dir.result)
 ```
 
-The name of the .las or .laz file containing the point cloud data is introduced in **`las`** argument and must include the .las/.laz extension. Optionally, the plot identification number (**`id`**) and the file name (**`file`**) can be defined. Both are set to `NULL` by default, which assigns `1` to the plot identification number and `1.txt` to the reduced point cloud saved in the working directory specified in **`dir.result`** (same name as the identification number).
+The name of the .las or .laz file containing the point cloud data is introduced in **`las`** argument and must include the .las/.laz extension. Optionally, the plot identification number (**`id`**) and the file name (**`file`**) can be defined. Both are set to `NULL` by default, which assigns `1` to the plot identification number and `1.txt` (same name as the identification number) to the reduced point cloud saved in the working directory specified in **`dir.result`**.
 
 The directory of the input .las/.laz files and the output file can be specified in **`dir.data`** and **`dir.result`** respectively. If not further specified, the current working directory is used. The output .txt files contain the reduced point clouds will be saved if not specified in **`save.result`**.
 
@@ -141,7 +141,7 @@ The argument **`d.top`** defines the top stem diameter (in cm), which is used fo
 #### The output data frame
 
 ```{r eval = FALSE,  include=TRUE}
-tree.list.single.tls
+head(tree.list.single.tls)
 ```
 
 The data frame shown above is the output of the `tree.detect.single.scan` function. Each row represents a detected tree (consecutively numbered in the column `tree`). The columns `id` and `file` display the plot identification number and the file name respectively equal to the columns in the `normalize` output table. The coordinates of the detected trees are given as Cartesian coordinates of the tree's center (`x` and `y`, in m) and azimuthal angles of the center (`phi` in rad), the left border (`phi.left` in rad), the right border (`phi.right` in rad) and the horizontal distance from the tree's center to the plot's center (`h.dist` in m).
@@ -156,7 +156,7 @@ The data frame is saved as .csv file without row names using the `write.csv` fun
 
 When multiple scans were performed in the same sampling plot (multi-scan approach) or SLAM devices were used, the function `tree.detection.multi.scan` can be applied as follows below. Additionally, the function `normalize` must be adjusted by specifying `scan.approach = "multi"`.
 
-```{r eval=FALSE, include=TRUE}
+```{r eval=TRUE, warning=FALSE, include=TRUE}
 pcd.multi <- normalize(las = "Galicia_multi_scan.laz", 
                  x.center = 0, y.center = 0, RGB = TRUE,
                  scan.approach = "multi", file = "multi.txt",
@@ -174,8 +174,8 @@ tree.list.multi.tls <- tree.detection.multi.scan(data = pcd.multi,
 
 The function `tree.detection.multi.scan` comes along with the same arguments as the function `tree.detection.single.scan`, which are described in "Data from TLS single-scan approach". However, instead of specifying the resolution, the precision of the TLS (in cm) must be defined in `tls.precision`. The procedure remains the same and the output data frame contains the all the columns explained above:
 
-```{r eval=FALSE, include=TRUE}
-tree.list.multi.tls
+```{r eval=TRUE, include=TRUE}
+head(tree.list.multi.tls)
 ```
 
 ### Automatic normalization and tree detection of several plots
@@ -185,11 +185,12 @@ If data from multiple plots are to be analysed, the function `tree.detection.sev
 In the function, the arguments for both the `normalize` and `tree.detection` functions must be specified as explained above. The function is applied as follows:
 
 ```{r eval=FALSE, include=TRUE}
-tree.lists.sev.tls <- tree.detection.several.plots(las.list, 
-                            id = NULL, file = NULL,
+tree.lists.sev.tls <- tree.detection.several.plots(
+                            las.list = c("Galicia_multi_scan.laz", "Fagus_sylvatica_SLAM.laz"), 
+                            id = NULL, file = ("multi.txt", "SLAM.txt"),
                             
-                            scan.approach = "single",
-                            x.center = NULL, y.center = NULL,
+                            scan.approach = "multi",
+                            x.center = 0, y.center = 0,
                             max.dist = NULL, min.height = NULL, max.height = NULL,
                             algorithm.dtm = "knnidw", res.dtm = 0.2, 
                             csf = list(cloth_resolution = 0.5),
