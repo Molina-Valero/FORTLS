@@ -467,6 +467,10 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
                              center.r = as.numeric(),
                              center.theta = as.numeric(),
 
+                             sec.x = as.numeric(),
+                             sec.y = as.numeric(),
+                             sec.max = as.numeric(),
+
                              horizontal.distance = as.numeric(), # repeated line
                              radius = as.numeric(),
 
@@ -481,6 +485,14 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
 
       .dat <- .filter[which(.filter$tree == i), ]
       .dat <- .dat[order(abs(.dat$dif)), ]
+
+      .sec.x <- .dat$center.x[nrow(.dat)]
+      .sec.y <- .dat$center.y[nrow(.dat)]
+      .sec.max <- .dat$sec[nrow(.dat)]
+
+      .dat$sec.x <- .sec.x
+      .dat$sec.y <- .sec.y
+      .dat$sec.max <- .sec.max
 
       if(nrow(.dat) > 3)
         .dat <- .dat[1:3, ]
@@ -497,6 +509,11 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
 
                         x = tapply(.filteraux$center.x, .filteraux$tree, mean, na.rm = TRUE),
                         y = tapply(.filteraux$center.y, .filteraux$tree, mean, na.rm = TRUE),
+
+                        sec.x = tapply(.filteraux$sec.x, .filteraux$tree, mean, na.rm = TRUE),
+                        sec.y = tapply(.filteraux$sec.y, .filteraux$tree, mean, na.rm = TRUE),
+                        sec.max = tapply(.filteraux$sec.max, .filteraux$tree, mean, na.rm = TRUE),
+
                         phi = tapply(.filteraux$center.phi, .filteraux$tree, mean, na.rm = TRUE),
                         phi.left = tapply(.filteraux$phi.left, .filteraux$tree, mean, na.rm = TRUE),
                         phi.right = tapply(.filteraux$phi.right, .filteraux$tree, mean, na.rm = TRUE),
