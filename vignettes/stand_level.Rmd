@@ -63,8 +63,87 @@ The metrics and values can be computed for different plot designs which are spec
 
 As the name implies, circular fixed area plots (`"fixed.area"`) are plots with a circular area defined by the plot radius (in m). The size of k-tree plots (`"k.tree"`) is determined by the number of trees (k) that enter the plot. The basal area factor (BAF in m$^2$/ha) defines the angle-count plots (`"angle.count"`). The parameters `radius`, `k` and `BAF` have to be specified as data frame in `plot.parameters`. If the one of these parameters is not specified, the corresponding plot design will not be considered in the calculations. To calculate the dominant height and diameter, the number of dominant trees per ha (trees/ha) can be indicated by the argument `num.tree`. By default, the number of dominant trees is set to 100 trees/ha.
 
+#### Output files
+
+The function `metrics.variables` generates a list of which each element represents one of the considered plot designs (fixed area, k-tree and angle-count plots). These elements are data frames containing the estimated metrics and variables at stand-level described below as columns. Further columns include information about the plot, such as the identification number (`id`) and the stratum identification (`stratum`) both coinciding with the respective columns in the output file of the `tree.detection` function. Each row represents a simulated plot i.e., a plot with a certain size (defined by the values for `radius`, `k` and `BAF` shown in the respective columns). 
+
+If `save.result = TRUE`, the data frames will be saved as .csv files to the directory indicated in `dir.result` (or if not specified the working directory). The .csv files will not contain row names and will be created using the `write.csv` function from the [utils](https://cran.rstudio.com/web/packages/R.utils/index.html) package.
+
 ### Stand-level metrics
 
+The stand-level metrics consist of statistical descriptive values, such as percentiles, standard deviation or means, as well as the number of points belonging to a section of the point cloud. 
 
+The values **`n.pts`** and **`n.pts.est`** indicate the number of points and the estimated number of points respectively that belong to the tree's normal section (1.3 m +/- 0.05 m). This is calculated for the original point cloud (`n.pts`, `n.pts.est`) and the reduced point cloud (**`n.pts.red`**, **`n.pts.red.est`**).
+
+Furthermore, the height percentiles (`P01`, `P05`, `P10`, `P20`, `P25`, `P30`, `P40`, `P50`, `P60`, `P70`, `P75`, `P80`, `P90`, `P95`, `P99`, numbers indicating the *k*-th percentile) are calculated for the $z$ coordinate of the TLS point cloud. Therefore they denominate the height (in m) above ground level.
+
+#### Statistics of the z, rho and r
+
+To describe the tendencies and distribution of the spherical coordinates `z`, $\rho$ (horizontal distance, `rho`) and `r` (euclidean distance), the following statics are calculated:
+
+- arithmetic (`mean.arit.z/rho/r`), quadratic (`mean.qua.z/rho/r`), geometric (`mean.geom.z/rho/r`) and harmonic means (`mean.harm.z/rho/r`)
+- median (`median.z/rho/r`) 
+- mode (`mode.z/rho/r`)
+- variance (`var.z/rho/r`)
+- standard deviation (`sd.z/rho/r`)
+- coefficient of variation (`CV.z/rho/r`)
+- range (`D.z/rho/r`)
+- interquartile range (`ID.z/rho/r`)
+- maximum (`max.z/rho/r`)
+- minimum (`min.z/rho/r`)
+- kurtosis (`kurtosis.z/rho/r`)
+- skewness (`skewness.z/rho/r`)
+- percentage of points above the arithmetic mean (`p.a.mean.z/rho/r`) and the mode (`p.a.mode.z/rho/r`) 
+- percentage of points below the arithmetic mean (`p.b.mean.z/rho/r`) and the mode (`p.b.mode.z/rho/r`) 
+- percentage of points above a height of 2 m (`p.a.2m.z`, only for the z coordinate)
+- percentage of points below a height of 2 m (`p.b.2m.z`, only for the z coordinate)
+- L-moments of order 2, 3 and 4 (`L2.z/rho/r`, `L3.z/rho/r` and `L4.z/rho/r`)
+- third and forth central L-moments (`L3.mu.z/rho/r` and `L4.mu.z/rho/r`)
+- ratio of L1 and L2 moments (`L.CV.z/rho/r`)
+- median of the absolute deviation from the overall median (`median.a.d.z/rho/r`)
+- mode of the absolute deviation from the overall mode (`mode.a.d.z/rho/r`)
+- Canopy relief ratio i.e., the ration of `mean.z/rho/r` to `max.z/rho/r` (`CRR.z/rho/r`)
+- scale and shape parameters of the Weibull distribution fitted for the spherical coordinates (`weibull_c.z/rho/r`, `weibull_b.z/rho/r`)
 
 ### Stand-level variables
+
+The variables are estimated based on the tree attributes of the detected trees from the point cloud data (output of the functions `tree.deteection.single.scan` and `tree.deteection.multi.scan`)  similar to the procedure of conventional forest inventories. The values are computed at stand-level and therefore extended to an area of one ha.
+
+#### Stand density (N), volume (V) and basal area (G) 
+
+The stand density (**`N.tls`**, trees/ha) is calculated by the following equations. For the circular fixed area and k-tree plots, `N.tls` is calculated by 
+
+$N.tls=\frac{10000}{\pi R^2}\cdot n$ 
+
+with $R$ being the radius of the plot (in m) and $n$ the number of detected trees. The density of angle-count plots is calculated by 
+
+$N.tls=\sum_{i=1}^{n} \frac{BAF}{g_i}$ 
+
+with $BAF$ being the basal area factor (in m$^2$/ha) and $g_i$ the basal area of the tree $i$ (in m$^2$).
+
+The basal area (**`G.tls`**, in m$^2$/ha) is estimated for circular fixed area and k-tree plots by the following equation:
+
+$G.tls=\frac{10000}{\pi R^2}\sum_{i=1}^{n} g_i$
+
+and for angle-count plots, the following equation is applied:
+
+$G.tls=BAF \cdot n$
+
+The stem volume (**`V.tls`**, in m$^3$/ha) is estimated by modelling the stem profile as a paraboloid The volume is calculated as the volume of the revolution of the paraboloid function. The total heights of the detected trees are estimated as the 99th percentile of the points of the $z$ coordinate delimited by Voronoi polygons ($h_{P_{99}i}$, in m). The equation used for the calculation for circular fixed area and k-tree plots is
+
+$V.tls=\frac{10000}{\pi R^2}\sum_{i=1}^{n} \pi \cdot \frac{h_{P_{99}i}^2}{2} \cdot \frac{(\frac{1}{2} \cdot dbh_i)^2}{(h_{P_{99}i} - 1.3)^2}$
+
+and for angle-count plots is
+
+$V.tls=\sum_{i=1}^{n} \frac{BAF}{g_i} \cdot \pi \cdot \frac{h_{P_{99}i}^2}{2} \cdot \frac{(\frac{1}{2} \cdot dbh_i)^2}{(h_{P_{99}i} - 1.3)^2}$
+
+#### Occlusion correction
+
+
+
+#### Mean and dominant heights (h) and diameters (d)
+
+The mean heights (in m) and diameters (in cm) are calculated by the arithmetic (**`h.tls`**, **`d.tls`**), quadratic (**`h.g`**, **`d.g`**), geometric (**`h.geom`**, **`d.geom`**) and harmonic mean (**`h.harm`**, **`d.harm`**). To calculate the dominant heights and diameters, only the $n$ largest trees per hectar are considered. If not otherwise specified in the `num.tree` argument (see above), the number of dominant trees per hectar is set to 100 trees/ha. Dominant heights and diameters are also calculated as the arithmetic (**`h.0.tls`**, **`d.0.tls`**), quadratic (**`h.0.g`**, **`d.0.g`**), geometric (**`h.0.geom`**, **`d.0.geom`**) and harmonic mean (**`h.0.harm`**, **`d.0.harm`**).
+
+
+
