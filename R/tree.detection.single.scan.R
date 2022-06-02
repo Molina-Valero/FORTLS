@@ -586,17 +586,22 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
       # Voronoi tessellation
 
       .tree.2 <- .tree[ , c("tree", "sec.x", "sec.y"), drop = FALSE]
+      .tree.2 <- .tree.2[!duplicated(.tree.2$sec.x) & !duplicated(.tree.2$sec.y), ]
       colnames(.tree.2) <- c("tree", "x", "y")
       .tree.2$tree <- 1:nrow(.tree.2)
 
-      .sec <- .tree[ , c("tree", "sec.max"), drop = FALSE]
+      .sec <- .tree[ , c("tree", "sec.max", "radius"), drop = FALSE]
       .sec$tree <- 1:nrow(.sec)
 
       .voro <- data[, c("x", "y", "z")]
       .voro <- sf::st_as_sf(.voro, coords = c("x", "y"))
 
       .tree.2 <- sf::st_as_sf(.tree.2, coords = c("x", "y"))
+      .voronoi <- sf::st_buffer(.tree.2, dist = .sec$radius * 3)
+      .voro <- sf::st_intersection(.voro, .voronoi)
+
       .voronoi <- sf::st_collection_extract(sf::st_voronoi(do.call(c, sf::st_geometry(.tree.2))))
+
       .tree.3 <- sf::st_intersects(.voronoi, .tree.2)
       .tree.3 <- data.frame(id = 1:length(.tree.3),
                             tree = unlist(.tree.3, recursive = TRUE, use.names = TRUE))

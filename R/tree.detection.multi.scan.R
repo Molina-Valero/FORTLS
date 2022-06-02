@@ -545,6 +545,7 @@ tree.detection.multi.scan <- function(data,
   # Voronoi tessellation
 
   .tree.2 <- .tree[ , c("tree", "sec.x", "sec.y"), drop = FALSE]
+  .tree.2 <- .tree.2[!duplicated(.tree.2$sec.x) & !duplicated(.tree.2$sec.y), ]
   colnames(.tree.2) <- c("tree", "x", "y")
   .tree.2$tree <- 1:nrow(.tree.2)
 
