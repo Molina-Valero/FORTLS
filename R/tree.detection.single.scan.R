@@ -225,9 +225,13 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
     kk <- data.frame(sec = table(.filter$sec[.filter$sec >= stem.section[1] & .filter$sec <= stem.section[2]]))
     kk <- data.frame(sec = table(.filter$sec[.filter$arc.circ == 1]))
     kk <- kk[kk[,2] == max(kk[,2]), ]
+    if(as.numeric(as.character(kk[, 1])) > 1){
     eje <- .filter[.filter$sec < as.numeric(as.character(kk[, 1])) + 1 &
                    .filter$sec > as.numeric(as.character(kk[, 1])) - 1,
-                   c("center.x", "center.y", "center.rho", "center.phi", "radius", "sec")]
+                   c("center.x", "center.y", "center.rho", "center.phi", "radius", "sec")]}else{
+      eje <- .filter[.filter$sec < as.numeric(as.character(kk[, 1])) + 1,
+                     c("center.x", "center.y", "center.rho", "center.phi", "radius", "sec")]}
+
     .dbscan <- dbscan::dbscan(eje[, c("center.x", "center.y"), drop = FALSE], eps = mean(eje$radius), minPts = 1)
     eje$tree <- .dbscan$cluster
     eje <- eje[, c("tree", "sec", "center.x", "center.y", "center.rho", "center.phi")]

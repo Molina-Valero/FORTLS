@@ -664,133 +664,133 @@ if(nrow(.filter) < 1){
 
 
 .volume <- function(data, d.top = NULL){
-  
+
   datos <- data.frame(hi = as.numeric(), dhi = as.numeric(), h = as.numeric(),
                       dbh = as.numeric())
-  
+
   for (i in unique(data$tree)) {
-    
+
     tree <- data[data$tree == i, ]
     tree <- tree[tree$hi < tree$h, ]
-    
+
     if (nrow(tree) < 2 | suppressWarnings(min(abs(diff(tree$dhi)))) > 10) {
-      
+
       datos <- rbind(datos, tree[tree$hi == 1.3, c("hi", "dhi", "h", "dbh")])
-      
+
     } else {
-      
+
       tree$dif.sec <- c(abs(diff(tree$hi)), 0)
       tree$dif <- c(diff(tree$dhi),
                     tree$dhi[nrow(tree)] - tree$dhi[nrow(tree) - 1])
       tree$dif <- ifelse(tree$dif.sec > 1, tree$dif / tree$dif.sec, tree$dif)
-      
+
       while (max(abs(tree$dif)) > 10) {
-        
+
         tree$filter <- ifelse(tree$dif > 10 | tree$dif < -10, 0, 1)
         tree <- tree[tree$filter == 1, ]
         if(nrow(tree) == 1) {next}
-        
+
         tree$dif.sec <- c(abs(diff(tree$hi)), 0)
         tree$dif <- c(diff(tree$dhi),
                       tree$dhi[nrow(tree)] - tree$dhi[nrow(tree) - 1])
         tree$dif <- ifelse(tree$dif.sec > 1, tree$dif / tree$dif.sec, tree$dif)
-        
+
       }
-      
+
     }
-    
+
     datos <- rbind(datos, tree[, c("hi", "dhi", "h", "dbh")])
-    
+
     # Add additional values if the largest break is smaller than total height
     # minus 0.5 m
     if (all(tree$h - .5 > tree$hi)) {
-      
+
       aux <- tree[which.max(tree$hi)[1], , drop = FALSE]
       datos <- rbind(datos,
                      data.frame(hi = aux$h - .5,
                                 dhi = .5 * aux$dhi / (aux$h - aux$hi),
                                 aux[, c("h", "dbh"), drop = FALSE]))
-      
+
     }
-    
+
   }
-  
+
   loes <- stats::lowess(datos$hi, datos$dhi)
   loes <- data.frame(hi = loes$x, dhi.mean = loes$y)
   loes <- loes[!duplicated(loes), ]
   datos <- merge(datos, loes, all = FALSE)
   datos$sep <- abs(datos$dhi - datos$dhi.mean)
   datos <- datos[datos$sep < stats::quantile(datos$sep, prob = 0.9), ]
-  
+
   ajuste <- stats::nls(dhi ~ dbh * ((h - hi) / (h - 1.3)) ** b1, data = datos,
                        start = c(b1 = 1), max)
   b1 <- stats::coef(ajuste)[1]
-  
+
   # Height where diameter limit is reached (d.lim)
   h_d_lim <- function(dbh, h, d.lim, b1) {
-    
+
     return(h - ((d.lim * (h - 1.3) ** b1) / dbh) ** (1 / b1))
-    
+
   }
-  
+
   # Volume between two heights
   vol_m3 <- function(dbh, h, hinf, hsup, b1) {
-    
+
     return(pi * (dbh ** 2) *
              (((h - hinf) ** (2 * b1 + 1)) - ((h - hsup) ** (2 * b1 + 1))) /
              (40000 * ((h - 1.3) ** (2 * b1)) * (2 * b1 + 1)))
-    
+
   }
-  
+
   if (is.null(d.top)) {
-    
+
     volume <- data.frame(tree = as.numeric(), v = as.numeric())
-    
+
     for (i in unique(data$tree)) {
-      
+
       tree <- data[data$tree == i, ]
       volume.i <- data.frame(tree = i,
                              v = vol_m3(tree$dbh[1], tree$h[1], 0, tree$h[1],
                                         b1))
       volume <- rbind(volume, volume.i)
-      
+
     }
-    
+
   } else {
-    
+
     volume <- data.frame(tree = as.numeric(), v = as.numeric(),
                          v.com = as.numeric())
-    
+
     for (i in unique(data$tree)) {
-      
+
       tree <- data[data$tree == i, ]
-      
+
       # If diameter at the bottom is smaller than 'd.top' then 'h.lim' is forced
       # to be zero (consequently, 'v.com' will be also zero)
       if (predict(ajuste, data.frame(hi = 0, h = tree$h[1],
                                      dbh = tree$dbh[1])) < d.top) {
-        
+
         h.lim <- 0
-        
+
       } else {
-        
+
         h.lim <- h_d_lim(tree$dbh[1], tree$h[1], d.top, b1)
-        
+
       }
-      
+
       volume.i <- data.frame(tree = i,
                              v = vol_m3(tree$dbh[1], tree$h[1], 0, tree$h[1],
                                         b1),
                              v.com = vol_m3(tree$dbh[1], tree$h[1], 0, h.lim,
                                             b1))
       volume <- rbind(volume, volume.i)
-      
+
     }
-    
+
   }
-  
+
   return(volume)
-  
+
 }
 
 
