@@ -224,10 +224,16 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
     # Assigning sections to tree axis
     kk <- data.frame(sec = table(.filter$sec[.filter$sec >= stem.section[1] & .filter$sec <= stem.section[2]]))
     kk <- data.frame(sec = table(.filter$sec[.filter$arc.circ == 1]))
+    kk[, 1] <- as.numeric(as.character(kk[, 1]))
     kk <- kk[kk[,2] == max(kk[,2]), ]
-    if(as.numeric(as.character(kk[, 1])) > 1){
-    eje <- .filter[.filter$sec < as.numeric(as.character(kk[, 1])) + 1 &
-                   .filter$sec > as.numeric(as.character(kk[, 1])) - 1,
+    if(nrow(kk) > 1){
+      kk$dif <- abs(kk[, 1] - 1.3)
+      kk <- kk[kk$dif == min(kk$dif), ]}
+    if(nrow(kk) > 1){
+      kk <- kk[kk[, 1] == min(kk[, 1]), ]}
+    if(kk[, 1] > 1){
+    eje <- .filter[.filter$sec < kk[, 1] + 1 &
+                   .filter$sec > kk[, 1] - 1,
                    c("center.x", "center.y", "center.rho", "center.phi", "radius", "sec")]}else{
       eje <- .filter[.filter$sec < as.numeric(as.character(kk[, 1])) + 1,
                      c("center.x", "center.y", "center.rho", "center.phi", "radius", "sec")]}
