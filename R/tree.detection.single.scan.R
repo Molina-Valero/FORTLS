@@ -543,6 +543,7 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
 
     # Remove duplicated trees and ordering by distance and numbering trees from 1 to n trees
     .tree <- .tree[!duplicated(.tree$x) & !duplicated(.tree$y), ]
+    .tree <- .tree[.tree$radius > 0, ]
     .tree <- .tree[order(.tree$rho), ]
     .tree$tree <- 1:nrow(.tree)
 
@@ -598,13 +599,14 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
 
       .sec <- .tree[ , c("tree", "sec.max", "radius"), drop = FALSE]
       .sec$tree <- 1:nrow(.sec)
+      # .sec$radius <- ifelse(.sec$radius < 0, 0.1, .sec$radius)
 
       .voro <- data[, c("x", "y", "z")]
       .voro <- sf::st_as_sf(.voro, coords = c("x", "y"))
 
       .tree.2 <- sf::st_as_sf(.tree.2, coords = c("x", "y"))
       .voronoi <- sf::st_buffer(.tree.2, dist = .sec$radius * 3)
-      .voro <- sf::st_intersection(.voro, .voronoi)
+      .voro <- suppressWarnings(sf::st_intersection(.voro, .voronoi))
 
       .voronoi <- sf::st_collection_extract(sf::st_voronoi(do.call(c, sf::st_geometry(.tree.2))))
 

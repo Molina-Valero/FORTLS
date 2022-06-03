@@ -237,7 +237,7 @@
   # Radius value as the mean distance
   # .dat <- .dat[order(.dat$dist, decreasing = FALSE), , drop = FALSE]
   .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25) & .dat$dist<stats::quantile(.dat$dist, prob = 0.9)])
-  if(.radio < 0 | is.na(.radio)){return(.filter)}
+  if(.radio <= 0 | is.na(.radio)){return(.filter)}
 
   # Coefficient of variation for distances among cluster points and the estimated center
   .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25)], na.rm = TRUE) / .radio
@@ -523,7 +523,7 @@
   # .dat <- .dat[order(.dat$dist, decreasing = FALSE), , drop = FALSE]
   # plot(.dat$x, .dat$y, asp = 1)
   .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25) & .dat$dist<stats::quantile(.dat$dist, prob = 0.9)])
-  if(.radio < 0 | is.na(.radio)){return(.filter)}
+  if(.radio <= 0 | is.na(.radio)){return(.filter)}
 
   # xyc4<-conicfit::calculateCircle(.center.x,.center.y,.radio)
   # points(xyc4[,1],xyc4[,2],col='red',type='l')

@@ -492,6 +492,8 @@ tree.detection.multi.scan <- function(data,
   rm(.filteraux)
 
   # Ordering by distance and numbering trees from 1 to n trees
+  .tree <- .tree[!duplicated(.tree$x) & !duplicated(.tree$y), ]
+  .tree <- .tree[.tree$radius > 0, ]
   .tree <- .tree[order(.tree$rho), ]
   .tree$tree <- 1:nrow(.tree)
 
