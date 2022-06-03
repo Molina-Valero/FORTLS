@@ -684,11 +684,11 @@ if(nrow(.filter) < 1){
                     tree$dhi[nrow(tree)] - tree$dhi[nrow(tree) - 1])
       tree$dif <- ifelse(tree$dif.sec > 1, tree$dif / tree$dif.sec, tree$dif)
 
-      while (max(abs(tree$dif)) > 10) {
+      while (suppressWarnings(max(abs(tree$dif))) > 10) {
 
         tree$filter <- ifelse(tree$dif > 10 | tree$dif < -10, 0, 1)
         tree <- tree[tree$filter == 1, ]
-        if(nrow(tree) == 1) {next}
+        if(nrow(tree) < 2) {next}
 
         tree$dif.sec <- c(abs(diff(tree$hi)), 0)
         tree$dif <- c(diff(tree$dhi),
@@ -714,6 +714,10 @@ if(nrow(.filter) < 1){
     }
 
   }
+
+  # Removing NA's
+
+  datos <- datos[!is.na(datos$hi), ]
 
   loes <- stats::lowess(datos$hi, datos$dhi)
   loes <- data.frame(hi = loes$x, dhi.mean = loes$y)
