@@ -30,15 +30,17 @@ The aim of the normalization process is obtaining the coordinates relative to th
 ### The arguments of `normalize`
 
 ```{r include=FALSE}
-dir.data <- "~/Desktop/USC-Internship/FORTLS/Vignettes"
-dir.result <- "~/Desktop/USC-Internship/FORTLS/Vignettes"
+dir.data <- system.file("extdata", "Galicia_multi_scan.laz", package="FORTLS")
+dir.result <- system.file("extdata", "Galicia_multi_scan.laz", package="FORTLS")
+
 library(FORTLS)
 ```
 
 The `normalize` function is applied as follows:
 
 ```{r eval=FALSE, include=TRUE}
-pcd.single <- normalize(las = "Galicia_single_scan.laz", 
+system.file("exdata", "Galicia_multi_scan.laz", package = "FORTLS")
+pcd.single <- normalize(las = paste(dir.data, "/Galicia_multi_scan.laz", sep = ""), 
                  x.center = 0, y.center = 0,
                  max.dist = NULL, min.height = NULL, max.height = NULL, 
                  algorithm.dtm = "knnidw", res.dtm = 0.2,
@@ -157,6 +159,7 @@ The data frame is saved as .csv file without row names using the `write.csv` fun
 When multiple scans were performed in the same sampling plot (multi-scan approach) or SLAM devices were used, the function `tree.detection.multi.scan` can be applied as follows below. Additionally, the function `normalize` must be adjusted by specifying `scan.approach = "multi"`.
 
 ```{r eval=TRUE, warning=FALSE, include=TRUE}
+
 pcd.multi <- normalize(las = "Galicia_multi_scan.laz", 
                  x.center = 0, y.center = 0, RGB = TRUE,
                  scan.approach = "multi", file = "multi.txt",
