@@ -1,6 +1,6 @@
 
 tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min = 1.3,
-                                       ncr.threshold = 0.1, tls.resolution = NULL,
+                                       ncr.threshold = 0.1, tls.resolution = list(),
                                        stem.section = NULL, breaks = NULL,
                                        d.top = NULL,
                                        plot.attributes = NULL,

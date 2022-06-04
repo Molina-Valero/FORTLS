@@ -13,7 +13,7 @@ tree.detection.single.scan(data,
                            dbh.min = 4, dbh.max = 200, h.min = 1.3,
                            ncr.threshold = 0.1,
                            tls.resolution = list(),
-                           breaks = NULL, stem.section = NULL,
+                           stem.section = NULL, breaks = NULL,
                            d.top = NULL,
                            plot.attributes = NULL,
                            save.result = TRUE, dir.result = NULL)}

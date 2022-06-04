@@ -52,7 +52,7 @@ simulations(tree.tls, tree.ds = NULL, tree.field,
     }
   }
 
-  \item{distance.sampling}{
+  \item{tree.ds}{
   An optional list containing results arises from the application of distance
   sampling methodologies. The structure and format must be analogous to output
   returned by \code{\link{distance.sampling}} function. In particular, it must
@@ -94,6 +94,8 @@ simulations(tree.tls, tree.ds = NULL, tree.field,
     }
   }
 
+  \item{plot.design}{Vector containing the plot designs considered. By default, all plot designs will be considered (circular fixed area, k-tree and angle-count plots).}
+
   \item{plot.parameters}{
   Optional list containing parameters for circular fixed area, k-tree and angle-count
   plot designs. User can set all or any of the following parameters specifying
@@ -132,6 +134,16 @@ simulations(tree.tls, tree.ds = NULL, tree.field,
   \code{list(radius.max = 25, k.tree.max = 50, BAF.max = 4)} by default and, as a
   consequence, the three available plot designs will be simulated.
   }
+
+  \item{scan.approach}{Character parameter indicating TLS single-scan (\sQuote{single}) or TLS multi-scan approach or SLAM point clouds (\sQuote{multi}) approaches. If this argument is not specified by the user, it will be set to \sQuote{multi} approach.}
+
+    \item{var.metr}{Optional vector containing all the metrics and variables of interest. By default it will be set as NULL and thus, all the metrics and variables available will be generated.}
+
+    \item{dbh.min}{Optional minimum \emph{dbh} (cm) considered for detecting trees. By default it will be set at 4 cm.}
+
+  \item{h.min}{Optional minimum \emph{h} (m) considered for detecting trees. By default it will be set at 1.3 m.}
+
+  \item{max.dist}{Optional argument to specify the maximum horizontal distance considered in which trees will be included.}
 
   \item{dir.data}{
   Optional character string naming the absolute path of the directory where TXT

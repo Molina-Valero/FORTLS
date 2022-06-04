@@ -771,7 +771,7 @@ if(nrow(.filter) < 1){
 
       # If diameter at the bottom is smaller than 'd.top' then 'h.lim' is forced
       # to be zero (consequently, 'v.com' will be also zero)
-      if (predict(ajuste, data.frame(hi = 0, h = tree$h[1],
+      if (stats::predict(ajuste, data.frame(hi = 0, h = tree$h[1],
                                      dbh = tree$dbh[1])) < d.top) {
 
         h.lim <- 0
