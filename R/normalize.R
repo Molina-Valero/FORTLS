@@ -244,7 +244,7 @@ normalize <- function(las, normalized = NULL,
   if(scan.approach == "multi"){
 
     .data$prob <- stats::runif(nrow(.data))
-    .data$prob.selec <- ifelse(.data$prob >= 0.5, 1, 0)}
+    .data$prob.selec <- ifelse(.data$prob >= 0.75, 1, 0)}
 
   # Assign id
 
