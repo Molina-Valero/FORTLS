@@ -299,6 +299,7 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
         .filt$dist.total <- .filt$dist / max(.filt$dist) +
           .filt$dist.rho / max(.filt$dist.rho) +
           .filt$dist.phi / max(.filt$dist.phi)
+        .filt$dist.total <- ifelse(is.nan(.filt$dist.total), 0, .filt$dist.total)
         .filt <- .filt[.filt$dist.total == min(.filt$dist.total), ]
 
         if(nrow(.filt) > 1)
