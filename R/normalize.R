@@ -63,10 +63,12 @@ normalize <- function(las, normalized = NULL,
 
   if(!is.null(normalized)) {
 
-    if(!is.null(max.dist))
+    if(!is.null(max.dist)){
       .data <- lidR::clip_circle(.las, 0, 0, max.dist)
+      .data <- data.frame(.data@data)} else {
 
-    .data <- data.frame(.data@data)
+      .data <- data.frame(.las@data)}
+
 
     # .data <- subset(.data, .data$Classification == 1)
 
