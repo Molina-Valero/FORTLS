@@ -32,9 +32,9 @@ In order to calculare metrics and variables at stand-level, the function **`metr
 
 ```{r eval=FALSE, include=TRUE}
 metrics <- metrics.variables(tree.tls = tree.list, 
-                  tree.ds = NULL, tree.field = NULL,
+                  tree.ds = tree.ds, tree.field = tree.field,
                   plot.design = c("fixed.area", "k.tree", "angle.count"),
-                  plot.parameters = data.frame(radius = 15, k = 10, BAF = 1),
+                  plot.parameters = data.frame(radius = 10, k = 10, BAF = 1),
                   scan.approach = "single", var.metr = NULL,
                   dbh.min = 4, h.min = 1.3, max.dist = Inf, 
                   dir.data = dir.data, save.result = FALSE, dir.result = NULL)
@@ -109,8 +109,13 @@ If `save.result = TRUE`, the data frames will be saved as seperate .csv files (o
 metrics <- read.csv(paste(dir.data, "metrics.variables.fixed.area.plot.csv", sep = "/"))
 ```
 
-```{r eval=TRUE, include=TRUE}
-metrics[, -c(3:24)]
+```{r eval=FALSE, include=TRUE}
+head(metrics[, -c(3:24)])
+```
+
+```{r echo=FALSE}
+kableExtra::scroll_box(kable_input = kableExtra::kable(metrics[, -c(3:24)], format = "html"), 
+                       width = "100%")
 ```
 
 The stand-level metrics consist of statistical descriptive values, such as percentiles, standard deviation or means, as well as the number of points belonging to a section of the point cloud. 
@@ -149,8 +154,12 @@ To describe the tendencies and distribution of the spherical coordinates `z`, $\
 
 ### Stand-level variables
 
-```{r eval=TRUE, include=TRUE}
-metrics[, c(1:24)]
+```{r eval=FALSE, include=TRUE}
+head(metrics[, c(1:24)])
+```
+```{r echo=FALSE}
+kableExtra::scroll_box(kable_input = kableExtra::kable(metrics[, c(1:24)], format = "html"), 
+                       width = "100%")
 ```
 
 The variables are estimated based on the tree attributes of the detected trees from the point cloud data (output of the functions `tree.deteection.single.scan` and `tree.deteection.multi.scan`)  similar to the procedure of conventional forest inventories. The values are computed at stand-level and therefore extended to an area of one ha.

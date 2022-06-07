@@ -151,7 +151,7 @@ The argument **`d.top`** defines the top stem diameter (in cm), which is used fo
 
 #### The output data frame
 
-```{r eval = FALSE, include=FALSE}
+```{r eval = FALSE, include=TRUE}
 head(tree.list.single.tls)
 ```
 
