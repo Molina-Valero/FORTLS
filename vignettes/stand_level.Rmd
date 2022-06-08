@@ -110,11 +110,11 @@ metrics <- read.csv(paste(dir.data, "metrics.variables.fixed.area.plot.csv", sep
 ```
 
 ```{r eval=FALSE, include=TRUE}
-head(metrics[, -c(3:24)])
+metrics[1:10, -c(3:36)]
 ```
 
 ```{r echo=FALSE}
-kableExtra::scroll_box(kable_input = kableExtra::kable(metrics[, -c(3:24)], format = "html"), 
+kableExtra::scroll_box(kable_input = kableExtra::kable(metrics[1:10, -c(3:36)], format = "html"), 
                        width = "100%")
 ```
 
@@ -155,10 +155,11 @@ To describe the tendencies and distribution of the spherical coordinates `z`, $\
 ### Stand-level variables
 
 ```{r eval=FALSE, include=TRUE}
-head(metrics[, c(1:24)])
+metrics[1:10, 1:36]
 ```
+
 ```{r echo=FALSE}
-kableExtra::scroll_box(kable_input = kableExtra::kable(metrics[, c(1:24)], format = "html"), 
+kableExtra::scroll_box(kable_input = kableExtra::kable(metrics[1:10, 1:36], format = "html"), 
                        width = "100%")
 ```
 
@@ -196,11 +197,11 @@ $V.tls=\sum_{i=1}^{n} \frac{BAF}{g_i} \cdot \pi \cdot \frac{h_{P_{99}i}^2}{2} \c
 
 The above mentioned calculations of the stand-level variables N, V and G do not consider possible occlusions of trees. Therefore different occlusion correction approaches are included in the function which are explained below. 
 
-For angle-count plots, the occlusion correction based on the Poisson attenuation model is applied. This approach is based on a geometric gap probablility which decreases with increasing distance from the TLS device and follows a possion distribution. The thereby calculated stand density, volume and basal area are called `N.pam`, `V.pam` and `G.pam` respectively.
+For angle-count plots, the occlusion correction based on the Poisson attenuation model is applied. This approach is based on a geometric gap probablility which decreases with increasing distance from the TLS device and follows a possion distribution. The thereby calculated stand density, volume and basal area are called **`N.pam`**, **`V.pam`** and **`G.pam`** respectively.
 
-For the other two plot designs (circular fixed area and k-tree plots) different occlusion correction approaches are applied. One approach is based on distance smpling data and can therefore only be used when the function `distance.sampling` was used (i.e., when the `tree.ds` argument is specified other than `NULL`). Functions based on point transect sampling that describe how the probability of tree detection decreases whith increasing distance from the TLS device are used for the calculation. These functions applied for the calculation of the variables `N.hn`/`V.hn`/`G.hn` and `N.hr`/`V.hr`/`G.hr` are Half-Normal and Hazard-Rate respectively. Additionally, `N.hn.cov`/`V.hn.cov`/`G.hn.cov` and `N.hr.cov`/`V.hr.cov`/`G.hr.cov` are calculated with expanding the scale component of the function with the $dbh$ as covariate. 
+For the other two plot designs (circular fixed area and k-tree plots) different occlusion correction approaches are applied. One approach is based on distance smpling data and can therefore only be used when the function `distance.sampling` was used (i.e., when the `tree.ds` argument is specified other than `NULL`). Functions based on point transect sampling that describe how the probability of tree detection decreases whith increasing distance from the TLS device are used for the calculation. These functions applied for the calculation of the variables **`N.hn`**/**`V.hn`**/**`G.hn`** and **`N.hr`**/**`V.hr`**/**`G.hr`** are Half-Normal and Hazard-Rate respectively. Additionally, **`N.hn.cov`**/**`V.hn.cov`**/**`G.hn.cov`** and **`N.hr.cov`**/**`V.hr.cov`**/**`G.hr.cov`** are calculated with expanding the scale component of the function with the $dbh$ as covariate. 
 
-The other approaches corrects shadowing effects. With this method an expansion factor is calculated to correct the variables. The expansion factor is based on the percentage of the shaded area i.e., the unsample area which is not seen from the TLS device due to masking by trees. The corrected calculated variables are called `N.sh`/`V.sh`/`G.sh`.
+The other approaches corrects shadowing effects. With this method an expansion factor is calculated to correct the variables. The expansion factor is based on the percentage of the shaded area i.e., the unsample area which is not seen from the TLS device due to masking by trees. The corrected calculated variables are called **`N.sh`**/**`V.sh`**/**`G.sh`**.
 
 #### Mean and dominant heights (h) and diameters (d)
 

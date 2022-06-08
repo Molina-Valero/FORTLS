@@ -1,0 +1,86 @@
+---
+title: "Plot design optimization"
+#author: "Vignette Author"
+#date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{plot_design_optimization}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+The function `metrics.variables` used for the calculation of stand-level variables and metrics (see vignette "Stand level") requires arguments specifying the plot designs and sizes. If the optimal plot design and size for the calculation of stand-level variables is not know, the optimal plots design for the corresponding TLS data can be determined by two different approaches implemented in FORTLS. The approaches depend on whether field data for the plots is available or not. 
+
+```{r include=FALSE}
+dir.data <- system.file("exdata", package="FORTLS")
+
+tree.list <- read.csv(paste(dir.data, "tree.tls.csv", sep = "/"))
+sim <- read.csv(paste(dir.data, "simulations.fixed.area.plot.csv", sep = "/"))
+
+library(FORTLS)
+```
+
+## Estimating optimal plot size without field data
+
+If no field data is available, the function **`estimation.plot.size`** can be applied to determine the optimal plot design size. This function uses the data frame containing the list of detected trees (introduced in **`tree.tls`**) and estimates stand-level density ($N$, trees/ha) and basal area ($G$, m$^2$/ha) for many differently-sized plots for the three plot designs (circular fixed area, k-tree and angle-count) by increasing continuously their size. 
+
+Thus, circular fixed area plots with increasing radius (increment of 0.1 m) with the maximum radius defined by **`radius.max`** in **`plot.parameters`** (by default set to 25, if radius is larger than furthest tree, the horizontal distance to this furthest tree is considered as maximum radius) will be simulated and for each plot, the variables (N and G) are estimated. Similarly, k-tree plots with tree numbers (k) ranging from 1 to **`k.max`** (specified in `plot.parameters`, default value set to 50 or number of trees in the plot) and angle-count plots with increasing basal area factor (BAF, increments of 0.1 m$^2$/ha) to the maximum value specified by **`BAF.max`** in `plot.parameters` (set to 4 by default) are simulated and the respective stand-level variables are calculated. Optionally, the minimum diameter at breast height (**`dbh.min`**, in cm) to include the trees in the estimations can be defined. By default the minimum dbh is set to 4 cm.
+
+The function generates size-estimation charts i.e., plots showing the estimated stand-level density (N) and basal area (G) on the y axes respective to the different plot sizes (x axes). The estimations will be performed for all existing plots. By default the output plots will contain one line for each plot. When **`average`** is set to `TRUE`, the average of all estimations and the standard deviation will be drawn instead of multiple lines for each sample plot. One chart for each plot design is drawn by default. If **`all.plot.designs`** is set to `TRUE`, the line charts of all three plot design will be drawn in one plot.
+
+```{r fig.height=7, fig.width=7, fig.align = "center", message=FALSE, warning=FALSE}
+estimation.plot.size(tree.tls = tree.list,
+                     plot.parameters = data.frame(radius.max = 25, k.max = 50, BAF.max = 4),
+                     dbh.min = 4,
+                     average = TRUE, all.plot.designs = FALSE)
+```
+
+The black line represents the average over all plots (in the example shown here 16 plots) of the estimated density on the left and the basal area on the right. The dotted line indicates the number of plots. This figure helps to find suitable plot design for the calculation of stand-level metrics and variables. The optimal plot design and size should be chosen within a range where the estimated values for N and G reach a stable level. A too small plot size leads to high estimation errors and the true value can not be estimated. For example, the basal area estimated for fixed area plots with radius smaller than 5 m is higher than the true value. On the other hand, too large plots come along with systematic errors due to occlusion of trees. Therefore, for example the basal area of fixed area plots with radius bigger than 20 m is estimated lower than the true value. In order to avoid both types of errors, the figure helps to find a plot size range with stable values.
+
+## Validation with field data and optimizing plot design
+
+When data from field measurements are available for the same sample plots, the TLS-based estimates can be validated and the optimal plot designs can be found applying functions implemented in FORTLS. In the first step for the optimization of the plot design, the function **`simulations`** simulates plots with incremental size and computes the corresponding stand-level metrics and variables (similar to the function `metrics.variables`, see stand-level vignette). Based on the simulated data, two different processes can be performed. First, the bias between TLS data and field data for each individual estimated variable can be assessed with the function **`relative.bias`**. Second, correlations between all estimated variables and metrics based on TLS-data and thus the output data of the simulation function and the variables estimated from field data can be calculated with the **`correlations`** function. This function calculates both the Pearson and Spearman correlation coefficients. To visualize the correlation coefficients, heatmaps can be drawn by the **`optimize.plot.design`** function.
+
+### Plot simultaion and estimation of metrcis and variables
+
+```{r}
+sim <- simulations(tree.tls, tree.ds = NULL, tree.field,
+            plot.design = c("fixed.area", "k.tree", "angle.count"),
+            plot.parameters = data.frame(radius.max = 25, k.max = 50, BAF.max = 4),
+            scan.approach = "single", var.metr = list(tls = NULL, field = NULL),
+            dbh.min = 4, h.min = 1.3, max.dist = Inf,
+            dir.data = dir.data, save.result = FALSE, dir.result = NULL)
+```
+
+### Calculation of relative bias
+
+```{r}
+bias <- relative.bias(simulations = list(fixed.area=sim),
+              variables = c("N", "G", "V", "d", "dg", "d.0", "h", "h.0"),
+              save.result = FALSE, dir.result = NULL)
+bias$fixed.area
+```
+
+### correlation (heat map)
+
+```{r}
+cor <- correlations(simulations = list(fixed.area=sim),
+             variables = c("N", "G", "V", "d", "dg", "d.0", "h", "h.0"),
+             method = c("pearson", "spearman"), save.result = FALSE,
+             dir.result = NULL)
+```
+
+```{r}
+optimize.plot.design(correlations = cor,
+                     variables = c("N", "G", "V", "d", "dg", "d.0", "h", "h.0"),
+                     dir.result = NULL)
+```
+
+## modelos
