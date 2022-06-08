@@ -160,7 +160,9 @@ files <- list.files(pattern = "laz$", path = dir.data)
 
 # Tree detection
 
-tree.tls <- tree.detection.several.plots(las.list = c("Galicia_multi_scan.laz", "Go_Fagus_SLAM.laz"),
+tree.tls <- tree.detection.several.plots(las.list =
+                                         c("Galicia_multi_scan.laz",
+                                         "Go_Fagus_SLAM.laz"),
 
                                          scan.approach = "multi",
 
