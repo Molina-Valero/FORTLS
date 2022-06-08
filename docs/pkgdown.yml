@@ -1,0 +1,8 @@
+pandoc: 2.17.1.1
+pkgdown: 2.0.3
+pkgdown_sha: ~
+articles:
+  stand_level: stand_level.html
+  tree_level: tree_level.html
+last_built: 2022-06-07T11:17Z
+
