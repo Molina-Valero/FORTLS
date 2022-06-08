@@ -517,8 +517,8 @@ dir.result <- getwd()
 # Without occlusion correction based on distance sampling methods
 
 sim <- simulations(tree.tls = example.tls, tree.field = example.field,
-                   plot.parameters = list(radius.max = 10, k.tree.max = 20,
-                                          BAF.max = 3),
+                   plot.parameters = data.frame(radius.max = 10, k.max = 20,
+                                                BAF.max = 2),
                    dir.data = dir.data, dir.result = dir.result)
 
 
