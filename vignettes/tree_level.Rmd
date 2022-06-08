@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 FORTLS is used for processing of point cloud data derived from terrestrial-based technologies such as Terrestrial Laser Scanning (TLS) or Simultaneous Localization and Mapping (SLAM). Point cloud data must be provided as .las or .laz files. The first obligatory step is the normalization of the point cloud applying the function `normalize`. The obtained normalized point clouds serve as input data for the tree detection functions i.e. `tree.detection.single.scan`, `tree.detection.multi.scan` and `tree.detection.several.plots`. The function `tree.detection.single.scan` detects trees from normalized TLS single-scan data and `tree.detection.multi.scan` from normalized TLS multi-scan (or SLAM) data. If data from more than one plot is to be analyzed automatically, the function `tree.detection.several.plots` should be used, which includes both the normalization and the tree detection functions and executes these functions on each input plot sequentially. 
 
 ```{r include=FALSE}
-dir.data <- devtools::system.file("exdata", package="FORTLS")
+dir.data <- system.file("exdata", package="FORTLS")
 library(FORTLS)
 library(lidR)
 ```
@@ -36,7 +36,7 @@ The aim of the normalization process is obtaining the coordinates relative to th
 The following figure shows the normalized point cloud which is used as example data below. The function `plot` from the [lidR](https://cran.r-project.org/web/packages/lidR/index.html) package is used to generate the figure. 
 
 ```{r eval = FALSE, include = TRUE}
-dir.data <- devtools::system.file("exdata", package="FORTLS")
+dir.data <- system.file("exdata", package="FORTLS")
 multiLAS <- readLAS(paste(dir.data, "Galicia_multi_scan.laz", sep = "/"))
 lidR::plot(multiLAS, color = "RGB")
 ```

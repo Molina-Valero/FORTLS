@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 Once all trees were detected function was applied on the normalized point cloud and the tree list was generated, stand-level metrics and variables can be estimated. These estimations can be based on different plot designs i.e., circular fixed area, k-tree and angle-count plots. The sizes of the plots can be regulated by defining the radius, k and the basal area factor (BAF) respectively.
 
 ```{r include=FALSE}
-dir.data <- devtools::system.file("exdata", package="FORTLS")
+dir.data <- system.file("exdata", package="FORTLS")
 
 tree.list <- read.csv(paste(dir.data, "tree.tls.csv", sep = "/"))
 
