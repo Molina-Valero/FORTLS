@@ -84,29 +84,5 @@ estimation.plot.size(tree.tls, average = TRUE)
 estimation.plot.size(tree.tls, all.plot.designs = TRUE)
 
 
-# Considering two strata and different parameters
-
-# Loading dataset with strata
-
-plot.attributes <- Rioja.data$plot.attributes
-
-
-# Merging the plot.attributes data set with strata information
-
-tree.tls <- merge(tree.tls, plot.attributes, by = "id")
-
-
-estimation.plot.size(tree.tls,
-                     plot.parameters = list(radius.max = 10, k.tree.max = 10, BAF.max = 2))
-
-estimation.plot.size(tree.tls, ,
-                     plot.parameters = list(radius.max = 15, k.tree.max = 20, BAF.max = 4),
-                     average = TRUE)
-
-estimation.plot.size(tree.tls,
-                     plot.parameters = list(radius.max = 20, k.tree.max = 30, BAF.max = 2),
-                     all.plot.designs = TRUE)
-
-
 }
 }

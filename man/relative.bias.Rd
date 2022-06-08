@@ -263,18 +263,18 @@ dir.result <- getwd()
 # corresponding to Rioja example
 # Relative bias for variables by default
 
-rb <- relative.bias(simulations = Rioja.simulations, dir.result = dir.result)
+rb <- relative.bias(simulations = simulations, dir.result = dir.result)
 
 
 # Relative bias for variable 'N'
 
-rb <- relative.bias(simulations = Rioja.simulations, variables = "N",
+rb <- relative.bias(simulations = simulations, variables = "N",
                     dir.result = dir.result)
 
 
 # Relative bias corresponding to angle-count design for all available variables
 
-rb <- relative.bias(simulations = Rioja.simulations["angle.count.plot"],
+rb <- relative.bias(simulations = simulations["angle.count"],
                     variables <- c("N", "G", "V", "d", "dg", "dgeom", "dharm",
                                    "d.0", "dg.0", "dgeom.0", "dharm.0", "h",
                                    "hg", "hgeom", "hharm", "h.0", "hg.0",

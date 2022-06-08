@@ -287,12 +287,7 @@ Sensing}, \bold{34(sup2)}, S426-S440. \doi{10.5589/m08-046}}
 
 \author{
 Juan Alberto Molina-Valero,
-María José Ginzo Villamayor,
-Manuel Antonio Novo Pérez,
-Adela Martínez-Calvo,
-Juan Gabriel Álvarez-González,
-Fernando Montes and
-César Pérez-Cruzado.}
+Adela Martínez-Calvo.}
 
 \seealso{
 \code{\link{tree.detection.single.scan}}, \code{\link{tree.detection.multi.scan}}, \code{\link{tree.detection.several.plots}}, \code{\link{distance.sampling}},
@@ -317,7 +312,7 @@ tree.tls <- Rioja.data$tree.tls
 
 # Download example of TXT file corresponding to plot 1 from Rioja data set
 
-download.file(url = "https://www.dropbox.com/s/w4fgcyezr2olj9m/1.txt?dl=1",
+download.file(url = "https://www.dropbox.com/s/w4fgcyezr2olj9m/Rioja_1.txt?dl=1",
               destfile = file.path(dir.data, "1.txt"), mode = "wb")
 
 
@@ -330,28 +325,6 @@ met.var.TLS <- metrics.variables(tree.tls = tree.tls,
                                  plot.parameters = data.frame(radius = 10, k.tree = 10, BAF = 2),
                                  dir.data = dir.data, dir.result = dir.result)
 
-
-# Considering strata
-# Loading dataset with strata
-
-plot.attributes <- Rioja.data$plot.attributes
-
-# Merging the plot.attributes data set with strata information
-
-tree.list.tls <- merge(tree.list.tls, plot.attributes, by = "id")
-
-# Download example of TXT file corresponding to strata 2 (plot 9) from Rioja data set
-
-download.file(url = "https://www.dropbox.com/s/sghmw3zud424s11/2.txt?dl=1",
-              destfile = file.path(dir.data, "9.txt"), mode = "wb")
-
-plot.parameters <- data.frame(radius = c(10, 15), k.tree = c(8, 12), BAF = c(1.5, 2),
-num.trees = c(100, 75))
-
-met.var.TLS <- metrics.variables(tree.tls = tree.tls,
-                                 distance.sampling = ds,
-                                 plot.parameters = plot.parameters,
-                                 dir.data = dir.data, dir.result = dir.result)
 
   }
 }

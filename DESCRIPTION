@@ -21,8 +21,8 @@ BugReports: https://github.com/Molina-Valero/FORTLS/issues
 License: GPL-3
 Depends: R (>= 3.5.0)
 Imports: conicfit, dbscan, Distance, htmlwidgets, lidR, moments, plotly, progress, Rcpp(>= 1.0.7), raster, RCSF, rgeos, scales, sf, sp, tidyr, VoxR, vroom
-Suggests: kableExtra, knitr, rmarkdown, testthat
+Suggests: devtools, kableExtra, knitr, rmarkdown, testthat
 LinkingTo: Rcpp, RcppEigen
 Encoding: UTF-8
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.0
 VignetteBuilder: knitr

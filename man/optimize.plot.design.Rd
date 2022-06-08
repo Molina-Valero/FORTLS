@@ -201,7 +201,7 @@ data("Rioja.simulations")
 # Compute correlations between field estimations and TLS metrics corresponding
 # to Rioja example, and select optimal correlations results
 
-corr <- correlations(simulations = Rioja.simulations,
+corr <- correlations(simulations = simulations,
                      variables = c("N", "G", "V", "d", "dg", "dgeom","dharm",
                                    "d.0", "dg.0", "dgeom.0", "dharm.0", "h",
                                    "hg", "hgeom", "hharm", "h.0", "hg.0",

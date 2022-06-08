@@ -504,7 +504,7 @@ dir.data <- getwd()
 
 # Download example of TXT file corresponding to plot 1 from Rioja data set
 
-download.file(url = "https://www.dropbox.com/s/w4fgcyezr2olj9m/1.txt?raw=1",
+download.file(url = "https://www.dropbox.com/s/w4fgcyezr2olj9m/Rioja_1.txt?dl=1",
               destfile = file.path(dir.data, "1.txt"), mode = "wb")
 
 # Establish directory where simulation results corresponding to plot 1 from
@@ -517,42 +517,10 @@ dir.result <- getwd()
 # Without occlusion correction based on distance sampling methods
 
 sim <- simulations(tree.tls = example.tls, tree.field = example.field,
-                   plot.parameters = list(radius.max = 20, k.tree.max = 30,
-                                          BAF.max = 4),
+                   plot.parameters = list(radius.max = 10, k.tree.max = 20,
+                                          BAF.max = 3),
                    dir.data = dir.data, dir.result = dir.result)
 
-# With occlusion correction based on distance sampling methods
-
-sim <- simulations(tree.tls = example.tls, distance.sampling = example.ds,
-                   tree.field = example.field,
-                   plot.parameters = list(radius.max = 20, k.tree.max = 30,
-                                          BAF.max = 4),
-                   dir.data = dir.data,
-                   dir.result = dir.result)
-# Only circular fixed area plot design with non-default parameters, and with occlusion
-# correction based on distance sampling methods
-
-sim <- simulations(tree.tls = example.tls, distance.sampling = example.ds,
-                   tree.field = example.field,
-                   plot.parameters <- list(radius.max = 20,
-                                           radius.increment = .25,
-                                           num.trees = 50),
-                   dir.data = dir.data, dir.result = dir.result)
-# Only k-tree plot design with non-default parameters, and with occlusion
-# correction based on distance sampling methods
-
-sim <- simulations(tree.tls = example.tls, distance.sampling = example.ds,
-                   tree.field = example.field,
-                   plot.parameters <- list(k.tree.max = 30, num.trees = 50),
-                   dir.data = dir.data, dir.result = dir.result)
-# Only angle-count plot design with non-default parameters, and with occlusion
-# correction based on distance sampling methods
-
-sim <- simulations(tree.tls = example.tls, distance.sampling = example.ds,
-                   tree.field = example.field,
-                   plot.parameters <- list(BAF.max = 5, BAF.increment = 0.5,
-                                           num.trees = 50),
-                   dir.data = dir.data, dir.result = dir.result)
 
 }
 }
