@@ -147,14 +147,14 @@ dir.result <- getwd()
 
 # Loading example data (LAZ file) to dir.data
 
-download.file("https://www.dropbox.com/s/ihr2tk0a9vuwixf/Pinus_radiata_single_scan.laz?dl=1",
+download.file("https://www.dropbox.com/s/v9tomu358xgho25/Galicia_single_scan.laz?dl=1",
               destfile = file.path(dir.data, "Pinus_radiata_single_scan.laz"),
               mode = "wb")
 
 
 # Normalizing the whole point cloud data without considering arguments
 
-pcd <- normalize(las = "Pinus_radiata_single_scan.laz",
+pcd <- normalize(las = "Galicia_single_scan.laz",
 
                  dir.data = dir.data, dir.result = dir.result)
 
@@ -163,15 +163,15 @@ pcd <- normalize(las = "Pinus_radiata_single_scan.laz",
 
 # Loading example data (LAZ file) to dir.data
 
-download.file("https://www.dropbox.com/s/iaf4sf9z6w4ga14/Pinus_radiata_multi_scan.laz?dl=1",
+download.file("https://www.dropbox.com/s/j48chrbngwoma6y/Galicia_multi_scan.laz?dl=1",
               destfile = file.path(dir.data, "Pinus_radiata_multi_scan.laz"),
               mode = "wb")
 
 # Normalizing the whole point cloud data without considering arguments
 
-pcd <- normalize(las = "Pinus_radiata_multi_scan.laz",
+pcd <- normalize(las = "Galicia_multi_scan.laz",
 
-                 scan.approach = "multi"
+                 scan.approach = "multi",
 
                  dir.data = dir.data, dir.result = dir.result)
 

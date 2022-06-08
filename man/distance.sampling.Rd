@@ -123,10 +123,7 @@ tree.tls <- Rioja.data$tree.tls
 ds <- distance.sampling(tree.tls)
 
 
-# Considering only some plots (first 8 plots)
+  }
 
-ds <- distance.sampling(tree.tls, id.plots = 1:8)
-
-
-}}
+}
 

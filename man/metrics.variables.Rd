@@ -309,6 +309,7 @@ dir.result <- getwd()
 
 data("Rioja.data")
 tree.tls <- Rioja.data$tree.tls
+tree.tls <- tree.tls[tree.tls$id == "1", ]
 
 # Download example of TXT file corresponding to plot 1 from Rioja data set
 
@@ -321,12 +322,13 @@ download.file(url = "https://www.dropbox.com/s/w4fgcyezr2olj9m/Rioja_1.txt?dl=1"
 ds <- distance.sampling(tree.tls)
 
 met.var.TLS <- metrics.variables(tree.tls = tree.tls,
-                                 distance.sampling = ds,
-                                 plot.parameters = data.frame(radius = 10, k.tree = 10, BAF = 2),
+                                 tree.ds = ds,
+                                 plot.parameters = data.frame(radius = 10, k = 10, BAF = 2),
                                  dir.data = dir.data, dir.result = dir.result)
 
 
   }
+
 }
 
 

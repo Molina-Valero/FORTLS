@@ -1,6 +1,6 @@
 ---
 title: "Tree-level"
-#author: "Authors"
+author: "Anika Seppelt"
 #date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >

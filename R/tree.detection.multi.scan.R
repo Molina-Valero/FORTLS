@@ -562,7 +562,7 @@ tree.detection.multi.scan <- function(data,
 
   .tree.2 <- sf::st_as_sf(.tree.2, coords = c("x", "y"))
   .voronoi <- sf::st_buffer(.tree.2, dist = .sec$radius * 3)
-  .voro <- sf::st_intersection(.voro, .voronoi)
+  .voro <- suppressWarnings(sf::st_intersection(.voro, .voronoi))
 
   .voronoi <- sf::st_collection_extract(sf::st_voronoi(do.call(c, sf::st_geometry(.tree.2))))
   # .voronoi <- sf::st_collection_extract(sf::st_buffer(dist = .sec$radius * 3, do.call(c, sf::st_geometry(.tree.2))))

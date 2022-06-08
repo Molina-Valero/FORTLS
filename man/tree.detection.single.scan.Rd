@@ -168,7 +168,7 @@ download.file("https://www.dropbox.com/s/v9tomu358xgho25/Galicia_single_scan.laz
 
 pcd <- normalize(las = "Galicia_single_scan.laz",
 
-                 id = "Galicia_single_scan",
+                 max.dist = 15,
 
                  dir.data = dir.data, dir.result = dir.result)
 

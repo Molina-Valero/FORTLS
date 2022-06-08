@@ -1,6 +1,6 @@
 ---
 title: "Stand level"
-#author: "Vignette Author"
+author: "Anika Seppelt"
 #date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >

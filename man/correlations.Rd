@@ -468,6 +468,8 @@ corr <- correlations(simulations = simulations["angle.count"],
                                     "hg", "hgeom", "hharm", "h.0", "hg.0",
                                     "hgeom.0", "hharm.0"),
                      dir.result = dir.result)
-}
+
+  }
+
 }
 

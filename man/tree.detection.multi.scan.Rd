@@ -151,8 +151,6 @@ download.file("https://www.dropbox.com/s/j48chrbngwoma6y/Galicia_multi_scan.laz?
 
 pcd <- normalize(las = "Galicia_multi_scan.laz",
 
-                 id = "Gaicia_multi_scan",
-
                  scan.approach = "multi",
 
                  max.dist = 15,

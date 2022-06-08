@@ -84,5 +84,6 @@ estimation.plot.size(tree.tls, average = TRUE)
 estimation.plot.size(tree.tls, all.plot.designs = TRUE)
 
 
-}
+  }
+
 }
