@@ -79,11 +79,7 @@ tree.detection.several.plots(las.list, id = NULL, file = NULL,
 
   \item {\code{horizontal.angle}}: horizontal angle aperture (degrees).
 
-  \item {\code{vertical.angle}}: vertical angle aperture (degrees).}
-
-  \item{}{or separation between two consecutive points at a certain distance from TLS:}
-
-  \itemize{
+  \item {\code{vertical.angle}}: vertical angle aperture (degrees).
 
   \item {\code{point.dist}}: distance (mm) between two consecutive points.
 

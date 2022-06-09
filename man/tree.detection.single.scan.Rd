@@ -36,11 +36,7 @@ tree.detection.single.scan(data,
 
   \item {\code{horizontal.angle}}: horizontal angle aperture (degrees).
 
-  \item {\code{vertical.angle}}: vertical angle aperture (degrees).}
-
-  \item{}{or separation between two consecutive points at a certain distance from TLS:}
-
-  \itemize{
+  \item {\code{vertical.angle}}: vertical angle aperture (degrees).
 
   \item {\code{point.dist}}: distance (mm) between two consecutive points.
 
@@ -77,7 +73,6 @@ Local surface variation (also known as normal change rate ,NCR), is a quantitati
   \item{file}{Optional file name identification encoded as character string or numeric. If it is null, the file will be encoded as \code{id} by default.}
 
   \item{tree}{tree numbering}
-
 
 \item{Coordinates}{
 

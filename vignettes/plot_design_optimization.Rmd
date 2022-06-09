@@ -21,7 +21,8 @@ The function `metrics.variables` used for the calculation of stand-level variabl
 ```{r include=FALSE}
 dir.data <- system.file("exdata", package="FORTLS")
 
-tree.list <- read.csv(paste(dir.data, "tree.tls.csv", sep = "/"))
+tree.tls <- read.csv(paste(dir.data, "tree.tls.csv", sep = "/"))
+tree.field <- read.csv(paste(dir.data, "tree.field.csv", sep = "/"))
 sim <- read.csv(paste(dir.data, "simulations.fixed.area.plot.csv", sep = "/"))
 
 library(FORTLS)
@@ -36,7 +37,7 @@ Thus, circular fixed area plots with increasing radius (increment of 0.1 m) with
 The function generates size-estimation charts i.e., plots showing the estimated stand-level density (N) and basal area (G) on the y axes respective to the different plot sizes (x axes). The estimations will be performed for all existing plots. By default the output plots will contain one line for each plot. When **`average`** is set to `TRUE`, the average of all estimations and the standard deviation will be drawn instead of multiple lines for each sample plot. One chart for each plot design is drawn by default. If **`all.plot.designs`** is set to `TRUE`, the line charts of all three plot design will be drawn in one plot.
 
 ```{r fig.height=7, fig.width=7, fig.align = "center", message=FALSE, warning=FALSE}
-estimation.plot.size(tree.tls = tree.list,
+estimation.plot.size(tree.tls = tree.tls,
                      plot.parameters = data.frame(radius.max = 25, k.max = 50, BAF.max = 4),
                      dbh.min = 4,
                      average = TRUE, all.plot.designs = FALSE)
@@ -50,7 +51,7 @@ When data from field measurements are available for the same sample plots, the T
 
 ### Plot simultaion and estimation of metrcis and variables
 
-```{r}
+```{r eval=FALSE}
 sim <- simulations(tree.tls, tree.ds = NULL, tree.field,
             plot.design = c("fixed.area", "k.tree", "angle.count"),
             plot.parameters = data.frame(radius.max = 25, k.max = 50, BAF.max = 4),
@@ -61,25 +62,25 @@ sim <- simulations(tree.tls, tree.ds = NULL, tree.field,
 
 ### Calculation of relative bias
 
-```{r}
+```{r eval=FALSE}
 bias <- relative.bias(simulations = list(fixed.area=sim),
-              variables = c("N", "G", "V", "d", "dg", "d.0", "h", "h.0"),
+              variables = c("N", "G", "d", "dg", "d.0", "h", "h.0"),
               save.result = FALSE, dir.result = NULL)
 bias$fixed.area
 ```
 
 ### correlation (heat map)
 
-```{r}
+```{r eval=FALSE}
 cor <- correlations(simulations = list(fixed.area=sim),
-             variables = c("N", "G", "V", "d", "dg", "d.0", "h", "h.0"),
+             variables = c("N", "G", "d", "dg", "d.0", "h", "h.0"),
              method = c("pearson", "spearman"), save.result = FALSE,
              dir.result = NULL)
 ```
 
-```{r}
+```{r eval=FALSE}
 optimize.plot.design(correlations = cor,
-                     variables = c("N", "G", "V", "d", "dg", "d.0", "h", "h.0"),
+                     variables = c("N", "G", "d", "dg", "d.0", "h", "h.0"),
                      dir.result = NULL)
 ```
 

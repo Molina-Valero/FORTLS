@@ -293,7 +293,7 @@
   # .cor <- try(stats::cor.test(x = .dat2$n, y = .dat2$phi, method = 'spearman'))
 
   # If error, go to next iteration
-  if(class(.cor) == "try-error"){return(.filter)} else{
+  if(methods::is(.cor) == "try-error"){return(.filter)} else{
 
     .occlusion <- .cor[[4]]
 
@@ -577,7 +577,7 @@
   # .cor <- try(stats::cor.test(x = .dat.2$n, y = .dat.2$phi, method = 'spearman'))
 
   # If error, go to next iteration
-  if(class(.cor) == "try-error"){return(.filter)} else{
+  if(methods::is(.cor) == "try-error"){return(.filter)} else{
 
     .occlusion <- .cor[[4]]
 

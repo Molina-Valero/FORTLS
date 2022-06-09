@@ -15,12 +15,12 @@ Author: Juan Alberto Molina-Valero [aut, cph, cre],
   Fernando Montes [aut],
   César Pérez-Cruzado [aut, ths]
 Maintainer: Juan Alberto Molina-Valero <juanalberto.molina.valero@usc.es>
-Description: Process automation of point cloud data derived from terrestrial-based technologies such as Terrestrial Laser Scanner (TLS) or Simultaneous Localization and Mapping (SLAM). 'FORTLS' enables (i) detection of trees and estimation of tree-level attributes (e.g. diameters and heights), (ii) estimation of stand-level variables (e.g. density, basal area, mean and dominant height), (iii) computation of metrics related to important forest attributes estimated in Forest Inventories (FIs) at stand-level, and (iv) optimization of plot design for combining TLS data and field measured data. Documentation about 'FORTLS' is described in Molina-Valero et al. (2022, <doi.org/10.1016/j.envsoft.2022.105337>). 
+Description: Process automation of point cloud data derived from terrestrial-based technologies such as Terrestrial Laser Scanner (TLS) or Simultaneous Localization and Mapping (SLAM). 'FORTLS' enables (i) detection of trees and estimation of tree-level attributes (e.g. diameters and heights), (ii) estimation of stand-level variables (e.g. density, basal area, mean and dominant height), (iii) computation of metrics related to important forest attributes estimated in Forest Inventories at stand-level, and (iv) optimization of plot design for combining TLS data and field measured data. Documentation about 'FORTLS' is described in Molina-Valero et al. (2022, <doi.org/10.1016/j.envsoft.2022.105337>). 
 URL: https://github.com/Molina-Valero/FORTLS
 BugReports: https://github.com/Molina-Valero/FORTLS/issues
 License: GPL-3
 Depends: R (>= 3.5.0)
-Imports: dbscan, Distance, htmlwidgets, lidR, moments, plotly, progress, raster, Rcpp(>= 1.0.7), RCSF, scales, sf, sp, tidyr, VoxR, vroom
+Imports: dbscan, Distance, htmlwidgets, lidR, methods, moments, plotly, progress, raster, Rcpp(>= 1.0.7), RCSF, scales, sf, sp, tidyr, VoxR, vroom
 Suggests: devtools, kableExtra, knitr, rmarkdown, testthat
 LinkingTo: Rcpp, RcppEigen
 Encoding: UTF-8
