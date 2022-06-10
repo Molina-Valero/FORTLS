@@ -20,7 +20,6 @@ FORTLS is used for processing of point cloud data derived from terrestrial-based
 
 ```{r include=FALSE}
 dir.data <- getwd()
-dir.result <- getwd()
 download.file("https://www.dropbox.com/s/9jrk455ciyy8p84/Galicia_single_scan_reduced.laz?dl=1",
               destfile = file.path(dir.data, "Galicia_single_scan.laz"),
               mode = "wb")
@@ -28,17 +27,11 @@ download.file("https://www.dropbox.com/s/u6hy83mgqwfdx8b/Galicia_multi_scan_redu
               destfile = file.path(dir.data, "Galicia_multi_scan.laz"),
               mode = "wb")
 library(FORTLS)
-library(lidR)
-
 ```
 
 ## Normalization
 
-<<<<<<< Updated upstream
-The aim of the normalization process is to obtain the coordinates relative to the plot's center and the ground level. In this process, the functions `readLAS`, `clip_circle`, `classify_ground`, `grid_terrain` and `normalize_height` from the [lidR](https://cran.r-project.org/web/packages/lidR/index.html) package are used internally (Roussel et al., 2020^[Roussel, J.R., Auty, D., Coops, N.C., Tompalski, P., Goodbody, T.R.H., Sanchez Meador, A., Bourdon, J.F., de Boissieu, F., Achim, A., 2020. lidR: an R package for analysis of Airborne Laser Scanning (ALS) data. Remote Sens. Environ. 251, 112061 https://doi.org/10.1016/j.rse.2020.112061.]). The following steps are executed:
-=======
-The aim of the normalization process is obtaining the coordinates relative to the plot's center and the ground level. In this process, the functions `readLAS`, `clip_circle`, `classify_ground`, `grid_terrain` and `normalize_height` from the [lidR](https://CRAN.R-project.org/package=lidR) package are used internally (Roussel et al., 2020^[Roussel, J.R., Auty, D., Coops, N.C., Tompalski, P., Goodbody, T.R.H., Sanchez Meador, A., Bourdon, J.F., de Boissieu, F., Achim, A., 2020. lidR: an R package for analysis of Airborne Laser Scanning (ALS) data. Remote Sens. Environ. 251, 112061 https://doi.org/10.1016/j.rse.2020.112061.]). The following steps are executed:
->>>>>>> Stashed changes
+The aim of the normalization process is to obtain the coordinates relative to the plot's center and the ground level. In this process, the functions `readLAS`, `clip_circle`, `classify_ground`, `grid_terrain` and `normalize_height` from the [lidR](https://CRAN.R-project.org/package=lidR) package are used internally (Roussel et al., 2020^[Roussel, J.R., Auty, D., Coops, N.C., Tompalski, P., Goodbody, T.R.H., Sanchez Meador, A., Bourdon, J.F., de Boissieu, F., Achim, A., 2020. lidR: an R package for analysis of Airborne Laser Scanning (ALS) data. Remote Sens. Environ. 251, 112061 https://doi.org/10.1016/j.rse.2020.112061.]). The following steps are executed:
 
 - Classification of points as "ground" or "not ground" by the cloth simulation filter (CSF) algorithm (Zhang et al., 2016^[Zhang, W., Qi, J., Wan, P., Wang, H., Xie, D., Wang, X., Yan, G., 2016. An easy-to-use airborne LiDAR data filtering method based on Cloth simulation. Rem. Sens. 8 (6), 501. https://doi.org/10.3390/rs8060501.])
 - Generation of a digital terrain model (DTM) by spatial interpolation of the points classified as "ground"
@@ -48,7 +41,6 @@ The aim of the normalization process is obtaining the coordinates relative to th
 The following figure shows the normalized point cloud which is used as example data below. The function `plot` from the [lidR](https://CRAN.R-project.org/package=lidR) package is used to generate the figure. 
 
 ```{r eval = FALSE, include = TRUE}
-dir.data <- system.file("exdata", package="FORTLS")
 multiLAS <- readLAS(paste(dir.data, "Galicia_multi_scan.laz", sep = "/"))
 lidR::plot(multiLAS, color = "RGB")
 ```
@@ -76,7 +68,7 @@ The name of the .las or .laz file containing the point cloud data is introduced 
 
 The directory of the input .las/.laz files and the output file can be specified in **`dir.data`** and **`dir.result`** respectively. If not specified, the current working directory is used. The output .txt files containing the reduced point clouds will be saved if not otherwise specified in **`save.result`** (`save.result = TRUE` by default).
 
-If the point cloud in the input file was already normalized, the argument **`normalized`** can be set to `normalized = TRUE`. As a result, one part of the internal normalization process is skipped. Furthermore the scanning approach applied for data collection must be specified in **`scan.approach`** with `"single"` (set by default) indicating the TLS single-scan approach and `"multi"` indicating the TLS multi-scan and SLAM point clouds approaches.
+If the point cloud in the input file was already normalized, the argument **`normalized`** can be set to `normalized = TRUE` (default setting `normalized = NULL`). As a result, one part of the internal normalization process is skipped. Furthermore the scanning approach applied for data collection must be specified in **`scan.approach`** with `"single"` (set by default) indicating the TLS single-scan approach and `"multi"` indicating the TLS multi-scan and SLAM point clouds approaches.
 
 #### Defining the point cloud
 
@@ -96,8 +88,13 @@ When the point clouds are colorized, the RGB values can be used to improve the n
 
 The `normalize` function generates the data frame shown below. Each row corresponds to one point of the point cloud of the input data. The columns `id`, `file` and `point` indicate the plot identification number, the file name and the point number respectively. The following columns contain the normalized Cartesian, cylindrical and spherical coordinates `x` (distance on x axis in m), `y` (distance on y axis in m), `z` (height relative to ground level in m), `rho` (horizontal distance in m), `phi` (angle in rad), `r` (radial distance in m) and `theta` (polar angle in rad). The column `slope` displays the slope of the terrain given in rad. If the GLA algorithm was used, the column `GLA` shows the results of that algorithm. Furthermore, a selection probability is assigned to each point by applying the PCP algorithm (`prob`) and the column `prob.select` shows the selected plots (indicated with 1) and discarded points (indicated with 0).
 
-```{r eval = TRUE, include = TRUE}
+```{r eval = FALSE, include = TRUE}
 head(pcd.single)
+```
+
+```{r echo=FALSE}
+kableExtra::scroll_box(kable_input = kableExtra::kable(head(pcd.single), format = "html"), 
+                       width = "100%")
 ```
 
 The .txt file saved to the directory indicated by `dir.result` (if `save.result = TRUE`) contains a similar data frame to that shown above. However, the data frame will only include the reduced point cloud, i.e. only the selected points (`prob.select = 1`). The data frame is saved without row names as .txt file by using the `vroom_write` function of the [vroom](https://CRAN.R-project.org/package=vroom) package.
@@ -110,7 +107,7 @@ The tree detection functions include algorithms to detect as many trees as possi
 
 When the single-scan approach was used to collect the data, the function `tree.detection.single.scan` can be applied as follows:
 
-```{r eval = TRUE, message=FALSE, warning=FALSE, include=TRUE}
+```{r eval = TRUE, warning=FALSE, include=TRUE}
 tls.resolution = list(point.dist = 6.34, tls.dist = 10)
 
 tree.list.single.tls <- tree.detection.single.scan(data = pcd.single,
@@ -163,8 +160,13 @@ The argument **`d.top`** defines the top stem diameter (in cm), which is used fo
 
 #### The output data frame
 
-```{r eval = TRUE, include=TRUE}
+```{r eval = FALSE, include=TRUE}
 head(tree.list.single.tls)
+```
+
+```{r echo=FALSE}
+kableExtra::scroll_box(kable_input = kableExtra::kable(head(tree.list.single.tls), 
+                                                       format = "html"), width = "100%")
 ```
 
 The data frame shown above is the output of the `tree.detect.single.scan` function. Each row represents a detected tree (consecutively numbered in the column `tree`). The columns `id` and `file` display the plot identification number and the file name respectively equal to the columns in the `normalize` output table. The coordinates of the detected trees are given as Cartesian coordinates of the tree's center (`x` and `y`, in m) and azimuthal angles of the center (`phi` in rad), the left border (`phi.left` in rad), the right border (`phi.right` in rad) and the horizontal distance from the tree's center to the plot's center (`h.dist` in m).
@@ -181,7 +183,6 @@ When multiple scans were performed in the same sampling plot (multi-scan approac
 
 ```{r eval = TRUE, warning=FALSE, include=TRUE}
 pcd.multi <- normalize(las = "Galicia_multi_scan.laz", 
-                 normalized = NULL,
                  x.center = 0, y.center = 0, RGB = TRUE,
                  scan.approach = "multi", file = "multi.txt",
                  dir.data = dir.data, save.result = FALSE)
@@ -198,16 +199,20 @@ tree.list.multi.tls <- tree.detection.multi.scan(data = pcd.multi,
 
 The function `tree.detection.multi.scan` comes along with the same arguments as the function `tree.detection.single.scan`, which are described in "Data from TLS single-scan approach". However, instead of specifying the resolution, the precision of the TLS (in m) can be defined in `tls.precision`. If not defined, the default value is 0.03 m. The procedure remains the same and the output data frame contains the all the columns explained above:
 
-```{r eval = TRUE, include=TRUE}
+```{r eval = FALSE, include=TRUE}
 head(tree.list.multi.tls)
+```
+
+```{r echo=FALSE}
+kableExtra::scroll_box(kable_input = kableExtra::kable(head(tree.list.multi.tls), 
+                                                       format = "html"), width = "100%")
 ```
 
 The following figure shows the same point cloud (`"Galicia_multi_scan.laz"`) as above. The trees that were detected by the `tree.detection.multi.scan` function are labeled with a red belt at 1.3 m. 
 
 ```{r eval = FALSE, include = FALSE}
-multiLAS <- readLAS(paste(dir.data, "Galicia_multi_scan.laz", sep = "/"))
 diameter <- readLAS(paste(dir.data, "diameters.laz", sep = "/"))
-plot(multiLAS, color = "RGB", add = plot(diameter, color = "Intensity"))
+lidR::plot(multiLAS, color = "RGB", add = plot(diameter, color = "Intensity"))
 ```
 
 <img src="pointcloud1diameter.jpg" alt="drawing" width="300"/>

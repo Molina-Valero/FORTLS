@@ -32,11 +32,11 @@ library(FORTLS)
 
 ## Estimating optimal plot size without field data
 
-If no field data is available, the function **`estimation.plot.size`** can be applied to determine the optimal plot design size. This function uses the data frame containing the list of detected trees (introduced in **`tree.tls`**) and estimates stand-level density ($N$, trees/ha) and basal area ($G$, m$^2$/ha) for many differently-sized plots for the three plot designs (circular fixed area, k-tree and angle-count) by increasing continuously their size. 
+If no field data is available, the function **`estimation.plot.size`** can be applied to determine the optimal plot design size. This function uses the data frame containing the list of detected trees (introduced in **`tree.tls`**) and estimates stand-level density ($N$, trees/ha) and basal area ($G$, m$^2$/ha) for many simulated differently-sized plots for the three plot designs (circular fixed area, k-tree and angle-count) by increasing continuously their size. 
 
-Thus, circular fixed area plots with increasing radius (increment of 0.1 m) with the maximum radius defined by **`radius.max`** in **`plot.parameters`** (by default set to 25, if radius is larger than furthest tree, the horizontal distance to this furthest tree is considered as maximum radius) will be simulated and for each plot, the variables (N and G) are estimated. Similarly, k-tree plots with tree numbers (k) ranging from 1 to **`k.max`** (specified in `plot.parameters`, default value set to 50 or number of trees in the plot) and angle-count plots with increasing basal area factor (BAF, increments of 0.1 m$^2$/ha) to the maximum value specified by **`BAF.max`** in `plot.parameters` (set to 4 by default) are simulated and the respective stand-level variables are calculated. Optionally, the minimum diameter at breast height (**`dbh.min`**, in cm) to include the trees in the estimations can be defined. By default the minimum dbh is set to 4 cm.
+Thus, circular fixed area plots with increasing radius (increment of 0.1 m) with the maximum radius defined by **`radius.max`** in **`plot.parameters`** (by default set to 25, if radius is larger than furthest tree, the horizontal distance to this furthest tree is considered as maximum radius) will be simulated and for each plot, the variables (N and G) are estimated. Similarly, k-tree plots with tree numbers ($k$) ranging from 1 to **`k.max`** (specified in `plot.parameters`, default value set to 50 or total number of trees in the plot) and angle-count plots with increasing basal area factor (BAF, increments of 0.1 m$^2$/ha) to the maximum value specified by **`BAF.max`** in `plot.parameters` (set to 4 by default) are simulated and the respective stand-level variables are calculated. Optionally, the minimum diameter at breast height (**`dbh.min`**, in cm) to include the trees in the estimations can be defined. By default the minimum $dbh$ is set to 4 cm.
 
-The function generates size-estimation charts i.e., plots showing the estimated stand-level density (N) and basal area (G) on the y axes respective to the different plot sizes (x axes). The estimations will be performed for all existing plots. By default the output plots will contain one line for each plot. When **`average`** is set to `TRUE`, the average of all estimations and the standard deviation will be drawn instead of multiple lines for each sample plot. One chart for each plot design is drawn by default. If **`all.plot.designs`** is set to `TRUE`, the line charts of all three plot design will be drawn in one plot.
+The function generates size-estimation charts i.e., plots showing the estimated stand-level density ($N$) and basal area ($G$) on the $y$ axes respective to the different plot sizes ($x$ axes). The estimations will be performed for all simulated plots. By default the output graphs will contain one line for each plot. When **`average`** is set to `TRUE`, the average of all estimations as a continous line and the standard deviation as grey shaded area will be drawn instead of multiple lines for each sample plot. One chart for each plot design is drawn by default. If **`all.plot.designs`** is set to `TRUE`, the line charts of all three plot design will be drawn in one graph.
 
 ```{r fig.height=7, fig.width=7, fig.align = "center", message=FALSE, warning=FALSE}
 estimation.plot.size(tree.tls = tree.tls,
@@ -45,16 +45,18 @@ estimation.plot.size(tree.tls = tree.tls,
                      average = TRUE, all.plot.designs = FALSE)
 ```
 
-The black line represents the average over all plots (in the example shown here 16 plots) of the estimated density on the left and the basal area on the right. The dotted line indicates the number of plots. This figure helps to find suitable plot design for the calculation of stand-level metrics and variables. The optimal plot design and size should be chosen within a range where the estimated values for N and G reach a stable level. A too small plot size leads to high estimation errors and the true value can not be estimated. For example, the basal area estimated for fixed area plots with radius smaller than 5 m is higher than the true value. On the other hand, too large plots come along with systematic errors due to occlusion of trees. Therefore, for example the basal area of fixed area plots with radius bigger than 20 m is estimated lower than the true value. In order to avoid both types of errors, the figure helps to find a plot size range with stable values.
+The continuous line represents the average over all plots (i.e. 16 plots in the example shown here) of the estimated density ($N$) on the left and the basal area ($G$) on the right. The dotted line indicates the number of plots. This figure helps to find suitable plot design for the calculation of stand-level metrics and variables. The optimal plot design and size should be chosen within a range where the estimated values for $N$ and $G$ reach a stable level. A too small plot leads to high errors of estimation, since the sample is too small. For example, in the example above the basal area estimated for fixed area plots with radius smaller than 5 m is higher than the true value. On the other hand, too large plots come along with systematic errors due to occlusion of trees. Therefore, for example the basal area of fixed area plots with radius bigger than 20 m is estimated lower than the true value. In order to avoid both types of errors, the figure helps to find a plot size range with stable values.
 
 ## Validation with field data and optimizing plot design
 
-When data from field measurements are available for the same sample plots, the TLS-based estimates can be validated and the optimal plot designs can be found applying functions implemented in FORTLS. In the first step for the optimization of the plot design, the function **`simulations`** simulates plots with incremental size and computes the corresponding stand-level metrics and variables (similar to the function `metrics.variables`, see stand-level vignette). Based on the simulated data, two different processes can be performed. First, the bias between TLS data and field data for each individual estimated variable can be assessed with the function **`relative.bias`**. Second, correlations between all estimated variables and metrics based on TLS-data and thus the output data of the simulation function and the variables estimated from field data can be calculated with the **`correlations`** function. This function calculates both the Pearson and Spearman correlation coefficients. To visualize the correlation coefficients, heatmaps can be drawn by the **`optimize.plot.design`** function.
+When data from field measurements are available for the same sample plots, the TLS-based estimates can be validated and the optimal plot designs can be found applying functions implemented in FORTLS. In the first step of the optimization process, the function **`simulations`** simulates plots with incremental size and computes the corresponding stand-level metrics and variables (similar to the function `metrics.variables`, see <stand-level vignette). Based on the simulated data, two different processes can be performed. First, the bias between TLS data and field data for each individual estimated variable can be assessed with the function **`relative.bias`**. Second, correlations between all estimated variables and metrics based on TLS-data (output data of the simulation function) and the variables estimated from field data can be calculated with the **`correlations`** function. This function calculates both the Pearson and Spearman correlation coefficients. To visualize the correlation coefficients, heatmaps can be drawn by the **`optimize.plot.design`** function.
 
-### Plot simultaion and estimation of metrcis and variables
+### Plot simultaion and estimation of metrics and variables
 
-```{r eval=FALSE}
-sim <- simulations(tree.tls, tree.ds = NULL, tree.field,
+The **`simulations`** function is applied as follows:
+
+```{r eval=FALSE, include=TRUE}
+sim <- simulations(tree.tls = tree.tls, tree.ds = tree.ds, tree.field = tree.field,
             plot.design = c("fixed.area", "k.tree", "angle.count"),
             plot.parameters = data.frame(radius.max = 25, k.max = 50, BAF.max = 4),
             scan.approach = "single", var.metr = list(tls = NULL, field = NULL),
@@ -62,13 +64,35 @@ sim <- simulations(tree.tls, tree.ds = NULL, tree.field,
             dir.data = dir.data, save.result = FALSE, dir.result = NULL)
 ```
 
+#### The input data frames
+
+Both TLS and field data from the same sample plots are required to compute the function. The TLS data introduced in **`tree.tls`** should have the same format as the data frame returned from the `tree.detection.single.scan` and `tree.detection.multi.scan` functions. Thus, each row must correspond to a detected tree and it must contain at least the following columns: `id`, `file`, `tree`, `x`, `y`, `phi.left`, `phi.right`, `horizontal.distance`, `dbh`, `num.points`, `num.points.hom`, `num.points.est`, `num.points.hom.est` and `partial.occlusion`. The data frame containing the field data must be inserted in the argument **`tree.field`**. Similar to the TLS data table, each row must correspond to a tree (specified in the columns `id` and `tree`) and the values for `horizontal.distance`, `dbh`, `total.height` and an integer value indicating if the tree is dead (1) or alive (NA, specified in `dead`) must be included in the data frame. 
+
+When the distance sampling method for correction occlusion effects was applied (function `distance.sample`, see Stand level vignette), a list with the results and output data frames from the aforesaid function can be introduced in **`tree.ds`**. The list must contain at least the data frame `tree` with the detection probabilities (`P.hn`, `P.hn.cov`, `P.hr` and `P.hr.cov`) for each tree. By default `tree.ds` is set to `NULL` and as a result, the calculations of the variables based on occlusion detection will not be performed.
+
+#### Specifying designs of simulated plots
+
+A vector containing the names of the plot designs can specify the plot designs (`"fixed.area"`, `"k.tree"`, `"angle.count"`) that are to be considered for the simulations in **`plot.design`**. By default, this argument is set to `NULL` and all three plots designs will be considered. 
+
+Furthermore the argument **`plot.parameters`** allows for manually specifying the design of the simulated plots. Many differently-sized plots of the plot designs specified in `plot.design` are simulated. The list introduced in `plot.parameters` can include the following elements to customize the generated plots. The elements `radius.max`, `k.tree.max` and `BAF.max` define the maximum radius (in m), the maximum number of trees and the maximum BAF (in m$^2$/ha) respectively to which the sizes of circular fixed area, k-tree and angle-count plots respectively can increase. By default the values are set to `radius.max = 25`, `k.tree.max = 50` and `BAF.max = 4`. The increment by which the sizes of circular fixed area and angle-count plots sequentially increase can also be customized by specifying the elements `radius.increment` and `BAF.increment` respectively. The default settings are `radius.increment = 0.1` (in m) and `BAF.increment = 0.1` (in m$^2$/ha). An additional element of the list can be `num.trees` defining the number of dominant trees per hectare (trees/ha). This value is needed for the calculation of dominant diamters and heights and is set to 100 trees/ha by default.
+
+#### Further adjustable arguments
+
+Similar to the other functions, the scan approach can be specified in **`scan.approach`** and is by default set to `"multi"`. Metrics and variables of interest can be defined as a vector in **`var.metr`**. Thus, only those metrics and variables named in the vector are calculated. If not specified, `var.metr` is set to `NULL` and all possible metrics and variables are computed. The arguments **`dbh.min`**, **`h.min`** and **`max.dist`** can optionally define the minimum $dbh$, height and maximum distance of a tree to be included in the calculations. The default values are `dbh.min = 4` (in cm), `h.min = 1.3` (in m) and `max.dist = NULL` (no maximal distance is considered). 
+
+The argument **`dir.data`** should specify the working directory of the .txt files with the normalized reduced point clouds (output of `normalize` function). If not specified, it is set to `NULL` and the current working directory is assigned to it. The output files will be saved by default, since the argument **`save.result`** is set to `TRUE` to the directory path indicated in **`dir.result`**. For each plot design (circular fixed area, k-tree and angle-count plots), a .csv file is created using the `write.csv` function from the [utils](https://CRAN.R-project.org/package=R.utils) package.
+
+#### Output of the simulations function
+
+
+
 ### Calculation of relative bias
 
 ```{r eval=FALSE}
 bias <- relative.bias(simulations = list(fixed.area=sim),
               variables = c("N", "G", "d", "dg", "d.0", "h", "h.0"),
               save.result = FALSE, dir.result = NULL)
-bias$fixed.area
+head(bias$fixed.area)
 ```
 
 ### correlation (heat map)
