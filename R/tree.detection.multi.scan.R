@@ -632,16 +632,16 @@ tree.detection.multi.scan <- function(data,
 
   # Paraboloid volume
 
-  .tree$v <- pi * (.tree[, "h"] ^ 2 / 2) * ((.tree[, "dbh"] / 200) ^ 2 / (.tree[, "h"] - 1.3) ^ 2)
+  .tree$v <- pi * (.tree[, "h"] ^ 2 / 2) * ((.tree[, "dbh"] / 200) ^ 2 / (.tree[, "h"] - 1.3))
 
   }
 
   .stem <- .stem[, c("tree", "x", "y", "dhi", "dbh", "hi", "h")]
   .stem <- .stem[order(.stem$tree, .stem$hi), , drop = FALSE]
 
-  # utils::write.csv(.stem,
-  #                  file = file.path(dir.result, "tree.tls.stem.csv"),
-  #                  row.names = FALSE)
+  utils::write.csv(.stem,
+                   file = file.path(dir.result, "tree.tls.stem.csv"),
+                   row.names = FALSE)
 
 
   # If plot identification (id) is not available
