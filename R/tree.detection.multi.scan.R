@@ -645,9 +645,9 @@ tree.detection.multi.scan <- function(data,
   .stem <- .stem[, c("tree", "x", "y", "dhi", "dbh", "hi", "h")]
   .stem <- .stem[order(.stem$tree, .stem$hi), , drop = FALSE]
 
-  utils::write.csv(.stem,
-                   file = file.path(dir.result, "tree.tls.stem.csv"),
-                   row.names = FALSE)
+  # utils::write.csv(.stem,
+  #                  file = file.path(dir.result, "tree.tls.stem.csv"),
+  #                  row.names = FALSE)
 
 
   # If plot identification (id) is not available
