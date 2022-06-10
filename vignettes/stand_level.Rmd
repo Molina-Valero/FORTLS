@@ -19,9 +19,11 @@ knitr::opts_chunk$set(
 Once all trees were detected from the normalized point cloud and the tree list was generated, metrics and variables at stand level can be estimated. These estimations can be based on different plot designs, that are circular fixed area, k-tree and angle-count plots. The sizes of the plots can be regulated by defining the radius, k and the basal area factor (BAF) respectively.
 
 ```{r include=FALSE}
+dir.data <- system.file("data", package="FORTLS")
+setwd(dir.data)
+load("Rioja.data.RData")
+tree.list <- Rioja.data$tree.tls
 dir.data <- system.file("exdata", package="FORTLS")
-
-tree.list <- read.csv(paste(dir.data, "tree.tls.csv", sep = "/"))
 
 library(FORTLS)
 ```
@@ -101,7 +103,11 @@ As the name implies, circular fixed area plots (`"fixed.area"`) are plots with a
 
 The function `metrics.variables` generates a list in which each element represents one of the considered plot designs (fixed area, k-tree and angle-count plots). These elements are data frames containing the estimated metrics and variables at stand-level described below as columns. Further columns include information about the plot, such as the identification number (`id`) and the stratum identification (`stratum`) both coinciding with the respective columns in the output file of the `tree.detection` function. Each row represents a simulated plot i.e., a plot with a certain size (defined by the values for `radius`, `k` and `BAF` shown in the respective columns). 
 
+<<<<<<< Updated upstream
 If `save.result = TRUE`, the data frames will be saved as seperate .csv files (one for every plot design) to the directory indicated in `dir.result` (or if not specified to the working directory). The .csv files (without row names) will be created using the `write.csv` function from the [utils](https://cran.rstudio.com/web/packages/R.utils/index.html) package.
+=======
+If `save.result = TRUE`, the data frames will be saved as seperate .csv files (one for every plot design) to the directory indicated in `dir.result` (or if not specified the working directory). The .csv files will not contain row names and will be created using the `write.csv` function from the [utils](https://CRAN.R-project.org/package=R.utils) package.
+>>>>>>> Stashed changes
 
 ### Stand-level metrics
 

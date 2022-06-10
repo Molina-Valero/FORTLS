@@ -1,10 +1,10 @@
 ---
 title: "Plot design optimization"
-#author: "Vignette Author"
+author: "Anika Seppelt"
 #date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{plot_design_optimization}
+  %\VignetteIndexEntry{Plot design optimization}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -19,12 +19,14 @@ knitr::opts_chunk$set(
 The function `metrics.variables` used for the calculation of stand-level variables and metrics (see vignette "Stand level") requires arguments specifying the plot designs and sizes. If the optimal plot design and size for the calculation of stand-level variables is not know, the optimal plots design for the corresponding TLS data can be determined by two different approaches implemented in FORTLS. The approaches depend on whether field data for the plots is available or not. 
 
 ```{r include=FALSE}
+dir.data <- system.file("data", package="FORTLS")
+setwd(dir.data)
+load("Rioja.data.RData")
+load("Rioja.simulations.RData")
+tree.tls <- Rioja.data$tree.tls
+tree.field <- Rioja.data$tree.field
+sim <- simulations$fixed.area
 dir.data <- system.file("exdata", package="FORTLS")
-
-tree.tls <- read.csv(paste(dir.data, "tree.tls.csv", sep = "/"))
-tree.field <- read.csv(paste(dir.data, "tree.field.csv", sep = "/"))
-sim <- read.csv(paste(dir.data, "simulations.fixed.area.plot.csv", sep = "/"))
-
 library(FORTLS)
 ```
 

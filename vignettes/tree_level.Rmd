@@ -26,14 +26,18 @@ library(lidR)
 
 ## Normalization
 
+<<<<<<< Updated upstream
 The aim of the normalization process is to obtain the coordinates relative to the plot's center and the ground level. In this process, the functions `readLAS`, `clip_circle`, `classify_ground`, `grid_terrain` and `normalize_height` from the [lidR](https://cran.r-project.org/web/packages/lidR/index.html) package are used internally (Roussel et al., 2020^[Roussel, J.R., Auty, D., Coops, N.C., Tompalski, P., Goodbody, T.R.H., Sanchez Meador, A., Bourdon, J.F., de Boissieu, F., Achim, A., 2020. lidR: an R package for analysis of Airborne Laser Scanning (ALS) data. Remote Sens. Environ. 251, 112061 https://doi.org/10.1016/j.rse.2020.112061.]). The following steps are executed:
+=======
+The aim of the normalization process is obtaining the coordinates relative to the plot's center and the ground level. In this process, the functions `readLAS`, `clip_circle`, `classify_ground`, `grid_terrain` and `normalize_height` from the [lidR](https://CRAN.R-project.org/package=lidR) package are used internally (Roussel et al., 2020^[Roussel, J.R., Auty, D., Coops, N.C., Tompalski, P., Goodbody, T.R.H., Sanchez Meador, A., Bourdon, J.F., de Boissieu, F., Achim, A., 2020. lidR: an R package for analysis of Airborne Laser Scanning (ALS) data. Remote Sens. Environ. 251, 112061 https://doi.org/10.1016/j.rse.2020.112061.]). The following steps are executed:
+>>>>>>> Stashed changes
 
 - Classification of points as "ground" or "not ground" by the cloth simulation filter (CSF) algorithm (Zhang et al., 2016^[Zhang, W., Qi, J., Wan, P., Wang, H., Xie, D., Wang, X., Yan, G., 2016. An easy-to-use airborne LiDAR data filtering method based on Cloth simulation. Rem. Sens. 8 (6), 501. https://doi.org/10.3390/rs8060501.])
 - Generation of a digital terrain model (DTM) by spatial interpolation of the points classified as "ground"
 - Normalization of the point cloud by subtracting the DTM and computation of the Cartesian, cylindrical and spherical coordinates 
 - Reduction of the density of the point cloud. In case of single-scan approach data, the densitiy is reduced by the point cropping (PCP) algorithm (Molina-Valero et al., 2019^[Molina Valero, J.A., Ginzo Villamayor, M.J., Novo Pérez, M.A., Álvarez-González, J.G., Pérez-Cruzado, C., 2019. Estimación del área basimétrica en masas maduras de Pinus sylvestris en base a una única medición del escáner láser terrestre (TLS). Cuad. Soc. Esp. Cienc. For. 45 (3), 97–116. https://doi.org/10.31167/csecfv0i45.19887.]) and in the case of multi-scan approach data, the point density reduction is based on random selection of points
 
-The following figure shows the normalized point cloud which is used as example data below. The function `plot` from the [lidR](https://cran.r-project.org/web/packages/lidR/index.html) package is used to generate the figure. 
+The following figure shows the normalized point cloud which is used as example data below. The function `plot` from the [lidR](https://CRAN.R-project.org/package=lidR) package is used to generate the figure. 
 
 ```{r eval = FALSE, include = TRUE}
 dir.data <- system.file("exdata", package="FORTLS")
@@ -47,7 +51,7 @@ lidR::plot(multiLAS, color = "RGB")
 
 The `normalize` function is applied as follows:
 
-```{r eval = TRUE, include = TRUE}
+```{r eval = FALSE, include = TRUE}
 pcd.single <- normalize(las = "Galicia_single_scan.laz", 
                  normalized = TRUE,
                  x.center = 0, y.center = 0,
@@ -84,11 +88,11 @@ When the point clouds are colorized, the RGB values can be used to improve the n
 
 The `normalize` function generates the data frame shown below. Each row corresponds to one point of the point cloud of the input data. The columns `id`, `file` and `point` indicate the plot identification number, the file name and the point number respectively. The following columns contain the normalized Cartesian, cylindrical and spherical coordinates `x` (distance on x axis in m), `y` (distance on y axis in m), `z` (height relative to ground level in m), `rho` (horizontal distance in m), `phi` (angle in rad), `r` (radial distance in m) and `theta` (polar angle in rad). The column `slope` displays the slope of the terrain given in rad. If the GLA algorithm was used, the column `GLA` shows the results of that algorithm. Furthermore, a selection probability is assigned to each point by applying the PCP algorithm (`prob`) and the column `prob.select` shows the selected plots (indicated with 1) and discarded points (indicated with 0).
 
-```{r eval = TRUE, include = TRUE}
+```{r eval = FALSE, include = TRUE}
 head(pcd.single)
 ```
 
-The .txt file saved to the directory indicated by `dir.result` (if `save.result = TRUE`) contains a similar data frame to that shown above. However, the data frame will only include the reduced point cloud, i.e. only the selected points (`prob.select = 1`). The data frame is saved without row names as .txt file by using the `vroom_write` function of the [vroom](https://cran.r-project.org/web/packages/vroom/index.html) package.
+The .txt file saved to the directory indicated by `dir.result` (if `save.result = TRUE`) contains a similar data frame to that shown above. However, the data frame will only include the reduced point cloud, i.e. only the selected points (`prob.select = 1`). The data frame is saved without row names as .txt file by using the `vroom_write` function of the [vroom](https://CRAN.R-project.org/package=vroom) package.
 
 ## Tree detection
 
@@ -136,7 +140,7 @@ In order to improve the detection of trees, the point cloud is reduced by removi
 After the cylinders have been selected from the point cloud, **`breaks`** defines the height (in m) of horizontal slices on which the tree detection algorithms are applied. If not otherwise specified, slices are taken every 0.3 m starting at a height of 0.4 m until reaching the maximum height. The slices have a extension of 0.1 m (height of slice +/- 5 cm). On each slice the following algorithms are applied:
 
 - **Removal of branches and foliage:** The NCR values are calculated for each point and only those points are kept as stem points with a NCR value lower than the predefined threshold (`ncr.threshold`)
-- **Clustering of the points:** The clustering process is applied on the horizontal projection of the point's Cartesian coordinates i.e., only their $x$ and $y$ coordinates are considered. The Density-Based Spatial Clustering of Applications based on the Noise (DBSCAN) method (Ester et al., 1996^[Ester, M., Kriegel, H.P., Sander, J., Xu, X., (1996). A density-based algorithm for discovering clusters in large spatial databases with noise. In Kdd 96 (34), 226–231.]) implemented by the `dbscan` function of the [dbscan](https://cran.r-project.org/web/packages/dbscan/) package is used to perform the clustering. The radius of the epsilon neighborhood (`eps`) is defined as the minimum distance between two consecutive points at the furthest distance from the plot center in the respective horizontal slice
+- **Clustering of the points:** The clustering process is applied on the horizontal projection of the point's Cartesian coordinates i.e., only their $x$ and $y$ coordinates are considered. The Density-Based Spatial Clustering of Applications based on the Noise (DBSCAN) method (Ester et al., 1996^[Ester, M., Kriegel, H.P., Sander, J., Xu, X., (1996). A density-based algorithm for discovering clusters in large spatial databases with noise. In Kdd 96 (34), 226–231.]) implemented by the `dbscan` function of the [dbscan](https://CRAN.R-project.org/package=dbscan) package is used to perform the clustering. The radius of the epsilon neighborhood (`eps`) is defined as the minimum distance between two consecutive points at the furthest distance from the plot center in the respective horizontal slice
 - **Removing of points belonging to remaining branches and foliage:** Two characteristics are used to distinguish stem and branch clusters. First, the density of stem sections is higher than of branch and foliage sections. And second, stem points should have a predominant vertical distribution. Hence, when the point cloud is vertical projected and dissected into a grid, cells over stems have a higher point density than cells over leafs or branches. Points in cells with a lower density than the median density are removed from the point cloud
 - **Calculation of the center of the potential tree section:** The center is considered as the point in which the variance of the distances between all cluster points and the potential center point reaches its lowest value
 - **Classification of clusters:** In order to decide whether the clusters belong to a tree section, different geometric features are considered. First, the calculated center of the tree section must be located behind the stem point clusters relative to the TLS position. Second, no points should be located behind the tree surface relative to the TLS position.  And third, the clusters should form an arc, which implicates that extreme points should lay further away from the TLS than points in the middle.
@@ -161,13 +165,13 @@ Furthermore, the tree attributes `dbh` (diameter at breast height in cm), `h` (t
 
 For each tree, the number of points of the normal section slice (1.3 m +/- 0.05 m) of the original point cloud and the reduced point cloud (`n.pts` and `n.pts.red` respectively) are calculated and also estimated (`n.pts.est` and `n.pts.red.est` respectively). The column `partial.occlusion` describes whether the the detected tree is partially occluded (1) or not (0).
 
-The data frame is saved as .csv file without row names using the `write.csv` function from the [utils](https://cran.rstudio.com/web/packages/R.utils/index.html) package.
+The data frame is saved as .csv file without row names using the `write.csv` function from the [utils](https://CRAN.R-project.org/package=R.utils) package.
 
 ### Data from TLS multi-scan approach
 
 When multiple scans were performed in the same sampling plot (multi-scan approach) or SLAM devices were used, the function `tree.detection.multi.scan` can be applied as follows below. Additionally, the function `normalize` must be adjusted by specifying `scan.approach = "multi"`.
 
-```{r eval = TRUE, warning=FALSE, include=TRUE}
+```{r eval = FALSE, warning=FALSE, include=TRUE}
 pcd.multi <- normalize(las = "Galicia_multi_scan.laz", 
                  normalized = TRUE,
                  x.center = 0, y.center = 0, RGB = TRUE,
@@ -186,7 +190,7 @@ tree.list.multi.tls <- tree.detection.multi.scan(data = pcd.multi,
 
 The function `tree.detection.multi.scan` comes along with the same arguments as the function `tree.detection.single.scan`, which are described in "Data from TLS single-scan approach". However, instead of specifying the resolution, the precision of the TLS (in m) can be defined in `tls.precision`. If not defined, the default value is 0.03 m. The procedure remains the same and the output data frame contains the all the columns explained above:
 
-```{r eval = TRUE, include=TRUE}
+```{r eval = FALSE, include=TRUE}
 head(tree.list.multi.tls)
 ```
 
