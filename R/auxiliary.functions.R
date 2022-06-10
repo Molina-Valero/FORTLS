@@ -520,20 +520,8 @@
   .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)
 
   # Radius value as the mean distance
-  # .dat <- .dat[order(.dat$dist, decreasing = FALSE), , drop = FALSE]
-  # plot(.dat$x, .dat$y, asp = 1)
   .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25) & .dat$dist<stats::quantile(.dat$dist, prob = 0.9)])
   if(.radio <= 0 | is.na(.radio)){return(.filter)}
-
-  # xyc4<-conicfit::calculateCircle(.center.x,.center.y,.radio)
-  # points(xyc4[,1],xyc4[,2],col='red',type='l')
-
-
-  # c4 <- conicfit::LMcircleFit(as.matrix(.dat[.dat$dist>stats::quantile(.dat$dist, prob = 0.25), c("x", "y")]))
-  # xyc4<-conicfit::calculateCircle(c4[1],c4[2],c4[3])
-  # points(xyc4[,1],xyc4[,2],col='cyan',type='l')
-  # .radio2 <- c4[3]
-  .radio2 <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5) & .dat$dist<stats::quantile(.dat$dist, prob = 0.9)])
 
   # Coefficient of variation for distances among cluster points and the estimated center
   .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25)]) / .radio
@@ -583,8 +571,6 @@
 
   }
 
-  # plot(.dat$x, .dat$y, asp = 1, main = paste(.cluster, .circ, .arc.circ, sep = " "))
-
 
   # Zhang et al., (2019)
   .n.w.ratio <- stats::sd(.dat$z) / sqrt(stats::sd(.dat$x) ^ 2 + stats::sd(.dat$y) ^ 2)
@@ -604,7 +590,7 @@
                         center.phi = .center.phi, center.rho = .center.rho,
                         center.r = .center.r, center.theta = .center.theta,
 
-                        radius = .radio, radius2 = .radio2,
+                        radius = .radio,
 
                         n.pts = .n.pts, n.pts.red = .n.pts.red,
 
@@ -640,7 +626,7 @@ if(nrow(.filter) < 1){
                            center.x = as.numeric(), center.y = as.numeric(),
                            center.phi = as.numeric(), center.rho = as.numeric(),
                            center.r = as.numeric(), center.theta = as.numeric(),
-                           radius = as.numeric(), radius2 = as.numeric(),
+                           radius = as.numeric(),
                            n.pts = as.numeric(), n.pts.red = as.numeric(),
                            circ = as.numeric(), arc.circ = as.numeric(), sec = as.numeric())
 
@@ -648,7 +634,7 @@ if(nrow(.filter) < 1){
 
   .filter1.0 <- .filter[, c("cluster",
                             "center.x", "center.y", "center.phi", "center.rho", "center.r", "center.theta",
-                            "radius", "radius2", "n.pts", "n.pts.red", "circ", "arc.circ"), drop = FALSE]
+                            "radius", "n.pts", "n.pts.red", "circ", "arc.circ"), drop = FALSE]
 
   .filter1.0$sec <- cut$sec[1]
 

@@ -192,7 +192,7 @@ tree.detection.multi.scan <- function(data,
 
       warning("No tree was detected")
 
-      .colnames <- c("tree", "x", "y", "phi", "h.dist", "dbh", "dbh2", "h", "v", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+      .colnames <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
     } else if (is.null(data$id) & !is.null(d.top)) {
 
@@ -200,7 +200,7 @@ tree.detection.multi.scan <- function(data,
 
       warning("No tree was detected")
 
-      .colnames <- c("tree", "x", "y", "phi", "h.dist", "dbh", "dbh2", "h", "v", "v.com", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+      .colnames <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "v.com", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
     } else if (!is.null(data$id) & is.null(d.top)) {
 
@@ -208,7 +208,7 @@ tree.detection.multi.scan <- function(data,
 
       warning("No tree was detected for plot ", data$id[1])
 
-      .colnames <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "dbh2", "h", "v", "v.com", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+      .colnames <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "v.com", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
     } else {
 
@@ -216,7 +216,7 @@ tree.detection.multi.scan <- function(data,
 
       warning("No tree was detected for plot ", data$id[1])
 
-      .colnames <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "dbh2", "h", "v", "v.com", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+      .colnames <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "v.com", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
     }
 
@@ -244,7 +244,7 @@ tree.detection.multi.scan <- function(data,
                            center.x = as.numeric(), center.y = as.numeric(),
                            center.phi = as.numeric(), center.rho = as.numeric(),
                            center.r = as.numeric(), center.theta = as.numeric(),
-                           radius = as.numeric(), radius2 = as.numeric(),
+                           radius = as.numeric(),
                            n.pts = as.numeric(), n.pts.red = as.numeric(),
                            circ = as.numeric(), arc.cir = as.numeric())
 
@@ -280,7 +280,7 @@ tree.detection.multi.scan <- function(data,
       .filt <- .filt[, c("tree", "sec", "dist",
                          "center.x", "center.y", "center.phi",
                          "center.rho", "center.r", "center.theta",
-                         "radius", "radius2", "n.pts", "n.pts.red", "circ", "arc.circ")]
+                         "radius", "n.pts", "n.pts.red", "circ", "arc.circ")]
 
       .filteraux <- rbind(.filteraux, .filt)
 
@@ -300,7 +300,7 @@ tree.detection.multi.scan <- function(data,
                         center.x = as.numeric(), center.y = as.numeric(),
                         center.phi = as.numeric(), center.rho = as.numeric(),
                         center.r = as.numeric(), center.theta = as.numeric(),
-                        radius = as.numeric(), radius2 = as.numeric(),
+                        radius = as.numeric(),
                         n.pts = as.numeric(), n.pts.red = as.numeric(),
                         circ = as.numeric(), arc.cir = as.numeric())
 
@@ -335,16 +335,15 @@ tree.detection.multi.scan <- function(data,
 
   # Export all section detected
   .filter <- .filter[order(.filter$tree, .filter$sec), , drop = FALSE]
-  .stem <- .filter[, c("tree", "sec", "center.x",  "center.y", "radius", "radius2")]
+  .stem <- .filter[, c("tree", "sec", "center.x",  "center.y", "radius")]
   .stem$radius <- .stem$radius * 200
-  .stem$radius2 <- .stem$radius2 * 200
-  colnames(.stem) <- c("tree", "sec", "x",  "y", "dbh", "dbh2")
+  colnames(.stem) <- c("tree", "sec", "x",  "y", "dbh")
 
 
   # Calculate of taper coefficient as the slope coefficient of linear regression
 
   # .taper <- .filter[.filter$sec >= 1 & .filter$sec <= 1.6, c("tree", "sec", "radius"), drop = FALSE]
-  .taper <- .filter[, c("tree", "sec", "radius", "radius2"), drop = FALSE]
+  .taper <- .filter[, c("tree", "sec", "radius"), drop = FALSE]
 
   .slope.tree <- data.frame(tree = as.numeric(), slope = as.numeric(), slope2 = as.numeric())
 
@@ -354,13 +353,12 @@ tree.detection.multi.scan <- function(data,
 
   if(nrow(.taper.i) < 2){
 
-    .slope <- data.frame(tree = i, slope = NA, slope2 = NA)
+    .slope <- data.frame(tree = i, slope = NA)
 
   } else {
 
     .lm <- stats::lm(radius ~ sec, data = .taper.i)
-    .lm2 <- stats::lm(radius2 ~ sec, data = .taper.i)
-    .slope <- data.frame(tree = i, slope = stats::coef(.lm)[2], slope2 = stats::coef(.lm2)[2])
+    .slope <- data.frame(tree = i, slope = stats::coef(.lm)[2])
 
   }
 
@@ -377,7 +375,6 @@ tree.detection.multi.scan <- function(data,
   # will not be important. An estimated radius will always exist
   .filter$dif <- 1.3 - .filter$sec
   .filter$radio.est <- ifelse(.filter$dif == 0, .filter$radius, .filter$radius + .filter$slope * .filter$dif)
-  .filter$radio.est2 <- ifelse(.filter$dif == 0, .filter$radius2, .filter$radius2 + .filter$slope2 * .filter$dif)
   .filter <- .filter[!is.na(.filter$radio.est), ]
 
   # When there are not enough tree to the linear model, and tress were
@@ -386,7 +383,7 @@ tree.detection.multi.scan <- function(data,
   # .filter$radio.est <- ifelse(is.na(.filter$radio.est), .filter$radius, .filter$radio.est)
   # .filter$radio.est2 <- ifelse(is.na(.filter$radio.est2), .filter$radius2, .filter$radio.est2)
 
-  .radio.est <- data.frame(radio.est = as.numeric(), radio.est2 = as.numeric())
+  .radio.est <- data.frame(radio.est = as.numeric())
 
   for (i in unique(.filter$tree)) {
 
@@ -413,7 +410,7 @@ tree.detection.multi.scan <- function(data,
     }
 
 
-    .out <- data.frame(radio.est = mean(.dat$radio.est, na.rm = TRUE), radio.est2 = mean(.dat$radio.est2, na.rm = TRUE))
+    .out <- data.frame(radio.est = mean(.dat$radio.est, na.rm = TRUE))
     .radio.est <- rbind(.radio.est, .out)
 
   }
@@ -434,7 +431,6 @@ tree.detection.multi.scan <- function(data,
 
                         horizontal.distance = as.numeric(), # repeated line
                         radius = as.numeric(),
-                        radius2 = as.numeric(),
 
                         partial.occlusion = as.numeric(),
 
@@ -485,7 +481,6 @@ tree.detection.multi.scan <- function(data,
 
                       horizontal.distance = tapply(.filteraux$center.rho, .filteraux$tree, mean, na.rm = TRUE), # repeated line
                       radius = .radio.est$radio.est,
-                      radius2 = .radio.est$radio.est2,
 
                       partial.occlusion = tapply(.filteraux$arc.circ, .filteraux$tree, min, na.rm = TRUE),
 
@@ -506,7 +501,6 @@ tree.detection.multi.scan <- function(data,
 
   # Compute dbh (cm)
   .tree$dbh <- .tree$radius * 200
-  .tree$dbh2 <- .tree$radius2 * 200
 
 
   # Calculate points belonging to radius unit
@@ -606,15 +600,15 @@ tree.detection.multi.scan <- function(data,
   .stem <- merge(.stem, .tree[, c("tree", "h")], by = "tree")
   .stem <- .stem[.stem$sec != 1.3, ]
   .tree$sec <- 1.3
-  .stem <- rbind(.stem, .tree[, c("tree", "sec", "x", "y", "dbh", "dbh2", "h")])
+  .stem <- rbind(.stem, .tree[, c("tree", "sec", "x", "y", "dbh", "h")])
   .tree <- .tree[, -ncol(.tree)]
   .stem <- .stem[order(.stem$tree, .stem$sec), , drop = FALSE]
-  colnames(.stem) <- c("tree", "sec", "x", "y", "dhi", "dhi2", "h")
+  colnames(.stem) <- c("tree", "sec", "x", "y", "dhi", "h")
   .stem <- merge(.stem, .tree[, c("tree", "dbh")], by = "tree", all.x = TRUE)
-  colnames(.stem) <- c("tree", "hi", "x", "y", "dhi", "dhi2", "h", "dbh")
+  colnames(.stem) <- c("tree", "hi", "x", "y", "dhi", "h", "dbh")
 
   # Cheking the trees h
-  .stem <- merge(.stem[, c("tree", "hi", "x", "y", "dhi", "dhi2", "dbh")],
+  .stem <- merge(.stem[, c("tree", "hi", "x", "y", "dhi", "dbh")],
                  data.frame(tree = unique(.stem$tree),
                             h = do.call(rbind, lapply(split(.stem[, c("hi", "h")], .stem$tree), max))),
                  all.x = TRUE, by = "tree")
@@ -645,9 +639,9 @@ tree.detection.multi.scan <- function(data,
   .stem <- .stem[, c("tree", "x", "y", "dhi", "dbh", "hi", "h")]
   .stem <- .stem[order(.stem$tree, .stem$hi), , drop = FALSE]
 
-  utils::write.csv(.stem,
-                   file = file.path(dir.result, "tree.tls.stem.csv"),
-                   row.names = FALSE)
+  # utils::write.csv(.stem,
+  #                  file = file.path(dir.result, "tree.tls.stem.csv"),
+  #                  row.names = FALSE)
 
 
   # If plot identification (id) is not available
