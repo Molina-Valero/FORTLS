@@ -25,16 +25,16 @@ load("Rioja.data.RData")
 load("Rioja.simulations.RData")
 tree.tls <- Rioja.data$tree.tls
 tree.field <- Rioja.data$tree.field
-sim <- simulations$fixed.area
+sim.fix <- simulations$fixed.area
 dir.data <- system.file("exdata", package="FORTLS")
 library(FORTLS)
 ```
 
 ## Estimating optimal plot size without field data
 
-If no field data is available, the function **`estimation.plot.size`** can be applied to determine the optimal plot design size. This function uses the data frame containing the list of detected trees (introduced in **`tree.tls`**) and estimates stand-level density ($N$, trees/ha) and basal area ($G$, m$^2$/ha) for many simulated differently-sized plots for the three plot designs (circular fixed area, k-tree and angle-count) by increasing continuously their size. 
+If no field data is available, the function **`estimation.plot.size`** can be applied to determine the optimal plot design and size. This function uses the data frame containing the list of detected trees (introduced in **`tree.tls`**) and estimates stand-level density ($N$, trees/ha) and basal area ($G$, m$^2$/ha) for many simulated differently-sized plots and the three plot designs (circular fixed area, k-tree and angle-count) by increasing continuously their size. 
 
-Thus, circular fixed area plots with increasing radius (increment of 0.1 m) with the maximum radius defined by **`radius.max`** in **`plot.parameters`** (by default set to 25, if radius is larger than furthest tree, the horizontal distance to this furthest tree is considered as maximum radius) will be simulated and for each plot, the variables (N and G) are estimated. Similarly, k-tree plots with tree numbers ($k$) ranging from 1 to **`k.max`** (specified in `plot.parameters`, default value set to 50 or total number of trees in the plot) and angle-count plots with increasing basal area factor (BAF, increments of 0.1 m$^2$/ha) to the maximum value specified by **`BAF.max`** in `plot.parameters` (set to 4 by default) are simulated and the respective stand-level variables are calculated. Optionally, the minimum diameter at breast height (**`dbh.min`**, in cm) to include the trees in the estimations can be defined. By default the minimum $dbh$ is set to 4 cm.
+Thus, circular fixed area plots with increasing radius (increment of 0.1 m) to the maximum radius defined by **`radius.max`** in **`plot.parameters`** (by default set to 25, if radius is larger than furthest tree, the horizontal distance to this furthest tree is considered as maximum radius) will be simulated and for each plot, the variables (N and G) are estimated. Similarly, k-tree plots with tree numbers ($k$) ranging from 1 to **`k.max`** (specified in `plot.parameters`, default value set to 50 or total number of trees in the plot) and angle-count plots with increasing basal area factor (BAF, increments of 0.1 m$^2$/ha) to the maximum value specified by **`BAF.max`** in `plot.parameters` (set to 4 by default) are simulated and the respective stand-level variables are calculated. Optionally, the minimum diameter at breast height (**`dbh.min`**, in cm) to include the trees in the estimations can be defined. By default the minimum $dbh$ is set to 4 cm.
 
 The function generates size-estimation charts i.e., plots showing the estimated stand-level density ($N$) and basal area ($G$) on the $y$ axes respective to the different plot sizes ($x$ axes). The estimations will be performed for all simulated plots. By default the output graphs will contain one line for each plot. When **`average`** is set to `TRUE`, the average of all estimations as a continous line and the standard deviation as grey shaded area will be drawn instead of multiple lines for each sample plot. One chart for each plot design is drawn by default. If **`all.plot.designs`** is set to `TRUE`, the line charts of all three plot design will be drawn in one graph.
 
@@ -56,7 +56,7 @@ When data from field measurements are available for the same sample plots, the T
 The **`simulations`** function is applied as follows:
 
 ```{r eval=FALSE, include=TRUE}
-sim <- simulations(tree.tls = tree.tls, tree.ds = tree.ds, tree.field = tree.field,
+simulations <- simulations(tree.tls = tree.tls, tree.ds = tree.ds, tree.field = tree.field,
             plot.design = c("fixed.area", "k.tree", "angle.count"),
             plot.parameters = data.frame(radius.max = 25, k.max = 50, BAF.max = 4),
             scan.approach = "single", var.metr = list(tls = NULL, field = NULL),
@@ -84,28 +84,105 @@ The argument **`dir.data`** should specify the working directory of the .txt fil
 
 #### Output of the simulations function
 
+The `simulations` function generates a list with one element for each plot design. The elements are data frames containing the simulated plot. Each row represents a simulated plot defined by their respective plot identification number `id` and their size determined by either `radius`, `k` or `BAF` depending on the plot design. The columns `N`, `G`, `V`, `V.user`, `W.user`, `d`, `dg`, `dgeom`, `dharm`, `h`, `hg`, `hgeom` and `hharm` display the stand-level variables based on the field data. The remaining columns contain the stand-level variables and metrics estimated for each plot based on the TLS data. As an example the data frame for circular fixed areas is shown below.
 
+```{r eval=FALSE, include=TRUE}
+head(simulations$fixed.area)
+```
+
+```{r echo=FALSE}
+kableExtra::scroll_box(kable_input = kableExtra::kable(head(simulations$fixed.area), 
+                                                       format = "html"), width = "100%")
+```
+
+As described above, plots with increasing sizes are estimated and the corresponding variables an metrics are calculated. The plots are ordered from the smallest to the biggest. Plots with small radius can not be simulated for all sample plots (see table above), since trees not always enter. But plots with e.g. a radius of 20 m, can be simulated for all sample sample plots (see end of table below).
+
+```{r eval=FALSE, include=TRUE}
+tail(simulations$fixed.area)
+```
+
+```{r echo=FALSE}
+kableExtra::scroll_box(kable_input = kableExtra::kable(tail(simulations$fixed.area), 
+                                                       format = "html"), width = "100%")
+```
 
 ### Calculation of relative bias
 
-```{r eval=FALSE}
-bias <- relative.bias(simulations = list(fixed.area=sim),
+In order to estimate the goodness of the TLS-based estimation of the variables, the function **`relative.bias`** computes the relative bias between the variables estimated from field data and their respective TLS-based estimates. The relative bias is calculated for each sample plot and each simulated plot (i.e. different plot sizes and designs). Therefore, the input data for this function (introduced in **`simulations`**) must be a list of data frames containing the estimated variables (based on field and TLS data) for all the simulated plots. Thus, a similar list to the output of the `simulations` function (see above) is required, that has the same description and format. 
+
+Optionally, the variables for which the relative bias will be computed can be specified in a vector in **`variables`**. Only, the names of the field data based estimates can be introduced. If not otherwise specified, the argument will be set to `c("N", "G", "V", "d", "dg", "d.0", "h", "h.0")` by default. Other possible variables are `dgeom`, `dharm`, `dg.0`, `dgeom.0`, `dharm.0`, `hg`, `hgeom`, `hharm`, `hg.0`, `hgeom.0` or `hharm.0`. 
+
+The arguments **`save.result`** and **`dir.result`** define whether and to which directory the output files should be saved. Two different output files are generated. First, the data frames for each plot design (as shown below for circular fixed areas) are saved as .csv files using the `write.csv` function from the [utils](https://CRAN.R-project.org/package=R.utils) package. Second, interactive line charts representing the relative biases are saved as .html files by means of the `saveWidget` function in the [htmlwidgets](https://CRAN.R-project.org/package=htmlwidgets) package.
+
+```{r eval=TRUE}
+bias <- relative.bias(simulations = simulations,
               variables = c("N", "G", "d", "dg", "d.0", "h", "h.0"),
               save.result = FALSE, dir.result = NULL)
+```
+
+The function calculates the relative bias between the field data estimates (specified in `variables`) and the counterpart variables that are estimated based on TLS data. The TLS counterparts for the density (`N`) are the variables `N.tls`, `N.hn`, `N.hr`, `N.hn.cov`, `N.hr.cov` and `N.sh` for circular fixed area and k-tree plots, and `N.tls` and `N.pam` for angle-count plots. The same pattern applies to the basal area (`G`) and the volume (`V`) where the corresponding TLS-based estimates are `G.tls`, `G.hn`, `G.hr`, `G.hn.cov`, `G.hr.cov`, `G.sh` and `G.pam`, and `V.tls`, `V.hn`, `V.hr`, `V.hn.cov`, `V.hr.cov`, `V.sh` and `V.pam` respectively. In case of mean and dominant diameters (`d`, `dg`, `dgeom`, `dharm`, `d.0`, `dg.0`, `dgeom.0`, and `dharm.0`) and heights (`h`, `hg`, `hgeom`, `hharm`, `h.0`, `hg.0`, `hgeom.0` and `hharm.0`), for all three plot designs their respective counterpart variables are `d.tls`, `dg.tls`, `dgeom.tls`, `dharm.tls`, `d.0.tls`, `dg.0.tls`, `dgeom.0.tls` and `dharm.0.tls` (for the diameter), and `h.tls`, `hg.tls`, `hgeom.tls`, `hharm.tls`, `h.0.tls`, `hg.0.tls`, `hgeom.0.tls`, `hharm.0.tls` and in addition `P99` (for the height). The relative bias are calculated as follows
+
+$ \frac{\frac{1}{n} \sum_{i=1}^{n}{y_i} - \frac{1}{n}\sum_{i=1}^{n}{x_i}}{\sum_{i=1}^{n}{x_i}}$
+
+where $x_i$ is the value of the field estimate and $y_i$ the value of its TLS counterpart corresponding to plot $i$. For each plot size defined by the radius, k or BAF, the biases are calculated and stored as a data frame (shown below). Each row represents the a simulated plot of a certain size and the columns contain the calculate bias between the variables indicated in the column name. The two compared variables are joint with `.` as separation, e.g. `N.N.tls` means that the bias between `N` and `N.tls` was calculated. 
+
+```{r eval=FALSE, include=TRUE}
 head(bias$fixed.area)
 ```
 
-### correlation (heat map)
+```{r echo=FALSE}
+kableExtra::scroll_box(kable_input = kableExtra::kable(head(bias$fixed.area), 
+                                                       format = "html"), width = "100%")
+```
 
-```{r eval=FALSE}
-cor <- correlations(simulations = list(fixed.area=sim),
+HTML graphic
+
+```{r include=FALSE}
+dir.data <- getwd()
+download.file("https://www.dropbox.com/s/27kn3rojbq0sb0y/correlations.h.fixed.area.pearson.html?dl=1",
+              destfile = file.path(dir.data, "correlations.h.fixed.area.pearson.html"),
+              mode = "wb")
+```
+
+```{r, echo=FALSE}
+#shiny::includeHTML("correlations.h.fixed.area.pearson.html")
+#htmltools::includeHTML("correlations.h.fixed.area.pearson.html")
+#htmltools::tags$iframe(title = "My embedded document", src = "correlations.h.fixed.area.pearson.html")
+```
+
+## Functions facilitating model-based or model-assisted sampling approaches 
+
+To facilitate the application of model-based sampling, two additional functions are included in the FORTLS package. The function **`correlations`** computes the correlations between variables estimated from field data and from TLS data and calculates the respective Pearson and Spearman correlation coefficients. The results are saved as .csv files and dispayed in line charts and heat maps (when applying the function **`optimize.plot.design`**). 
+
+### Computing correlations
+
+The **`correlations`** computes the correlations for all the plot designs that are introduces as elements of a list in **`simulations`**. The format and description must be the same as the output list of the `simulations` function. Also similar to the function `relative.bias`, the variables for which the correlations are to be calculated can be specified in **`variables`**. By default, this argument is set to `variables = c("N", "G", "V", "d", "dg", "d.0", "h", "h.0")`. If only one of the two above-mentioned correlation measurments should be calculated, it can be specified in **`method`**. This argument is set to `method = c("pearson", "spearman")` by default and both correlation coefficients are computed. 
+
+```{r}
+cor <- correlations(simulations = simulations,
              variables = c("N", "G", "d", "dg", "d.0", "h", "h.0"),
              method = c("pearson", "spearman"), save.result = FALSE,
              dir.result = NULL)
 ```
 
+In addition to the calculation of the correlation measures, the function also performs tests of association and returns the p-values. The output of this function is a list containing the following three elements `correlations`, `correlations.pval` and `opt.correlations`. Each of them is a list including if not otherwise specified (in `method`) two elements `pearson` and `spearman`. These two elements are lists again that include separate data frames for each plot design (circular fixed area, k-tree and angle-count plots). The data frames contain the corresponding correlation coefficients (in `correlations`), the calculated p-values (in `correlations.pval`) and the optimal correlations for a given plot size and field data estimate (in `opt.correlations`).
+
+```{r}
+cor$correlations$pearson$fixed.area[1:6,1:10]
+```
+
+All mentioned data frames are divided into rows each of which represent a given plot size. 
+
+```{r}
+cor$correlations.pval$pearson$fixed.area[1:6,1:10]
+```
+
+```{r}
+head(cor$opt.correlations$pearson$fixed.area)
+```
+
 ```{r eval=FALSE}
-optimize.plot.design(correlations = cor,
+optimize.plot.design(correlations = cor$correlations,
                      variables = c("N", "G", "d", "dg", "d.0", "h", "h.0"),
                      dir.result = NULL)
 ```
