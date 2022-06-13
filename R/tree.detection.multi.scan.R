@@ -3,7 +3,7 @@ tree.detection.multi.scan <- function(data,
                                       dbh.min = 4, dbh.max = 200, h.min = 1.3,
                                       ncr.threshold = 0.1, tls.precision = NULL,
                                       stem.section = NULL, breaks = NULL,
-                                      d.top = NULL,
+                                      den.type = 1, d.top = NULL,
                                       plot.attributes = NULL,
                                       save.result = TRUE, dir.result = NULL){
 
@@ -628,11 +628,23 @@ tree.detection.multi.scan <- function(data,
     .tree <- merge(.tree, stem.v, all = TRUE)
 
 
-  } else {
+  } else if (length(table(.stem$hi)) <= 3 & !is.null(d.top)) {
 
+  den.type <- 1
+  n <- den.type
   # Paraboloid volume
 
-  .tree$v <- pi * (.tree[, "h"] ^ 2 / 2) * ((.tree[, "dbh"] / 200) ^ 2 / (.tree[, "h"] - 1.3))
+  .tree$v <- pi * (.tree[, "h"] ^ (n + 1) / (n + 1)) * ((.tree[, "dbh"] / 200) ^ 2 / (.tree[, "h"] - 1.3) ^ n)
+  h.lim <- (((d.top / 200) ^ 2) / ((.tree[, "dbh"] / 200) ^ 2 / (.tree[, "h"] - 1.3) ^ n)) ^ (1 / n)
+  .tree$v.com <- pi * ((.tree[, "h"] ^ (n + 1) - h.lim ^ (n + 1)) / (n + 1)) * ((.tree[, "dbh"] / 200) ^ 2 / (.tree[, "h"] - 1.3) ^ n)
+  .tree$v.com <- ifelse(.tree$v.com < 0, 0, .tree$v.com)
+
+  } else {
+
+    den.type <- 1
+    n <- den.type
+
+  .tree$v <- pi * (.tree[, "h"] ^ (n + 1) / (n + 1)) * ((.tree[, "dbh"] / 200) ^ 2 / (.tree[, "h"] - 1.3) ^ n)
 
   }
 
