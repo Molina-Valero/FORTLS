@@ -14,7 +14,7 @@ tree.detection.single.scan(data,
                            ncr.threshold = 0.1,
                            tls.resolution = list(),
                            stem.section = NULL, breaks = NULL,
-                           d.top = NULL,
+                           den.type = 1, d.top = NULL,
                            plot.attributes = NULL,
                            save.result = TRUE, dir.result = NULL)}
 
@@ -49,6 +49,8 @@ tree.detection.single.scan(data,
   \item{stem.section}{Section free of noise (shurb, branches, etc.) considered to detect trees. If not specified, an automatic internal algorithm will be applied (see \sQuote{Details}).}
 
   \item{d.top}{Top stem diameter (cm) considered to estimate commercial timber volume.}
+
+  \item{den.type}{Numeric argument indicating the dendrometic type used to estimate volumen when there are not sections enough to fit a taper equation. Dendrometrics types available are the following: cylinder = 0, paraboloid = 1 (by default), cone = 2 and neiloid = 3.}
 
   \item{plot.attributes}{Data frame with attributes at plot level. It must contain a column named \code{id} (character string or numeric value) with encoding coinciding with that used in \code{id} argument of \code{\link{normalize}} for identifying plots. If there are strata, another column named \sQuote{stratum} (numeric) will be required for other functionalities of \pkg{FORTLS} (see, for instance, \code{\link{estimation.plot.size}} or \code{\link{metrics.variables}}). If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, the function will not add these possible plot attributes.}
 

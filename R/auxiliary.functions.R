@@ -816,15 +816,17 @@ if(nrow(.filter) < 1){
   eje$x <- stats::coef(mod.x)[1] + stats::coef(mod.x)[2] * eje$sec
   eje$y <- stats::coef(mod.y)[1] + stats::coef(mod.y)[2] * eje$sec
 
-  #plot(data$z, data$rho, asp = 1)
-  #plot(data$z, data$phi, asp = 1)
-  # plot(data$z, data$x, asp = 1, main = data$tree[1])
-  # abline(mod.x, col = 2)
-  # plot(data$z, data$y, asp = 1, main = data$tree[1])
-  # abline(mod.y, col = 2)
+  # plot(data$z, data$rho, asp = 1)
+  # plot(data$z, data$phi, asp = 1)
+  # plot(data$z, data$x, asp = 1, xlab = "Z (m)", ylab = "X (m)")
+  # abline(mod.x, col = 2, lwd = 3)
+  # plot(data$z, data$y, asp = 1, xlab = "Z (m)", ylab = "Y (m)")
+  # abline(mod.y, col = 2, lwd = 3)
   }
 
   return(eje)
+
+
 }
 
 

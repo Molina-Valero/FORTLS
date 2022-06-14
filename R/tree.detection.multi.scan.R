@@ -2,7 +2,7 @@
 tree.detection.multi.scan <- function(data,
                                       dbh.min = 4, dbh.max = 200, h.min = 1.3,
                                       ncr.threshold = 0.1, tls.precision = NULL,
-                                      stem.section = NULL, breaks = NULL,
+                                      stem.section = NULL, breaks = NULL, slice = 0.1,
                                       den.type = 1, d.top = NULL,
                                       plot.attributes = NULL,
                                       save.result = TRUE, dir.result = NULL){
@@ -53,10 +53,20 @@ tree.detection.multi.scan <- function(data,
 
   stem <- stem[, c("x", "y", "z", "npts")]
 
+  # dat <- data[data$prob > 0.75, ]
+  # dat <- VoxR::vox(dat[, c("x", "y", "z")], res = 0.03)
+  # dat <- dat[, c("x", "y", "z", "npts")]
+  # dat <- VoxR::project_voxels(dat)
+  # par(mar = c(4, 4, 1, 1))
+  # plot(dat$x, dat$y, col = "grey", asp = 1, pch = 19, cex = 0.5,
+  #      xlab = "X (m)", ylab = "Y (m)")
+
   stem <- VoxR::project_voxels(stem)
-  # plot(stem$x, stem$y, col = "grey", asp = 1, pch = 19, cex = 0.5)
+  # points(stem$x, stem$y, col = "green", pch = 19, cex = 0.5)
   stem <- stem[stem$npts > mean(stem$npts), ]
   # points(stem$x, stem$y, pch = 19, cex = 0.5, col = "black")
+  # legend(x = "topright", legend = c("Total", "Stem section", "Above mean"),
+  #        col = c("grey", "green", "black"), pch = 19, bty = "n")
 
   buf <- sp::SpatialPoints(cbind(stem$x,stem$y))
   buf <- suppressWarnings(raster::buffer(buf, width = 37500, dissolve = TRUE))
@@ -123,13 +133,15 @@ tree.detection.multi.scan <- function(data,
                            phi.left = as.numeric(), phi.right = as.numeric(),
                            circ = as.numeric(), arc.circ = as.numeric(), sec = as.numeric())
 
+  slice <- slice / 2
+
 
   for(cuts in breaks){
 
 
     message("Computing section: ", cuts, " m")
 
-    .cut <- data[which(data$z > (cuts-0.1) & data$z < (cuts+0.1)), , drop = FALSE]
+    .cut <- data[which(data$z > (cuts-slice-0.05) & data$z < (cuts+slice+0.05)), , drop = FALSE]
 
     if(nrow(.cut) < 100){next}
 
@@ -140,7 +152,7 @@ tree.detection.multi.scan <- function(data,
 
     # Restrict to slice corresponding to cuts m +/- 5 cm
 
-    .cut <- .cut[which(.cut$z > (cuts-0.05) & .cut$z < (cuts+0.05)), , drop = FALSE]
+    .cut <- .cut[which(.cut$z > (cuts-slice) & .cut$z < (cuts+slice)), , drop = FALSE]
 
     # Dbscan parameters
 
