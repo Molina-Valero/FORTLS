@@ -28,7 +28,7 @@ representing correlations are generated."><!-- mathjax --><script src="https://c
     
     <a class="navbar-brand me-2" href="../index.html">FORTLS</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,8 +42,9 @@ representing correlations are generated."><!-- mathjax --><script src="https://c
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/stand_level.html">Stand level</a>
+    <a class="dropdown-item" href="../articles/stand_level.html">Stand-level</a>
     <a class="dropdown-item" href="../articles/tree_level.html">Tree-level</a>
+    <a class="dropdown-item" href="../articles/plot_design_optimization.html">Plot design optimization</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -181,7 +182,9 @@ representing correlations are generated.</p>
       argument, it must contain at least <code>id</code> and <code>BAF</code> columns, one
       of the field estimates columns and one of the TLS metrics columns.</p></li>
 </ul><p></p></dd>
-<dt>variables</dt>
+
+
+  <dt>variables</dt>
 <dd><p>Optional character vector naming field estimates for which correlations
   between these and all the available TLS metrics will be computed. If
   this argument is specified by the user, it must include at least one of the
@@ -197,18 +200,24 @@ representing correlations are generated.</p>
   cases all the elements in the <code>simulations</code> argument
   must include at least the columns corresponding to the field estimates specified in the
   <code>variables</code> argument.</p></dd>
-<dt>method</dt>
+
+
+  <dt>method</dt>
 <dd><p>Optional character vector naming which correlation measurements will be used.
   If this argument is specified by the user, it must include at least one of
   the following character strings: “<code>pearson</code>” or
   “<code>spearman</code>”. If this argument is not specified by the user, it
   will be set to <code>c("pearson", "spearman")</code> by default.</p></dd>
-<dt>save.result</dt>
+
+
+  <dt>save.result</dt>
 <dd><p>Optional logical indicating wheter or not the output files described in
   ‘Output Files’ section must be saved in <code>dir.result</code> or not. If
   this argument is not specified by the user, it will be set to <code>TRUE</code> by
   default and, as a consequence, the output files will be saved.</p></dd>
-<dt>dir.result</dt>
+
+
+  <dt>dir.result</dt>
 <dd><p>Optional character string naming the absolute path of an existing directory
   where files described in the ‘Output Files’ section will be saved.
   <code>.Platform$file.sep</code> must be used as the path separator in
@@ -216,6 +225,7 @@ representing correlations are generated.</p>
   <code>save.result</code> is <code>TRUE</code>, it will be set to <code>NULL</code> by default and,
   as consequence, the current working directory of the <span style="R">R</span> process will be
   assigned to <code>dir.result</code> during execution.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -288,12 +298,16 @@ corresponds.</p>
       will be analogous to that indicated for the previous element but
       estimated Pearson's correlations will be replaced by Spearman's correlations.</p></li>
 </ul><p></p></dd>
-<dt>correlations.pval</dt>
+
+
+  <dt>correlations.pval</dt>
 <dd><p>List containing the p-value of the test for association corresponding to each
   measure specified in <code>method</code> argument. The structure and format will be
   the same as indicated for the previous element but estimated
   correlations will be replaced by p-values for their corresponding tests for association.</p></dd>
-<dt>opt.correlations</dt>
+
+
+  <dt>opt.correlations</dt>
 <dd><p>List containing the optimal correlations, and the names of the TLS metrics to
   which they correspond, for each measure specified in <code>method</code> argument.
   The list will will include all or any of the following named elements:</p><ul><li><p><code>pearson</code>: if “<code>pearson</code>” is not included in
@@ -348,6 +362,7 @@ corresponds.</p>
       format will be analogous to that indicated for the previous element, but
       optimal Pearson's correlations will be replaced by Spearman's correlations.</p></li>
 </ul><p></p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="output-files">Output Files<a class="anchor" aria-label="anchor" href="#output-files"></a></h2>
@@ -446,11 +461,11 @@ Fernando Montes and César Pérez-Cruzado.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Juan Alberto Molina-Valero, Adela Martínez-Calvo, Juan Gabriel Álvarez-González, Fernando Montes, César Pérez-Cruzado.</p>
+  <p></p><p>Developed by Juan Alberto Molina-Valero, Adela Martínez-Calvo, Anika Seppelt, Juan Gabriel Álvarez-González, Fernando Montes, César Pérez-Cruzado.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

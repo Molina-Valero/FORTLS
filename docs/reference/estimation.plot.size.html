@@ -12,7 +12,7 @@ different plot designs can be compared if specified in the arguments, producing 
     
     <a class="navbar-brand me-2" href="../index.html">FORTLS</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,8 +26,9 @@ different plot designs can be compared if specified in the arguments, producing 
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/stand_level.html">Stand level</a>
+    <a class="dropdown-item" href="../articles/stand_level.html">Stand-level</a>
     <a class="dropdown-item" href="../articles/tree_level.html">Tree-level</a>
+    <a class="dropdown-item" href="../articles/plot_design_optimization.html">Plot design optimization</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -70,16 +71,24 @@ different plot designs can be compared if specified in the arguments, producing 
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>tree.tls</dt>
 <dd><p>Data frame with information of trees detected from TLS point cloud data in the same format as <code><a href="tree.detection.single.scan.html">tree.detection.single.scan</a></code> and <code><a href="tree.detection.multi.scan.html">tree.detection.multi.scan</a></code> ‘Value’.</p></dd>
-<dt>plot.parameters</dt>
+
+
+  <dt>plot.parameters</dt>
 <dd><p>Optional data frame containing parameters for circular fixed area, k-tree and angle-count plot designs. The parameters are as follows:</p></dd>
-</dl><ul><li><p><code>radius.max</code>: maximum plot radius (m) considered for circular fixed area plots. If the <code>radius.max</code> specified is larger than the farthest tree from the plot centre, the horizontal distance from the farthest tree will be considered the maximum <code>radius</code>. By default, the <code>radius.max</code> will be 25 m.</p></li>
+
+
+  </dl><ul><li><p><code>radius.max</code>: maximum plot radius (m) considered for circular fixed area plots. If the <code>radius.max</code> specified is larger than the farthest tree from the plot centre, the horizontal distance from the farthest tree will be considered the maximum <code>radius</code>. By default, the <code>radius.max</code> will be 25 m.</p></li>
 <li><p><code>k.tree.max</code>: maximum number of trees considered for k-tree plots. If <code>k.tree.max</code> specified is larger than the maximum number of trees of the densest plot, this number of trees will be considered the maximum <code>k.tree.max</code>. By default, <code>k.tree.max</code> is 50.</p></li>
 <li><p><code>BAF.max</code>: maximum basal area factor (\({m}^{2}/ha\)) considered for angle-count plots. By default, <code>BAF.max</code> is 4.</p></li>
 </ul><dl><dt>dbh.min</dt>
 <dd><p>Optional minimum <em>dbh</em> (cm) considered for detecting trees. By default it will be set at 4 cm.</p></dd>
-<dt>average</dt>
+
+
+  <dt>average</dt>
 <dd><p>Logical; if <code>TRUE</code>, plot means values and standard deviation of estimations will be represented. By default, it will be set as <code>FALSE</code>.</p></dd>
-<dt>all.plot.designs</dt>
+
+
+  <dt>all.plot.designs</dt>
 <dd><p>Logical; if <code>TRUE</code>, charts for each plot design are drawn together. By default, it will be set as <code>FALSE</code>.</p></dd>
 </dl></div>
     <div class="section level2">
@@ -132,154 +141,154 @@ César Pérez-Cruzado.</p>
 <span class="r-in"><span class="fu">estimation.plot.size</span><span class="op">(</span><span class="va">tree.tls</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '1'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '1', maximum 'k' was reduced to 35, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.52 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.53 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '2'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '2', maximum 'k' was reduced to 47, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.53 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.57 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '3'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '3', maximum 'k' was reduced to 44, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.53 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.51 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '4'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '4', maximum 'k' was reduced to 38, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.56 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.53 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '5'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '5', maximum 'k' was reduced to 44, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.57 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.56 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '6'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '6', maximum 'k' was reduced to 36, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.73 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.52 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '7'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '7', maximum 'k' was reduced to 33, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.51 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.58 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '8'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '8', maximum 'k' was reduced to 46, since this is the number of trees in the plot.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.65 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '9'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '9', maximum 'k' was reduced to 38, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.46 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.72 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '10'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '10', maximum 'k' was reduced to 26, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.44 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.64 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '11'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '11', maximum 'k' was reduced to 31, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.54 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.55 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '12'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '12', maximum 'k' was reduced to 36, since this is the number of trees in the plot.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.57 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '13'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '13', maximum 'k' was reduced to 40, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.55 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.64 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '14'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '14', maximum 'k' was reduced to 38, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.53 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.57 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '15'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '15', maximum 'k' was reduced to 36, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.51 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.67 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '16'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '16', maximum 'k' was reduced to 36, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.58 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.65 secs)</span>
 <span class="r-plt img"><img src="estimation.plot.size-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">estimation.plot.size</span><span class="op">(</span><span class="va">tree.tls</span>, average <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '1'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '1', maximum 'k' was reduced to 35, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.55 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.87 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '2'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '2', maximum 'k' was reduced to 47, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.54 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.76 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '3'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '3', maximum 'k' was reduced to 44, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.66 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.56 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '4'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '4', maximum 'k' was reduced to 38, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.59 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.54 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '5'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '5', maximum 'k' was reduced to 44, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.52 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.64 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '6'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '6', maximum 'k' was reduced to 36, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.48 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.74 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '7'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '7', maximum 'k' was reduced to 33, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.49 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.58 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '8'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '8', maximum 'k' was reduced to 46, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.5 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.59 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '9'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '9', maximum 'k' was reduced to 38, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.62 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.52 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '10'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '10', maximum 'k' was reduced to 26, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.49 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.5 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '11'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '11', maximum 'k' was reduced to 31, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.48 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.54 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '12'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '12', maximum 'k' was reduced to 36, since this is the number of trees in the plot.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.53 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '13'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '13', maximum 'k' was reduced to 40, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.53 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.56 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '14'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '14', maximum 'k' was reduced to 38, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.52 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.69 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '15'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '15', maximum 'k' was reduced to 36, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.52 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.64 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '16'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '16', maximum 'k' was reduced to 36, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.52 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.69 secs)</span>
 <span class="r-plt img"><img src="estimation.plot.size-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu">estimation.plot.size</span><span class="op">(</span><span class="va">tree.tls</span>, all.plot.designs <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '1'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '1', maximum 'k' was reduced to 35, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.51 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.53 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '2'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '2', maximum 'k' was reduced to 47, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.52 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.53 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '3'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '3', maximum 'k' was reduced to 44, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.5 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.52 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '4'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '4', maximum 'k' was reduced to 38, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.52 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.54 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '5'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '5', maximum 'k' was reduced to 44, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.52 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.54 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '6'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '6', maximum 'k' was reduced to 36, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.52 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.5 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '7'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '7', maximum 'k' was reduced to 33, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.5 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.47 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '8'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '8', maximum 'k' was reduced to 46, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.57 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.53 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '9'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '9', maximum 'k' was reduced to 38, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.48 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.51 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '10'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '10', maximum 'k' was reduced to 26, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.46 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.51 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '11'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '11', maximum 'k' was reduced to 31, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.66 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.69 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '12'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '12', maximum 'k' was reduced to 36, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.5 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.57 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '13'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '13', maximum 'k' was reduced to 40, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.83 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.54 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '14'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '14', maximum 'k' was reduced to 38, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.58 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.72 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '15'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '15', maximum 'k' was reduced to 36, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.74 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.54 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing simulations for plot: '16'</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>For TLS plot '16', maximum 'k' was reduced to 36, since this is the number of trees in the plot.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.5 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (0.52 secs)</span>
 <span class="r-plt img"><img src="estimation.plot.size-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"></span>
 <span class="r-in"></span>
@@ -292,11 +301,11 @@ César Pérez-Cruzado.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Juan Alberto Molina-Valero, Adela Martínez-Calvo, Juan Gabriel Álvarez-González, Fernando Montes, César Pérez-Cruzado.</p>
+  <p></p><p>Developed by Juan Alberto Molina-Valero, Adela Martínez-Calvo, Anika Seppelt, Juan Gabriel Álvarez-González, Fernando Montes, César Pérez-Cruzado.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

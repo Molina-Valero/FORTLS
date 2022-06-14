@@ -22,7 +22,7 @@ admissible are Pearson's correlation coefficient and/or Spearman's rho."><!-- ma
     
     <a class="navbar-brand me-2" href="../index.html">FORTLS</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,8 +36,9 @@ admissible are Pearson's correlation coefficient and/or Spearman's rho."><!-- ma
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/stand_level.html">Stand level</a>
+    <a class="dropdown-item" href="../articles/stand_level.html">Stand-level</a>
     <a class="dropdown-item" href="../articles/tree_level.html">Tree-level</a>
+    <a class="dropdown-item" href="../articles/plot_design_optimization.html">Plot design optimization</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -134,7 +135,9 @@ admissible are Pearson's correlation coefficient and/or Spearman's <em>rho</em>.
       previous element but with optimal Pearson's correlations replaced by
       Spearman's correlations.</p></li>
 </ul><p></p></dd>
-<dt>variables</dt>
+
+
+  <dt>variables</dt>
 <dd><p>Optional character vector naming field estimations whose optimal correlations
   will be represented graphically in the heatmaps generated during the
   execution. If this argument is specified by the user, it must include at
@@ -151,13 +154,16 @@ admissible are Pearson's correlation coefficient and/or Spearman's <em>rho</em>.
   argument must have at least the (‘<code>&lt;x&gt;.cor</code>’,
   ‘<code>&lt;x&gt;.metric</code>’) pairs corresponding to the field estimations
   specified in the <code>variables</code> argument.</p></dd>
-<dt>dir.result</dt>
+
+
+  <dt>dir.result</dt>
 <dd><p>Optional character string naming the absolute path of an existing directory
   where files described in ‘Output Files’ section will be saved.
   <code>.Platform$file.sep</code> must be used as the path separator in
   <code>dir.result</code>. If this argument is not specified by the user, it will be set
   to <code>NULL</code> by default and, as consequence, the current working directory
   of the <span style="R">R</span> process will be assigned to <code>dir.result</code> during the execution.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -176,7 +182,9 @@ correctly applied when the heatmap is generated.</p>
     </div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Invisible <code>NULL</code>.</p>
+    
+
+<p>Invisible <code>NULL</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="output-files">Output Files<a class="anchor" aria-label="anchor" href="#output-files"></a></h2>
@@ -228,11 +236,11 @@ Fernando Montes and César Pérez-Cruzado.</p>
 <span class="r-in">                                   <span class="st">"hgeom.0"</span>, <span class="st">"hharm.0"</span><span class="op">)</span>,</span>
 <span class="r-in">                     save.result <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing correlations for fixed area plots</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (337.6 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (376.9 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing correlations for k-tree plots</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (83.34 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (84.73 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing correlations for angle-count plots</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (63.36 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (61.64 secs)</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">opt.corr</span> <span class="op">&lt;-</span> <span class="va">corr</span><span class="op">$</span><span class="va">opt.correlations</span></span>
 <span class="r-in"></span>
@@ -255,9 +263,9 @@ Fernando Montes and César Pérez-Cruzado.</p>
 <span class="r-in"><span class="fu">optimize.plot.design</span><span class="op">(</span>correlations <span class="op">=</span> <span class="va">opt.corr</span>, variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"N"</span>, <span class="st">"G"</span><span class="op">)</span>,</span>
 <span class="r-in">                     dir.result <span class="op">=</span> <span class="va">dir.result</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Plotting heatmap(s) for optimal Pearson's correlations </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (3.79 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (4.5 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Plotting heatmap(s) for optimal Spearman's correlations </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (3.24 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (3.46 secs)</span>
 <span class="r-in"></span>
 <span class="r-in"></span>
 <span class="r-in">  <span class="co"># }</span></span>
@@ -268,11 +276,11 @@ Fernando Montes and César Pérez-Cruzado.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Juan Alberto Molina-Valero, Adela Martínez-Calvo, Juan Gabriel Álvarez-González, Fernando Montes, César Pérez-Cruzado.</p>
+  <p></p><p>Developed by Juan Alberto Molina-Valero, Adela Martínez-Calvo, Anika Seppelt, Juan Gabriel Álvarez-González, Fernando Montes, César Pérez-Cruzado.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

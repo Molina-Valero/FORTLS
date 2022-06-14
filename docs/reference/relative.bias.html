@@ -26,7 +26,7 @@ TLS metrics are also generated."><!-- mathjax --><script src="https://cdnjs.clou
     
     <a class="navbar-brand me-2" href="../index.html">FORTLS</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,8 +40,9 @@ TLS metrics are also generated."><!-- mathjax --><script src="https://cdnjs.clou
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/stand_level.html">Stand level</a>
+    <a class="dropdown-item" href="../articles/stand_level.html">Stand-level</a>
     <a class="dropdown-item" href="../articles/tree_level.html">Tree-level</a>
+    <a class="dropdown-item" href="../articles/plot_design_optimization.html">Plot design optimization</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -107,7 +108,9 @@ TLS metrics are also generated.</p>
       <code>BAF</code> and at least one of the field estimate columns, it must
       contain at least one TLS counterpart for each field estimate considered.</p></li>
 </ul><p></p></dd>
-<dt>variables</dt>
+
+
+  <dt>variables</dt>
 <dd><p>Optional character vector naming field estimates for which the relative bias
   between them and all their available TLS counterparts will be computed. If
   this argument is specified by the user, it must contain at least one of the
@@ -123,12 +126,16 @@ TLS metrics are also generated.</p>
   cases, all the elements in <code>simulations</code> argument
   must include at least the columns corresponding to the field estimations specified in the
   <code>variables</code> argument.</p></dd>
-<dt>save.result</dt>
+
+
+  <dt>save.result</dt>
 <dd><p>Optional logical which indicates whether or not the output files described in
   ‘Output Files’ section must be saved in <code>dir.result</code>. If
   this argument is not specified by the user, it will be set to <code>TRUE</code> by
   default and, as a consequence, the output files will be saved.</p></dd>
-<dt>dir.result</dt>
+
+
+  <dt>dir.result</dt>
 <dd><p>Optional character string naming the absolute path of an existing directory
   where files described in ‘Output Files’ section will be saved.
   <code>.Platform$file.sep</code> must be used as the path separator in
@@ -136,6 +143,7 @@ TLS metrics are also generated.</p>
   <code>save.result</code> is <code>TRUE</code>, it will be set to <code>NULL</code> by default and,
   as a consequence, the current working directory of the <span style="R">R</span> process will be
   assigned to <code>dir.result</code> during the execution.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -191,7 +199,9 @@ estimate and its TLS counterpart, respectively, corresponding to plot
       estimated relative bias between ‘<code>&lt;x&gt;</code>’, a field estimation,
       and ‘<code>&lt;y&gt;</code>’, a TLS counterpart.</p></li>
 </ul><p></p></dd>
-<dt>k.tree.plot</dt>
+
+
+  <dt>k.tree.plot</dt>
 <dd><p>If no “<code>k.tree.plot</code>” element exists in the <code>simulations</code>
   argument, missing; otherwise, the matrix will include the relative bias estimated
   in the k-tree plot design between each field estimation specified in
@@ -202,7 +212,9 @@ estimate and its TLS counterpart, respectively, corresponding to plot
       estimated relative bias between ‘<code>&lt;x&gt;</code>’, a field estimation,
       and ‘<code>&lt;y&gt;</code>’, a TLS counterpart.</p></li>
 </ul><p></p></dd>
-<dt>angle.count.plot</dt>
+
+
+  <dt>angle.count.plot</dt>
 <dd><p>If no “<code>angle.count</code>” element exists in <code>simulations</code>
   argument, missing; otherwise, the matrix will contain estimated relative bias under
   angle-count plot design between each field estimation specified in the
@@ -215,6 +227,7 @@ estimate and its TLS counterpart, respectively, corresponding to plot
       estimated relative bias between ‘<code>&lt;x&gt;</code>’, a field estimation,
       and ‘<code>&lt;y&gt;</code>’, a TLS counterpart.</p></li>
 </ul><p></p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="output-files">Output Files<a class="anchor" aria-label="anchor" href="#output-files"></a></h2>
@@ -280,11 +293,11 @@ Fernando Montes and César Pérez-Cruzado.</p>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">rb</span> <span class="op">&lt;-</span> <span class="fu">relative.bias</span><span class="op">(</span>simulations <span class="op">=</span> <span class="va">simulations</span>, dir.result <span class="op">=</span> <span class="va">dir.result</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing relative bias for fixed area plots</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (7.27 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (7.38 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing relative bias for k-tree plots</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (7.18 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (9.59 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing relative bias for angle-count plots</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (5.86 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (6.76 secs)</span>
 <span class="r-in"></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Relative bias for variable 'N'</span></span>
@@ -292,11 +305,11 @@ Fernando Montes and César Pérez-Cruzado.</p>
 <span class="r-in"><span class="va">rb</span> <span class="op">&lt;-</span> <span class="fu">relative.bias</span><span class="op">(</span>simulations <span class="op">=</span> <span class="va">simulations</span>, variables <span class="op">=</span> <span class="st">"N"</span>,</span>
 <span class="r-in">                    dir.result <span class="op">=</span> <span class="va">dir.result</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing relative bias for fixed area plots</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (1.68 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (1.61 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing relative bias for k-tree plots</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (1.42 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (1.49 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing relative bias for angle-count plots</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (1.13 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (1.32 secs)</span>
 <span class="r-in"></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Relative bias corresponding to angle-count design for all available variables</span></span>
@@ -308,7 +321,7 @@ Fernando Montes and César Pérez-Cruzado.</p>
 <span class="r-in">                                   <span class="st">"hgeom.0"</span>, <span class="st">"hharm.0"</span><span class="op">)</span>,</span>
 <span class="r-in">                    dir.result <span class="op">=</span> <span class="va">dir.result</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing relative bias for angle-count plots</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (7.4 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (8.09 secs)</span>
 <span class="r-in">  <span class="co"># }</span></span>
 </code></pre></div>
     </div>
@@ -317,11 +330,11 @@ Fernando Montes and César Pérez-Cruzado.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Juan Alberto Molina-Valero, Adela Martínez-Calvo, Juan Gabriel Álvarez-González, Fernando Montes, César Pérez-Cruzado.</p>
+  <p></p><p>Developed by Juan Alberto Molina-Valero, Adela Martínez-Calvo, Anika Seppelt, Juan Gabriel Álvarez-González, Fernando Montes, César Pérez-Cruzado.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>
