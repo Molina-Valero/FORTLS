@@ -2,8 +2,8 @@ pandoc: 2.17.1.1
 pkgdown: 2.0.4
 pkgdown_sha: ~
 articles:
+  plot_design_optimization: plot_design_optimization.html
   stand_level: stand_level.html
   tree_level: tree_level.html
-  plot_design_optimization: plot_design_optimization.html
-last_built: 2022-06-14T15:09Z
+last_built: 2022-06-14T17:28Z
 
