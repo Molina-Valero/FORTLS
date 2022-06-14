@@ -4,7 +4,7 @@ author: "Anika Seppelt"
 #date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Plot design optimization}
+  %\VignetteIndexEntry{3. Plot design optimization}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -25,7 +25,6 @@ load("Rioja.data.RData")
 load("Rioja.simulations.RData")
 tree.tls <- Rioja.data$tree.tls
 tree.field <- Rioja.data$tree.field
-sim.fix <- simulations$fixed.area
 dir.data <- system.file("exdata", package="FORTLS")
 library(FORTLS)
 ```
@@ -122,7 +121,9 @@ bias <- relative.bias(simulations = simulations,
 
 The function calculates the relative bias between the field data estimates (specified in `variables`) and the counterpart variables that are estimated based on TLS data. The TLS counterparts for the density (`N`) are the variables `N.tls`, `N.hn`, `N.hr`, `N.hn.cov`, `N.hr.cov` and `N.sh` for circular fixed area and k-tree plots, and `N.tls` and `N.pam` for angle-count plots. The same pattern applies to the basal area (`G`) and the volume (`V`) where the corresponding TLS-based estimates are `G.tls`, `G.hn`, `G.hr`, `G.hn.cov`, `G.hr.cov`, `G.sh` and `G.pam`, and `V.tls`, `V.hn`, `V.hr`, `V.hn.cov`, `V.hr.cov`, `V.sh` and `V.pam` respectively. In case of mean and dominant diameters (`d`, `dg`, `dgeom`, `dharm`, `d.0`, `dg.0`, `dgeom.0`, and `dharm.0`) and heights (`h`, `hg`, `hgeom`, `hharm`, `h.0`, `hg.0`, `hgeom.0` and `hharm.0`), for all three plot designs their respective counterpart variables are `d.tls`, `dg.tls`, `dgeom.tls`, `dharm.tls`, `d.0.tls`, `dg.0.tls`, `dgeom.0.tls` and `dharm.0.tls` (for the diameter), and `h.tls`, `hg.tls`, `hgeom.tls`, `hharm.tls`, `h.0.tls`, `hg.0.tls`, `hgeom.0.tls`, `hharm.0.tls` and in addition `P99` (for the height). The relative bias are calculated as follows
 
-$ \frac{\frac{1}{n} \sum_{i=1}^{n}{y_i} - \frac{1}{n}\sum_{i=1}^{n}{x_i}}{\sum_{i=1}^{n}{x_i}}$
+$$ 
+\frac{\frac{1}{n} \sum_{i=1}^{n}y_i - \frac{1}{n}\sum_{i=1}^{n}x_i}{\sum_{i=1}^{n}x_i}
+$$
 
 where $x_i$ is the value of the field estimate and $y_i$ the value of its TLS counterpart corresponding to plot $i$. For each plot size defined by the radius, k or BAF, the biases are calculated and stored as a data frame (shown below). Each row represents the a simulated plot of a certain size and the columns contain the calculate bias between the variables indicated in the column name. The two compared variables are joint with `.` as separation, e.g. `N.N.tls` means that the bias between `N` and `N.tls` was calculated. 
 
@@ -135,20 +136,14 @@ kableExtra::scroll_box(kable_input = kableExtra::kable(head(bias$fixed.area),
                                                        format = "html"), width = "100%")
 ```
 
-HTML graphic
-
 ```{r include=FALSE}
 dir.data <- getwd()
-download.file("https://www.dropbox.com/s/27kn3rojbq0sb0y/correlations.h.fixed.area.pearson.html?dl=1",
-              destfile = file.path(dir.data, "correlations.h.fixed.area.pearson.html"),
+download.file("https://www.dropbox.com/s/p501d6qsvf8zksc/RB.G.fixed.area.html?dl=1",
+              destfile = file.path(dir.data, "RB.G.fixed.area.html"),
               mode = "wb")
 ```
 
-```{r, echo=FALSE}
-#shiny::includeHTML("correlations.h.fixed.area.pearson.html")
-#htmltools::includeHTML("correlations.h.fixed.area.pearson.html")
-#htmltools::tags$iframe(title = "My embedded document", src = "correlations.h.fixed.area.pearson.html")
-```
+For better visualization, line charts are created that show the relative bias of a given variable and plot design. As an example, the interactive graphic showing the relative bias of basal area estimations (`G`) for fixed are plots can be seen when following the link ([RB.G.fixed.area.html](RB.G.fixed.area.html)).
 
 ## Functions facilitating model-based or model-assisted sampling approaches 
 
@@ -161,30 +156,70 @@ The **`correlations`** computes the correlations for all the plot designs that a
 ```{r}
 cor <- correlations(simulations = simulations,
              variables = c("N", "G", "d", "dg", "d.0", "h", "h.0"),
-             method = c("pearson", "spearman"), save.result = FALSE,
-             dir.result = NULL)
+             method = c("pearson", "spearman"), 
+             save.result = FALSE, dir.result = NULL)
 ```
 
-In addition to the calculation of the correlation measures, the function also performs tests of association and returns the p-values. The output of this function is a list containing the following three elements `correlations`, `correlations.pval` and `opt.correlations`. Each of them is a list including if not otherwise specified (in `method`) two elements `pearson` and `spearman`. These two elements are lists again that include separate data frames for each plot design (circular fixed area, k-tree and angle-count plots). The data frames contain the corresponding correlation coefficients (in `correlations`), the calculated p-values (in `correlations.pval`) and the optimal correlations for a given plot size and field data estimate (in `opt.correlations`).
+In addition to the calculation of the correlation measures, the function also performs tests of association and returns the p-values. The output of this function is a list containing the following three elements `correlations`, `correlations.pval` and `opt.correlations`. Each of them is a list including, if not otherwise specified (in `method`), two elements `pearson` and `spearman`. These two elements are lists again that include separate data frames for each plot design (circular fixed area, k-tree and angle-count plots). The data frames contain the corresponding correlation coefficients (in `correlations`), the calculated p-values (in `correlations.pval`) and the optimal correlations for a given plot size and field data estimate (in `opt.correlations`).
 
-```{r}
-cor$correlations$pearson$fixed.area[1:6,1:10]
+```{r eval=FALSE, include=TRUE}
+cor$correlations$pearson$fixed.area[20:26,1:15]
 ```
 
-All mentioned data frames are divided into rows each of which represent a given plot size. 
-
-```{r}
-cor$correlations.pval$pearson$fixed.area[1:6,1:10]
+```{r echo=FALSE}
+kableExtra::scroll_box(kable_input = kableExtra::kable(
+  cor$correlations$pearson$fixed.area[20:26,1:15], format = "html"), width = "100%")
 ```
 
-```{r}
-head(cor$opt.correlations$pearson$fixed.area)
+All mentioned data frames are divided into rows each of which represent a given plot size defined by `radius` (for circular fixed area plots), `k` (for k-tree plots) or `BAF` (for angle-count plots). The columns of the data frames in `correlations` (shown above) and `correlations.pval` (shown below) contain the calculated coefficients and p-values respectively for the corresponding correlation. The column names are composed of the two variables (e.g. `N` and `N.tls`) separated by `.` (giving `N.N.tls`) as described for the `relative.bias` function.
+
+```{r eval=FALSE, include=TRUE}
+cor$correlations.pval$pearson$fixed.area[20:26,1:15]
 ```
+
+```{r echo=FALSE}
+kableExtra::scroll_box(kable_input = kableExtra::kable(
+  cor$correlations.pval$pearson$fixed.area[20:26,1:15], format = "html"), width = "100%")
+```
+
+The data frames of the `opt.correlations` list (example shown below) are also divided into rows that represent the different plot sizes. For a given plot size and variable (specified in the argument `variables`), the best correlating TLS-based estimate and the corresponding correlation coefficient is displayed in this table. The columns named `<variable>.metric` (with variable being here `N`, `G`, `d`, `dg`, `d.0`, `h` and `h.0`) contain the TLS-based variable or metric that yielded the best correlation with the respective field data-based variable in the column name for a certain plot radius. The columns `<variable>.cor` display the measures of the respective correlations. 
+
+```{r eval=FALSE, include=TRUE}
+cor$opt.correlations$pearson$fixed.area[20:26,]
+```
+
+```{r echo=FALSE}
+kableExtra::scroll_box(kable_input = kableExtra::kable(
+  cor$opt.correlations$pearson$fixed.area[20:26,], format = "html"), width = "100%")
+```
+
+```{r include=FALSE}
+dir.data <- getwd()
+download.file("https://www.dropbox.com/s/27kn3rojbq0sb0y/correlations.h.fixed.area.pearson.html?dl=1",
+              destfile = file.path(dir.data, "correlations.h.fixed.area.pearson.html"),
+              mode = "wb")
+```
+
+The `correlations` functions creates different files and saves them (if `save.result = TRUE`, default setting) to the directory indicated in `dir.result`. These files are, on the one hand, .csv files of the data frames in the lists `correlations` and `opt.correlations` are created by means of the `write.csv` function from the [utils](https://CRAN.R-project.org/package=R.utils) package. These .csv files will be named as `correlations.<plot design>.<method>.csv` and `opt.correlations.<plot design>.plot.<method>.csv` with plot design being `"fixed.area.plot"`, `“k.tree.plot”` or `“angle.count.plot”` and method being `“pearson”` or `“spearman”`. On the other hand, interactive line charts representing the correlation coefficients will be created for each variable (selected in `variables`) as .html file using the `saveWidget` function in the [htmlwidgets](https://CRAN.R-project.org/package=htmlwidgets) package. As an example, the interactive line chart for the variable height (`h`) and fixed area plots (pearson measure) is shown ([correlations.h.fixed.area.pearson.html](correlations.h.fixed.area.pearson.html)).
+
+### Visualizing correlations
+
+In order to visualize the optimal correlations, the function **`optimize.plot.design`** creates heat maps and is applied as follows:
 
 ```{r eval=FALSE}
-optimize.plot.design(correlations = cor$correlations,
+optimize.plot.design(correlations = cor$opt.correlations,
                      variables = c("N", "G", "d", "dg", "d.0", "h", "h.0"),
                      dir.result = NULL)
 ```
 
-## modelos
+The function creates the heatmaps based on the optimal correlation list (`opt.correlations` from the output of the `correlations` function) introduced in **`correlations`**. The introduced list must have the same format and description as the `opt.correlation` list. Similar to the other functions described above, the variables of interest can be selected in **`variables`** (default setting: `variables = c("N", "G", "V", "d", "dg", "d.0", "h", "h.0")`). This function generates interactive heatmaps with the `saveWidget` function of the [htmlwidgets](https://CRAN.R-project.org/package=htmlwidgets) package and saves these graphics to the directory indicated in **`dir.result`** (or by default the working directory). For each plot design and correlation measure one plot is generated and named as `opt.correlations.<plot design>.<method>.html` where plot design can be `“fixed.area.plot”`, `“k.tree.plot”` or `“angle.count.plot”` and method either `“pearson”` or `“spearman”` according to the plot design and correlation measure. 
+
+```{r include=FALSE}
+dir.data <- getwd()
+download.file("https://www.dropbox.com/s/ddgqe1u34mn0vg9/opt.correlations.fixed.area.plot.pearson.html?dl=1",
+              destfile = file.path(dir.data, "opt.correlations.fixed.area.plot.pearson.html"),
+              mode = "wb")
+```
+
+To show an example, the heatmap of the pearson correlation coefficient for fixed area plots and pearson measure can be seen when opening the link ([opt.correlations.fixed.area.plot.pearson.html](opt.correlations.fixed.area.plot.pearson.html)).
+

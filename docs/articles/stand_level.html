@@ -608,7 +608,8 @@ the list with tree detection probabilities (i.e., the output file of the
 mentioned function) can be introduced in
 <strong><code>tree.ds</code></strong>. By default, this argument is set
 to <code>NULL</code> and metrics using distance sampling corrections
-will not be calculated.</p>
+will not be calculated. The <code>distance.sampling</code> is applied as
+follows:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>tree.ds <span class="ot">&lt;-</span> <span class="fu">distance.sampling</span>(<span class="at">tree.tls =</span> tree.list,</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                             <span class="at">id.plots =</span> <span class="cn">NULL</span>,</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                             <span class="at">strata.attributes =</span> <span class="cn">NULL</span>)</span></code></pre></div>
@@ -638,8 +639,8 @@ occlusion.</p>
 probabilities for each tree of all plots according to the four different
 detection functions. The columns <code>P.hn</code> and
 <code>P.hn.cov</code> show the detection probabilities calculated by the
-half normal function with and without <span class="math inline">\(dbh\)</span> as covariate, while <code>P.hr</code>
-and <code>P.hr.cov</code> display the probabilities according to the
+half normal function without and with <span class="math inline">\(dbh\)</span> as covariate, while <code>P.hr</code>
+and <code>P.hr.cov</code> contain the probabilities according to the
 hazard rate function without and with covariate respectively.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(tree.ds<span class="sc">$</span>tree)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   stratum id tree     P.hn  P.hn.cov      P.hr  P.hr.cov</span></span>
@@ -664,7 +665,7 @@ Akaike information criterion (AIC) for every detection function fit.</p>
 </div>
 <div id="additional-information-about-trees-through-field-data" class="section level4">
 <h4>Additional information about trees through field data</h4>
-<p>If supplementary field data is available for the sample plot, a data
+<p>If supplementary field data is available for the sample plots, a data
 frame containing this information can be included in
 <strong><code>tree.field</code></strong>. Each row of the data frame
 must represent a tree and the data frame must contain at least the
@@ -705,7 +706,7 @@ their distance.</p>
 </div>
 <div id="plot-design-and-parameters" class="section level4">
 <h4>Plot design and parameters</h4>
-<p>The metrics and values can be computed for different plot designs
+<p>The metrics and variables can be computed for different plot designs
 which are specified by <strong><code>plot.design</code></strong> and
 <strong><code>plot.parameters</code></strong>. There are three different
 plot designs, which are similar to the procedure used in conventional
@@ -717,12 +718,12 @@ be considered.</p>
 the plot radius (in m). The size of k-tree plots (<code>&quot;k.tree&quot;</code>)
 is determined by the number of trees (k) that enter the plot. The basal
 area factor (BAF in m<span class="math inline">\(^2\)</span>/ha) defines
-the angle-count plots (<code>&quot;angle.count&quot;</code>). The parameters
-<code>radius</code>, <code>k</code> and <code>BAF</code> have to be
-specified as data frame in <code>plot.parameters</code>. If one of these
-parameters is not specified, the corresponding plot design will not be
-considered in the calculations. To calculate the dominant height and
-diameter, the number of dominant trees per ha (trees/ha) can be
+the size of angle-count plots (<code>&quot;angle.count&quot;</code>). The
+parameters <code>radius</code>, <code>k</code> and <code>BAF</code> have
+to be specified as data frame in <code>plot.parameters</code>. If one of
+these parameters is not specified, the corresponding plot design will
+not be considered in the calculations. To calculate the dominant height
+and diameter, the number of dominant trees per ha (trees/ha) can be
 indicated by the argument <code>num.tree</code>. By default, the number
 of dominant trees is set to 100 trees/ha.</p>
 </div>
@@ -731,23 +732,23 @@ of dominant trees is set to 100 trees/ha.</p>
 <p>The function <code>metrics.variables</code> generates a list in which
 each element represents one of the considered plot designs (fixed area,
 k-tree and angle-count plots). These elements are data frames containing
-the estimated metrics and variables at stand-level described below as
-columns. Further columns include information about the plot, such as the
+the estimated metrics and variables at stand-level as columns (described
+below). Further columns include information about the plot, such as the
 identification number (<code>id</code>) and the stratum identification
 (<code>stratum</code>) both coinciding with the respective columns in
-the output file of the <code>tree.detection</code> function. Each row
+the output file of the <code>tree.detection</code> functions. Each row
 represents a simulated plot i.e., a plot with a certain size (defined by
 the values for <code>radius</code>, <code>k</code> and <code>BAF</code>
 shown in the respective columns).</p>
 <p>If <code>save.result = TRUE</code>, the data frames will be saved as
-seperate .csv files (one for every plot design) to the directory
-indicated in <code>dir.result</code> (or if not specified the working
-directory). The .csv files (without row names)will be created using the
+seperate .csv files (one for each plot design) to the directory
+indicated in <code>dir.result</code> (or if not specified to the working
+directory). The .csv files (without row names) will be created using the
 <code>write.csv</code> function from the <a href="https://CRAN.R-project.org/package=R.utils">utils</a> package.</p>
 </div>
 <div id="stand-level-metrics" class="section level3">
 <h3>Stand-level metrics</h3>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>metrics[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="sc">-</span><span class="fu">c</span>(<span class="dv">3</span><span class="sc">:</span><span class="dv">36</span>)]</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>metrics[<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="sc">-</span><span class="fu">c</span>(<span class="dv">3</span><span class="sc">:</span><span class="dv">36</span>)]</span></code></pre></div>
 <div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
 <table>
 <thead>
@@ -1141,13 +1142,13 @@ weibull_b.r
 9.357327
 </td>
 <td style="text-align:right;">
-10.002327
+10.00233
 </td>
 <td style="text-align:right;">
-10.320327
+10.32033
 </td>
 <td style="text-align:right;">
-10.685327
+10.68533
 </td>
 <td style="text-align:right;">
 11.39733
@@ -1345,7 +1346,7 @@ weibull_b.r
 4.957027
 </td>
 <td style="text-align:right;">
-10.176251
+10.17625
 </td>
 <td style="text-align:right;">
 10.45033
@@ -1357,10 +1358,10 @@ weibull_b.r
 9.541126
 </td>
 <td style="text-align:right;">
-10.036128
+10.03613
 </td>
 <td style="text-align:right;">
-7.9399569
+7.939957
 </td>
 <td style="text-align:right;">
 18.04629
@@ -1399,7 +1400,7 @@ weibull_b.r
 51.84995
 </td>
 <td style="text-align:right;">
-14.4560852
+14.45609
 </td>
 <td style="text-align:right;">
 0.5638970
@@ -1482,13 +1483,13 @@ weibull_b.r
 10.223590
 </td>
 <td style="text-align:right;">
-10.649590
+10.64959
 </td>
 <td style="text-align:right;">
-10.790590
+10.79059
 </td>
 <td style="text-align:right;">
-10.879590
+10.87959
 </td>
 <td style="text-align:right;">
 11.37959
@@ -1686,7 +1687,7 @@ weibull_b.r
 6.133511
 </td>
 <td style="text-align:right;">
-11.069896
+11.06990
 </td>
 <td style="text-align:right;">
 11.25312
@@ -1698,10 +1699,10 @@ weibull_b.r
 10.592588
 </td>
 <td style="text-align:right;">
-10.955864
+10.95586
 </td>
 <td style="text-align:right;">
-10.7780538
+10.778054
 </td>
 <td style="text-align:right;">
 18.13256
@@ -1740,7 +1741,7 @@ weibull_b.r
 52.26416
 </td>
 <td style="text-align:right;">
-42.9794410
+42.97944
 </td>
 <td style="text-align:right;">
 0.6104983
@@ -1823,13 +1824,13 @@ weibull_b.r
 10.219528
 </td>
 <td style="text-align:right;">
-10.816528
+10.81653
 </td>
 <td style="text-align:right;">
-11.008528
+11.00853
 </td>
 <td style="text-align:right;">
-11.297528
+11.29753
 </td>
 <td style="text-align:right;">
 12.37553
@@ -2027,7 +2028,7 @@ weibull_b.r
 7.316667
 </td>
 <td style="text-align:right;">
-11.644075
+11.64407
 </td>
 <td style="text-align:right;">
 11.81267
@@ -2039,10 +2040,10 @@ weibull_b.r
 11.243853
 </td>
 <td style="text-align:right;">
-11.753827
+11.75383
 </td>
 <td style="text-align:right;">
-1.1807736
+1.180774
 </td>
 <td style="text-align:right;">
 18.26309
@@ -2081,7 +2082,7 @@ weibull_b.r
 47.07054
 </td>
 <td style="text-align:right;">
-0.0000000
+0.00000
 </td>
 <td style="text-align:right;">
 0.6375741
@@ -2164,13 +2165,13 @@ weibull_b.r
 9.999321
 </td>
 <td style="text-align:right;">
-10.675321
+10.67532
 </td>
 <td style="text-align:right;">
-11.144321
+11.14432
 </td>
 <td style="text-align:right;">
-11.667321
+11.66732
 </td>
 <td style="text-align:right;">
 13.05332
@@ -2368,7 +2369,7 @@ weibull_b.r
 5.418747
 </td>
 <td style="text-align:right;">
-10.783934
+10.78393
 </td>
 <td style="text-align:right;">
 11.08143
@@ -2380,10 +2381,10 @@ weibull_b.r
 9.950309
 </td>
 <td style="text-align:right;">
-10.505246
+10.50525
 </td>
 <td style="text-align:right;">
-9.2126594
+9.212659
 </td>
 <td style="text-align:right;">
 35.48690
@@ -2422,7 +2423,7 @@ weibull_b.r
 55.46543
 </td>
 <td style="text-align:right;">
-22.8599894
+22.85999
 </td>
 <td style="text-align:right;">
 0.3038850
@@ -2505,13 +2506,13 @@ weibull_b.r
 11.478293
 </td>
 <td style="text-align:right;">
-12.077293
+12.07729
 </td>
 <td style="text-align:right;">
-12.460293
+12.46029
 </td>
 <td style="text-align:right;">
-12.858293
+12.85829
 </td>
 <td style="text-align:right;">
 13.79829
@@ -2709,7 +2710,7 @@ weibull_b.r
 6.044389
 </td>
 <td style="text-align:right;">
-12.228454
+12.22845
 </td>
 <td style="text-align:right;">
 12.53702
@@ -2721,10 +2722,10 @@ weibull_b.r
 11.333547
 </td>
 <td style="text-align:right;">
-12.471519
+12.47152
 </td>
 <td style="text-align:right;">
-11.3467337
+11.346734
 </td>
 <td style="text-align:right;">
 18.43135
@@ -2763,7 +2764,7 @@ weibull_b.r
 46.65558
 </td>
 <td style="text-align:right;">
-36.9370818
+36.93708
 </td>
 <td style="text-align:right;">
 0.6634594
@@ -2846,13 +2847,13 @@ weibull_b.r
 11.199031
 </td>
 <td style="text-align:right;">
-11.607031
+11.60703
 </td>
 <td style="text-align:right;">
-11.808031
+11.80803
 </td>
 <td style="text-align:right;">
-12.043031
+12.04303
 </td>
 <td style="text-align:right;">
 12.86603
@@ -3050,7 +3051,7 @@ weibull_b.r
 7.350166
 </td>
 <td style="text-align:right;">
-12.259273
+12.25927
 </td>
 <td style="text-align:right;">
 12.48402
@@ -3062,10 +3063,10 @@ weibull_b.r
 11.639040
 </td>
 <td style="text-align:right;">
-12.452602
+12.45260
 </td>
 <td style="text-align:right;">
-1.0711337
+1.071134
 </td>
 <td style="text-align:right;">
 18.74465
@@ -3104,7 +3105,7 @@ weibull_b.r
 45.77623
 </td>
 <td style="text-align:right;">
-0.0000000
+0.00000
 </td>
 <td style="text-align:right;">
 0.6540144
@@ -3140,1383 +3141,21 @@ weibull_b.r
 13.20862
 </td>
 </tr>
-<tr>
-<td style="text-align:right;">
-7
-</td>
-<td style="text-align:right;">
-10
-</td>
-<td style="text-align:right;">
-5714.000
-</td>
-<td style="text-align:right;">
-2111.974
-</td>
-<td style="text-align:right;">
-421.6667
-</td>
-<td style="text-align:right;">
-336.7864
-</td>
-<td style="text-align:right;">
-0.5685654
-</td>
-<td style="text-align:right;">
-1.935565
-</td>
-<td style="text-align:right;">
-3.833565
-</td>
-<td style="text-align:right;">
-5.436565
-</td>
-<td style="text-align:right;">
-5.971565
-</td>
-<td style="text-align:right;">
-6.557565
-</td>
-<td style="text-align:right;">
-6.984565
-</td>
-<td style="text-align:right;">
-7.462565
-</td>
-<td style="text-align:right;">
-8.121565
-</td>
-<td style="text-align:right;">
-9.199565
-</td>
-<td style="text-align:right;">
-9.478565
-</td>
-<td style="text-align:right;">
-9.832565
-</td>
-<td style="text-align:right;">
-10.94257
-</td>
-<td style="text-align:right;">
-11.55557
-</td>
-<td style="text-align:right;">
-13.14957
-</td>
-<td style="text-align:right;">
-7.493919
-</td>
-<td style="text-align:right;">
-7.977575
-</td>
-<td style="text-align:right;">
-6.692132
-</td>
-<td style="text-align:right;">
-5.009319
-</td>
-<td style="text-align:right;">
-7.462565
-</td>
-<td style="text-align:right;">
-6.957565
-</td>
-<td style="text-align:right;">
-15.21057
-</td>
-<td style="text-align:right;">
-0.2505654
-</td>
-<td style="text-align:right;">
-7.482884
-</td>
-<td style="text-align:right;">
-2.735486
-</td>
-<td style="text-align:right;">
-0.3650274
-</td>
-<td style="text-align:right;">
-14.960
-</td>
-<td style="text-align:right;">
-3.507
-</td>
-<td style="text-align:right;">
-3.048755
-</td>
-<td style="text-align:right;">
--0.4143436
-</td>
-<td style="text-align:right;">
-49.41443
-</td>
-<td style="text-align:right;">
-60.86139
-</td>
-<td style="text-align:right;">
-94.85520
-</td>
-<td style="text-align:right;">
-50.58557
-</td>
-<td style="text-align:right;">
-39.09871
-</td>
-<td style="text-align:right;">
-5.144797
-</td>
-<td style="text-align:right;">
-0.4926786
-</td>
-<td style="text-align:right;">
-40196672
-</td>
-<td style="text-align:right;">
-366710022
-</td>
-<td style="text-align:right;">
-3531747461
-</td>
-<td style="text-align:right;">
--536981016
-</td>
-<td style="text-align:right;">
-6083744872
-</td>
-<td style="text-align:right;">
-2e-07
-</td>
-<td style="text-align:right;">
-1.817646
-</td>
-<td style="text-align:right;">
-0.5363541
-</td>
-<td style="text-align:right;">
-2.985498
-</td>
-<td style="text-align:right;">
-8.393822
-</td>
-<td style="text-align:right;">
-5.626769
-</td>
-<td style="text-align:right;">
-6.196345
-</td>
-<td style="text-align:right;">
-4.958949
-</td>
-<td style="text-align:right;">
-4.286719
-</td>
-<td style="text-align:right;">
-5.375033
-</td>
-<td style="text-align:right;">
-1.2702425
-</td>
-<td style="text-align:right;">
-9.999990
-</td>
-<td style="text-align:right;">
-1.2702425
-</td>
-<td style="text-align:right;">
-6.734170
-</td>
-<td style="text-align:right;">
-2.595028
-</td>
-<td style="text-align:right;">
-0.4611933
-</td>
-<td style="text-align:right;">
-8.729747
-</td>
-<td style="text-align:right;">
-4.991540
-</td>
-<td style="text-align:right;">
-1.595999
-</td>
-<td style="text-align:right;">
-0.0912346
-</td>
-<td style="text-align:right;">
-47.21909
-</td>
-<td style="text-align:right;">
-99.99984
-</td>
-<td style="text-align:right;">
-52.78091
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0.5626775
-</td>
-<td style="text-align:right;">
-24250432
-</td>
-<td style="text-align:right;">
-185323897
-</td>
-<td style="text-align:right;">
-1509477761
-</td>
-<td style="text-align:right;">
--224030503
-</td>
-<td style="text-align:right;">
-1945065041
-</td>
-<td style="text-align:right;">
-2e-07
-</td>
-<td style="text-align:right;">
-2.493979
-</td>
-<td style="text-align:right;">
-4.356527
-</td>
-<td style="text-align:right;">
-2.299391
-</td>
-<td style="text-align:right;">
-6.351386
-</td>
-<td style="text-align:right;">
-9.732677
-</td>
-<td style="text-align:right;">
-10.10131
-</td>
-<td style="text-align:right;">
-9.350891
-</td>
-<td style="text-align:right;">
-8.961849
-</td>
-<td style="text-align:right;">
-9.506762
-</td>
-<td style="text-align:right;">
-9.6644063
-</td>
-<td style="text-align:right;">
-18.10333
-</td>
-<td style="text-align:right;">
-2.6453776
-</td>
-<td style="text-align:right;">
-7.311408
-</td>
-<td style="text-align:right;">
-2.703962
-</td>
-<td style="text-align:right;">
-0.2778230
-</td>
-<td style="text-align:right;">
-15.45795
-</td>
-<td style="text-align:right;">
-3.909543
-</td>
-<td style="text-align:right;">
-2.506014
-</td>
-<td style="text-align:right;">
-0.3252880
-</td>
-<td style="text-align:right;">
-45.94504
-</td>
-<td style="text-align:right;">
-47.14752
-</td>
-<td style="text-align:right;">
-54.05496
-</td>
-<td style="text-align:right;">
-52.8523184
-</td>
-<td style="text-align:right;">
-0.5376181
-</td>
-<td style="text-align:right;">
-64447105
-</td>
-<td style="text-align:right;">
-721194531
-</td>
-<td style="text-align:right;">
-8534665599
-</td>
-<td style="text-align:right;">
--1160532136
-</td>
-<td style="text-align:right;">
-17086536377
-</td>
-<td style="text-align:right;">
-2e-07
-</td>
-<td style="text-align:right;">
-1.954278
-</td>
-<td style="text-align:right;">
-0.0682704
-</td>
-<td style="text-align:right;">
-4.043365
-</td>
-<td style="text-align:right;">
-10.73111
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-8
-</td>
-<td style="text-align:right;">
-10
-</td>
-<td style="text-align:right;">
-9743.667
-</td>
-<td style="text-align:right;">
-3757.255
-</td>
-<td style="text-align:right;">
-562.6667
-</td>
-<td style="text-align:right;">
-611.5376
-</td>
-<td style="text-align:right;">
-0.9307070
-</td>
-<td style="text-align:right;">
-4.500957
-</td>
-<td style="text-align:right;">
-7.517707
-</td>
-<td style="text-align:right;">
-9.454707
-</td>
-<td style="text-align:right;">
-9.653707
-</td>
-<td style="text-align:right;">
-9.920707
-</td>
-<td style="text-align:right;">
-10.660707
-</td>
-<td style="text-align:right;">
-11.246707
-</td>
-<td style="text-align:right;">
-11.804707
-</td>
-<td style="text-align:right;">
-12.258707
-</td>
-<td style="text-align:right;">
-12.689707
-</td>
-<td style="text-align:right;">
-12.979707
-</td>
-<td style="text-align:right;">
-13.95571
-</td>
-<td style="text-align:right;">
-14.74871
-</td>
-<td style="text-align:right;">
-16.55971
-</td>
-<td style="text-align:right;">
-10.860327
-</td>
-<td style="text-align:right;">
-11.251850
-</td>
-<td style="text-align:right;">
-10.109936
-</td>
-<td style="text-align:right;">
-7.928546
-</td>
-<td style="text-align:right;">
-11.264707
-</td>
-<td style="text-align:right;">
-11.998707
-</td>
-<td style="text-align:right;">
-18.60871
-</td>
-<td style="text-align:right;">
-0.2507070
-</td>
-<td style="text-align:right;">
-8.657447
-</td>
-<td style="text-align:right;">
-2.942354
-</td>
-<td style="text-align:right;">
-0.2709268
-</td>
-<td style="text-align:right;">
-18.358
-</td>
-<td style="text-align:right;">
-3.027
-</td>
-<td style="text-align:right;">
-5.235847
-</td>
-<td style="text-align:right;">
--1.1890803
-</td>
-<td style="text-align:right;">
-57.27333
-</td>
-<td style="text-align:right;">
-35.37220
-</td>
-<td style="text-align:right;">
-97.69587
-</td>
-<td style="text-align:right;">
-42.72667
-</td>
-<td style="text-align:right;">
-64.59455
-</td>
-<td style="text-align:right;">
-2.304129
-</td>
-<td style="text-align:right;">
-0.5836153
-</td>
-<td style="text-align:right;">
-150405458
-</td>
-<td style="text-align:right;">
-1820865638
-</td>
-<td style="text-align:right;">
-22708259825
-</td>
-<td style="text-align:right;">
--3079489000
-</td>
-<td style="text-align:right;">
-50046395337
-</td>
-<td style="text-align:right;">
-1e-07
-</td>
-<td style="text-align:right;">
-1.422380
-</td>
-<td style="text-align:right;">
-1.1383804
-</td>
-<td style="text-align:right;">
-4.157193
-</td>
-<td style="text-align:right;">
-11.955416
-</td>
-<td style="text-align:right;">
-5.312133
-</td>
-<td style="text-align:right;">
-6.069788
-</td>
-<td style="text-align:right;">
-3.946387
-</td>
-<td style="text-align:right;">
-1.854522
-</td>
-<td style="text-align:right;">
-5.467076
-</td>
-<td style="text-align:right;">
-0.1000016
-</td>
-<td style="text-align:right;">
-9.999998
-</td>
-<td style="text-align:right;">
-0.1000016
-</td>
-<td style="text-align:right;">
-8.623579
-</td>
-<td style="text-align:right;">
-2.936593
-</td>
-<td style="text-align:right;">
-0.5528087
-</td>
-<td style="text-align:right;">
-9.899996
-</td>
-<td style="text-align:right;">
-5.116112
-</td>
-<td style="text-align:right;">
-1.748930
-</td>
-<td style="text-align:right;">
--0.1888821
-</td>
-<td style="text-align:right;">
-50.86717
-</td>
-<td style="text-align:right;">
-99.99992
-</td>
-<td style="text-align:right;">
-49.13283
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0.5312134
-</td>
-<td style="text-align:right;">
-43768608
-</td>
-<td style="text-align:right;">
-335665499
-</td>
-<td style="text-align:right;">
-2714338876
-</td>
-<td style="text-align:right;">
--361848155
-</td>
-<td style="text-align:right;">
-2992511154
-</td>
-<td style="text-align:right;">
-1e-07
-</td>
-<td style="text-align:right;">
-2.584502
-</td>
-<td style="text-align:right;">
-5.212131
-</td>
-<td style="text-align:right;">
-1.879612
-</td>
-<td style="text-align:right;">
-5.984257
-</td>
-<td style="text-align:right;">
-12.530005
-</td>
-<td style="text-align:right;">
-12.78462
-</td>
-<td style="text-align:right;">
-12.220955
-</td>
-<td style="text-align:right;">
-11.791952
-</td>
-<td style="text-align:right;">
-12.507933
-</td>
-<td style="text-align:right;">
-9.6062276
-</td>
-<td style="text-align:right;">
-20.25897
-</td>
-<td style="text-align:right;">
-0.6243428
-</td>
-<td style="text-align:right;">
-6.445452
-</td>
-<td style="text-align:right;">
-2.538790
-</td>
-<td style="text-align:right;">
-0.2026168
-</td>
-<td style="text-align:right;">
-19.63463
-</td>
-<td style="text-align:right;">
-3.038022
-</td>
-<td style="text-align:right;">
-4.084158
-</td>
-<td style="text-align:right;">
--0.4502819
-</td>
-<td style="text-align:right;">
-49.63838
-</td>
-<td style="text-align:right;">
-89.64653
-</td>
-<td style="text-align:right;">
-50.36162
-</td>
-<td style="text-align:right;">
-10.3533844
-</td>
-<td style="text-align:right;">
-0.6184916
-</td>
-<td style="text-align:right;">
-194174066
-</td>
-<td style="text-align:right;">
-2616137403
-</td>
-<td style="text-align:right;">
-36259293992
-</td>
-<td style="text-align:right;">
--4682864398
-</td>
-<td style="text-align:right;">
-88051515574
-</td>
-<td style="text-align:right;">
-1e-07
-</td>
-<td style="text-align:right;">
-1.532510
-</td>
-<td style="text-align:right;">
-2.9237769
-</td>
-<td style="text-align:right;">
-5.716029
-</td>
-<td style="text-align:right;">
-13.54283
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-9
-</td>
-<td style="text-align:right;">
-10
-</td>
-<td style="text-align:right;">
-4279.333
-</td>
-<td style="text-align:right;">
-1646.029
-</td>
-<td style="text-align:right;">
-308.3333
-</td>
-<td style="text-align:right;">
-270.9809
-</td>
-<td style="text-align:right;">
-0.6031318
-</td>
-<td style="text-align:right;">
-3.579132
-</td>
-<td style="text-align:right;">
-5.832132
-</td>
-<td style="text-align:right;">
-7.148132
-</td>
-<td style="text-align:right;">
-7.772132
-</td>
-<td style="text-align:right;">
-8.510132
-</td>
-<td style="text-align:right;">
-9.499132
-</td>
-<td style="text-align:right;">
-10.203132
-</td>
-<td style="text-align:right;">
-10.789132
-</td>
-<td style="text-align:right;">
-11.405132
-</td>
-<td style="text-align:right;">
-11.732132
-</td>
-<td style="text-align:right;">
-12.027132
-</td>
-<td style="text-align:right;">
-12.98713
-</td>
-<td style="text-align:right;">
-13.57613
-</td>
-<td style="text-align:right;">
-14.66913
-</td>
-<td style="text-align:right;">
-9.605225
-</td>
-<td style="text-align:right;">
-10.066179
-</td>
-<td style="text-align:right;">
-8.743306
-</td>
-<td style="text-align:right;">
-6.440769
-</td>
-<td style="text-align:right;">
-10.203132
-</td>
-<td style="text-align:right;">
-11.819132
-</td>
-<td style="text-align:right;">
-16.49613
-</td>
-<td style="text-align:right;">
-0.2501318
-</td>
-<td style="text-align:right;">
-9.067614
-</td>
-<td style="text-align:right;">
-3.011248
-</td>
-<td style="text-align:right;">
-0.3135010
-</td>
-<td style="text-align:right;">
-16.246
-</td>
-<td style="text-align:right;">
-3.960
-</td>
-<td style="text-align:right;">
-3.758277
-</td>
-<td style="text-align:right;">
--0.9044234
-</td>
-<td style="text-align:right;">
-58.96927
-</td>
-<td style="text-align:right;">
-23.32420
-</td>
-<td style="text-align:right;">
-96.52975
-</td>
-<td style="text-align:right;">
-41.03073
-</td>
-<td style="text-align:right;">
-76.65027
-</td>
-<td style="text-align:right;">
-3.470248
-</td>
-<td style="text-align:right;">
-0.5822714
-</td>
-<td style="text-align:right;">
-88128573
-</td>
-<td style="text-align:right;">
-976518312
-</td>
-<td style="text-align:right;">
-11212339438
-</td>
-<td style="text-align:right;">
--1562964338
-</td>
-<td style="text-align:right;">
-22478240445
-</td>
-<td style="text-align:right;">
-1e-07
-</td>
-<td style="text-align:right;">
-2.061094
-</td>
-<td style="text-align:right;">
-2.2139065
-</td>
-<td style="text-align:right;">
-3.536683
-</td>
-<td style="text-align:right;">
-10.669550
-</td>
-<td style="text-align:right;">
-6.730110
-</td>
-<td style="text-align:right;">
-7.019065
-</td>
-<td style="text-align:right;">
-6.400429
-</td>
-<td style="text-align:right;">
-6.032778
-</td>
-<td style="text-align:right;">
-6.628989
-</td>
-<td style="text-align:right;">
-0.4151342
-</td>
-<td style="text-align:right;">
-9.999998
-</td>
-<td style="text-align:right;">
-0.4151342
-</td>
-<td style="text-align:right;">
-3.972893
-</td>
-<td style="text-align:right;">
-1.993212
-</td>
-<td style="text-align:right;">
-0.2961633
-</td>
-<td style="text-align:right;">
-9.584864
-</td>
-<td style="text-align:right;">
-3.501628
-</td>
-<td style="text-align:right;">
-1.973615
-</td>
-<td style="text-align:right;">
--0.1377673
-</td>
-<td style="text-align:right;">
-47.79657
-</td>
-<td style="text-align:right;">
-99.99989
-</td>
-<td style="text-align:right;">
-52.20343
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0.6730111
-</td>
-<td style="text-align:right;">
-42849522
-</td>
-<td style="text-align:right;">
-333943140
-</td>
-<td style="text-align:right;">
-2724935969
-</td>
-<td style="text-align:right;">
--531202288
-</td>
-<td style="text-align:right;">
-5380089693
-</td>
-<td style="text-align:right;">
-2e-07
-</td>
-<td style="text-align:right;">
-1.768527
-</td>
-<td style="text-align:right;">
-6.314976
-</td>
-<td style="text-align:right;">
-3.767138
-</td>
-<td style="text-align:right;">
-7.450165
-</td>
-<td style="text-align:right;">
-11.991092
-</td>
-<td style="text-align:right;">
-12.27172
-</td>
-<td style="text-align:right;">
-11.662012
-</td>
-<td style="text-align:right;">
-11.243122
-</td>
-<td style="text-align:right;">
-12.198369
-</td>
-<td style="text-align:right;">
-0.9138638
-</td>
-<td style="text-align:right;">
-19.00635
-</td>
-<td style="text-align:right;">
-0.7140398
-</td>
-<td style="text-align:right;">
-6.808948
-</td>
-<td style="text-align:right;">
-2.609396
-</td>
-<td style="text-align:right;">
-0.2176112
-</td>
-<td style="text-align:right;">
-18.29231
-</td>
-<td style="text-align:right;">
-3.605498
-</td>
-<td style="text-align:right;">
-2.951113
-</td>
-<td style="text-align:right;">
--0.3990219
-</td>
-<td style="text-align:right;">
-54.22588
-</td>
-<td style="text-align:right;">
-99.99287
-</td>
-<td style="text-align:right;">
-45.77412
-</td>
-<td style="text-align:right;">
-0.0070136
-</td>
-<td style="text-align:right;">
-0.6308993
-</td>
-<td style="text-align:right;">
-130978095
-</td>
-<td style="text-align:right;">
-1706426439
-</td>
-<td style="text-align:right;">
-22913600260
-</td>
-<td style="text-align:right;">
--3005281379
-</td>
-<td style="text-align:right;">
-54062999692
-</td>
-<td style="text-align:right;">
-1e-07
-</td>
-<td style="text-align:right;">
-1.814688
-</td>
-<td style="text-align:right;">
-11.0772284
-</td>
-<td style="text-align:right;">
-5.288140
-</td>
-<td style="text-align:right;">
-13.01774
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-10
-</td>
-<td style="text-align:right;">
-10
-</td>
-<td style="text-align:right;">
-3406.333
-</td>
-<td style="text-align:right;">
-1455.664
-</td>
-<td style="text-align:right;">
-275.6667
-</td>
-<td style="text-align:right;">
-233.3156
-</td>
-<td style="text-align:right;">
-0.5729873
-</td>
-<td style="text-align:right;">
-2.722987
-</td>
-<td style="text-align:right;">
-5.495987
-</td>
-<td style="text-align:right;">
-7.916987
-</td>
-<td style="text-align:right;">
-8.435987
-</td>
-<td style="text-align:right;">
-8.780987
-</td>
-<td style="text-align:right;">
-9.394987
-</td>
-<td style="text-align:right;">
-10.117987
-</td>
-<td style="text-align:right;">
-10.792987
-</td>
-<td style="text-align:right;">
-11.592987
-</td>
-<td style="text-align:right;">
-12.031987
-</td>
-<td style="text-align:right;">
-12.437987
-</td>
-<td style="text-align:right;">
-13.26199
-</td>
-<td style="text-align:right;">
-13.86599
-</td>
-<td style="text-align:right;">
-14.81099
-</td>
-<td style="text-align:right;">
-9.734746
-</td>
-<td style="text-align:right;">
-10.234741
-</td>
-<td style="text-align:right;">
-8.751519
-</td>
-<td style="text-align:right;">
-6.185856
-</td>
-<td style="text-align:right;">
-10.117987
-</td>
-<td style="text-align:right;">
-9.122987
-</td>
-<td style="text-align:right;">
-16.92899
-</td>
-<td style="text-align:right;">
-0.2509873
-</td>
-<td style="text-align:right;">
-9.984659
-</td>
-<td style="text-align:right;">
-3.159851
-</td>
-<td style="text-align:right;">
-0.3245951
-</td>
-<td style="text-align:right;">
-16.678
-</td>
-<td style="text-align:right;">
-3.596
-</td>
-<td style="text-align:right;">
-3.899630
-</td>
-<td style="text-align:right;">
--0.9617088
-</td>
-<td style="text-align:right;">
-56.11462
-</td>
-<td style="text-align:right;">
-64.21504
-</td>
-<td style="text-align:right;">
-95.78039
-</td>
-<td style="text-align:right;">
-43.88538
-</td>
-<td style="text-align:right;">
-35.75615
-</td>
-<td style="text-align:right;">
-4.219608
-</td>
-<td style="text-align:right;">
-0.5750341
-</td>
-<td style="text-align:right;">
-78904867
-</td>
-<td style="text-align:right;">
-891695670
-</td>
-<td style="text-align:right;">
-10444019980
-</td>
-<td style="text-align:right;">
--1412658924
-</td>
-<td style="text-align:right;">
-20586918534
-</td>
-<td style="text-align:right;">
-1e-07
-</td>
-<td style="text-align:right;">
-1.844242
-</td>
-<td style="text-align:right;">
-0.6117584
-</td>
-<td style="text-align:right;">
-3.402585
-</td>
-<td style="text-align:right;">
-10.835438
-</td>
-<td style="text-align:right;">
-6.346769
-</td>
-<td style="text-align:right;">
-6.735573
-</td>
-<td style="text-align:right;">
-5.882559
-</td>
-<td style="text-align:right;">
-5.343706
-</td>
-<td style="text-align:right;">
-6.429673
-</td>
-<td style="text-align:right;">
-0.8228467
-</td>
-<td style="text-align:right;">
-9.999990
-</td>
-<td style="text-align:right;">
-0.8228467
-</td>
-<td style="text-align:right;">
-5.086469
-</td>
-<td style="text-align:right;">
-2.255320
-</td>
-<td style="text-align:right;">
-0.3553493
-</td>
-<td style="text-align:right;">
-9.177144
-</td>
-<td style="text-align:right;">
-4.132672
-</td>
-<td style="text-align:right;">
-1.839781
-</td>
-<td style="text-align:right;">
--0.1149567
-</td>
-<td style="text-align:right;">
-50.66039
-</td>
-<td style="text-align:right;">
-99.99987
-</td>
-<td style="text-align:right;">
-49.33961
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0.6346775
-</td>
-<td style="text-align:right;">
-34174262
-</td>
-<td style="text-align:right;">
-264537750
-</td>
-<td style="text-align:right;">
-2158913229
-</td>
-<td style="text-align:right;">
--386150185
-</td>
-<td style="text-align:right;">
-3702606927
-</td>
-<td style="text-align:right;">
-2e-07
-</td>
-<td style="text-align:right;">
-2.059980
-</td>
-<td style="text-align:right;">
-5.523922
-</td>
-<td style="text-align:right;">
-3.076309
-</td>
-<td style="text-align:right;">
-7.099386
-</td>
-<td style="text-align:right;">
-11.960944
-</td>
-<td style="text-align:right;">
-12.25226
-</td>
-<td style="text-align:right;">
-11.556626
-</td>
-<td style="text-align:right;">
-10.796298
-</td>
-<td style="text-align:right;">
-11.920920
-</td>
-<td style="text-align:right;">
-1.1358458
-</td>
-<td style="text-align:right;">
-19.07216
-</td>
-<td style="text-align:right;">
-0.8945503
-</td>
-<td style="text-align:right;">
-7.053692
-</td>
-<td style="text-align:right;">
-2.655879
-</td>
-<td style="text-align:right;">
-0.2220459
-</td>
-<td style="text-align:right;">
-18.17761
-</td>
-<td style="text-align:right;">
-3.490515
-</td>
-<td style="text-align:right;">
-4.460802
-</td>
-<td style="text-align:right;">
--0.6442338
-</td>
-<td style="text-align:right;">
-49.35820
-</td>
-<td style="text-align:right;">
-99.95075
-</td>
-<td style="text-align:right;">
-50.64180
-</td>
-<td style="text-align:right;">
-0.0491192
-</td>
-<td style="text-align:right;">
-0.6271417
-</td>
-<td style="text-align:right;">
-113079129
-</td>
-<td style="text-align:right;">
-1470546634
-</td>
-<td style="text-align:right;">
-19710531865
-</td>
-<td style="text-align:right;">
--2587049261
-</td>
-<td style="text-align:right;">
-46419402627
-</td>
-<td style="text-align:right;">
-1e-07
-</td>
-<td style="text-align:right;">
-1.724580
-</td>
-<td style="text-align:right;">
-10.8250979
-</td>
-<td style="text-align:right;">
-5.172859
-</td>
-<td style="text-align:right;">
-13.00145
-</td>
-</tr>
 </tbody>
 </table>
 </div>
 <p>The stand-level metrics are statistical descriptive values, such as
 percentiles, standard deviation or means, as well as the number of
 points belonging to the normal section of the point cloud.</p>
-<p>The values <strong><code>n.pts</code></strong> and
-<strong><code>n.pts.est</code></strong> indicate the number of points
-and the estimated number of points respectively that belong to the
-tree’s normal section (1.3 m +/- 0.05 m). This is calculated for the
+<p>The values <strong><code>n.pts</code></strong>,
+<strong><code>n.pts.est</code></strong>,
+<strong><code>n.pts.red</code></strong> and
+<strong><code>n.pts.red.est</code></strong> indicate the number of
+points and the estimated number of points respectively that belong to
+the tree’s normal section (1.3 m +/- 0.05 m). This is calculated for the
 original point cloud (<code>n.pts</code>, <code>n.pts.est</code>) and
-the reduced point cloud (<strong><code>n.pts.red</code></strong>,
-<strong><code>n.pts.red.est</code></strong>).</p>
+the reduced point cloud (<code>n.pts.red</code>,
+<code>n.pts.red.est</code>).</p>
 <p>Furthermore, the height percentiles (<code>P01</code>,
 <code>P05</code>, <code>P10</code>, <code>P20</code>, <code>P25</code>,
 <code>P30</code>, <code>P40</code>, <code>P50</code>, <code>P60</code>,
@@ -4529,7 +3168,7 @@ Therefore they denominate the height (in m) above ground level.</p>
 <p>To describe the tendencies and distribution of the spherical
 coordinates <code>z</code>, <span class="math inline">\(\rho\)</span>
 (horizontal distance, <code>rho</code>) and <code>r</code> (euclidean
-distance), the following statics are calculated:</p>
+distance), the following statistics are calculated:</p>
 <ul>
 <li>arithmetic (<code>mean.arit.z/rho/r</code>), quadratic
 (<code>mean.qua.z/rho/r</code>), geometric
@@ -4553,9 +3192,9 @@ distance), the following statics are calculated:</p>
 (<code>p.b.mean.z/rho/r</code>) and the mode
 (<code>p.b.mode.z/rho/r</code>)</li>
 <li>percentage of points above a height of 2 m (<code>p.a.2m.z</code>,
-only for the z coordinate)</li>
+only for the <span class="math inline">\(z\)</span> coordinate)</li>
 <li>percentage of points below a height of 2 m (<code>p.b.2m.z</code>,
-only for the z coordinate)</li>
+only for the <span class="math inline">\(z\)</span> coordinate)</li>
 <li>L-moments of order 2, 3 and 4 (<code>L2.z/rho/r</code>,
 <code>L3.z/rho/r</code> and <code>L4.z/rho/r</code>)</li>
 <li>third and forth central L-moments (<code>L3.mu.z/rho/r</code> and
@@ -4575,7 +3214,7 @@ the spherical coordinates (<code>weibull_c.z/rho/r</code>,
 </div>
 <div id="stand-level-variables" class="section level3">
 <h3>Stand-level variables</h3>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>metrics[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">36</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>metrics[<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">36</span>]</span></code></pre></div>
 <div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
 <table>
 <thead>
@@ -4765,16 +3404,16 @@ hharm.0.tls
 25.72557
 </td>
 <td style="text-align:right;">
-11.989629
+11.98963
 </td>
 <td style="text-align:right;">
-12.020864
+12.02086
 </td>
 <td style="text-align:right;">
 11.95768
 </td>
 <td style="text-align:right;">
-11.925077
+11.92508
 </td>
 <td style="text-align:right;">
 31.50910
@@ -4789,16 +3428,16 @@ hharm.0.tls
 31.30362
 </td>
 <td style="text-align:right;">
-12.779890
+12.77989
 </td>
 <td style="text-align:right;">
-12.785912
+12.78591
 </td>
 <td style="text-align:right;">
-12.773816
+12.77382
 </td>
 <td style="text-align:right;">
-12.767686
+12.76769
 </td>
 </tr>
 <tr>
@@ -4875,16 +3514,16 @@ hharm.0.tls
 24.86175
 </td>
 <td style="text-align:right;">
-11.593800
+11.59380
 </td>
 <td style="text-align:right;">
-11.661994
+11.66199
 </td>
 <td style="text-align:right;">
 11.51966
 </td>
 <td style="text-align:right;">
-11.439023
+11.43902
 </td>
 <td style="text-align:right;">
 32.68378
@@ -4899,16 +3538,16 @@ hharm.0.tls
 32.53280
 </td>
 <td style="text-align:right;">
-12.419503
+12.41950
 </td>
 <td style="text-align:right;">
-12.443320
+12.44332
 </td>
 <td style="text-align:right;">
-12.395757
+12.39576
 </td>
 <td style="text-align:right;">
-12.372121
+12.37212
 </td>
 </tr>
 <tr>
@@ -4985,16 +3624,16 @@ hharm.0.tls
 27.55093
 </td>
 <td style="text-align:right;">
-11.382013
+11.38201
 </td>
 <td style="text-align:right;">
-11.442462
+11.44246
 </td>
 <td style="text-align:right;">
 11.32332
 </td>
 <td style="text-align:right;">
-11.266332
+11.26633
 </td>
 <td style="text-align:right;">
 31.17303
@@ -5009,16 +3648,16 @@ hharm.0.tls
 31.10141
 </td>
 <td style="text-align:right;">
-11.785407
+11.78541
 </td>
 <td style="text-align:right;">
-11.939159
+11.93916
 </td>
 <td style="text-align:right;">
-11.628835
+11.62884
 </td>
 <td style="text-align:right;">
-11.472547
+11.47255
 </td>
 </tr>
 <tr>
@@ -5095,16 +3734,16 @@ hharm.0.tls
 31.58609
 </td>
 <td style="text-align:right;">
-12.696362
+12.69636
 </td>
 <td style="text-align:right;">
-12.816023
+12.81602
 </td>
 <td style="text-align:right;">
 12.56975
 </td>
 <td style="text-align:right;">
-12.435972
+12.43597
 </td>
 <td style="text-align:right;">
 38.69937
@@ -5119,16 +3758,16 @@ hharm.0.tls
 38.37101
 </td>
 <td style="text-align:right;">
-12.559739
+12.55974
 </td>
 <td style="text-align:right;">
-12.576498
+12.57650
 </td>
 <td style="text-align:right;">
-12.541855
+12.54186
 </td>
 <td style="text-align:right;">
-12.522566
+12.52257
 </td>
 </tr>
 <tr>
@@ -5205,16 +3844,16 @@ hharm.0.tls
 27.23715
 </td>
 <td style="text-align:right;">
-12.774202
+12.77420
 </td>
 <td style="text-align:right;">
-12.993287
+12.99329
 </td>
 <td style="text-align:right;">
 12.47878
 </td>
 <td style="text-align:right;">
-12.083401
+12.08340
 </td>
 <td style="text-align:right;">
 34.98638
@@ -5229,16 +3868,16 @@ hharm.0.tls
 34.83518
 </td>
 <td style="text-align:right;">
-13.399105
+13.39910
 </td>
 <td style="text-align:right;">
-13.404667
+13.40467
 </td>
 <td style="text-align:right;">
-13.393588
+13.39359
 </td>
 <td style="text-align:right;">
-13.388121
+13.38812
 </td>
 </tr>
 <tr>
@@ -5315,16 +3954,16 @@ hharm.0.tls
 27.69453
 </td>
 <td style="text-align:right;">
-12.823806
+12.82381
 </td>
 <td style="text-align:right;">
-12.846892
+12.84689
 </td>
 <td style="text-align:right;">
 12.80020
 </td>
 <td style="text-align:right;">
-12.776111
+12.77611
 </td>
 <td style="text-align:right;">
 31.41186
@@ -5339,456 +3978,16 @@ hharm.0.tls
 31.33830
 </td>
 <td style="text-align:right;">
-12.793794
+12.79379
 </td>
 <td style="text-align:right;">
-12.816664
+12.81666
 </td>
 <td style="text-align:right;">
-12.771296
+12.77130
 </td>
 <td style="text-align:right;">
-12.749230
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-7
-</td>
-<td style="text-align:right;">
-10
-</td>
-<td style="text-align:right;">
-222.8169
-</td>
-<td style="text-align:right;">
-241.4554
-</td>
-<td style="text-align:right;">
-237.3396
-</td>
-<td style="text-align:right;">
-240.5856
-</td>
-<td style="text-align:right;">
-234.7690
-</td>
-<td style="text-align:right;">
-227.6167
-</td>
-<td style="text-align:right;">
-14.54917
-</td>
-<td style="text-align:right;">
-15.76620
-</td>
-<td style="text-align:right;">
-15.49745
-</td>
-<td style="text-align:right;">
-15.70941
-</td>
-<td style="text-align:right;">
-15.32961
-</td>
-<td style="text-align:right;">
-14.86259
-</td>
-<td style="text-align:right;">
-68.43174
-</td>
-<td style="text-align:right;">
-74.15599
-</td>
-<td style="text-align:right;">
-72.89194
-</td>
-<td style="text-align:right;">
-73.88887
-</td>
-<td style="text-align:right;">
-72.10248
-</td>
-<td style="text-align:right;">
-69.90586
-</td>
-<td style="text-align:right;">
-28.64982
-</td>
-<td style="text-align:right;">
-28.83369
-</td>
-<td style="text-align:right;">
-28.46615
-</td>
-<td style="text-align:right;">
-28.28447
-</td>
-<td style="text-align:right;">
-9.427252
-</td>
-<td style="text-align:right;">
-9.538041
-</td>
-<td style="text-align:right;">
-9.30623
-</td>
-<td style="text-align:right;">
-9.174771
-</td>
-<td style="text-align:right;">
-32.09548
-</td>
-<td style="text-align:right;">
-32.11374
-</td>
-<td style="text-align:right;">
-32.07683
-</td>
-<td style="text-align:right;">
-32.05773
-</td>
-<td style="text-align:right;">
-9.467794
-</td>
-<td style="text-align:right;">
-9.491537
-</td>
-<td style="text-align:right;">
-9.442169
-</td>
-<td style="text-align:right;">
-9.414334
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-8
-</td>
-<td style="text-align:right;">
-10
-</td>
-<td style="text-align:right;">
-381.9719
-</td>
-<td style="text-align:right;">
-413.9235
-</td>
-<td style="text-align:right;">
-406.8678
-</td>
-<td style="text-align:right;">
-409.1669
-</td>
-<td style="text-align:right;">
-399.6612
-</td>
-<td style="text-align:right;">
-397.0100
-</td>
-<td style="text-align:right;">
-25.47545
-</td>
-<td style="text-align:right;">
-27.60645
-</td>
-<td style="text-align:right;">
-27.13587
-</td>
-<td style="text-align:right;">
-27.28921
-</td>
-<td style="text-align:right;">
-26.65523
-</td>
-<td style="text-align:right;">
-26.47841
-</td>
-<td style="text-align:right;">
-162.31490
-</td>
-<td style="text-align:right;">
-175.89239
-</td>
-<td style="text-align:right;">
-172.89417
-</td>
-<td style="text-align:right;">
-173.87114
-</td>
-<td style="text-align:right;">
-169.83178
-</td>
-<td style="text-align:right;">
-168.70520
-</td>
-<td style="text-align:right;">
-27.97931
-</td>
-<td style="text-align:right;">
-29.14072
-</td>
-<td style="text-align:right;">
-26.81026
-</td>
-<td style="text-align:right;">
-25.63604
-</td>
-<td style="text-align:right;">
-12.967147
-</td>
-<td style="text-align:right;">
-13.221756
-</td>
-<td style="text-align:right;">
-12.64289
-</td>
-<td style="text-align:right;">
-12.226733
-</td>
-<td style="text-align:right;">
-37.57058
-</td>
-<td style="text-align:right;">
-38.21408
-</td>
-<td style="text-align:right;">
-36.96986
-</td>
-<td style="text-align:right;">
-36.42600
-</td>
-<td style="text-align:right;">
-14.302392
-</td>
-<td style="text-align:right;">
-14.419537
-</td>
-<td style="text-align:right;">
-14.188125
-</td>
-<td style="text-align:right;">
-14.078081
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-9
-</td>
-<td style="text-align:right;">
-10
-</td>
-<td style="text-align:right;">
-159.1549
-</td>
-<td style="text-align:right;">
-172.4681
-</td>
-<td style="text-align:right;">
-169.5283
-</td>
-<td style="text-align:right;">
-189.2484
-</td>
-<td style="text-align:right;">
-180.6815
-</td>
-<td style="text-align:right;">
-161.4225
-</td>
-<td style="text-align:right;">
-15.61629
-</td>
-<td style="text-align:right;">
-16.92258
-</td>
-<td style="text-align:right;">
-16.63412
-</td>
-<td style="text-align:right;">
-18.56906
-</td>
-<td style="text-align:right;">
-17.72848
-</td>
-<td style="text-align:right;">
-15.83879
-</td>
-<td style="text-align:right;">
-86.51096
-</td>
-<td style="text-align:right;">
-93.74753
-</td>
-<td style="text-align:right;">
-92.14953
-</td>
-<td style="text-align:right;">
-102.86868
-</td>
-<td style="text-align:right;">
-98.21201
-</td>
-<td style="text-align:right;">
-87.74355
-</td>
-<td style="text-align:right;">
-34.77630
-</td>
-<td style="text-align:right;">
-35.34549
-</td>
-<td style="text-align:right;">
-34.16537
-</td>
-<td style="text-align:right;">
-33.51814
-</td>
-<td style="text-align:right;">
-12.948546
-</td>
-<td style="text-align:right;">
-13.072242
-</td>
-<td style="text-align:right;">
-12.82890
-</td>
-<td style="text-align:right;">
-12.714533
-</td>
-<td style="text-align:right;">
-38.45597
-</td>
-<td style="text-align:right;">
-38.66824
-</td>
-<td style="text-align:right;">
-38.25009
-</td>
-<td style="text-align:right;">
-38.05223
-</td>
-<td style="text-align:right;">
-14.021901
-</td>
-<td style="text-align:right;">
-14.100620
-</td>
-<td style="text-align:right;">
-13.943145
-</td>
-<td style="text-align:right;">
-13.864905
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-10
-</td>
-<td style="text-align:right;">
-10
-</td>
-<td style="text-align:right;">
-159.1549
-</td>
-<td style="text-align:right;">
-172.4681
-</td>
-<td style="text-align:right;">
-169.5283
-</td>
-<td style="text-align:right;">
-180.4342
-</td>
-<td style="text-align:right;">
-174.5637
-</td>
-<td style="text-align:right;">
-161.0274
-</td>
-<td style="text-align:right;">
-12.62109
-</td>
-<td style="text-align:right;">
-13.67684
-</td>
-<td style="text-align:right;">
-13.44371
-</td>
-<td style="text-align:right;">
-14.30855
-</td>
-<td style="text-align:right;">
-13.84302
-</td>
-<td style="text-align:right;">
-12.76958
-</td>
-<td style="text-align:right;">
-66.19513
-</td>
-<td style="text-align:right;">
-71.73229
-</td>
-<td style="text-align:right;">
-70.50956
-</td>
-<td style="text-align:right;">
-75.04552
-</td>
-<td style="text-align:right;">
-72.60387
-</td>
-<td style="text-align:right;">
-66.97390
-</td>
-<td style="text-align:right;">
-31.63177
-</td>
-<td style="text-align:right;">
-31.77558
-</td>
-<td style="text-align:right;">
-31.49079
-</td>
-<td style="text-align:right;">
-31.35335
-</td>
-<td style="text-align:right;">
-12.865906
-</td>
-<td style="text-align:right;">
-13.030798
-</td>
-<td style="text-align:right;">
-12.69047
-</td>
-<td style="text-align:right;">
-12.508349
-</td>
-<td style="text-align:right;">
-33.53881
-</td>
-<td style="text-align:right;">
-33.61798
-</td>
-<td style="text-align:right;">
-33.46008
-</td>
-<td style="text-align:right;">
-33.38204
-</td>
-<td style="text-align:right;">
-11.969079
-</td>
-<td style="text-align:right;">
-12.173402
-</td>
-<td style="text-align:right;">
-11.774260
-</td>
-<td style="text-align:right;">
-11.593831
+12.74923
 </td>
 </tr>
 </tbody>
@@ -5805,21 +4004,26 @@ and are therefore extended to an area of one ha.</p>
 <p>The stand density (<strong><code>N.tls</code></strong>, trees/ha) is
 calculated by the following equations. For the circular fixed area and
 k-tree plots, <code>N.tls</code> is calculated by</p>
-<p><span class="math inline">\(N.tls=\frac{10000}{\pi R^2}\cdot
-n\)</span></p>
+<p><span class="math display">\[
+N.tls=\frac{10000}{\pi R^2}\cdot n
+\]</span></p>
 <p>with <span class="math inline">\(R\)</span> being the radius of the
 plot (in m) and <span class="math inline">\(n\)</span> the number of
 detected trees. The density of angle-count plots is calculated by</p>
-<p><span class="math inline">\(N.tls=\sum_{i=1}^{n}
-\frac{BAF}{g_i}\)</span></p>
+<p><span class="math display">\[
+N.tls=\sum_{i=1}^{n} \frac{BAF}{g_i}
+\]</span></p>
 <p>with <span class="math inline">\(BAF\)</span> being the basal area
 factor (in m<span class="math inline">\(^2\)</span>/ha) and <span class="math inline">\(g_i\)</span> the basal area of the tree <span class="math inline">\(i\)</span> (in m<span class="math inline">\(^2\)</span>).</p>
 <p>The basal area (<strong><code>G.tls</code></strong>, in m<span class="math inline">\(^2\)</span>/ha) is estimated for circular fixed
 area and k-tree plots by the following equation:</p>
-<p><span class="math inline">\(G.tls=\frac{10000}{\pi R^2}\sum_{i=1}^{n}
-g_i\)</span></p>
+<p><span class="math display">\[
+G.tls=\frac{10000}{\pi R^2}\sum_{i=1}^{n} g_i
+\]</span></p>
 <p>and for angle-count plots, the following equation is applied:</p>
-<p><span class="math inline">\(G.tls=BAF \cdot n\)</span></p>
+<p><span class="math display">\[
+G.tls=BAF \cdot n
+\]</span></p>
 <p>The stem volume (<strong><code>V.tls</code></strong>, in m<span class="math inline">\(^3\)</span>/ha) is estimated by modelling the stem
 profile as a paraboloid. The volume is calculated as the volume of the
 revolution of the paraboloid function. The total heights of the detected
@@ -5827,13 +4031,17 @@ trees are estimated as the 99th percentile of the points of the <span class="mat
 polygons (<span class="math inline">\(h_{P_{99}i}\)</span>, in m). The
 equation used for the calculation for circular fixed area and k-tree
 plots is</p>
-<p><span class="math inline">\(V.tls=\frac{10000}{\pi R^2}\sum_{i=1}^{n}
-\pi \cdot \frac{h_{P_{99}i}^2}{2} \cdot \frac{(\frac{1}{2} \cdot
-dbh_i)^2}{(h_{P_{99}i} - 1.3)^2}\)</span></p>
+<p><span class="math display">\[
+V.tls=\frac{10000}{\pi R^2}\sum_{i=1}^{n} \pi \cdot
+\frac{h_{P_{99}i}^2}{2} \cdot \frac{(\frac{1}{2} \cdot
+dbh_i)^2}{(h_{P_{99}i} - 1.3)^2}
+\]</span></p>
 <p>and for angle-count plots is</p>
-<p><span class="math inline">\(V.tls=\sum_{i=1}^{n} \frac{BAF}{g_i}
-\cdot \pi \cdot \frac{h_{P_{99}i}^2}{2} \cdot \frac{(\frac{1}{2} \cdot
-dbh_i)^2}{(h_{P_{99}i} - 1.3)^2}\)</span></p>
+<p><span class="math display">\[
+V.tls=\sum_{i=1}^{n} \frac{BAF}{g_i} \cdot \pi \cdot
+\frac{h_{P_{99}i}^2}{2} \cdot \frac{(\frac{1}{2} \cdot
+dbh_i)^2}{(h_{P_{99}i} - 1.3)^2}
+\]</span></p>
 </div>
 <div id="occlusion-correction" class="section level4">
 <h4>Occlusion correction</h4>
@@ -5858,18 +4066,18 @@ function <code>distance.sampling</code> was used (i.e., when the
 <code>NULL</code>). Functions based on point transect sampling that
 describe how the probability of tree detection decreases with increasing
 distance from the TLS device are used for the calculation. These
-functions applied for the calculation of the variables
+functions are applied for the calculation of the variables
 <strong><code>N.hn</code></strong>/<strong><code>V.hn</code></strong>/<strong><code>G.hn</code></strong>
 and
 <strong><code>N.hr</code></strong>/<strong><code>V.hr</code></strong>/<strong><code>G.hr</code></strong>
-are Half-Normal and Hazard-Rate respectively. Additionally,
+and are Half-Normal and Hazard-Rate respectively. Additionally,
 <strong><code>N.hn.cov</code></strong>/<strong><code>V.hn.cov</code></strong>/<strong><code>G.hn.cov</code></strong>
 and
 <strong><code>N.hr.cov</code></strong>/<strong><code>V.hr.cov</code></strong>/<strong><code>G.hr.cov</code></strong>
 are calculated with expanding the scale component of the function with
 <span class="math inline">\(dbh\)</span> as covariate.</p>
-<p>The other approaches corrects shadowing effects. With this method an
-expansion factor is calculated to correct the variables. The expansion
+<p>The other approach corrects shadowing effects. Tthis method
+calculates an expansion factor to correct the variables. The expansion
 factor is based on the percentage of the shaded area i.e., unsample area
 which is not seen from the TLS device due to masking by trees. The
 corrected calculated variables are called
@@ -5883,7 +4091,7 @@ arithmetic (<strong><code>h.tls</code></strong>,
 <strong><code>d.tls</code></strong>), quadratic
 (<strong><code>h.g</code></strong>, <strong><code>d.g</code></strong>),
 geometric (<strong><code>h.geom</code></strong>,
-<strong><code>d.geom</code></strong>) and harmonic mean
+<strong><code>d.geom</code></strong>) and harmonic means
 (<strong><code>h.harm</code></strong>,
 <strong><code>d.harm</code></strong>). To calculate the dominant heights
 and diameters, only the <span class="math inline">\(n\)</span> largest
@@ -5896,7 +4104,7 @@ also calculated as the arithmetic
 (<strong><code>h.0.g</code></strong>,
 <strong><code>d.0.g</code></strong>), geometric
 (<strong><code>h.0.geom</code></strong>,
-<strong><code>d.0.geom</code></strong>) and harmonic mean
+<strong><code>d.0.geom</code></strong>) and harmonic means
 (<strong><code>h.0.harm</code></strong>,
 <strong><code>d.0.harm</code></strong>).</p>
 </div>
