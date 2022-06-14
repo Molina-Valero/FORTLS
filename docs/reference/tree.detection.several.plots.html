@@ -24,9 +24,9 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/plot_design_optimization.html">Plot design optimization</a>
     <a class="dropdown-item" href="../articles/stand_level.html">Stand-level</a>
     <a class="dropdown-item" href="../articles/tree_level.html">Tree-level</a>
-    <a class="dropdown-item" href="../articles/plot_design_optimization.html">Plot design optimization</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -70,7 +70,7 @@
                              ncr.threshold <span class="op">=</span> <span class="fl">0.1</span>,
                              tls.resolution <span class="op">=</span> <span class="cn">NULL</span>, tls.precision <span class="op">=</span> <span class="cn">NULL</span>,
                              stem.section <span class="op">=</span> <span class="cn">NULL</span>, breaks <span class="op">=</span> <span class="cn">NULL</span>,
-                             d.top <span class="op">=</span> <span class="cn">NULL</span>,
+                             den.type <span class="op">=</span> <span class="fl">1</span>, d.top <span class="op">=</span> <span class="cn">NULL</span>,
 
                              plot.attributes <span class="op">=</span> <span class="cn">NULL</span>,
 
@@ -181,6 +181,10 @@
 <dd><p>Top stem diameter (cm) considered to estimate commercial timber volume.</p></dd>
 
 
+  <dt>den.type</dt>
+<dd><p>Numeric argument indicating the dendrometic type used to estimate volumen when there are not sections enough to fit a taper equation. Dendrometrics types available are the following: cylinder = 0, paraboloid = 1 (by default), cone = 2 and neiloid = 3.</p></dd>
+
+
   <dt>plot.attributes</dt>
 <dd><p>Data frame with attributes at plot level. It must contain a column named <code>id</code> (character string or numeric value) with encoding coinciding with that used in <code>id</code> argument of <code><a href="normalize.html">normalize</a></code> for identifying plots. If there are strata, another column named ‘stratum’ (numeric) will be required for other functionalities of <span class="pkg">FORTLS</span> (see, for instance, <code><a href="estimation.plot.size.html">estimation.plot.size</a></code> or <code><a href="metrics.variables.html">metrics.variables</a></code>). If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, the function will not add these possible plot attributes.</p></dd>
 
@@ -269,7 +273,6 @@ and Adela Martínez-Calvo.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing plot: 1</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Normalizing</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Detecting trees</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required namespace: rgeos</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing section: 1.3 m</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing plot: 2</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Normalizing</span>
