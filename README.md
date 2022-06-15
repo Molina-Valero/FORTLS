@@ -1,6 +1,8 @@
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 
-FORTLS <img src="https://github.com/Molina-Valero/FORTLS/blob/devel/man/figures/FORTLS.png" align="right" width="250"/>
-======================================================================================================
+# FORTLS <img src="man/figures/FORTLS.png" align="right" alt="" width="120" />
+
+<!-- badges: start -->
 
 ![license](https://img.shields.io/badge/Licence-GPL--3-blue.svg)
 [![](https://www.r-pkg.org/badges/version/FORTLS)](https://CRAN.R-project.org/package=FORTLS)
