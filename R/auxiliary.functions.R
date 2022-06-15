@@ -388,6 +388,7 @@
 
 
   .dat <- cut
+  # .dat <- .cut[.cut$cluster == 12, ]
 
   if(nrow(.dat) < 10){return(.filter)}
 
@@ -611,8 +612,8 @@
 # .filter <- .filter[which(.filter$tree == 1), , drop = FALSE]
 
 .filter$tree <- ifelse(.filter$circ == 1 & .filter$density.radio >= .outliers, 1,
-                       ifelse(.filter$arc.circ == 1 & .filter$occlusion > 0.95 & .filter$density.radio >= .outliers, 1,
-                              ifelse(.filter$circ == 0 & .filter$arc.circ == 0 & .filter$occlusion > 0.975 & .filter$density.radio >= .outliers, 1, 0)))
+                       ifelse(.filter$arc.circ == 1 & .filter$occlusion >= 0.95 & .filter$density.radio >= .outliers, 1,
+                              ifelse(.filter$circ == 0 & .filter$arc.circ == 0 & .filter$occlusion >= 0.975 & .filter$density.radio >= .outliers, 1, 0)))
 .filter <- .filter[which(.filter$tree == 1), , drop = FALSE]
 
 # Dbh maximum and minimum
@@ -787,7 +788,7 @@ if(nrow(.filter) < 1){
 .stem.axis <- function(data, scan.approach = "single"){
 
   if(scan.approach == "multi"){
-    data <- data[data$prob > 0.9, ]} else {
+    data <- data[data$prob > 0.5, ]} else {
 
     data <- data[data$prob < 0.1 | data$prob > 0.9, ]}
 

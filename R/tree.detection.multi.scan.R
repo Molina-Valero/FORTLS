@@ -51,7 +51,7 @@ tree.detection.multi.scan <- function(data,
   stem <- VoxR::vox(stem[, c("x", "y", "z")], res = 0.03)} else {
     stem <- VoxR::vox(stem[, c("x", "y", "z")], res = tls.precision)}
 
-  stem <- stem[, c("x", "y", "z", "npts")]
+  # stem <- stem[, c("x", "y", "z", "npts")]
 
   # dat <- data[data$prob > 0.75, ]
   # dat <- VoxR::vox(dat[, c("x", "y", "z")], res = 0.03)
@@ -105,6 +105,8 @@ tree.detection.multi.scan <- function(data,
 
   rm(stem)
 
+  # kk <- eje[eje$sec >= 1 & eje$sec <= 2, ]
+  # points(kk$x, kk$y, pch = 19, col = 2)
 
   # Estimating NCR threshold when RGB is available
 
@@ -175,6 +177,13 @@ tree.detection.multi.scan <- function(data,
     # Assigning section to the slice
 
     .cut$sec <- cuts
+
+    # kk <- data.frame(x = tapply(.cut$x, .cut$cluster, mean),
+    #                  y = tapply(.cut$y, .cut$cluster, mean),
+    #                  cluster = tapply(.cut$cluster, .cut$cluster, mean))
+    #
+    # plot(.cut$x, .cut$y, col = .cut$cluster, asp = 1)
+    # text(kk$x, kk$y)
 
     # Selection of those cluster belonging to trees
 
