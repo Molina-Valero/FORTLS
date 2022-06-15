@@ -143,7 +143,7 @@ tree.detection.multi.scan <- function(data,
 
     .cut <- data[which(data$z > (cuts-slice-0.05) & data$z < (cuts+slice+0.05)), , drop = FALSE]
 
-    if(nrow(.cut) < 100){next}
+    if(nrow(.cut) < 50){next}
 
     .cut <- .ncr.remove.slice.double(.cut)
 

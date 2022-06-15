@@ -580,7 +580,7 @@
   .densidad_radio <- .n.pts.red / .radio
 
 
-  if(nrow(.dat) < 15){return(.filter)}
+  if(nrow(.dat) < 10){return(.filter)}
 
 
   # Results
