@@ -1,6 +1,6 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# FORTLS <img src="man/figures/FORTLS.png" align="right" alt="" width="120" />
+# FORTLS <img src="man/figures/logo.png" align="right" alt="" width="120" />
 
 <!-- badges: start -->
 
