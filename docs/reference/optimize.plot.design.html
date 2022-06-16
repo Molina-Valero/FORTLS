@@ -36,9 +36,9 @@ admissible are Pearson's correlation coefficient and/or Spearman's rho."><!-- ma
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/plot_design_optimization.html">Plot design optimization</a>
     <a class="dropdown-item" href="../articles/stand_level.html">Stand-level</a>
     <a class="dropdown-item" href="../articles/tree_level.html">Tree-level</a>
+    <a class="dropdown-item" href="../articles/plot_design_optimization.html">Plot design optimization</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -236,11 +236,11 @@ Fernando Montes and César Pérez-Cruzado.</p>
 <span class="r-in">                                   <span class="st">"hgeom.0"</span>, <span class="st">"hharm.0"</span><span class="op">)</span>,</span>
 <span class="r-in">                     save.result <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing correlations for fixed area plots</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (363.27 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (372.16 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing correlations for k-tree plots</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (88.57 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (94.56 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing correlations for angle-count plots</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (65.45 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (73.34 secs)</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">opt.corr</span> <span class="op">&lt;-</span> <span class="va">corr</span><span class="op">$</span><span class="va">opt.correlations</span></span>
 <span class="r-in"></span>
@@ -263,9 +263,9 @@ Fernando Montes and César Pérez-Cruzado.</p>
 <span class="r-in"><span class="fu">optimize.plot.design</span><span class="op">(</span>correlations <span class="op">=</span> <span class="va">opt.corr</span>, variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"N"</span>, <span class="st">"G"</span><span class="op">)</span>,</span>
 <span class="r-in">                     dir.result <span class="op">=</span> <span class="va">dir.result</span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Plotting heatmap(s) for optimal Pearson's correlations </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (4.04 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (6.57 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Plotting heatmap(s) for optimal Spearman's correlations </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (3.79 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (5.5 secs)</span>
 <span class="r-in"></span>
 <span class="r-in"></span>
 <span class="r-in">  <span class="co"># }</span></span>
