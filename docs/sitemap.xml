@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>/reference/tree.detection.multi.scans.html</loc>
+  </url>
+  <url>
     <loc>/reference/FORTLS-package.html</loc>
   </url>
   <url>
@@ -118,9 +121,6 @@
     <loc>/reference/tree.detection.multi.scan.html</loc>
   </url>
   <url>
-    <loc>/reference/tree.detection.multi.scans.html</loc>
-  </url>
-  <url>
     <loc>/reference/tree.detection.several.plots.html</loc>
   </url>
   <url>
@@ -139,6 +139,18 @@
     <loc>/reference/weighted_mean_sqrt.html</loc>
   </url>
   <url>
+    <loc>/articles/RB.G.fixed.area.html</loc>
+  </url>
+  <url>
+    <loc>/articles/correlations.h.fixed.area.pearson.html</loc>
+  </url>
+  <url>
+    <loc>/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>/articles/opt.correlations.fixed.area.plot.pearson.html</loc>
+  </url>
+  <url>
     <loc>/articles/plot_design_optimization.html</loc>
   </url>
   <url>
@@ -146,18 +158,6 @@
   </url>
   <url>
     <loc>/articles/tree_level.html</loc>
-  </url>
-  <url>
-    <loc>/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>/articles/RB.G.fixed.area.html</loc>
-  </url>
-  <url>
-    <loc>/articles/correlations.h.fixed.area.pearson.html</loc>
-  </url>
-  <url>
-    <loc>/articles/opt.correlations.fixed.area.plot.pearson.html</loc>
   </url>
   <url>
     <loc>/404.html</loc>
