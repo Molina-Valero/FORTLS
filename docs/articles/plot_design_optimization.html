@@ -41,9 +41,9 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/plot_design_optimization.html">Plot design optimization</a>
     <a class="dropdown-item" href="../articles/stand_level.html">Stand-level</a>
     <a class="dropdown-item" href="../articles/tree_level.html">Tree-level</a>
+    <a class="dropdown-item" href="../articles/plot_design_optimization.html">Plot design optimization</a>
   </div>
 </li>
       </ul>
@@ -82,13 +82,13 @@ Seppelt</h4>
     
     
 <p>The function <code>metrics.variables</code> used for the calculation
-of stand-level variables and metrics (see vignette “Stand level”)
+of stand-level variables and metrics (see vignette “Stand-level”)
 requires arguments specifying the plot designs and sizes. If the optimal
 plot design and size for the calculation of stand-level variables is not
-know, the optimal plots design for the corresponding TLS data can be
+known, the optimal plots design for the corresponding TLS data can be
 determined by two different approaches implemented in FORTLS. The
-approaches depend on whether field data for the plots is available or
-not.</p>
+approaches depend on whether field data for the sample plots is
+available or not.</p>
 <div class="section level2">
 <h2 id="estimating-optimal-plot-size-without-field-data">Estimating optimal plot size without field data<a class="anchor" aria-label="anchor" href="#estimating-optimal-plot-size-without-field-data"></a>
 </h2>
@@ -100,7 +100,7 @@ frame containing the list of detected trees (introduced in
 density (<span class="math inline">\(N\)</span>, trees/ha) and basal
 area (<span class="math inline">\(G\)</span>, m<span class="math inline">\(^2\)</span>/ha) for many simulated
 differently-sized plots and the three plot designs (circular fixed area,
-k-tree and angle-count) by increasing continuously their size.</p>
+k-tree and angle-count) by increasing continuously their sizes.</p>
 <p>Thus, circular fixed area plots with increasing radius (increment of
 0.1 m) to the maximum radius defined by
 <strong><code>radius.max</code></strong> in
@@ -122,35 +122,40 @@ trees in the estimations can be defined. By default the minimum <span class="mat
 estimated stand-level density (<span class="math inline">\(N\)</span>)
 and basal area (<span class="math inline">\(G\)</span>) on the <span class="math inline">\(y\)</span> axes respective to the different plot
 sizes (<span class="math inline">\(x\)</span> axes). The estimations
-will be performed for all simulated plots. By default the output graphs
-will contain one line for each plot. When
-<strong><code>average</code></strong> is set to <code>TRUE</code>, the
-average of all estimations as a continous line and the standard
-deviation as grey shaded area will be drawn instead of multiple lines
-for each sample plot. One chart for each plot design is drawn by
-default. If <strong><code>all.plot.designs</code></strong> is set to
-<code>TRUE</code>, the line charts of all three plot design will be
-drawn in one graph.</p>
+will be performed for simulated plots corresponding to all sample plots.
+By default the output graphs will contain one line for each sample plot.
+When <strong><code>average</code></strong> is set to <code>TRUE</code>,
+the average of all estimations (for all plots) as a continuous line and
+the standard deviation as grey shaded area will be drawn instead of
+multiple lines for each sample plot. One chart for each plot design is
+drawn by default. If <strong><code>all.plot.designs</code></strong> is
+set to <code>TRUE</code>, the line charts of all three plot design will
+be drawn in one graph with different colours for each plot design.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/estimation.plot.size.html">estimation.plot.size</a></span><span class="op">(</span>tree.tls <span class="op">=</span> <span class="va">tree.tls</span>,
                      plot.parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>radius.max <span class="op">=</span> <span class="fl">25</span>, k.max <span class="op">=</span> <span class="fl">50</span>, BAF.max <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>,
                      dbh.min <span class="op">=</span> <span class="fl">4</span>,
                      average <span class="op">=</span> <span class="cn">TRUE</span>, all.plot.designs <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 <p><img src="plot_design_optimization_files/figure-html/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;"></p>
-<p>The continuous line represents the average over all plots (i.e. 16
-plots in the example shown here) of the estimated density (<span class="math inline">\(N\)</span>) on the left and the basal area (<span class="math inline">\(G\)</span>) on the right. The dotted line
-indicates the number of plots. This figure helps to find suitable plot
-design for the calculation of stand-level metrics and variables. The
-optimal plot design and size should be chosen within a range where the
-estimated values for <span class="math inline">\(N\)</span> and <span class="math inline">\(G\)</span> reach a stable level. A too small plot
-leads to high errors of estimation, since the sample is too small. For
-example, in the example above the basal area estimated for fixed area
-plots with radius smaller than 5 m is higher than the true value. On the
-other hand, too large plots come along with systematic errors due to
-occlusion of trees. Therefore, for example the basal area of fixed area
-plots with radius bigger than 20 m is estimated lower than the true
-value. In order to avoid both types of errors, the figure helps to find
-a plot size range with stable values.</p>
+<p>The continuous line represents the average over all sample plots
+(i.e. 16 plots in the example shown here) of the estimated density
+(<span class="math inline">\(N\)</span>) on the left and the basal area
+(<span class="math inline">\(G\)</span>) on the right. The dotted line
+indicates the number of sample plots. This figure helps to find suitable
+plot designs for the calculation of stand-level metrics and variables.
+The optimal plot design and size should be chosen within a range where
+the estimated values for <span class="math inline">\(N\)</span> and
+<span class="math inline">\(G\)</span> reach a stable level. A too small
+plot leads to high errors of estimation, since only few trees enter the
+plot and therefore the sample is too small. In the example above, the
+basal area estimated for fixed area plots with radius smaller than 5 m
+is much higher (around 40-50 m<span class="math inline">\(^2\)</span>/ha) than the true value (around 20
+m<span class="math inline">\(^2\)</span>/ha). On the other hand, too
+large plots come along with systematic errors due to occlusion of trees.
+Therefore, the basal area in the same example of fixed area plots with
+radius bigger than 20 m is estimated lower than the true value. In order
+to avoid both types of errors, the figure helps to find a plot size
+range with stable values.</p>
 </div>
 <div class="section level2">
 <h2 id="validation-with-field-data-and-optimizing-plot-design">Validation with field data and optimizing plot design<a class="anchor" aria-label="anchor" href="#validation-with-field-data-and-optimizing-plot-design"></a>
@@ -162,16 +167,16 @@ first step of the optimization process, the function
 <strong><code>simulations</code></strong> simulates plots with
 incremental size and computes the corresponding stand-level metrics and
 variables (similar to the function <code>metrics.variables</code>, see
-&lt;stand-level vignette). Based on the simulated data, two different
+“Stand-level” vignette). Based on the simulated data, two different
 processes can be performed. First, the bias between TLS data and field
 data for each individual estimated variable can be assessed with the
 function <strong><code>relative.bias</code></strong>. Second,
 correlations between all estimated variables and metrics based on
-TLS-data (output data of the simulation function) and the variables
-estimated from field data can be calculated with the
+TLS-data (output data of the <code>simulations</code> function) and the
+variables estimated from field data can be calculated with the
 <strong><code>correlations</code></strong> function. This function
 calculates both the Pearson and Spearman correlation coefficients. To
-visualize the correlation coefficients, heatmaps can be drawn by the
+visualize the correlation coefficients, heat maps can be drawn with the
 <strong><code>optimize.plot.design</code></strong> function.</p>
 <div class="section level3">
 <h3 id="plot-simultaion-and-estimation-of-metrics-and-variables">Plot simultaion and estimation of metrics and variables<a class="anchor" aria-label="anchor" href="#plot-simultaion-and-estimation-of-metrics-and-variables"></a>
@@ -206,19 +211,19 @@ must be inserted in the argument
 each row must correspond to a tree (specified in the columns
 <code>id</code> and <code>tree</code>) and the values for
 <code>horizontal.distance</code>, <code>dbh</code>,
-<code>total.height</code> and an integer value indicating if the tree is
-dead (1) or alive (NA, specified in <code>dead</code>) must be included
-in the data frame.</p>
-<p>When the distance sampling method for correction occlusion effects
-was applied (function <code>distance.sample</code>, see Stand level
-vignette), a list with the results and output data frames from the
+<code>total.height</code> and an integer value indicating whether the
+tree is dead (1) or alive (NA, specified in <code>dead</code>) must be
+included in the data frame.</p>
+<p>When the distance sampling method for correction of occlusion effects
+was applied (function <code>distance.sample</code>, see “Stand-level”
+vignette), a list with the results in the output data frames from the
 aforesaid function can be introduced in
 <strong><code>tree.ds</code></strong>. The list must contain at least
 the data frame <code>tree</code> with the detection probabilities
 (<code>P.hn</code>, <code>P.hn.cov</code>, <code>P.hr</code> and
 <code>P.hr.cov</code>) for each tree. By default <code>tree.ds</code> is
 set to <code>NULL</code> and as a result, the calculations of the
-variables based on occlusion detection will not be performed.</p>
+variables based on occlusion correction will not be performed.</p>
 </div>
 <div class="section level4">
 <h4 id="specifying-designs-of-simulated-plots">Specifying designs of simulated plots<a class="anchor" aria-label="anchor" href="#specifying-designs-of-simulated-plots"></a>
@@ -238,7 +243,7 @@ include the following elements to customize the generated plots. The
 elements <code>radius.max</code>, <code>k.tree.max</code> and
 <code>BAF.max</code> define the maximum radius (in m), the maximum
 number of trees and the maximum BAF (in m<span class="math inline">\(^2\)</span>/ha) respectively to which the sizes of
-circular fixed area, k-tree and angle-count plots respectively can
+circular fixed area, k-tree and angle-count plots respectively should
 increase. By default the values are set to <code>radius.max = 25</code>,
 <code>k.tree.max = 50</code> and <code>BAF.max = 4</code>. The increment
 by which the sizes of circular fixed area and angle-count plots
@@ -274,7 +279,7 @@ point clouds (output of <code>normalize</code> function). If not
 specified, it is set to <code>NULL</code> and the current working
 directory is assigned to it. The output files will be saved by default,
 since the argument <strong><code>save.result</code></strong> is set to
-<code>TRUE</code> to the directory path indicated in
+<code>TRUE</code>, to the directory path indicated in
 <strong><code>dir.result</code></strong>. For each plot design (circular
 fixed area, k-tree and angle-count plots), a .csv file is created using
 the <code>write.csv</code> function from the <a href="https://CRAN.R-project.org/package=R.utils" class="external-link">utils</a> package.</p>
@@ -291,11 +296,13 @@ size determined by either <code>radius</code>, <code>k</code> or
 <code>N</code>, <code>G</code>, <code>V</code>, <code>V.user</code>,
 <code>W.user</code>, <code>d</code>, <code>dg</code>,
 <code>dgeom</code>, <code>dharm</code>, <code>h</code>, <code>hg</code>,
-<code>hgeom</code> and <code>hharm</code> display the stand-level
-variables based on the field data. The remaining columns contain the
-stand-level variables and metrics estimated for each plot based on the
-TLS data. As an example the data frame for circular fixed areas is shown
-below.</p>
+<code>hgeom</code>, <code>hharm</code>, <code>d.0</code>,
+<code>dg.0</code>, <code>dgeom.0</code>, <code>dharm.0</code>,
+<code>h.0</code>, <code>hg.0</code>, <code>hgeom.0</code> and
+<code>hharm.0</code> display the stand-level variables based on the
+field data. The remaining columns contain the stand-level variables and
+metrics estimated for each plot based on the TLS data. As an example the
+data frame for circular fixed area plots is shown below.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">simulations</span><span class="op">$</span><span class="va">fixed.area</span><span class="op">)</span></code></pre></div>
 <div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
@@ -3850,8 +3857,9 @@ NA
 corresponding variables an metrics are calculated. The plots are ordered
 from the smallest to the biggest. Plots with small radius can not be
 simulated for all sample plots (see table above), since trees not always
-enter. But plots with e.g. a radius of 20 m, can be simulated for all
-sample sample plots (see end of table below).</p>
+enter, because the plots are too small. But plots with e.g. a radius of
+20 m, can be simulated for all sample plots (see end of table
+below).</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">simulations</span><span class="op">$</span><span class="va">fixed.area</span><span class="op">)</span></code></pre></div>
 <div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
@@ -7457,17 +7465,18 @@ below for circular fixed areas) are saved as .csv files using the
 Second, interactive line charts representing the relative biases are
 saved as .html files by means of the <code>saveWidget</code> function in
 the <a href="https://CRAN.R-project.org/package=htmlwidgets" class="external-link">htmlwidgets</a>
-package.</p>
+package. An example of these interactive line charts is provided
+below.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">bias</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/relative.bias.html">relative.bias</a></span><span class="op">(</span>simulations <span class="op">=</span> <span class="va">simulations</span>,
               variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"N"</span>, <span class="st">"G"</span>, <span class="st">"d"</span>, <span class="st">"dg"</span>, <span class="st">"d.0"</span>, <span class="st">"h"</span>, <span class="st">"h.0"</span><span class="op">)</span>,
               save.result <span class="op">=</span> <span class="cn">FALSE</span>, dir.result <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
 <span class="co">#&gt; Computing relative bias for fixed area plots</span>
-<span class="co">#&gt;  (0.39 secs)</span>
+<span class="co">#&gt;  (0.33 secs)</span>
 <span class="co">#&gt; Computing relative bias for k-tree plots</span>
-<span class="co">#&gt;  (0.1 secs)</span>
+<span class="co">#&gt;  (0.09 secs)</span>
 <span class="co">#&gt; Computing relative bias for angle-count plots</span>
-<span class="co">#&gt;  (0.05 secs)</span></code></pre></div>
+<span class="co">#&gt;  (0.04 secs)</span></code></pre></div>
 <p>The function calculates the relative bias between the field data
 estimates (specified in <code>variables</code>) and the counterpart
 variables that are estimated based on TLS data. The TLS counterparts for
@@ -7503,13 +7512,14 @@ height). The relative bias are calculated as follows</p>
 \]</span></p>
 <p>where <span class="math inline">\(x_i\)</span> is the value of the
 field estimate and <span class="math inline">\(y_i\)</span> the value of
-its TLS counterpart corresponding to plot <span class="math inline">\(i\)</span>. For each plot size defined by the
-radius, k or BAF, the biases are calculated and stored as a data frame
-(shown below). Each row represents the a simulated plot of a certain
-size and the columns contain the calculate bias between the variables
-indicated in the column name. The two compared variables are joint with
-<code>.</code> as separation, e.g. <code>N.N.tls</code> means that the
-bias between <code>N</code> and <code>N.tls</code> was calculated.</p>
+its TLS counterpart corresponding to plot <span class="math inline">\(i\)</span> of <span class="math inline">\(n\)</span> sample plots. For each plot size
+defined by the radius, k or BAF, the biases are calculated and stored as
+a data frame (shown below). Each row represents the a simulated plot of
+a certain size (here defined by <code>radius</code>) and the columns
+contain the calculate bias between the variables indicated in the column
+names. The two compared variables are joint with <code>.</code> as
+separation, e.g. <code>N.N.tls</code> means that the bias between
+<code>N</code> and <code>N.tls</code> was calculated.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">bias</span><span class="op">$</span><span class="va">fixed.area</span><span class="op">)</span></code></pre></div>
 <div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
@@ -7958,23 +7968,22 @@ interactive graphic showing the relative bias of basal area estimations
 (<code>G</code>) for fixed are plots can be seen when following the link
 (<a href="RB.G.fixed.area.html">RB.G.fixed.area.html</a>).</p>
 </div>
-</div>
-<div class="section level2">
-<h2 id="functions-facilitating-model-based-or-model-assisted-sampling-approaches">Functions facilitating model-based or model-assisted sampling
+<div class="section level3">
+<h3 id="functions-facilitating-model-based-or-model-assisted-sampling-approaches">Functions facilitating model-based or model-assisted sampling
 approaches<a class="anchor" aria-label="anchor" href="#functions-facilitating-model-based-or-model-assisted-sampling-approaches"></a>
-</h2>
+</h3>
 <p>To facilitate the application of model-based sampling, two additional
 functions are included in the FORTLS package. The function
 <strong><code>correlations</code></strong> computes the correlations
-between variables estimated from field data and from TLS data and
-calculates the respective Pearson and Spearman correlation coefficients.
-The results are saved as .csv files and dispayed in line charts and heat
-maps (when applying the function
+between variables estimated from field data and those estimated from TLS
+data and calculates the respective Pearson and Spearman correlation
+coefficients. The results are saved as .csv files and represented as
+line charts and heat maps (when applying the function
 <strong><code>optimize.plot.design</code></strong>).</p>
-<div class="section level3">
-<h3 id="computing-correlations">Computing correlations<a class="anchor" aria-label="anchor" href="#computing-correlations"></a>
-</h3>
-<p>The <strong><code>correlations</code></strong> computes the
+<div class="section level4">
+<h4 id="computing-correlations">Computing correlations<a class="anchor" aria-label="anchor" href="#computing-correlations"></a>
+</h4>
+<p>The <strong><code>correlations</code></strong> function computes the
 correlations for all the plot designs that are introduces as elements of
 a list in <strong><code>simulations</code></strong>. The format and
 description must be the same as the output list of the
@@ -7984,7 +7993,7 @@ to be calculated can be specified in
 <strong><code>variables</code></strong>. By default, this argument is
 set to
 <code>variables = c("N", "G", "V", "d", "dg", "d.0", "h", "h.0")</code>.
-If only one of the two above-mentioned correlation measurments should be
+If only one of the two above-mentioned correlation measures should be
 calculated, it can be specified in <strong><code>method</code></strong>.
 This argument is set to <code>method = c("pearson", "spearman")</code>
 by default and both correlation coefficients are computed.</p>
@@ -7994,11 +8003,11 @@ by default and both correlation coefficients are computed.</p>
              method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pearson"</span>, <span class="st">"spearman"</span><span class="op">)</span>, 
              save.result <span class="op">=</span> <span class="cn">FALSE</span>, dir.result <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
 <span class="co">#&gt; Computing correlations for fixed area plots</span>
-<span class="co">#&gt;  (126.19 secs)</span>
+<span class="co">#&gt;  (133.3 secs)</span>
 <span class="co">#&gt; Computing correlations for k-tree plots</span>
-<span class="co">#&gt;  (31.99 secs)</span>
+<span class="co">#&gt;  (34.51 secs)</span>
 <span class="co">#&gt; Computing correlations for angle-count plots</span>
-<span class="co">#&gt;  (24.37 secs)</span></code></pre></div>
+<span class="co">#&gt;  (25.35 secs)</span></code></pre></div>
 <p>In addition to the calculation of the correlation measures, the
 function also performs tests of association and returns the p-values.
 The output of this function is a list containing the following three
@@ -8406,7 +8415,7 @@ fixed area plots), <code>k</code> (for k-tree plots) or <code>BAF</code>
 coefficients and p-values respectively for the corresponding
 correlation. The column names are composed of the two variables
 (e.g. <code>N</code> and <code>N.tls</code>) separated by <code>.</code>
-(giving <code>N.N.tls</code>) as described for the
+(giving <code>N.N.tls</code>) that were correlated as described for the
 <code>relative.bias</code> function.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">cor</span><span class="op">$</span><span class="va">correlations.pval</span><span class="op">$</span><span class="va">pearson</span><span class="op">$</span><span class="va">fixed.area</span><span class="op">[</span><span class="fl">20</span><span class="op">:</span><span class="fl">26</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">15</span><span class="op">]</span></code></pre></div>
@@ -8798,13 +8807,17 @@ plot sizes. For a given plot size and variable (specified in the
 argument <code>variables</code>), the best correlating TLS-based
 estimate and the corresponding correlation coefficient is displayed in
 this table. The columns named <code>&lt;variable&gt;.metric</code> (with
-variable being here <code>N</code>, <code>G</code>, <code>d</code>,
-<code>dg</code>, <code>d.0</code>, <code>h</code> and <code>h.0</code>)
-contain the TLS-based variable or metric that yielded the best
-correlation with the respective field data-based variable in the column
-name for a certain plot radius. The columns
+<code>&lt;variable&gt;</code> being here <code>N</code>, <code>G</code>,
+<code>d</code>, <code>dg</code>, <code>d.0</code>, <code>h</code> and
+<code>h.0</code>) contain the TLS-based variable or metric that yielded
+the best correlation with the respective field data-based variable of
+the column name for a certain plot radius. The columns
 <code>&lt;variable&gt;.cor</code> display the measures of the respective
-correlations.</p>
+correlations. That means, in the example shown here, the TLS-based
+estimate that yielded the best correlation with the field data based
+variable density (<code>N</code>) for circular fixed area plots with a
+radius of 4.4 m is <code>ID.rho</code>. And the correlation coefficient
+is 0.7286.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">cor</span><span class="op">$</span><span class="va">opt.correlations</span><span class="op">$</span><span class="va">pearson</span><span class="op">$</span><span class="va">fixed.area</span><span class="op">[</span><span class="fl">20</span><span class="op">:</span><span class="fl">26</span>,<span class="op">]</span></code></pre></div>
 <div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
@@ -9216,24 +9229,25 @@ h.0.tls
 saves them (if <code>save.result = TRUE</code>, default setting) to the
 directory indicated in <code>dir.result</code>. These files are, on the
 one hand, .csv files of the data frames in the lists
-<code>correlations</code> and <code>opt.correlations</code> are created
-by means of the <code>write.csv</code> function from the <a href="https://CRAN.R-project.org/package=R.utils" class="external-link">utils</a> package.
+<code>correlations</code> and <code>opt.correlations</code> created by
+means of the <code>write.csv</code> function from the <a href="https://CRAN.R-project.org/package=R.utils" class="external-link">utils</a> package.
 These .csv files will be named as
 <code>correlations.&lt;plot design&gt;.&lt;method&gt;.csv</code> and
 <code>opt.correlations.&lt;plot design&gt;.plot.&lt;method&gt;.csv</code>
-with plot design being <code>"fixed.area.plot"</code>,
-<code>“k.tree.plot”</code> or <code>“angle.count.plot”</code> and method
-being <code>“pearson”</code> or <code>“spearman”</code>. On the other
-hand, interactive line charts representing the correlation coefficients
-will be created for each variable (selected in <code>variables</code>)
-as .html file using the <code>saveWidget</code> function in the <a href="https://CRAN.R-project.org/package=htmlwidgets" class="external-link">htmlwidgets</a>
+with <code>&lt;plot design&gt;</code> being
+<code>fixed.area.plot</code>, <code>k.tree.plot</code> or
+<code>angle.count.plot</code> and <code>&lt;method&gt;</code> being
+<code>pearson</code> or <code>spearman</code>. On the other hand,
+interactive line charts representing the correlation coefficients will
+be created for each variable (selected in <code>variables</code>) as
+.html file using the <code>saveWidget</code> function in the <a href="https://CRAN.R-project.org/package=htmlwidgets" class="external-link">htmlwidgets</a>
 package. As an example, the interactive line chart for the variable
 height (<code>h</code>) and fixed area plots (pearson measure) is shown
 (<a href="correlations.h.fixed.area.pearson.html">correlations.h.fixed.area.pearson.html</a>).</p>
 </div>
-<div class="section level3">
-<h3 id="visualizing-correlations">Visualizing correlations<a class="anchor" aria-label="anchor" href="#visualizing-correlations"></a>
-</h3>
+<div class="section level4">
+<h4 id="visualizing-correlations">Visualizing correlations<a class="anchor" aria-label="anchor" href="#visualizing-correlations"></a>
+</h4>
 <p>In order to visualize the optimal correlations, the function
 <strong><code>optimize.plot.design</code></strong> creates heat maps and
 is applied as follows:</p>
@@ -9241,7 +9255,7 @@ is applied as follows:</p>
 <code class="sourceCode R"><span class="fu"><a href="../reference/optimize.plot.design.html">optimize.plot.design</a></span><span class="op">(</span>correlations <span class="op">=</span> <span class="va">cor</span><span class="op">$</span><span class="va">opt.correlations</span>,
                      variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"N"</span>, <span class="st">"G"</span>, <span class="st">"d"</span>, <span class="st">"dg"</span>, <span class="st">"d.0"</span>, <span class="st">"h"</span>, <span class="st">"h.0"</span><span class="op">)</span>,
                      dir.result <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
-<p>The function creates the heatmaps based on the optimal correlation
+<p>The function creates the heat maps based on the optimal correlation
 list (<code>opt.correlations</code> from the output of the
 <code>correlations</code> function) introduced in
 <strong><code>correlations</code></strong>. The introduced list must
@@ -9250,20 +9264,22 @@ list. Similar to the other functions described above, the variables of
 interest can be selected in <strong><code>variables</code></strong>
 (default setting:
 <code>variables = c("N", "G", "V", "d", "dg", "d.0", "h", "h.0")</code>).
-This function generates interactive heatmaps with the
+This function generates interactive heat maps with the
 <code>saveWidget</code> function of the <a href="https://CRAN.R-project.org/package=htmlwidgets" class="external-link">htmlwidgets</a>
 package and saves these graphics to the directory indicated in
-<strong><code>dir.result</code></strong> (or by default the working
-directory). For each plot design and correlation measure one plot is
+<strong><code>dir.result</code></strong> (or by default to the working
+directory). For each plot design and correlation measure a plot is
 generated and named as
 <code>opt.correlations.&lt;plot design&gt;.&lt;method&gt;.html</code>
-where plot design can be <code>“fixed.area.plot”</code>,
-<code>“k.tree.plot”</code> or <code>“angle.count.plot”</code> and method
-either <code>“pearson”</code> or <code>“spearman”</code> according to
-the plot design and correlation measure.</p>
-<p>To show an example, the heatmap of the pearson correlation
-coefficient for fixed area plots and pearson measure can be seen when
-opening the link (<a href="opt.correlations.fixed.area.plot.pearson.html">opt.correlations.fixed.area.plot.pearson.html</a>).</p>
+where <code>&lt;plot design&gt;</code> can be
+<code>fixed.area.plot</code>, <code>k.tree.plot</code> or
+<code>angle.count.plot</code> and <code>&lt;method&gt;</code> either
+<code>pearson</code> or <code>spearman</code> according to the plot
+design and correlation measure.</p>
+<p>As an example, the heat map of the pearson correlation coefficient
+for fixed area plots and pearson measure is provided and can be seen
+when opening the link (<a href="opt.correlations.fixed.area.plot.pearson.html">opt.correlations.fixed.area.plot.pearson.html</a>).</p>
+</div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
