@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# FORTLS <img src="man/figures/logo.png" align="right" alt="" width="120" />
+# FORTLS <img src="man/figures/logo.png" align="right" alt="" width="250" />
 
 <!-- badges: start -->
 ![license](https://img.shields.io/badge/Licence-GPL--3-blue.svg)
