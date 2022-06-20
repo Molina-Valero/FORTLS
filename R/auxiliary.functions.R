@@ -788,7 +788,7 @@ if(nrow(.filter) < 1){
 .stem.axis <- function(data, scan.approach = "single"){
 
   if(scan.approach == "multi"){
-    data <- data[data$prob > 0.5, ]} else {
+    data <- data[data$prob > 0.75, ]} else {
 
     data <- data[data$prob < 0.1 | data$prob > 0.9, ]}
 

@@ -51,7 +51,7 @@ tree.detection.multi.scan <- function(data,
   stem <- VoxR::vox(stem[, c("x", "y", "z")], res = 0.03)} else {
     stem <- VoxR::vox(stem[, c("x", "y", "z")], res = tls.precision)}
 
-  # stem <- stem[, c("x", "y", "z", "npts")]
+  stem <- stem[, c("x", "y", "z", "npts")]
 
   # dat <- data[data$prob > 0.75, ]
   # dat <- VoxR::vox(dat[, c("x", "y", "z")], res = 0.03)
@@ -145,7 +145,7 @@ tree.detection.multi.scan <- function(data,
 
     .cut <- data[which(data$z > (cuts-slice-0.05) & data$z < (cuts+slice+0.05)), , drop = FALSE]
 
-    if(nrow(.cut) < 50){next}
+    if(nrow(.cut) < 100){next}
 
     .cut <- .ncr.remove.slice.double(.cut)
 
@@ -158,7 +158,7 @@ tree.detection.multi.scan <- function(data,
 
     # Dbscan parameters
 
-    if(is.null(tls.precision)){.eps <- .dbh.min} else {.eps <- tls.precision}
+    if(is.null(tls.precision)){.eps <- 0.03} else {.eps <- tls.precision}
 
     # Clustering
 
@@ -178,12 +178,6 @@ tree.detection.multi.scan <- function(data,
 
     .cut$sec <- cuts
 
-    # kk <- data.frame(x = tapply(.cut$x, .cut$cluster, mean),
-    #                  y = tapply(.cut$y, .cut$cluster, mean),
-    #                  cluster = tapply(.cut$cluster, .cut$cluster, mean))
-    #
-    # plot(.cut$x, .cut$y, col = .cut$cluster, asp = 1)
-    # text(kk$x, kk$y)
 
     # Selection of those cluster belonging to trees
 
