@@ -102,11 +102,11 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
 
   # Estimating NCR threshold when RGB are available
 
-  # if(!is.null(data$GLA)){
-  #   ncr <- data[data$GLA > 0, ]
-  #   ncr <- as.matrix(ncr[, c("point", "x", "y", "z")])
-  #   ncr.threshold <- ncr_point_cloud_double(ncr[1:10000, ])
-  #   ncr.threshold <- mean(ncr.threshold$ncr, na.rm = TRUE)}
+  if(!is.null(data$GLA)){
+    ncr <- data[data$GLA > 0, ]
+    ncr <- as.matrix(ncr[, c("point", "x", "y", "z")])
+    ncr.threshold <- ncr_point_cloud_double(ncr[1:10000, ])
+    ncr.threshold <- mean(ncr.threshold$ncr, na.rm = TRUE)}
 
 
   # Remove green parts
