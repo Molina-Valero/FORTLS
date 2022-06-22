@@ -16,11 +16,6 @@ correlations <- function(simulations,
     simulations$angle.count$id <- as.numeric(as.factor(simulations$angle.count$id))
 
 
-
-  if("W" %in% colnames(simulations$fixed.area))
-    variables = c(variables, "W")
-
-
   # Define a character vector containing index name (radius, k or BAF) for each
   # available plot design
   .plot.design <- c(fixed.area = "radius", k.tree = "k", angle.count = "BAF")
@@ -31,9 +26,9 @@ correlations <- function(simulations,
     # Density (trees/ha), basal area (m2/ha) and volume (m3/ha)
     "N", "G", "V",
 
-    # Biomass (Mg/ha)
-    if("W" %in% colnames(simulations$fixed.area))
-      "W",
+    # Volume (m3/ha) and biomass (Mg/ha) provided by user
+    # if("W" %in% colnames(simulations$fixed.area))
+    "V.user", "W.user",
 
     # Mean diameters (cm), and mean dominant diameters (cm)
     "d", "dg", "dgeom", "dharm",
