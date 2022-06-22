@@ -1073,9 +1073,8 @@ if(nrow(.filter) < 1){
 # Compute radius, k and BAF, and tree variables according to plot design(s) and
 # 'tree.var'. Currently available tree variables: basal area (g) and volume (v)
 
-.tree.calc <- function(tree, plot.design, tree.var
-                       # v.calc = c("coeff", "parab")[2]
-                       ) {
+.tree.calc <- function(tree, plot.design, tree.var,
+                       v.calc = c("coeff", "parab")[2]) {
 
   # Create data.frame where results will be saved
   .col.names <- plot.design
@@ -1113,29 +1112,29 @@ if(nrow(.filter) < 1){
   # Compute basal area (m^2)
   if ("g" %in% colnames(tree)) tree[, "g"] <- (pi / 4) * tree[, "dbh"] ^ 2
 
-  # Compute volume (m^3)
-  if ("v" %in% colnames(tree)) tree[, "v"] <- tree[, "v"]
+  # # Compute volume (m^3)
+  # if ("v" %in% colnames(tree)) tree[, "v"] <- tree[, "v"]
 
   # Compute comercial volume (m^3)
   # if ("v.com" %in% colnames(tree)) tree[, "v.com"] <- tree[, "v.com"]
 
-  # if ("v" %in% colnames(tree)) {
-  #
-  #   if (v.calc == "coeff") {
-  #
-  #     # Coefficient of 0.45
-  #     tree[, "v"] <- (pi / 4) * tree[, "dbh"] ^ 2 * tree[, "h"] * 0.45
-  #
-  #   } else if (v.calc == "parab") {
-  #
-  #     # Paraboloid
-  #     tree[, "v"] <- pi * (tree[, "h"] ^ 2 / 2) *
-  #       ((tree[, "dbh"] / 2) ^ 2 / (tree[, "h"] - 1.3) ^ 2)
-  #
-  #   } else
-  #     stop("Argument for tree volume calculation must be 'coeff' or 'parab'.")
-  #
-  # }
+  if ("v" %in% colnames(tree)) {
+
+    if (v.calc == "coeff") {
+
+      # Coefficient of 0.45
+      tree[, "v"] <- (pi / 4) * tree[, "dbh"] ^ 2 * tree[, "h"] * 0.45
+
+    } else if (v.calc == "parab") {
+
+      # Paraboloid
+      tree[, "v"] <- pi * (tree[, "h"] ^ 2 / 2) *
+        ((tree[, "dbh"] / 2) ^ 2 / (tree[, "h"] - 1.3))
+
+    } else
+      stop("Argument for tree volume calculation must be 'coeff' or 'parab'.")
+
+  }
 
   return(tree)
 
@@ -1797,7 +1796,7 @@ if(nrow(.filter) < 1){
 
   # Define available calculations for trees volume. Currently available
   # calculations: 'coeff' and 'parab'
-  # .v.calc <- c("coeff", "parab")
+  .v.calc <- c("coeff", "parab")
 
   # Define values by default for certain columns in 'plot.parameters'
   .plot.parameters <- data.frame(radius.incr = 0.1, k.incr = 1, BAF.incr = 0.1,
@@ -1824,8 +1823,8 @@ if(nrow(.filter) < 1){
                                 val = names(.scan.approach))
 
   # 'v.calc' must be a character string indicating how to calculate trees volume
-  # v.calc <- .check.class(x = v.calc, x.class = "character", name = "v.calc",
-  #                        n = 1, val = .v.calc)
+  v.calc <- .check.class(x = v.calc, x.class = "character", name = "v.calc",
+                         n = 1, val = .v.calc)
 
   # 'dbh.min', 'h.min' and 'max.dist' must be positive numeric values
   for (.i in c("dbh.min", "h.min", "max.dist")) {
@@ -2616,8 +2615,7 @@ if(nrow(.filter) < 1){
                 colnames(.col.mand) %in% "v"] <- TRUE
       .col.mand <- colnames(.col.mand)[apply(.col.mand, 2, any)]
       .tree <- .tree.calc(tree = .tree, plot.design = .plot.design[plot.design],
-                          tree.var = .col.mand)
-                          # v.calc = v.calc)
+                          tree.var = .col.mand, v.calc = v.calc)
 
       # Compute angular aperture (TLS data)
       if (.j == "tls" & all(c("phi.left", "phi.right") %in% colnames(.tree))) {
@@ -2654,6 +2652,7 @@ if(nrow(.filter) < 1){
           suppressMessages(vroom::vroom(file.path(dir.data, .id[.i, "file"]),
                                         col_select = c("x", "y", "z", "rho", "r"),
                                         progress = FALSE))
+        .data.tls <- as.matrix(.data.tls)
 
         # Discard points according to 'max.dist'
         .inval <- which(.data.tls[, "rho"] > max.dist)
@@ -2669,10 +2668,9 @@ if(nrow(.filter) < 1){
 
         # Order .data.tls by rho, select columns required for calculations
         # below, and convert to matrix
-        .data.tls <- as.matrix(.data.tls)[order(.data.tls[, "rho"],
-                                                decreasing = FALSE),
-                                          c("z", "rho", "r"), drop = FALSE]
-
+        .data.tls <- .data.tls[order(.data.tls[, "rho"], decreasing = FALSE),
+                               c("z", "rho", "r"), drop = FALSE]
+        
       }
 
 
