@@ -1,9 +1,7 @@
 
 metrics.variables <- function(tree.tls, tree.ds = NULL, tree.field = NULL,
-                              plot.design = c("fixed.area", "k.tree",
-                                              "angle.count"),
-                              plot.parameters = data.frame(radius = 25,
-                                                           k = 50, BAF = 4),
+                              plot.design = c("fixed.area", "k.tree", "angle.count"),
+                              plot.parameters = data.frame(radius = 25, k = 10, BAF = 2),
                               scan.approach = "single", var.metr = NULL,
                               dbh.min = 4, h.min = 1.3,
                               max.dist = Inf, dir.data = NULL,
