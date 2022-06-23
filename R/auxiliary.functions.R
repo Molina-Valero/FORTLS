@@ -236,7 +236,7 @@
 
   # Radius value as the mean distance
   # .dat <- .dat[order(.dat$dist, decreasing = FALSE), , drop = FALSE]
-  .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25) & .dat$dist<stats::quantile(.dat$dist, prob = 0.9)])
+  .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99)])
   if(.radio <= 0 | is.na(.radio)){return(.filter)}
 
   # Coefficient of variation for distances among cluster points and the estimated center
@@ -521,7 +521,7 @@
   .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)
 
   # Radius value as the mean distance
-  .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25) & .dat$dist<stats::quantile(.dat$dist, prob = 0.9)])
+  .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99)])
   if(.radio <= 0 | is.na(.radio)){return(.filter)}
 
   # Coefficient of variation for distances among cluster points and the estimated center
@@ -2670,7 +2670,7 @@ if(nrow(.filter) < 1){
         # below, and convert to matrix
         .data.tls <- .data.tls[order(.data.tls[, "rho"], decreasing = FALSE),
                                c("z", "rho", "r"), drop = FALSE]
-        
+
       }
 
 
