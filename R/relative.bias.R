@@ -2,7 +2,7 @@
 relative.bias <- function(simulations,
                           variables = c("N", "G", "V", "d", "dg", "d.0", "h", "h.0"),
                           save.result = TRUE, dir.result = NULL) {
-
+  
 
 
   # Checking if id columns are characters or factors, and converting to numeric in that cases
@@ -25,7 +25,10 @@ relative.bias <- function(simulations,
   .field.names <- c(
     # Density (trees/ha), basal area (m2/ha) and volume (m3/ha)
     "N", "G", "V",
-
+    
+    # Volume (m3/ha) provided by user
+    "V.user",
+    
     # Mean diameters (cm), and mean dominant diameters (cm)
     "d", "dg", "dgeom", "dharm",
     paste(c("d", "dg", "dgeom", "dharm"), "0", sep = "."),
@@ -281,6 +284,9 @@ relative.bias <- function(simulations,
     .row.names <-
       (substr(.RB.pairs[, "tls"], 1, nchar(.RB.pairs[, "field"])) ==
          .RB.pairs[, "field"]) |
+      (substr(.RB.pairs[, "tls"], 1, nchar(
+        gsub(".user", "", .RB.pairs[, "field"], fixed = TRUE))) ==
+         gsub(".user", "", .RB.pairs[, "field"], fixed = TRUE)) |
       ((substr(.RB.pairs[, "field"], 1, 1) == "h" &
           substr(.RB.pairs[, "tls"], 1, 1) == "P"))
     .RB.pairs <- .RB.pairs[.row.names, , drop = FALSE]
@@ -433,6 +439,8 @@ relative.bias <- function(simulations,
         .title <- switch(.j, N = "Density (N, trees/ha)",
                          G = "Basal area (G, m<sup>2</sup>/ha)",
                          V = "Volume (V, m<sup>3</sup>/ha)",
+                         V.user = paste("Volume (V, m<sup>3</sup>/ha) provided",
+                                        "by user"),
                          d = "Mean diameters (cm)",
                          h = "Mean heights (m)")
         .subtitle <- paste("<br> <span style='font-size: 20px;'>",
