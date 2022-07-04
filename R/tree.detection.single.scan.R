@@ -144,14 +144,14 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
     .cut <- .cut[which(.cut$z > (cuts-0.05) & .cut$z < (cuts+0.05)), , drop = FALSE]
 
     # DBSCAN parameters
-    .eps <- (tan(.alpha.h / 2) * (max(.cut$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2)
+    .eps <- 3 * (tan(.alpha.h / 2) * (max(.cut$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2)
 
     # Clustering
     .error <- try(suppressMessages(dbscan::dbscan(.cut[, c("x", "y"), drop = FALSE], eps = .eps)))
     if(class(.error)[1] == "try-error"){
       message("No computed section: ", cuts, " m")
       next} else {
-    .dbscan <- dbscan::dbscan(.cut[, c("x", "y"), drop = FALSE], eps = .eps)
+    .dbscan <- dbscan::dbscan(.cut[, c("x", "y"), drop = FALSE], eps = .eps, minPts = 15)
     .cut$cluster <- .dbscan$cluster
     .cut <- .cut[which(.cut$cluster > 0), , drop = FALSE]}
 

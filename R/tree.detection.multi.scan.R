@@ -162,7 +162,7 @@ tree.detection.multi.scan <- function(data,
 
     # Clustering
 
-    .error <- try(suppressMessages(dbscan::dbscan(.cut[, c("x", "y"), drop = FALSE], eps = .eps)))
+    .error <- try(suppressMessages(dbscan::dbscan(.cut[, c("x", "y"), drop = FALSE], eps = .eps, minPts = 15)))
     if(class(.error)[1] == "try-error"){
       message("No computed section: ", cuts, " m")
       next} else {

@@ -36,7 +36,7 @@
 
   # Second filter
 
-  .h <- (tan(.alpha.h / 2) * (mean(.dat$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2)
+  .h <- 3 * (tan(.alpha.h / 2) * (mean(.dat$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2)
 
   # Compute rho coordinates for section ends
 
@@ -55,7 +55,7 @@
   .dist <- sqrt((.dat.2$x[2:nrow(.dat.2)]-.dat.2$x[1:nrow(.dat.2)-1])^2+(.dat.2$y[2:nrow(.dat.2)]-.dat.2$y[1:nrow(.dat.2)-1])^2)
   .dist <- sd(.dist) / .h
 
-  if(.dist > 1){return(.filter)}
+  if(round(.dist, 1) > 1.5){return(.filter)}
 
   # Generate mesh
 
