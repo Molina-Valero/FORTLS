@@ -183,7 +183,8 @@ tree.detection.multi.scan <- function(data,
 
     .filter <- do.call(rbind, lapply(split(.cut, .cut$cluster), .sections.multi.scan,
                                      tls.precision = tls.precision,
-                                     .dbh.min = .dbh.min, .dbh.max = .dbh.max))
+                                     .dbh.min = .dbh.min, .dbh.max = .dbh.max,
+                                     slice = slice * 2))
 
     .filteraux <- rbind(.filteraux, .filter)
 

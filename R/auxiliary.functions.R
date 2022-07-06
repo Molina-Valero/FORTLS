@@ -1,7 +1,7 @@
 
 
 
-.sections.single.scan <- function(cut, .cut, .alpha.v, .alpha.h, .dbh.min, .dbh.max){
+.sections.single.scan <- function(cut, .cut, .alpha.v, .alpha.h, .dbh.min, .dbh.max, slice){
 
   .filter <- data.frame(cluster = as.numeric(),
 
@@ -29,8 +29,17 @@
   # Select cluster i
   .dat <- cut
 
+  # plot(.dat$x, .dat$y, asp = 1)
+  # kk <- data.frame(x = tapply(.dat$x, .dat$cluster, mean),
+  #                  y = tapply(.dat$y, .dat$cluster, mean),
+  #                  cluster = tapply(.dat$cluster, .dat$cluster, mean))
+  # text(kk$x, kk$y, col = "red")
+
+  # .dat <- .cut[.cut$cluster == 19, ]
+  # plot(.dat$phi, .dat$z)
+
   # First filter
-  .n <- (0.1 / (tan(.alpha.v / 2) * (mean(.dat$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2))
+  .n <- (slice / (tan(.alpha.v / 2) * (mean(.dat$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2))
 
   if(nrow(.dat) < .n){return(.filter)}
 
@@ -141,11 +150,11 @@
 
   if(is.nan(mean(.dat$slope, na.rm = TRUE))){
 
-    .n <- (0.1 / (tan(.alpha.v / 2) * (mean(.dat$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2))
+    .n <- (slice / (tan(.alpha.v / 2) * (mean(.dat$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2))
 
   } else {
 
-    .n <- (0.1 / (tan(.alpha.v / 2) * (mean(.dat$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2))
+    .n <- (slice / (tan(.alpha.v / 2) * (mean(.dat$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2))
 
   }
 
@@ -362,7 +371,7 @@
 
 
 
-.sections.multi.scan <- function(cut, tls.precision, .dbh.min, .dbh.max){
+.sections.multi.scan <- function(cut, tls.precision, .dbh.min, .dbh.max, slice){
 
   .filter <- data.frame(cluster = as.numeric(),
 

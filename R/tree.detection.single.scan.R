@@ -1,7 +1,7 @@
 
 tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min = 1.3,
                                        ncr.threshold = 0.1, tls.resolution = list(),
-                                       stem.section = NULL, breaks = NULL,
+                                       stem.section = NULL, breaks = NULL, slice = 0.1,
                                        den.type = 1, d.top = NULL,
                                        plot.attributes = NULL,
                                        save.result = TRUE, dir.result = NULL){
@@ -127,12 +127,14 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
                            phi.left = as.numeric(), phi.right = as.numeric(),
                            arc.circ = as.numeric(), sec = as.numeric())
 
+  slice <- slice / 2
+
 
   for(cuts in breaks){
 
     message("Computing section: ", cuts, " m")
 
-    .cut <- data[which(data$z > (cuts-0.1) & data$z < (cuts+0.1)), , drop = FALSE]
+    .cut <- data[which(data$z > (cuts-slice-0.05) & data$z < (cuts+slice+0.05)), , drop = FALSE]
 
     if(nrow(.cut) < 50){next}
 
@@ -141,7 +143,7 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
     .cut <- .cut[which(.cut$ncr < ncr.threshold | is.na(.cut$ncr)), , drop = FALSE]
 
     # Restrict to slice corresponding to cuts m +/- 5 cm
-    .cut <- .cut[which(.cut$z > (cuts-0.05) & .cut$z < (cuts+0.05)), , drop = FALSE]
+    .cut <- .cut[which(.cut$z > (cuts-slice) & .cut$z < (cuts+slice)), , drop = FALSE]
 
     # DBSCAN parameters
     .eps <- 3 * (tan(.alpha.h / 2) * (max(.cut$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2)
@@ -162,7 +164,8 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
 
     .filter <- do.call(rbind, lapply(split(.cut, .cut$cluster), .sections.single.scan, .cut = .cut,
                                      .alpha.v = .alpha.v, .alpha.h = .alpha.h,
-                                     .dbh.min = .dbh.min, .dbh.max = .dbh.max))
+                                     .dbh.min = .dbh.min, .dbh.max = .dbh.max,
+                                     slice = slice * 2))
 
     .filteraux<-rbind(.filteraux, .filter)
 
