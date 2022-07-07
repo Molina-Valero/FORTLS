@@ -64,7 +64,7 @@
   .dist <- sqrt((.dat.2$x[2:nrow(.dat.2)]-.dat.2$x[1:nrow(.dat.2)-1])^2+(.dat.2$y[2:nrow(.dat.2)]-.dat.2$y[1:nrow(.dat.2)-1])^2)
   .dist <- sd(.dist) / .h
 
-  if(round(.dist, 1) > 1.5){return(.filter)}
+  if(round(.dist) > 1){return(.filter)}
 
   # Generate mesh
 
