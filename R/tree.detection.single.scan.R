@@ -628,9 +628,13 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
                      function(id, voro, tree.3) {
                        sec.max <- .tree.3[.tree.3$id == id, "sec.max"]
                        z <- voro$z[voro$tree == id & voro$z > sec.max]
-                       P99 <-
-                         height_perc_cpp(rho_seq = Inf, z = z, rho = z)[, "P99.9"]
-                       names(P99) <- tree.3[tree.3$id == id, "tree"]
+                       if(length(z) < 1) {
+                         P99 <- 0
+                         names(P99) <- tree.3[tree.3$id == id, "tree"]
+                       } else {
+                         P99 <-
+                           height_perc_cpp(rho_seq = Inf, z = z, rho = z)[, "P99.9"]
+                         names(P99) <- tree.3[tree.3$id == id, "tree"]}
                        return(P99)
                      },
                      voro = .voro, tree.3 = .tree.3)
