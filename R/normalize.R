@@ -1,6 +1,7 @@
 
 normalize <- function(las, normalized = NULL,
                       x.center = NULL, y.center = NULL,
+                      x.side = NULL, y.side = NULL,
                       max.dist = NULL, min.height = NULL, max.height = 50,
                       algorithm.dtm = "knnidw", res.dtm = 0.2,
                       csf = list(cloth_resolution = 0.5),
@@ -63,9 +64,18 @@ normalize <- function(las, normalized = NULL,
 
   if(!is.null(normalized)) {
 
-    if(!is.null(max.dist)){
+      if(!is.null(max.dist)){
+
       .data <- lidR::clip_circle(.las, 0, 0, max.dist)
-      .data <- data.frame(.data@data)} else {
+      .data <- data.frame(.data@data)}
+
+      else if (!is.null(x.side) | !is.null(y.side)){
+
+      .data <- lidR::clip_rectangle(.las, 0 - (x.side / 2), 0 - (y.side / 2),
+                                          0 + (x.side / 2), 0 + (y.side / 2))
+      .data <- data.frame(.data@data)
+
+      } else {
 
       .data <- data.frame(.las@data)}
 
@@ -150,11 +160,16 @@ normalize <- function(las, normalized = NULL,
 
   # Data filtering at horizontal distances larger than max_dist m in the horizontal plane
 
-  if(!is.null(max.dist)) {
+  if(!is.null(max.dist)){
 
     .data <- lidR::clip_circle(.data, 0, 0, max.dist)
 
-    }
+    } else if (!is.null(x.side) | !is.null(y.side)){
+
+    .data <- lidR::clip_rectangle(.data, 0 - (x.side / 2), 0 - (y.side / 2),
+                                  0 + (x.side / 2), 0 + (y.side / 2))
+
+  }
 
   .pb$tick()
 
