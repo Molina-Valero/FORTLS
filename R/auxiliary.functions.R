@@ -802,7 +802,7 @@ if(nrow(.filter) < 1){
     data <- data[data$prob < 0.1 | data$prob > 0.9, ]}
 
 
-  if(nrow(data) < 50 | min(data$z) > 2){
+  if(nrow(data) < 50 | nrow(data) > 1000000 | min(data$z) > 2){
 
     eje <- data.frame(tree = as.numeric(), sec = as.numeric(), x = as.numeric(), y = as.numeric())
 

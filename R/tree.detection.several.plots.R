@@ -5,6 +5,7 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
                                          pcd.red = NULL, normalized = NULL,
                                          x.center = NULL, y.center = NULL,
+                                         x.side = NULL, y.side = NULL,
                                          max.dist = NULL, min.height = NULL, max.height = 50,
                                          algorithm.dtm = "knnidw", res.dtm = 0.2, csf = list(cloth_resolution = 0.5),
                                          RGB = NULL,
