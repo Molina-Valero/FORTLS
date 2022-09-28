@@ -64,7 +64,7 @@
   .dist <- sqrt((.dat.2$x[2:nrow(.dat.2)]-.dat.2$x[1:nrow(.dat.2)-1])^2+(.dat.2$y[2:nrow(.dat.2)]-.dat.2$y[1:nrow(.dat.2)-1])^2)
   .dist <- sd(.dist) / .h
 
-  if(round(.dist) > 1){return(.filter)}
+  # if(.dist > 1){return(.filter)}
 
   # Generate mesh
 
@@ -92,7 +92,7 @@
   .x.values <- seq(from = .xmin, to = .xmax, by = .h)
   .y.values <- seq(from = .ymin, to = .ymax, by = .h)
 
-  .h <- .h / 2
+  # .h <- .h / 2
 
   .density <- matrix(0, ncol = length(.x.values), nrow = length(.y.values))
 
