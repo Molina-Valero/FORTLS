@@ -11,10 +11,11 @@
 \usage{
 normalize(las, normalized = NULL,
           x.center = NULL, y.center = NULL,
+          x.side = NULL, y.side = NULL,
           max.dist = NULL, min.height = NULL, max.height = 50,
           algorithm.dtm = "knnidw", res.dtm = 0.2,
           csf = list(cloth_resolution = 0.5),
-          RGB = NULL,
+          intensity = NULL, RGB = NULL,
           scan.approach = "single",
           id = NULL, file = NULL,
           dir.data = NULL, save.result = TRUE, dir.result = NULL)}
@@ -28,6 +29,10 @@ normalize(las, normalized = NULL,
   \item{x.center}{Planimetric x center coordinate of point cloud data.}
 
   \item{y.center}{Planimetric y center coordinate of point cloud data.}
+
+  \item{x.side}{x-side (m) of the plot when the plot is square or rectangular.}
+
+  \item{y.side}{y-side (m) of the plot when the plot is square or rectangular.}
 
   \item{max.dist}{Optional maximum horizontal distance (m) considered from the plot centre. All points farther than \code{max.dist} will be discarded after the normalization process. If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, all points will be used in processing, with \code{max.dist} representing the farthest point.}
 
@@ -46,6 +51,8 @@ normalize(las, normalized = NULL,
   \item {\code{cloth_resolution}}: by default 0.5.}
 
   \item{scan.approach}{Character parameter indicating TLS single-scan (\sQuote{single}) or TLS multi-scan approach or SLAM point clouds (\sQuote{multi}) approaches. If this argument is not specified by the user, it will be set to \sQuote{multi} approach.}
+
+  \item{intensity}{Logical parameter useful when point clouds have LiDAR intesinty values.}
 
   \item{RGB}{Logical parameter useful when point clouds are colorized, thus including values of RGB colors. It is based on the Green Leaf Algorithm (GLA) (see \sQuote{Details}).}
 
@@ -99,6 +106,14 @@ Those points with values below 0 are clasified as woody parts, thus retained for
     }}
 
 \item{slope}{Slope of the terrain (rad).}
+
+\item{intensity}{Intensity (only if point cloud has intensity values and specified in arguments).}
+
+\item{R}{Red (only if point cloud is colorized and specified in arguments).}
+
+\item{G}{Green (only if point cloud is colorized and specified in arguments).}
+
+\item{B}{Blue (only if point cloud is colorized and specified in arguments).}
 
 \item{GLA}{Green Leaf Algorithm (only if point cloud is colorized and specified in arguments).}
 

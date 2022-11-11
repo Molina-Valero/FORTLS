@@ -5,7 +5,7 @@ normalize <- function(las, normalized = NULL,
                       max.dist = NULL, min.height = NULL, max.height = 50,
                       algorithm.dtm = "knnidw", res.dtm = 0.2,
                       csf = list(cloth_resolution = 0.5),
-                      RGB = NULL,
+                      intensity = NULL, RGB = NULL,
                       scan.approach = "single",
                       id = NULL, file = NULL,
                       dir.data = NULL, save.result = TRUE, dir.result = NULL){
@@ -28,9 +28,14 @@ normalize <- function(las, normalized = NULL,
 
   # Loading input (LAS file)
 
-  if(is.null(RGB)){
-  .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyz")))} else {
-    .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyzRGB")))}
+  if(is.null(RGB) & is.null(intensity)){
+  .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyz")))}
+    else if (is.null(RGB) & !is.null(intensity)){
+      .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyzIntensity")))}
+        else if (!is.null(RGB) & is.null(intensity)){
+          .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyzRGB")))}
+            else{
+              .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyzIntensityRGB")))}
 
 
   .pb$tick()
@@ -196,11 +201,18 @@ normalize <- function(las, normalized = NULL,
 
   # Extracting coordinates values
 
-  if(is.null(RGB)){
-  .data <- .data[, c("X", "Y", "Z", "slope"), drop = FALSE]
-  colnames(.data) <- c("x", "y", "z", "slope")} else {
+  if(is.null(RGB) & is.null(intensity)){
+    .data <- .data[, c("X", "Y", "Z", "slope"), drop = FALSE]
+    colnames(.data) <- c("x", "y", "z", "slope")}
+  else if (is.null(RGB) & !is.null(intensity)){
+    .data <- .data[, c("X", "Y", "Z", "slope", "Intensity"), drop = FALSE]
+    colnames(.data) <- c("x", "y", "z", "slope", "intensity")}
+  else if (!is.null(RGB) & is.null(intensity)){
     .data <- .data[, c("X", "Y", "Z", "slope", "R", "G", "B"), drop = FALSE]
     colnames(.data) <- c("x", "y", "z", "slope", "R", "G", "B")}
+  else{
+    .data <- .data[, c("X", "Y", "Z", "slope", "Intensity", "R", "G", "B"), drop = FALSE]
+    colnames(.data) <- c("x", "y", "z", "slope", "intensity", "R", "G", "B")}
 
 
   # Low point filtering
@@ -288,9 +300,13 @@ normalize <- function(las, normalized = NULL,
 
   }
 
-  if(is.null(RGB)){
-  .data <- .data[, c("id", "file", "point", "x", "y", "z", "rho", "phi", "r", "theta", "slope", "prob", "prob.selec"), drop = FALSE]} else {
-    .data <- .data[, c("id", "file", "point", "x", "y", "z", "rho", "phi", "r", "theta", "slope", "GLA", "prob", "prob.selec"), drop = FALSE]}
+  if(is.null(RGB) & is.null(intensity)){
+    .data <- .data[, c("id", "file", "point", "x", "y", "z", "rho", "phi", "r", "theta", "slope", "prob", "prob.selec"), drop = FALSE]}
+  else if (is.null(RGB) & !is.null(intensity)){
+    .data <- .data[, c("id", "file", "point", "x", "y", "z", "rho", "phi", "r", "theta", "slope", "intensity", "prob", "prob.selec"), drop = FALSE]}
+  else if (!is.null(RGB) & is.null(intensity)){
+    .data <- .data[, c("id", "file", "point", "x", "y", "z", "rho", "phi", "r", "theta", "slope", "R", "G", "B", "GLA", "prob", "prob.selec"), drop = FALSE]}
+  else{.data <- .data[, c("id", "file", "point", "x", "y", "z", "rho", "phi", "r", "theta", "slope", "intensity", "R", "G", "B", "GLA", "prob", "prob.selec"), drop = FALSE]}
 
   .pb$tick()
 
@@ -309,7 +325,5 @@ normalize <- function(las, normalized = NULL,
   .pb$tick()
 
   return(.data)
-
-
 
 }

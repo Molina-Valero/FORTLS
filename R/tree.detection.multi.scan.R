@@ -553,7 +553,7 @@ tree.detection.multi.scan <- function(data,
 
   if(nrow(.tree) == 1){
 
-    .P99 <- data.frame(tree = .tree$tree, P99.9 = stats::quantile(data$z, prob = 0.999))
+    .P99 <- data.frame(tree = .tree$tree, h = stats::quantile(data$z, prob = 0.9999999999))
 
   } else {
 
@@ -601,9 +601,10 @@ tree.detection.multi.scan <- function(data,
                  voro = .voro, tree.3 = .tree.3)
   .P99 <- data.frame(tree = names(.P99), h = .P99)
 
+  rm(.tree.2, .tree.3, .voro)
+
   }
 
-  rm(.tree.2, .tree.3, .voro)
 
   # Remove possible trees above "h.min" (1.3 m by default)
 
