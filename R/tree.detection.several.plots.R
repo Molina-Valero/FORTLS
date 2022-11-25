@@ -10,6 +10,7 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
                                          algorithm.dtm = "knnidw", res.dtm = 0.2, csf = list(cloth_resolution = 0.5),
                                          RGB = NULL,
 
+                                         single.tree = NULL,
                                          dbh.min = 4, dbh.max = 200, h.min = 1.3,
                                          ncr.threshold = 0.1,
                                          tls.resolution = NULL, tls.precision = NULL,
@@ -79,7 +80,7 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
     if(scan.approach == "single"){
 
-    .tree.tls.i <- tree.detection.single.scan(data = .data,
+    .tree.tls.i <- tree.detection.single.scan_2(data = .data,
 
                                               dbh.min = dbh.min, dbh.max = dbh.max, h.min = h.min,
 
@@ -97,7 +98,7 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
     if(scan.approach == "multi"){
 
-    .tree.tls.i <- tree.detection.multi.scan(data = .data,
+    .tree.tls.i <- tree.detection.multi.scan_2(data = .data, single.tree = single.tree,
 
                                              dbh.min = dbh.min, dbh.max = dbh.max, h.min = h.min,
 

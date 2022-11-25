@@ -1,10 +1,23 @@
 
-tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min = 1.3,
+tree.detection.single.scan_2 <- function(data, dbh.min = 4, dbh.max = 200, h.min = 1.3,
                                        ncr.threshold = 0.1, tls.resolution = list(),
                                        stem.section = NULL, breaks = NULL, slice = 0.1,
                                        den.type = 1, d.top = NULL,
                                        plot.attributes = NULL,
                                        save.result = TRUE, dir.result = NULL){
+
+  # data = pcd
+  # breaks = c(1, 1.3, 1.6, 2, 3, 4, 5, 7.5, 10, 12.5, 15, 17.5,  20, 25)
+  # dbh.min = 4
+  # dbh.max = 200
+  # h.min = 1.3
+  # ncr.threshold = 0.05
+  # slice = 0.1
+  # den.type = 1
+  # d.top = NULL
+  # plot.attributes = NULL
+  # stem.section = c(0.5, 7.5)
+  # tls.resolution = list(point.dist = 7.67, tls.dist = 10)
 
 
   #### Checking some function arguments ####
@@ -50,18 +63,29 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
 
   }
 
-  # Detection of stem part without shrub vegetation and crown
 
-  stem <- data[data$prob.selec == 1, ]
+  #### Detecting possible areas with trees in the point cloud ####
 
   if(!is.null(data$GLA)){
-    stem <- data[data$GLA <= 0, ]
-    stem <- stem[!is.na(stem$x) & !is.na(stem$y) & !is.na(stem$z), ]} else {
+    woody <- data[data$GLA <= 0, ]
+    woody <- woody[!is.na(woody$x) & !is.na(woody$y) & !is.na(woody$z), ]} else {woody <- data}
 
-      stem <- stem
 
-    }
+  # Statistical filtering of a point cloud
+  # Implements the Statistical Outliers Removal (SOR)
 
+  data.table::setDT(woody)
+  woody <- VoxR::filter_noise(data = woody[, c("x", "y", "z")], store_noise = TRUE, message = FALSE)
+  rgl::plot3d(woody,col=woody$Noise,add=TRUE)
+  woody <- woody[woody$Noise == 1, ]
+  noise <- woody[woody$Noise == 2, ]
+
+  woody <- merge(data, woody[, c("x", "y", "z")], by = c("x", "y", "z"), all = FALSE)
+  noise <- merge(data, noise, by = c("x", "y", "z"), all = FALSE)
+
+  # Detection of stem part without shrub vegetation and crown
+
+  stem <- woody[woody$prob.selec == 1, ]
 
   # Defining the vertical section in which trees are detected
 
@@ -78,17 +102,42 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
   }
 
 
+  stem <- VoxR::vox(stem[, c("x", "y", "z")], res = 0.03)
+  stem <- stem[, c("x", "y", "z", "npts")]
+
+  # dat <- data[data$prob.selec == 1, ]
+  # dat <- VoxR::vox(dat[, c("x", "y", "z")], res = 0.03)
+  # dat <- dat[, c("x", "y", "z", "npts")]
+  # dat <- VoxR::project_voxels(dat)
+  # par(mar = c(4, 4, 1, 1))
+  # plot(dat$x, dat$y, col = "grey", asp = 1, pch = 19, cex = 0.5,
+  #      xlab = "X (m)", ylab = "Y (m)")
+  stem <- VoxR::project_voxels(stem)
+  # points(stem$x, stem$y, col = "green", pch = 19, cex = 0.5)
+  stem <- stem[stem$npts > mean(stem$npts), ]
+  stem <- stem[stem$ratio < mean(stem$ratio), ]
+  # points(stem$x, stem$y, pch = 19, cex = 0.5, col = "black")
+  # legend(x = "topright", legend = c("Total", "Stem section", "Above mean"),
+  #        col = c("grey", "green", "black"), pch = 19, bty = "n")
+
+
+  buf <- sp::SpatialPoints(cbind(stem$x,stem$y))
+  buf <- suppressWarnings(raster::buffer(buf, width = 37500, dissolve = TRUE))
+  buf <- buf@polygons[[1]]@Polygons
+  buf <- lapply(seq_along(buf), function(i) sp::Polygons(list(buf[[i]]), ID = i))
+  buf <- sp::SpatialPolygons(buf)
+  # sp::plot(buf, col = "red")
+
   # Detection of stem part without shrub vegetation and crown
 
-  stem <- data[data$prob.selec == 1, ]
+  # stem <- woody[woody$prob.selec == 1, ]
 
-  if(!is.null(data$GLA)){
-    stem <- data[data$GLA <= 0, ]
-    stem <- stem[!is.na(stem$x) & !is.na(stem$y) & !is.na(stem$z), ]} else {
+  # Assigning points to trees previously detected
 
-      stem <- stem
+  # stem$tree <- sp::over(sp::SpatialPoints(coords = cbind(stem$x,stem$y,stem$z)), buf, returnlist=TRUE)
+  # stem <- stem[!is.na(stem$tree), ]
+  # points(stem$x, stem$y, pch = 19, cex = 0.1, col = stem$tree)
 
-    }
 
 
   # Breaks argument
@@ -97,6 +146,11 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
     breaks <- seq(from = 0.4, to = max(stem$z), by = 0.3)
     breaks <- breaks[-length(breaks)]}
 
+  # # Defining stem axis
+  #
+  # # eje <- do.call(rbind, lapply(split(stem, stem$tree), .stem.axis))
+  # # eje <- eje[eje$sec %in% as.character(breaks) & !is.na(eje$x), ]
+  #
   rm(stem)
 
 
@@ -109,11 +163,10 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
     ncr.threshold <- mean(ncr.threshold$ncr, na.rm = TRUE)}
 
 
-  # Remove green parts
+  # Assigning points to trees previously detected
 
-  if(!is.null(data$GLA)){
-    data <- data[data$GLA <= 0, ]
-    data <- data[!is.na(data$x) & !is.na(data$y) & !is.na(data$z), ]}
+  woody$tree <- sp::over(sp::SpatialPoints(coords = cbind(woody$x,woody$y,woody$z)), buf, returnlist=TRUE)
+  woody <- woody[!is.na(woody$tree), ]
 
 
   #### Starting with clustering process ####
@@ -134,9 +187,11 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
 
     message("Computing section: ", cuts, " m")
 
-    .cut <- data[which(data$z > (cuts-slice-0.05) & data$z < (cuts+slice+0.05)), , drop = FALSE]
+    .cut <- woody[which(woody$z > (cuts-slice-0.05) & woody$z < (cuts+slice+0.05)), , drop = FALSE]
 
     if(nrow(.cut) < 50){next}
+
+    .cut <- as.data.frame(.cut)
 
     .cut <- .ncr.remove.slice.double(.cut)
 
@@ -353,16 +408,24 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
 
       .filt <- .filteraux[.filteraux$tree == i, ]
 
-      .filt <- .filt[.filt$dist < 2 * mean(.filt$radius, na.rm = TRUE), ]
+      # .filt <- .filt[.filt$dist < 2 * mean(.filt$radius, na.rm = TRUE), ]
+      .filt <- .filt[.filt$dist < mean(.filt$dist, na.rm = TRUE) + mean(.filt$radius, na.rm = TRUE), ]
+
 
       if(nrow(.filt) < 1)
         next
 
-      .filt$dif <- c(0, abs(diff(.filt$radius)))
+      .filt$dif <- c(diff(.filt$radius), 0)
+      .filt$dif.sec <- c(abs(diff(.filt$sec)), 0)
+      .filt$dif <- ifelse(.filt$dif.sec > 1, .filt$dif / .filt$dif.sec, .filt$dif)
 
-      while (max(.filt$dif) > 0.1) {
+      threshold <- mean(.filt$radius) / 2
 
-        .filt <- .filt[.filt$dif <= 0.1, ]
+      while (max(.filt$dif) > threshold & min(.filt$dif) < -threshold / 2) {
+
+      # while (max(.filt$dif) > 0.1) {
+
+      .filt <- .filt[.filt$dif <= threshold & .filt$dif >= -threshold / 2, ]
 
       }
 
@@ -604,7 +667,7 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
     rm(.filteraux)
 
     # Remove duplicated trees and ordering by distance and numbering trees from 1 to n trees
-    .tree <- .tree[!duplicated(.tree$x) & !duplicated(.tree$y), ]
+    .tree <- .tree[!duplicated(.tree$x) & !duplicated(.tree$y) & !duplicated(.tree$sec.x) & !duplicated(.tree$sec.y), ]
     .tree <- .tree[.tree$radius > 0, ]
     .tree <- .tree[order(.tree$rho), ]
     .tree$tree <- 1:nrow(.tree)
@@ -809,6 +872,12 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
 
 
   }
+
+  # Removing values of 0 in n.pts
+  .tree$n.pts <- ifelse(.tree$n.pts < 1, 0.01, .tree$n.pts)
+  .tree$n.pts.red <- ifelse(.tree$n.pts.red < 1, 0.01, .tree$n.pts.red)
+  .tree$n.pts.est <- ifelse(.tree$n.pts.est < 1, 0.01, .tree$n.pts.est)
+  .tree$n.pts.red.est <- ifelse(.tree$n.pts.red.est < 1, 0.01, .tree$n.pts.red.est)
 
 
   # Lastly, aggregate attributes table
