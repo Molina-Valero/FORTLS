@@ -2,7 +2,8 @@
 tree.detection.multi.scan_2 <- function(data, single.tree = NULL,
                                         dbh.min = 4, dbh.max = 200, h.min = 1.3,
                                         ncr.threshold = 0.1, tls.precision = NULL,
-                                        stem.section = NULL, breaks = NULL, slice = 0.1,
+                                        stem.section = NULL, breaks = NULL,
+                                        slice = 0.1, bark.roughness = 2,
                                         den.type = 1, d.top = NULL,
                                         plot.attributes = NULL,
                                         save.result = TRUE, dir.result = NULL){
@@ -48,7 +49,7 @@ tree.detection.multi.scan_2 <- function(data, single.tree = NULL,
 
   data.table::setDT(woody)
   woody <- VoxR::filter_noise(data = woody[, c("x", "y", "z")], store_noise = TRUE, message = FALSE)
-  rgl::plot3d(woody,col=woody$Noise,add=TRUE)
+  # rgl::plot3d(woody,col=woody$Noise,add=TRUE)
   woody <- woody[woody$Noise == 1, ]
   # rgl::plot3d(woody)
   noise <- woody[woody$Noise == 2, ]
@@ -121,7 +122,7 @@ tree.detection.multi.scan_2 <- function(data, single.tree = NULL,
   stem <- stem[!is.na(stem$tree), ]
   # plot(stem$x, stem$y, col = stem$tree, asp = 1)
 
-  if(single.tree == TRUE){
+  if(!is.null(single.tree)){
 
     filter <- data.frame(table(stem$tree))
     filter <- filter[order(filter$Freq, decreasing = TRUE), ]
@@ -162,7 +163,7 @@ tree.detection.multi.scan_2 <- function(data, single.tree = NULL,
   woody$tree <- sp::over(sp::SpatialPoints(coords = cbind(woody$x,woody$y,woody$z)), buf, returnlist=TRUE)
   woody <- woody[!is.na(woody$tree), ]
 
-  if(single.tree == TRUE){
+  if(!is.null(single.tree)){
 
     filter <- data.frame(table(woody$tree))
     filter <- filter[order(filter$Freq, decreasing = TRUE), ]
@@ -233,7 +234,7 @@ tree.detection.multi.scan_2 <- function(data, single.tree = NULL,
     .filter <- do.call(rbind, lapply(split(.cut, .cut$cluster), .sections.multi.scan,
                                      tls.precision = tls.precision,
                                      .dbh.min = .dbh.min, .dbh.max = .dbh.max,
-                                     slice = slice * 2))
+                                     slice = slice * 2, bark.roughness = bark.roughness))
 
     .filteraux <- rbind(.filteraux, .filter)
 
@@ -312,7 +313,7 @@ tree.detection.multi.scan_2 <- function(data, single.tree = NULL,
                            radius = as.numeric(),
                            n.pts = as.numeric(), n.pts.red = as.numeric(),
                            circ = as.numeric(), arc.cir = as.numeric())
-  if(single.tree == TRUE){
+  if(!is.null(single.tree)){
 
   for (i in unique(.filter$tree)) {
     # for (j in unique(.filter$sec)) {

@@ -1,7 +1,7 @@
 
 
 
-.sections.single.scan <- function(cut, .cut, .alpha.v, .alpha.h, .dbh.min, .dbh.max, slice){
+.sections.single.scan <- function(cut, .cut, .alpha.v, .alpha.h, .dbh.min, .dbh.max, slice, bark.roughness){
 
   .filter <- data.frame(cluster = as.numeric(),
 
@@ -245,7 +245,13 @@
 
   # Radius value as the mean distance
   # .dat <- .dat[order(.dat$dist, decreasing = FALSE), , drop = FALSE]
-  .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99)])
+  if(bark.roughness == 1){
+    .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99)])
+  } else if(bark.roughness == 2){
+    .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99)])
+  } else {
+  .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99)])}
+
   if(.radio <= 0 | is.na(.radio)){return(.filter)}
 
   # Coefficient of variation for distances among cluster points and the estimated center
@@ -371,7 +377,7 @@
 
 
 
-.sections.multi.scan <- function(cut, tls.precision, .dbh.min, .dbh.max, slice){
+.sections.multi.scan <- function(cut, tls.precision, .dbh.min, .dbh.max, slice, bark.roughness){
 
   .filter <- data.frame(cluster = as.numeric(),
 
@@ -532,7 +538,13 @@
   .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)
 
   # Radius value as the mean distance
-  .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99)])
+  if(bark.roughness == 1){
+    .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99)])
+  } else if(bark.roughness == 2){
+    .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99)])
+  } else {
+    .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99)])}
+
   if(.radio <= 0 | is.na(.radio)){return(.filter)}
 
   # Coefficient of variation for distances among cluster points and the estimated center

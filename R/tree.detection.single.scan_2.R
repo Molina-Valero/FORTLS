@@ -1,7 +1,8 @@
 
 tree.detection.single.scan_2 <- function(data, dbh.min = 4, dbh.max = 200, h.min = 1.3,
                                        ncr.threshold = 0.1, tls.resolution = list(),
-                                       stem.section = NULL, breaks = NULL, slice = 0.1,
+                                       stem.section = NULL, breaks = NULL,
+                                       slice = 0.1, bark.roughness = 2,
                                        den.type = 1, d.top = NULL,
                                        plot.attributes = NULL,
                                        save.result = TRUE, dir.result = NULL){
@@ -76,7 +77,7 @@ tree.detection.single.scan_2 <- function(data, dbh.min = 4, dbh.max = 200, h.min
 
   data.table::setDT(woody)
   woody <- VoxR::filter_noise(data = woody[, c("x", "y", "z")], store_noise = TRUE, message = FALSE)
-  rgl::plot3d(woody,col=woody$Noise,add=TRUE)
+  # rgl::plot3d(woody,col=woody$Noise,add=TRUE)
   woody <- woody[woody$Noise == 1, ]
   noise <- woody[woody$Noise == 2, ]
 
@@ -220,7 +221,7 @@ tree.detection.single.scan_2 <- function(data, dbh.min = 4, dbh.max = 200, h.min
     .filter <- do.call(rbind, lapply(split(.cut, .cut$cluster), .sections.single.scan, .cut = .cut,
                                      .alpha.v = .alpha.v, .alpha.h = .alpha.h,
                                      .dbh.min = .dbh.min, .dbh.max = .dbh.max,
-                                     slice = slice * 2))
+                                     slice = slice * 2, bark.roughness = bark.roughness))
 
     .filteraux<-rbind(.filteraux, .filter)
 
