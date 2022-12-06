@@ -1707,8 +1707,16 @@ if(nrow(.filter) < 1){
 
   # Define a list containing mandatory trees' database(s) according to 'function
   # case'. Currently available 'function cases': 'sim', 'metr' and 'est'
-  .funct <- list(sim = c(field = "field", tls = "TLS"), metr = c(tls = "TLS"),
-                 est = c(tls = "TLS"))
+  if(is.null(tree.field))
+    .funct <- list(sim = c(field = "field", tls = "TLS"), metr = c(tls = "TLS"),
+                   est = c(tls = "TLS"))
+
+  else {
+
+   .funct <- list(sim = c(field = "field", tls = "TLS"), metr = c(field = "field", tls = "TLS"),
+                  est = c(tls = "TLS"))
+  }
+
 
   # Define a character vector containing index name (radius, k or BAF) for each
   # available plot design. Currently available plot designs: 'fixed.area',

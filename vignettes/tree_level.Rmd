@@ -20,10 +20,10 @@ FORTLS is used for processing of point cloud data derived from terrestrial-based
 
 ```{r include=FALSE}
 dir.data <- getwd()
-download.file("https://www.dropbox.com/s/9jrk455ciyy8p84/Galicia_single_scan_reduced.laz?dl=1",
+download.file("https://www.dropbox.com/s/4qvrh7tp3kq0hyo/Galicia_single_scan.laz?dl=1",
               destfile = file.path(dir.data, "Galicia_single_scan.laz"),
               mode = "wb")
-download.file("https://www.dropbox.com/s/u6hy83mgqwfdx8b/Galicia_multi_scan_reduced.laz?dl=1",
+download.file("https://www.dropbox.com/s/2nem6tfbsw7eyd7/Galicia_multi_scan.laz?dl=1",
               destfile = file.path(dir.data, "Galicia_multi_scan.laz"),
               mode = "wb")
 library(FORTLS)

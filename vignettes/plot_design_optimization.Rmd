@@ -90,7 +90,7 @@ head(simulations$fixed.area)
 ```
 
 ```{r echo=FALSE}
-kableExtra::scroll_box(kable_input = kableExtra::kable(head(simulations$fixed.area), 
+kableExtra::scroll_box(kable_input = kableExtra::kable(head(Rioja.simulations$fixed.area), 
                                                        format = "html"), width = "100%")
 ```
 
@@ -101,7 +101,7 @@ tail(simulations$fixed.area)
 ```
 
 ```{r echo=FALSE}
-kableExtra::scroll_box(kable_input = kableExtra::kable(tail(simulations$fixed.area), 
+kableExtra::scroll_box(kable_input = kableExtra::kable(tail(Rioja.simulations$fixed.area), 
                                                        format = "html"), width = "100%")
 ```
 
@@ -114,7 +114,7 @@ Optionally, the variables for which the relative bias will be computed can be sp
 The arguments **`save.result`** and **`dir.result`** define whether and to which directory the output files should be saved. Two different output files are generated. First, the data frames for each plot design (as shown below for circular fixed areas) are saved as .csv files using the `write.csv` function from the [utils](https://CRAN.R-project.org/package=R.utils) package. Second, interactive line charts representing the relative biases are saved as .html files by means of the `saveWidget` function in the [htmlwidgets](https://CRAN.R-project.org/package=htmlwidgets) package. An example of these interactive line charts is provided below.
 
 ```{r eval=TRUE}
-bias <- relative.bias(simulations = simulations,
+bias <- relative.bias(simulations = Rioja.simulations,
               variables = c("N", "G", "d", "dg", "d.0", "h", "h.0"),
               save.result = FALSE, dir.result = NULL)
 ```
@@ -138,7 +138,7 @@ kableExtra::scroll_box(kable_input = kableExtra::kable(head(bias$fixed.area),
 
 ```{r include=FALSE}
 dir.data <- getwd()
-download.file("https://www.dropbox.com/s/p501d6qsvf8zksc/RB.G.fixed.area.html?dl=1",
+download.file("https://www.dropbox.com/s/8a0hwh1xpqlprjc/RB.G.fixed.area.plot.html?dl=1",
               destfile = file.path(dir.data, "RB.G.fixed.area.html"),
               mode = "wb")
 ```
@@ -154,7 +154,7 @@ To facilitate the application of model-based sampling, two additional functions 
 The **`correlations`** function computes the correlations for all the plot designs that are introduces as elements of a list in **`simulations`**. The format and description must be the same as the output list of the `simulations` function. Also similar to the function `relative.bias`, the variables for which the correlations are to be calculated can be specified in **`variables`**. By default, this argument is set to `variables = c("N", "G", "V", "d", "dg", "d.0", "h", "h.0")`. If only one of the two above-mentioned correlation measures should be calculated, it can be specified in **`method`**. This argument is set to `method = c("pearson", "spearman")` by default and both correlation coefficients are computed. 
 
 ```{r}
-cor <- correlations(simulations = simulations,
+cor <- correlations(simulations = Rioja.simulations,
              variables = c("N", "G", "d", "dg", "d.0", "h", "h.0"),
              method = c("pearson", "spearman"), 
              save.result = FALSE, dir.result = NULL)
@@ -195,7 +195,7 @@ kableExtra::scroll_box(kable_input = kableExtra::kable(
 
 ```{r include=FALSE}
 dir.data <- getwd()
-download.file("https://www.dropbox.com/s/27kn3rojbq0sb0y/correlations.h.fixed.area.pearson.html?dl=1",
+download.file("https://www.dropbox.com/s/etriqgcmbahab7z/correlations.h.fixed.area.pearson.html?dl=1",
               destfile = file.path(dir.data, "correlations.h.fixed.area.pearson.html"),
               mode = "wb")
 ```
@@ -216,8 +216,8 @@ The function creates the heat maps based on the optimal correlation list (`opt.c
 
 ```{r include=FALSE}
 dir.data <- getwd()
-download.file("https://www.dropbox.com/s/ddgqe1u34mn0vg9/opt.correlations.fixed.area.plot.pearson.html?dl=1",
-              destfile = file.path(dir.data, "opt.correlations.fixed.area.plot.pearson.html"),
+download.file("https://www.dropbox.com/s/e0wzq32ltjjeren/opt.correlations.fixed.area.pearson.html?dl=1",
+              destfile = file.path(dir.data, "opt.correlations.fixed.area.pearson.html"),
               mode = "wb")
 ```
 

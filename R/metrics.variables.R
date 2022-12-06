@@ -2,7 +2,8 @@
 metrics.variables <- function(tree.tls, tree.ds = NULL, tree.field = NULL,
                               plot.design = c("fixed.area", "k.tree", "angle.count"),
                               plot.parameters = data.frame(radius = 25, k = 10, BAF = 2),
-                              scan.approach = "single", var.metr = NULL,
+                              scan.approach = "single", # var.metr = NULL,
+                              var.metr = list(tls = NULL, field = NULL),
                               v.calc = "parab", dbh.min = 4, h.min = 1.3,
                               max.dist = Inf, dir.data = NULL,
                               save.result = TRUE, dir.result = NULL) {
@@ -13,7 +14,7 @@ metrics.variables <- function(tree.tls, tree.ds = NULL, tree.field = NULL,
                     plot.design = plot.design,
                     plot.parameters = plot.parameters,
                     scan.approach = scan.approach,
-                    var.metr = list(tls = var.metr), v.calc = v.calc,
+                    var.metr = var.metr, v.calc = v.calc,
                     dbh.min = dbh.min, h.min = h.min, max.dist = max.dist,
                     dir.data = dir.data, save.result = save.result,
                     dir.result = dir.result)
