@@ -62,15 +62,19 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
   # Statistical filtering of a point cloud
   # Implements the Statistical Outliers Removal (SOR)
 
+  message("Statistical filtering of the whole point cloud")
+
   data.table::setDT(woody)
   woody <- VoxR::filter_noise(data = woody[, c("x", "y", "z")], store_noise = TRUE, message = FALSE)
-  woody <- woody[woody$Noise == 1, ]
   noise <- woody[woody$Noise == 2, ]
+  woody <- woody[woody$Noise == 1, ]
 
   woody <- merge(data, woody[, c("x", "y", "z")], by = c("x", "y", "z"), all = FALSE)
   noise <- merge(data, noise, by = c("x", "y", "z"), all = FALSE)
 
   # Detection of stem part without shrub vegetation and crown
+
+  message("Detecting tree stem axis")
 
   stem <- woody[woody$prob.selec == 1, ]
 
@@ -93,8 +97,8 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
   stem <- stem[, c("x", "y", "z", "npts")]
 
   stem <- VoxR::project_voxels(stem)
-  stem <- stem[stem$npts > mean(stem$npts), ]
-  stem <- stem[stem$ratio < mean(stem$ratio), ]
+  stem <- stem[stem$npts > mean(stem$npts) & stem$ratio > mean(stem$ratio) & stem$nvox > mean(stem$nvox), ]
+
 
   buf <- sp::SpatialPoints(cbind(stem$x,stem$y))
   buf <- suppressWarnings(raster::buffer(buf, width = 37500, dissolve = TRUE))
@@ -599,6 +603,7 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
 
     # Dendrometric variables
     .tree <- data.frame(tree = tapply(.filteraux$tree, .filteraux$tree, mean, na.rm = TRUE),
+                        filter = tapply(.filteraux$tree, .filteraux$tree, length),
 
                         x = tapply(.filteraux$center.x, .filteraux$tree, mean, na.rm = TRUE),
                         y = tapply(.filteraux$center.y, .filteraux$tree, mean, na.rm = TRUE),
@@ -624,8 +629,15 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
 
     rm(.filteraux)
 
+    # Selecting only those trees with more than one section detected when more than two breaks have been specified
+
+    if(length(breaks) > 3)
+      .tree <- .tree[.tree$filter > 1, ]
+
     # Remove duplicated trees and ordering by distance and numbering trees from 1 to n trees
-    .tree <- .tree[!duplicated(.tree$x) & !duplicated(.tree$y) & !duplicated(.tree$sec.x) & !duplicated(.tree$sec.y), ]
+
+    .tree <- .tree[!duplicated(.tree$x) & !duplicated(.tree$y), ]
+    # .tree <- .tree[!duplicated(.tree$sec.x) & !duplicated(.tree$sec.y), ]
     .tree <- .tree[.tree$radius > 0, ]
     .tree <- .tree[order(.tree$rho), ]
     .tree$tree <- 1:nrow(.tree)

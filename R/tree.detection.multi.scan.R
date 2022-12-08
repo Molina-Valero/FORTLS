@@ -32,16 +32,20 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   # Statistical filtering of a point cloud
   # Implements the Statistical Outliers Removal (SOR)
 
+  message("Statistical filtering of the whole point cloud")
+
   data.table::setDT(woody)
   woody <- VoxR::filter_noise(data = woody[, c("x", "y", "z")], store_noise = TRUE, message = FALSE)
+  # noise <- woody[woody$Noise == 2, ]
   woody <- woody[woody$Noise == 1, ]
-  noise <- woody[woody$Noise == 2, ]
 
   woody <- merge(data, woody[, c("x", "y", "z")], by = c("x", "y", "z"), all = FALSE)
-  noise <- merge(data, noise, by = c("x", "y", "z"), all = FALSE)
+  # noise <- merge(data, noise, by = c("x", "y", "z"), all = FALSE)
 
 
   # Detection of stem part without shrub vegetation and crown
+
+  message("Detecting tree stem axis")
 
   stem <- woody[woody$prob.selec == 1, ]
 
@@ -73,9 +77,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   # Filtering pixels
 
-  stem <- stem[stem$npts > mean(stem$npts), ]
-  stem <- stem[stem$ratio < mean(stem$ratio), ]
-
+  stem <- stem[stem$npts > mean(stem$npts) & stem$ratio > mean(stem$ratio) & stem$nvox > mean(stem$nvox), ]
 
   # Creation polygon to extract those projected areas in the original point cloud
   # where trees are probably located
@@ -95,6 +97,16 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   stem$tree <- sp::over(sp::SpatialPoints(coords = cbind(stem$x,stem$y,stem$z)), buf, returnlist=TRUE)
   stem <- stem[!is.na(stem$tree), ]
+
+  # Filtering stems axis
+
+  stem.i <- do.call(rbind, lapply(split(stem, stem$tree), .n.w.ratio))
+  .Q1 <- stats::quantile(stem.i$n.w.ratio, prob = 0.25, na.rm = TRUE)
+  .Q3 <- stats::quantile(stem.i$n.w.ratio, prob = 0.75, na.rm = TRUE)
+  stem.i <- stem.i[stem.i$n.w.ratio > .Q1 - 1.5 * (.Q3 - .Q1) & stem.i$n.w.ratio < .Q3 + 1.5 * (.Q3 - .Q1), ]
+  stem <- stem[stem$tree %in% stem.i$tree, ]
+
+  rm(stem.i)
 
 
   # If there is only one tree in the point cloud
@@ -123,6 +135,16 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   rm(stem)
 
+  # Removing those axis ver very closed (0.25 m) to each other
+
+  eje.3 <- eje[eje$sec == 1.3, ]
+  eje.2 <- eje.3
+  dbscan <- dbscan::dbscan(eje.2[, c("x", "y"), drop = FALSE], eps = 0.25, minPts = 1)
+  eje.2$cluster <- dbscan$cluster
+  eje.2 <- eje.2[!duplicated(eje.2$cluster), ]
+  eje <- eje[eje$tree %in% eje.2$tree, ]
+
+
   # Estimating NCR threshold when RGB is available
 
   if(!is.null(data$GLA)){
@@ -135,7 +157,11 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   # Assigning points to trees previously detected
 
   woody$tree <- sp::over(sp::SpatialPoints(coords = cbind(woody$x,woody$y,woody$z)), buf, returnlist=TRUE)
+  woody <- woody[woody$tree %in% eje.3$tree, ]
   woody <- woody[!is.na(woody$tree), ]
+
+  rm(eje.2, eje.3)
+
 
   # If there is only one tree in the point cloud
 
@@ -291,6 +317,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                            radius = as.numeric(),
                            n.pts = as.numeric(), n.pts.red = as.numeric(),
                            circ = as.numeric(), arc.cir = as.numeric())
+
   if(!is.null(single.tree)){
 
   for (i in unique(.filter$tree)) {
@@ -312,12 +339,14 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
       if(.filt$dist > 2.5){next}
 
-      .filt <- .filt[, c("tree", "sec", "dist",
+      .filt <- .filt[, c("tree", "cluster", "sec", "dist",
                          "center.x", "center.y", "center.phi",
                          "center.rho", "center.r", "center.theta",
                          "radius", "n.pts", "n.pts.red", "circ", "arc.circ")]
 
       .filteraux <- rbind(.filteraux, .filt)
+
+      .filter <- .filter[.filter$cluster != .filt$cluster, ]
 
     }
 
@@ -353,18 +382,24 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
         if(.filt$dist > 2.5 | .filt$dist.rho > 2.5 | .filt$dist.phi > 0.25){next}
 
 
-        .filt <- .filt[, c("tree", "sec", "dist",
+        .filt <- .filt[, c("tree", "cluster", "sec", "dist",
                            "center.x", "center.y", "center.phi",
                            "center.rho", "center.r", "center.theta",
                            "radius", "n.pts", "n.pts.red", "circ", "arc.circ")]
 
         .filteraux <- rbind(.filteraux, .filt)
 
+        .filter <- .filter[.filter$cluster != .filt$cluster, ]
+
       }
 
     }
 
   }
+
+  # Removing repeated cluster
+
+  .filteraux <- .filteraux[!duplicated(.filteraux$cluster), ]
 
 
   .filteraux <- .filteraux[order(.filteraux$tree, .filteraux$sec), , drop = FALSE]
@@ -549,6 +584,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   # Genrating dendrometric variables
 
   .tree <- data.frame(tree = tapply(.filteraux$tree, .filteraux$tree, mean, na.rm = TRUE),
+                      filter = tapply(.filteraux$tree, .filteraux$tree, length),
 
                       x = tapply(.filteraux$center.x, .filteraux$tree, mean, na.rm = TRUE),
                       y = tapply(.filteraux$center.y, .filteraux$tree, mean, na.rm = TRUE),
@@ -572,9 +608,15 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   rm(.filteraux)
 
+  # Selecting only those trees with more than one section detected when more than two breaks have been specified
+
+  if(length(breaks) > 3)
+    .tree <- .tree[.tree$filter > 1, ]
+
   # Ordering by distance and numbering trees from 1 to n trees
 
-  .tree <- .tree[!duplicated(.tree$x) & !duplicated(.tree$y) & !duplicated(.tree$sec.x) & !duplicated(.tree$sec.y), ]
+  .tree <- .tree[!duplicated(.tree$x) & !duplicated(.tree$y), ]
+  # .tree <- .tree[!duplicated(.tree$sec.x) & !duplicated(.tree$sec.y), ]
   .tree <- .tree[.tree$radius > 0, ]
   .tree <- .tree[order(.tree$rho), ]
   .tree$tree <- 1:nrow(.tree)

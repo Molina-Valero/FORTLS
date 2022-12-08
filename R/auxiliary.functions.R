@@ -405,7 +405,7 @@
   .dat <- cut
   # .dat <- .cut[.cut$cluster == 12, ]
 
-  if(nrow(.dat) < 10){return(.filter)}
+  if(nrow(.dat) < 25){return(.filter)}
 
   # plot(.dat$x, .dat$y, asp = 1, main = i)
 
@@ -670,6 +670,13 @@ if(nrow(.filter) < 1){
 }
 
 
+.n.w.ratio <- function(stem){
+
+  n.w.ratio <- stats::sd(stem$z) / sqrt(stats::sd(stem$x) ^ 2 + stats::sd(stem$y) ^ 2)
+  out <- data.frame(tree = stem$tree[1], n.w.ratio = n.w.ratio)
+  return(out)
+
+}
 
 
 
@@ -842,8 +849,8 @@ if(nrow(.filter) < 1){
 
   # plot(data$z, data$rho, asp = 1)
   # plot(data$z, data$phi, asp = 1)
-  plot(data$z, data$x, asp = 1, xlab = "Z (m)", ylab = "X (m)")
-  abline(mod.x, col = 2, lwd = 3)
+  # plot(data$z, data$x, asp = 1, xlab = "Z (m)", ylab = "X (m)", main = data$tree[1])
+  # abline(mod.x, col = 2, lwd = 3)
   # plot(data$z, data$y, asp = 1, xlab = "Z (m)", ylab = "Y (m)")
   # abline(mod.y, col = 2, lwd = 3)
   }
