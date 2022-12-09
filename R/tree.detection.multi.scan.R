@@ -75,8 +75,9 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   stem <- VoxR::project_voxels(stem)
 
 
-  # Filtering pixels
+  # Filtering pixels - double branch peeling
 
+  stem <- stem[stem$npts > mean(stem$npts) & stem$ratio > mean(stem$ratio) & stem$nvox > mean(stem$nvox), ]
   stem <- stem[stem$npts > mean(stem$npts) & stem$ratio > mean(stem$ratio) & stem$nvox > mean(stem$nvox), ]
 
   # Creation polygon to extract those projected areas in the original point cloud
@@ -131,6 +132,10 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   # Defining stem axis
 
   eje <- do.call(rbind, lapply(split(stem, stem$tree), .stem.axis, scan.approach = "multi"))
+  .Q1 <- stats::quantile(eje$n.w.ratio, prob = 0.25, na.rm = TRUE)
+  .Q3 <- stats::quantile(eje$n.w.ratio, prob = 0.75, na.rm = TRUE)
+  eje <- eje[eje$n.w.ratio > .Q1 - 1.5 * (.Q3 - .Q1), ]
+  eje <- eje[eje$tree %in% eje$tree, ]
   eje <- eje[eje$sec %in% as.character(breaks) & !is.na(eje$x), ]
 
   rm(stem)

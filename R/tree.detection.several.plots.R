@@ -81,7 +81,7 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
     if(scan.approach == "single"){
 
-    .tree.tls.i <- tree.detection.single.scan_2(data = .data,
+    .tree.tls.i <- tree.detection.single.scan(data = .data,
 
                                               dbh.min = dbh.min, dbh.max = dbh.max, h.min = h.min,
 
@@ -101,7 +101,7 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
     if(scan.approach == "multi"){
 
-    .tree.tls.i <- tree.detection.multi.scan_2(data = .data, single.tree = single.tree,
+    .tree.tls.i <- tree.detection.multi.scan(data = .data, single.tree = single.tree,
 
                                              dbh.min = dbh.min, dbh.max = dbh.max, h.min = h.min,
 
