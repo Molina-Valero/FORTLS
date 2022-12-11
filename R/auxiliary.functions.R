@@ -114,7 +114,9 @@
 
 
   # Estimate mean density by cell
-  .threeshold <- stats::median(.density, na.rm = TRUE)
+  # .threeshold <- stats::median(.density, na.rm = T)
+  # .threeshold <- mean(.density, na.rm = T)
+  .threeshold <- stats::quantile(.density, prob = 0.25, na.rm = T)
 
   if(is.nan(.threeshold) | is.na(.threeshold)){return(.filter)}
 
@@ -455,7 +457,9 @@
 
 
   # Estimate mean density by cell
-  .threeshold <- stats::median(.density, na.rm = T)
+  # .threeshold <- stats::median(.density, na.rm = T)
+  # .threeshold <- mean(.density, na.rm = T)
+  .threeshold <- stats::quantile(.density, prob = 0.25, na.rm = T)
 
   if(is.nan(.threeshold) | is.na(.threeshold)){return(.filter)}
 
@@ -466,9 +470,9 @@
     for(j in 1:length(.y.values)){
 
       .den <- .dat[which(.dat$x <= ((.x.values[i]) + .h) &
-                           .dat$x > ((.x.values[i]) - .h) &
-                           .dat$y <= ((.y.values[j]) + .h) &
-                           .dat$y > ((.y.values[j]) - .h)), , drop = FALSE]
+                         .dat$x > ((.x.values[i]) - .h) &
+                         .dat$y <= ((.y.values[j]) + .h) &
+                         .dat$y > ((.y.values[j]) - .h)), , drop = FALSE]
 
       # Discard cells with less than 2 points for computing mean density by
       # cell
@@ -539,11 +543,11 @@
 
   # Radius value as the mean distance
   if(bark.roughness == 1){
-    .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99)])
+    .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)])
   } else if(bark.roughness == 2){
-    .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99)])
+    .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)])
   } else {
-    .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99)])}
+    .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)])}
 
   if(.radio <= 0 | is.na(.radio)){return(.filter)}
 

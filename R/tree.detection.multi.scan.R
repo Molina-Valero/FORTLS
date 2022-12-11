@@ -3,7 +3,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                                       dbh.min = 4, dbh.max = 200, h.min = 1.3,
                                       ncr.threshold = 0.1, tls.precision = NULL,
                                       stem.section = NULL, breaks = NULL,
-                                      slice = 0.1, bark.roughness = 2,
+                                      slice = 0.1, understory = NULL, bark.roughness = 2,
                                       den.type = 1, d.top = NULL,
                                       plot.attributes = NULL,
                                       save.result = TRUE, dir.result = NULL){
@@ -78,7 +78,9 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   # Filtering pixels - double branch peeling
 
   stem <- stem[stem$npts > mean(stem$npts) & stem$ratio > mean(stem$ratio) & stem$nvox > mean(stem$nvox), ]
-  stem <- stem[stem$npts > mean(stem$npts) & stem$ratio > mean(stem$ratio) & stem$nvox > mean(stem$nvox), ]
+
+  if(!is.null(understory)){
+  stem <- stem[stem$npts > mean(stem$npts) & stem$ratio > mean(stem$ratio) & stem$nvox > mean(stem$nvox), ]}
 
   # Creation polygon to extract those projected areas in the original point cloud
   # where trees are probably located
@@ -522,7 +524,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
       .dat <- .dat[.dat$dif == 0 | .dat$dif == .dat$dif[2], ]
 
-    } else{
+    } else {
 
       .dat <- .dat[.dat$dif == min(.dat$dif), ]
 

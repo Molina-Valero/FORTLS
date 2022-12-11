@@ -2,7 +2,7 @@
 tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min = 1.3,
                                        ncr.threshold = 0.1, tls.resolution = list(),
                                        stem.section = NULL, breaks = NULL,
-                                       slice = 0.1, bark.roughness = 2,
+                                       slice = 0.1, understory = NULL, bark.roughness = 2,
                                        den.type = 1, d.top = NULL,
                                        plot.attributes = NULL,
                                        save.result = TRUE, dir.result = NULL){
@@ -97,7 +97,12 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
   stem <- stem[, c("x", "y", "z", "npts")]
 
   stem <- VoxR::project_voxels(stem)
+
+
   stem <- stem[stem$npts > mean(stem$npts) & stem$ratio > mean(stem$ratio) & stem$nvox > mean(stem$nvox), ]
+
+  if(!is.null(understory)){
+  stem <- stem[stem$npts > mean(stem$npts) & stem$ratio > mean(stem$ratio) & stem$nvox > mean(stem$nvox), ]}
 
 
   buf <- sp::SpatialPoints(cbind(stem$x,stem$y))
