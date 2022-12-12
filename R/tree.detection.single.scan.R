@@ -66,11 +66,11 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
 
   data.table::setDT(woody)
   woody <- VoxR::filter_noise(data = woody[, c("x", "y", "z")], store_noise = TRUE, message = FALSE)
-  noise <- woody[woody$Noise == 2, ]
+  # noise <- woody[woody$Noise == 2, ]
   woody <- woody[woody$Noise == 1, ]
 
   woody <- merge(data, woody[, c("x", "y", "z")], by = c("x", "y", "z"), all = FALSE)
-  noise <- merge(data, noise, by = c("x", "y", "z"), all = FALSE)
+  # noise <- merge(data, noise, by = c("x", "y", "z"), all = FALSE)
 
   # Detection of stem part without shrub vegetation and crown
 
@@ -110,6 +110,9 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
   buf <- buf@polygons[[1]]@Polygons
   buf <- lapply(seq_along(buf), function(i) sp::Polygons(list(buf[[i]]), ID = i))
   buf <- sp::SpatialPolygons(buf)
+
+
+  stem <- woody[woody$prob.selec == 1, ]
 
 
   # Breaks argument
