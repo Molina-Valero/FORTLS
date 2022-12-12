@@ -45,7 +45,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   # Detection of stem part without shrub vegetation and crown
 
-  message("Detecting tree stem axis")
+  message("Detecting tree stem axes")
 
   stem <- woody[woody$prob.selec == 1, ]
 
@@ -615,6 +615,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   rm(.filteraux)
 
+
   # Selecting only those trees with more than one section detected when more than two breaks have been specified
 
   if(length(breaks) > 3)
@@ -627,6 +628,67 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   .tree <- .tree[.tree$radius > 0, ]
   .tree <- .tree[order(.tree$rho), ]
   .tree$tree <- 1:nrow(.tree)
+
+
+  # Detecting possible trees overlaped
+
+  .tree.2 <- data.frame(tree = as.numeric(), filter = as.numeric(),
+
+                        x = as.numeric(), y = as.numeric(),
+
+                        sec.x = as.numeric(), sec.y = as.numeric(), sec.max = as.numeric(),
+
+                        phi = as.numeric(), rho = as.numeric(), r = as.numeric(), theta = as.numeric(),
+
+                        horizontal.distance = as.numeric(), radius = as.numeric(),
+
+                        partial.occlusion = as.numeric(),
+
+                        n.pts = as.numeric(), n.pts.red = as.numeric())
+
+
+  for (i in unique(.tree$tree)) {
+
+    if(nrow(.tree[.tree$tree == i, ]) < 1)
+      next
+
+    .filt <- .tree[.tree$tree == i, ]
+    .filteraux <- .tree[.tree$tree != i, ]
+
+    .filteraux$dist <- sqrt((.filteraux$x - .filt$x) ^ 2 + (.filteraux$y - .filt$y) ^ 2) - .filteraux$radius - .filt$radius
+
+    if(min(.filteraux$dist) < 0){
+
+      .filteraux <- .filteraux[.filteraux$dist < 0, ]
+      .filt <- rbind(.filt, .filteraux[ , -ncol(.filteraux)])
+      .filt <- .filt[.filt$filter == max(.filt$filter), ]
+
+      if(nrow(.filt) > 1)
+        .filt <- .filt[.filt$partial.occlusion > 0, ]
+
+
+      if(nrow(.filt) > 1)
+        .filt <- .filt[1, ]
+
+      .tree <- .tree[.tree$tree != .filteraux$tree[.filteraux$dist < 0], ]
+
+      .tree.2 <- rbind(.tree.2, .filt)
+
+
+    } else {
+
+      .tree.2 <- rbind(.tree.2, .filt)
+
+    }
+
+  }
+
+  .tree <- .tree.2
+
+  rm(.tree.2)
+
+  .tree$tree <- 1:nrow(.tree)
+
 
   # Indicate trees with partial occlusions, those for which none of the sections
   # was identified as circumference arch (ArcCirc)
