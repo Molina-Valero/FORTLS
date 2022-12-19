@@ -23,8 +23,14 @@ dir.data <- getwd()
 download.file("https://www.dropbox.com/s/4qvrh7tp3kq0hyo/Galicia_single_scan.laz?dl=1",
               destfile = file.path(dir.data, "Galicia_single_scan.laz"),
               mode = "wb")
-download.file("https://www.dropbox.com/s/2nem6tfbsw7eyd7/Galicia_multi_scan.laz?dl=1",
+download.file("https://www.dropbox.com/s/i905wj0lavklczb/Galicia_multi_scan_red.laz?dl=1",
               destfile = file.path(dir.data, "Galicia_multi_scan.laz"),
+              mode = "wb")
+download.file("https://www.dropbox.com/s/xg0qme298dwzrxu/Rioja_1.laz?dl=1",
+              destfile = file.path(dir.data, "Rioja_1.laz"),
+              mode = "wb")
+download.file("https://www.dropbox.com/s/tkakwgqt5kgvb9c/Rioja_2.laz?dl=1",
+              destfile = file.path(dir.data, "Rioja_2.laz"),
               mode = "wb")
 library(FORTLS)
 ```
@@ -187,7 +193,7 @@ pcd.multi <- normalize(las = "Galicia_multi_scan.laz",
                  scan.approach = "multi", file = "multi.txt",
                  dir.data = dir.data, save.result = FALSE)
 
-tree.list.multi.tls <- tree.detection.multi.scan(data = pcd.multi,
+tree.list.multi.tls <- tree.detection.multi.scan(data = pcd.multi[pcd.multi$prob.selec == 1, ],
                           dbh.min = 4, dbh.max = 200, h.min = 1.3,
                           ncr.threshold = 0.1,
                           tls.precision = 0.03,
@@ -224,11 +230,9 @@ If data from multiple plots are to be analysed, the function `tree.detection.sev
 In the function, the arguments for both the `normalize` and `tree.detection` functions must be specified as explained above. The function is applied as follows:
 
 ```{r eval = FALSE, include= TRUE}
-files <- list.files(pattern = "las$")
-
 tls.resolution = list(point.dist = 7.67, tls.dist = 10)
 
-tree.list.tls <- tree.detection.several.plots(las.list = files, 
+tree.list.tls <- tree.detection.several.plots(las.list = c("Rioja_1.laz", "Rioja_2.laz"), 
                       id = NULL, file = NULL,
                       scan.approach = "multi",
                       x.center = 0, y.center = 0,
