@@ -137,9 +137,9 @@ simulations(tree.tls, tree.ds = NULL, tree.field,
 
   \item{scan.approach}{Character parameter indicating TLS single-scan (\sQuote{single}) or TLS multi-scan approach or SLAM point clouds (\sQuote{multi}) approaches. If this argument is not specified by the user, it will be set to \sQuote{multi} approach.}
 
-    \item{var.metr}{Optional vector containing all the metrics and variables of interest. By default it will be set as NULL and thus, all the metrics and variables available will be generated.}
+  \item{var.metr}{Optional vector containing all the metrics and variables of interest. By default it will be set as NULL and thus, all the metrics and variables available will be generated.}
 
-    \item{dbh.min}{Optional minimum \emph{dbh} (cm) considered for detecting trees. By default it will be set at 4 cm.}
+  \item{dbh.min}{Optional minimum \emph{dbh} (cm) considered for detecting trees. By default it will be set at 4 cm.}
 
   \item{h.min}{Optional minimum \emph{h} (m) considered for detecting trees. By default it will be set at 1.3 m.}
 
@@ -467,10 +467,8 @@ loss of detail in the results generated.
 
 
 \author{
-Juan Alberto Molina-Valero, María José Ginzo Villamayor,
-Manuel Antonio Novo Pérez, Adela Martínez-Calvo, Juan Gabriel Álvarez-González,
-Fernando Montes and César Pérez-Cruzado.
-}
+Juan Alberto Molina-Valero and
+Adela Martínez-Calvo.}
 
 
 \seealso{

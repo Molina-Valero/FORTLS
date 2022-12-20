@@ -161,7 +161,7 @@ dir.result <- getwd()
 
 # Loading example data (LAZ file) to dir.data
 
-download.file("https://www.dropbox.com/s/v9tomu358xgho25/Galicia_single_scan.laz?dl=1",
+download.file("https://www.dropbox.com/s/4qvrh7tp3kq0hyo/Galicia_single_scan.laz?dl=1",
               destfile = file.path(dir.data, "Galicia_single_scan.laz"),
               mode = "wb")
 

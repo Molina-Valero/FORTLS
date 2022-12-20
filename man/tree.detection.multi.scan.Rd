@@ -150,7 +150,7 @@ dir.result <- getwd()
 
 # Loading example data of TLS multi-scan approach point cloud (LAZ file) to dir.data
 
-download.file("https://www.dropbox.com/s/j48chrbngwoma6y/Galicia_multi_scan.laz?dl=1",
+download.file("https://www.dropbox.com/s/2nem6tfbsw7eyd7/Galicia_multi_scan.laz?dl=1",
               destfile = file.path(dir.data, "Galicia_multi_scan.laz"),
               mode = "wb")
 

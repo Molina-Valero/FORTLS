@@ -179,10 +179,8 @@ definitive sampling design.
 
 
 \author{
-Juan Alberto Molina-Valero, María José Ginzo Villamayor,
-Manuel Antonio Novo Pérez, Adela Martínez-Calvo, Juan Gabriel Álvarez-González,
-Fernando Montes and César Pérez-Cruzado.
-}
+Juan Alberto Molina-Valero and
+Adela Martínez-Calvo.}
 
 
 \seealso{
@@ -201,7 +199,7 @@ data("Rioja.simulations")
 # Compute correlations between field estimations and TLS metrics corresponding
 # to Rioja example, and select optimal correlations results
 
-corr <- correlations(simulations = simulations,
+corr <- correlations(simulations = Rioja.simulations,
                      variables = c("N", "G", "d", "dg", "dgeom","dharm",
                                    "d.0", "dg.0", "dgeom.0", "dharm.0", "h",
                                    "hg", "hgeom", "hharm", "h.0", "hg.0",

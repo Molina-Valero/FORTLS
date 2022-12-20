@@ -49,13 +49,8 @@ The outputs of this function are inspired by Fig. 3 of Brunner and Gizachew (201
 Brunner, A., & Gizachew, B. (2014). Rapid detection of stand density, tree positions, and tree diameter with a 2D terrestrial laser scanner. \emph{European Journal of Forest Research}, \bold{133(5)}, 819-831.}
 
 \author{
-Juan Alberto Molina-Valero,
-María José Ginzo Villamayor,
-Manuel Antonio Novo Pérez,
-Adela Martínez-Calvo,
-Juan Gabriel Álvarez-González,
-Fernando Montes and
-César Pérez-Cruzado.}
+Juan Alberto Molina-Valero and
+Adela Martínez-Calvo.}
 
 \note{Mean values are relevant when plots are representing homogenous strata.
 

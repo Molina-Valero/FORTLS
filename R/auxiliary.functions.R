@@ -1972,8 +1972,8 @@ if(nrow(.filter) < 1){
   # 'var.metr' must be a list with one or two elements named 'tls' and 'field'
   var.metr <- .check.class(x = var.metr, x.class = class(.var.metr),
                            name = 'var.metr', n = Inf)
-  if (length(var.metr) != length(.var.metr))
-    stop("'var.metr' must have length equal to ", length(.var.metr), ".")
+  # if (length(var.metr) != length(.var.metr))
+  #   stop("'var.metr' must have length equal to ", length(.var.metr), ".")
   .miss <- names(.var.metr)[! names(.var.metr) %in% names(var.metr)]
   if (length(.miss) > 0)
     stop("Element(s) named ", .quot.past(.miss), " is(are) missing in ",
