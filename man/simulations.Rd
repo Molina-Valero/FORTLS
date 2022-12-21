@@ -30,7 +30,7 @@ simulations(tree.tls, tree.ds = NULL, tree.field,
             plot.design = c("fixed.area", "k.tree", "angle.count"),
             plot.parameters = data.frame(radius.max = 25, k.max = 50, BAF.max = 4),
             scan.approach = "single", var.metr = list(tls = NULL, field = NULL),
-            dbh.min = 4, h.min = 1.3, max.dist = Inf,
+            v.calc = "parab", dbh.min = 4, h.min = 1.3, max.dist = Inf,
             dir.data = NULL, save.result = TRUE, dir.result = NULL)
 }
 
@@ -138,6 +138,8 @@ simulations(tree.tls, tree.ds = NULL, tree.field,
   \item{scan.approach}{Character parameter indicating TLS single-scan (\sQuote{single}) or TLS multi-scan approach or SLAM point clouds (\sQuote{multi}) approaches. If this argument is not specified by the user, it will be set to \sQuote{multi} approach.}
 
   \item{var.metr}{Optional vector containing all the metrics and variables of interest. By default it will be set as NULL and thus, all the metrics and variables available will be generated.}
+
+  \item{v.calc}{Optional parameter to calculate volume when is not included in tree.tls input data.}
 
   \item{dbh.min}{Optional minimum \emph{dbh} (cm) considered for detecting trees. By default it will be set at 4 cm.}
 

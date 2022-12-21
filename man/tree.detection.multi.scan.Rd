@@ -9,12 +9,12 @@
 \description{Detects trees from point clouds corresponding to TLS multi-scan approaches and SLAM devices. For each tree detected, the function calculates the central coordinates and estimates the diameter at 1.3 m above ground level (which is known as \emph{dbh}, diameter at breast height) and classifies it as fully visible or partially occluded. Finally, the function obtains the number of points belonging to normal sections of trees (those corresponding to \emph{dbh} +/- 5 cm) and estimates them for both original and reduced (with random selection process) point clouds.}
 
 \usage{
-tree.detection.multi.scan(data,
+tree.detection.multi.scan(data, single.tree = NULL,
                           dbh.min = 4, dbh.max = 200, h.min = 1.3,
                           ncr.threshold = 0.1,
                           tls.precision = NULL,
                           stem.section = NULL, breaks = NULL,
-                          slice = 0.1, bark.roughness = 2,
+                          slice = 0.1, understory = NULL, bark.roughness = 2,
                           den.type = 1, d.top = NULL,
                           plot.attributes = NULL,
                           save.result = TRUE, dir.result = NULL)}
@@ -22,6 +22,8 @@ tree.detection.multi.scan(data,
 \arguments{
 
   \item{data}{Data frame with same description and format as indicated for \code{\link{normalize}} \sQuote{Value}.}
+
+  \item{single.tree}{Optional argument to indicate if there is only one tree.}
 
   \item{dbh.min}{Optional minimum \emph{dbh} (cm) considered for detecting trees. By default it will be set at 4 cm.}
 
@@ -33,11 +35,13 @@ tree.detection.multi.scan(data,
 
   \item{tls.precision}{Average point cloud precision in cm.}
 
-    \item{stem.section}{Section free of noise (shurb, branches, etc.) considered to detect trees. If not specified, an automatic internal algorithm will be applied (see \sQuote{Details}).}
+  \item{stem.section}{Section free of noise (shurb, branches, etc.) considered to detect trees. If not specified, an automatic internal algorithm will be applied (see \sQuote{Details}).}
 
   \item{breaks}{Height above ground level (m) of slices considered for detecting trees. By default it will be considered all possible sections from 0.4 m to maximum height by 0.3 m intervals (+/- 5 cm).}
 
   \item{slice}{Slice width considered for detecting trees. By default it will be considered as 0.1 m.}
+
+  \item{understory}{Optional argument to indicate if there is dense understory vegetation.}
 
   \item{bark.roughness}{Bark roughness established in 3 degrees (1 < 2 < 3). By default it will be considered as 2.}
 
