@@ -490,7 +490,7 @@
   }
 
   .dat <- merge(.dat, .remove, by = "point", all.y = TRUE)
-  .noise <- subset(.dat, !(point %in% .remove$point))
+  # .noise <- subset(.dat, !(point %in% .remove$point))
 
 
   if(nrow(.dat) < 1){return(.filter)}

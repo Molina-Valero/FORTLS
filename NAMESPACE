@@ -1,4 +1,6 @@
 export(normalize)
+import(RCSF)
+import(rgeos)
 importFrom(Rcpp, evalCpp)
 importFrom(tidyr, "%>%")
 importFrom("stats", "sd", "uniroot", "var")
