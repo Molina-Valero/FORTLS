@@ -1,5 +1,4 @@
 # FORTLS
-# We are working on the new version 1.2.0!!! 
 ## Automatic Processing of TLS Point Cloud Data for Forestry Purposes
 Process automation of Terrestrial Laser Scanner (TLS) point cloud data derived from single
 scans. 'FORTLS' enables (i) detection of trees and estimation of diameter
