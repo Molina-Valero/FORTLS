@@ -64,9 +64,9 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
 
   message("Statistical filtering of the whole point cloud")
 
-  data.table::setDT(woody)
+  woody <- woody[, c("x", "y", "z")]
+  woody <- VoxR::filter_noise(data = data.table::setDT(woody), store_noise = TRUE, message = FALSE)
 
-  woody <- VoxR::filter_noise(data = woody[, c("x", "y", "z")], store_noise = TRUE, message = FALSE)
   # noise <- woody[woody$Noise == 2, ]
 
   woody <- woody[woody$Noise == 1, ]
