@@ -804,10 +804,10 @@ if(nrow(.filter) < 1){
       }
 
       volume.i <- data.frame(tree = i,
-                             v = vol_m3(tree$dbh[1], tree$h[1], 0, tree$h[1],
-                                        b1),
-                             v.com = vol_m3(tree$dbh[1], tree$h[1], 0, h.lim,
-                                            b1))
+                             v = vol_m3(tree$dbh[1], tree$h[1], 0, tree$h[1], b1),
+                             v.com = vol_m3(tree$dbh[1], tree$h[1], 0, h.lim, b1),
+                             h.com = h.lim)
+
       volume <- rbind(volume, volume.i)
 
     }

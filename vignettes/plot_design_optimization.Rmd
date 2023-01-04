@@ -154,7 +154,8 @@ To facilitate the application of model-based sampling, two additional functions 
 The **`correlations`** function computes the correlations for all the plot designs that are introduces as elements of a list in **`simulations`**. The format and description must be the same as the output list of the `simulations` function. Also similar to the function `relative.bias`, the variables for which the correlations are to be calculated can be specified in **`variables`**. By default, this argument is set to `variables = c("N", "G", "V", "d", "dg", "d.0", "h", "h.0")`. If only one of the two above-mentioned correlation measures should be calculated, it can be specified in **`method`**. This argument is set to `method = c("pearson", "spearman")` by default and both correlation coefficients are computed. 
 
 ```{r}
-cor <- correlations(simulations = Rioja.simulations,
+fixed.area.simulations <- list(fixed.area = Rioja.simulations$fixed.area[Rioja.simulations$fixed.area$radius < 7.5, ])
+cor <- correlations(simulations = fixed.area.simulations,
              variables = c("N", "G", "d", "dg", "d.0", "h", "h.0"),
              method = c("pearson", "spearman"), 
              save.result = FALSE, dir.result = NULL)
@@ -221,5 +222,4 @@ download.file("https://www.dropbox.com/s/e0wzq32ltjjeren/opt.correlations.fixed.
               mode = "wb")
 ```
 
-As an example, the heat map of the pearson correlation coefficient for fixed area plots and pearson measure is provided and can be seen when opening the link ([opt.correlations.fixed.area.plot.pearson.html](opt.correlations.fixed.area.plot.pearson.html)).
-
+As an example, the heat map of the pearson correlation coefficient for fixed area plots and pearson measure is provided and can be seen when opening the link ([opt.correlations.fixed.area.pearson.html](opt.correlations.fixed.area.pearson.html)).
