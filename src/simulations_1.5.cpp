@@ -319,7 +319,7 @@ DataFrame fixed_area_cpp(std::vector<double> radius_seq,
 
         factor[j] = 1.0;
 
-      } else if ((factor[j] > num) & (factor_1[j] < num)) {
+      } else if ((factor[j] > num) && (factor_1[j] < num)) {
 
         factor[j] = (num - factor_1[j]) / num;
 
@@ -415,7 +415,7 @@ DataFrame k_tree_cpp(std::vector<double> k_seq,
 
         factor[j] = 1.0;
 
-      } else if ((factor[j] > num) & (factor_1[j] < num)) {
+      } else if ((factor[j] > num) && (factor_1[j] < num)) {
 
         factor[j] = (num - factor_1[j]) / num;
 
@@ -523,7 +523,7 @@ DataFrame angle_count_cpp(std::vector<double> baf_seq,
 
         factor[j] = 1.0;
 
-      } else if ((factor[j] > num) & (factor_1[j] < num)) {
+      } else if ((factor[j] > num) && (factor_1[j] < num)) {
 
         factor[j] = (num - factor_1[j]) / num;
 
