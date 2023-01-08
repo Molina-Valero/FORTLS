@@ -136,14 +136,7 @@ kableExtra::scroll_box(kable_input = kableExtra::kable(head(bias$fixed.area),
                                                        format = "html"), width = "100%")
 ```
 
-```{r include=FALSE}
-dir.data <- getwd()
-download.file("https://www.dropbox.com/s/8a0hwh1xpqlprjc/RB.G.fixed.area.plot.html?dl=1",
-              destfile = file.path(dir.data, "RB.G.fixed.area.html"),
-              mode = "wb")
-```
-
-For better visualization, line charts are created that show the relative bias of a given variable and plot design. As an example, the interactive graphic showing the relative bias of basal area estimations (`G`) for fixed are plots can be seen when following the link ([RB.G.fixed.area.html](RB.G.fixed.area.html)).
+For better visualization, line charts are created that show the relative bias of a given variable and plot design. As an example, the interactive graphic showing the relative bias of basal area estimations (`G`) for fixed are plots can be seen when following the link ([RB.G.fixed.area.html](https://www.dropbox.com/s/8a0hwh1xpqlprjc/RB.G.fixed.area.plot.html?dl=0)).
 
 ### Functions facilitating model-based or model-assisted sampling approaches 
 
@@ -194,14 +187,7 @@ kableExtra::scroll_box(kable_input = kableExtra::kable(
   cor$opt.correlations$pearson$fixed.area[20:26,], format = "html"), width = "100%")
 ```
 
-```{r include=FALSE}
-dir.data <- getwd()
-download.file("https://www.dropbox.com/s/etriqgcmbahab7z/correlations.h.fixed.area.pearson.html?dl=1",
-              destfile = file.path(dir.data, "correlations.h.fixed.area.pearson.html"),
-              mode = "wb")
-```
-
-The `correlations` functions creates different files and saves them (if `save.result = TRUE`, default setting) to the directory indicated in `dir.result`. These files are, on the one hand, .csv files of the data frames in the lists `correlations` and `opt.correlations` created by means of the `write.csv` function from the [utils](https://CRAN.R-project.org/package=R.utils) package. These .csv files will be named as `correlations.<plot design>.<method>.csv` and `opt.correlations.<plot design>.plot.<method>.csv` with `<plot design>` being `fixed.area.plot`, `k.tree.plot` or `angle.count.plot` and `<method>` being `pearson` or `spearman`. On the other hand, interactive line charts representing the correlation coefficients will be created for each variable (selected in `variables`) as .html file using the `saveWidget` function in the [htmlwidgets](https://CRAN.R-project.org/package=htmlwidgets) package. As an example, the interactive line chart for the variable height (`h`) and fixed area plots (pearson measure) is shown ([correlations.h.fixed.area.pearson.html](correlations.h.fixed.area.pearson.html)).
+The `correlations` functions creates different files and saves them (if `save.result = TRUE`, default setting) to the directory indicated in `dir.result`. These files are, on the one hand, .csv files of the data frames in the lists `correlations` and `opt.correlations` created by means of the `write.csv` function from the [utils](https://CRAN.R-project.org/package=R.utils) package. These .csv files will be named as `correlations.<plot design>.<method>.csv` and `opt.correlations.<plot design>.plot.<method>.csv` with `<plot design>` being `fixed.area.plot`, `k.tree.plot` or `angle.count.plot` and `<method>` being `pearson` or `spearman`. On the other hand, interactive line charts representing the correlation coefficients will be created for each variable (selected in `variables`) as .html file using the `saveWidget` function in the [htmlwidgets](https://CRAN.R-project.org/package=htmlwidgets) package. As an example, the interactive line chart for the variable height (`h`) and fixed area plots (pearson measure) is shown ([correlations.h.fixed.area.pearson.html](https://www.dropbox.com/s/etriqgcmbahab7z/correlations.h.fixed.area.pearson.html?dl=0)).
 
 #### Visualizing correlations
 
@@ -215,11 +201,4 @@ optimize.plot.design(correlations = cor$opt.correlations,
 
 The function creates the heat maps based on the optimal correlation list (`opt.correlations` from the output of the `correlations` function) introduced in **`correlations`**. The introduced list must have the same format and description as the `opt.correlation` list. Similar to the other functions described above, the variables of interest can be selected in **`variables`** (default setting: `variables = c("N", "G", "V", "d", "dg", "d.0", "h", "h.0")`). This function generates interactive heat maps with the `saveWidget` function of the [htmlwidgets](https://CRAN.R-project.org/package=htmlwidgets) package and saves these graphics to the directory indicated in **`dir.result`** (or by default to the working directory). For each plot design and correlation measure a plot is generated and named as `opt.correlations.<plot design>.<method>.html` where `<plot design>` can be `fixed.area.plot`, `k.tree.plot` or `angle.count.plot` and `<method>` either `pearson` or `spearman` according to the plot design and correlation measure. 
 
-```{r include=FALSE}
-dir.data <- getwd()
-download.file("https://www.dropbox.com/s/e0wzq32ltjjeren/opt.correlations.fixed.area.pearson.html?dl=1",
-              destfile = file.path(dir.data, "opt.correlations.fixed.area.pearson.html"),
-              mode = "wb")
-```
-
-As an example, the heat map of the pearson correlation coefficient for fixed area plots and pearson measure is provided and can be seen when opening the link ([opt.correlations.fixed.area.pearson.html](opt.correlations.fixed.area.pearson.html)).
+As an example, the heat map of the pearson correlation coefficient for fixed area plots and pearson measure is provided and can be seen when opening the link ([opt.correlations.fixed.area.pearson.html](https://www.dropbox.com/s/e0wzq32ltjjeren/opt.correlations.fixed.area.pearson.html?dl=0)).
