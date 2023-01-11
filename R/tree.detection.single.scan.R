@@ -869,6 +869,10 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
     .stem <- .stem[, c("tree", "x", "y", "dhi", "dbh", "hi", "h")]
     .stem <- .stem[order(.stem$tree, .stem$hi), , drop = FALSE]
 
+    if(!is.null(data$id)){
+      .stem$id <- data$id[1]
+      .stem <- .stem[, c("id", "tree", "x", "y", "dhi", "dbh", "hi", "h")]}
+
     utils::write.csv(.stem,
                      file = file.path(dir.result, "tree.tls.stem.csv"),
                      row.names = FALSE)
