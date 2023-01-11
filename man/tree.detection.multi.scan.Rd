@@ -93,6 +93,8 @@ Local surface variation (also known as normal change rate ,NCR), is a quantitati
 
 \item{\emph{h}}{estimated tree total height (m).}
 
+\item{\emph{h.com}}{estimated commercial tree height (m) according to the top diameter defined in the argument \code{d.top}.}
+
 \item{\emph{v}}{estimated tree stem volume (m^3).}
 
 \item{\emph{v.com}}{estimated commercial tree stem volume (m^3) according to the top diameter defined in the argument \code{d.top}.}
