@@ -9,17 +9,17 @@
 \description{Calculation of the probability of detection of every tree by using distance sampling methodologies (more specifically point transects methods), by means of fitting detection functions to the histogram of tree distribution according to their distance to TLS. Use both half normal and hazard rate functions, without and with \emph{dbh} as covariate. These probabilities are used for correcting estimation bias caused by lack of detection of trees due to occlusion.}
 
 \usage{
-distance.sampling(tree.list.tls,
+distance.sampling(tree.tls,
                   id.plots = NULL,
                   strata.attributes = NULL)}
 
 \arguments{
 
-  \item{tree.list.tls}{Data frame with a list of trees detected and their \emph{dbh} and horizontal distances from TLS with the same structure and format as \code{\link{tree.detection}} and \code{\link{tree.detection.multiple}} \sQuote{Value}.}
+  \item{tree.tls}{Data frame with a list of trees detected and their \emph{dbh} and horizontal distances from TLS with the same structure and format as \code{\link{tree.detection.single.scan}} and \code{\link{tree.detection.several.plots}} \sQuote{Value}.}
 
-  \item{id.plots}{Optional vector with plot identification encoded as character string or numeric for the plots considered. In this case, \code{tree.list.tls} argument must include a common column named \sQuote{id}. If this argument is not specified by the user, it will be set to NULL by default, and as a consequence, all plots will be considered.}
+  \item{id.plots}{Optional vector with plot identification encoded as character string or numeric for the plots considered. In this case, \code{tree.tls} argument must include a common column named \sQuote{id}. If this argument is not specified by the user, it will be set to NULL by default, and as a consequence, all plots will be considered.}
 
-  \item{strata.attributes}{Optional data frame inluding plot radius considered at strata level. It must contain a column named \sQuote{stratum} (numeric) with encoding coinciding with that used in previous functions (\code{\link{normalize}}, \code{\link{tree.detection}} and \code{\link{tree.detection.multiple}}) for identifying strata. Therefore, strata must heve been included previously in \sQuote{tree.list.tls}. Another column named \sQuote{plot.radius} (numeric) will be required to set maximum horizontal distance (m) considered for fitting detection probability functions. If this argument is not specified by the user, it will be set to NULL by default, and as a consequence, all trees will be included.}}
+  \item{strata.attributes}{Optional data frame inluding plot radius considered at strata level. It must contain a column named \sQuote{stratum} (numeric) with encoding coinciding with that used in previous functions (\code{\link{normalize}}, \code{\link{tree.detection.single.scan}} and \code{\link{tree.detection.several.plots}}) for identifying strata. Therefore, strata must heve been included previously in \sQuote{tree.tls}. Another column named \sQuote{plot.radius} (numeric) will be required to set maximum horizontal distance (m) considered for fitting detection probability functions. If this argument is not specified by the user, it will be set to NULL by default, and as a consequence, all trees will be included.}}
 
 \details{All internal functions related to distance sampling methodologies are fitted with the \code{\link[Distance]{ds}} function included in the \CRANpkg{Distance} package.
 
@@ -35,11 +35,11 @@ For further details on these point transects methods  and similar sampling metho
 
 \itemize{
 
-  \item {\code{stratum}}: stratum identification (coincident with strata of \code{tree.list.tls}). If there are not strata, it will be set as a single stratum encoded as 1 (numeric).
+  \item {\code{stratum}}: stratum identification (coincident with strata of \code{tree.tls}). If there are not strata, it will be set as a single stratum encoded as 1 (numeric).
 
-  \item {\code{id}}: plot identification (coincident with id of \code{tree.list.tls}).
+  \item {\code{id}}: plot identification (coincident with id of \code{tree.tls}).
 
-  \item {\code{tree}}: tree numbering (coincident with \code{tree} of \code{tree.list.tls}).
+  \item {\code{tree}}: tree numbering (coincident with \code{tree} of \code{tree.tls}).
 
   \item {\code{P.hn}}: tree detection probability according to half normal function.
 
@@ -98,16 +98,11 @@ Marques, F. F., & Buckland, S. T. (2003). Incorporating covariates into standard
 Miller, D. L., & Thomas, L. (2015). Mixture models for distance sampling detection functions. \emph{PloS one}, \bold{10(3)}, e0118726. \doi{https://doi.org/10.1371/journal.pone.0118726}.}
 
 \author{
-Juan Alberto Molina-Valero,
-María José Ginzo Villamayor,
-Manuel Antonio Novo Pérez,
-Adela Martínez-Calvo,
-Juan Gabriel Álvarez-González,
-Fernando Montes and
-César Pérez-Cruzado.}
+Juan Alberto Molina-Valero
+and Adela Martínez-Calvo.}
 
 \seealso{
-\code{\link{tree.detection}}, \code{\link{tree.detection.multiple}}, \code{\link{metrics.variables}}, \code{\link{simulations}}.
+\code{\link{tree.detection.single.scan}}, \code{\link{tree.detection.several.plots}}, \code{\link{metrics.variables}}, \code{\link{simulations}}.
 
 \code{\link{ds}} in \CRANpkg{Distance} package.
 }
@@ -121,35 +116,14 @@ César Pérez-Cruzado.}
 
 data(Rioja.data)
 
-tree.list.tls <- Rioja.data$tree.list.tls
+tree.tls <- Rioja.data$tree.tls
 
 # Whithout considering maximum distance
 
-ds <- distance.sampling(tree.list.tls)
+ds <- distance.sampling(tree.tls)
 
 
-# Considering only some plots (first 8 plots)
+  }
 
-ds <- distance.sampling(tree.list.tls, id.plots = 1:8)
-
-
-# Considering strata
-# Loading dataset with strata
-
-plot.attributes <- Rioja.data$plot.attributes
-
-# Merging the plot.attributes data set with strata information
-
-tree.list.tls <- merge(tree.list.tls, plot.attributes, by = "id")
-
-
-# Considering maximum distances of 10 and 15 m for stratum 1 and 2 respectively
-
-strata.attributes = data.frame(stratum = c(1, 2),
-                               plot.radius = c(10, 15))
-
-ds <- distance.sampling(tree.list.tls, strata.attributes = strata.attributes)
-
-
-}}
+}
 

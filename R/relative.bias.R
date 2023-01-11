@@ -1,57 +1,69 @@
 
 relative.bias <- function(simulations,
-                          variables = c("N", "G", "V", "d", "dg", "d.0", "h",
-                                        "h.0"),
+                          variables = c("N", "G", "V", "d", "dg", "d.0", "h", "h.0"),
                           save.result = TRUE, dir.result = NULL) {
+  
+
+
+  # Checking if id columns are characters or factors, and converting to numeric in that cases
+  if(!is.null(simulations$fixed.area) & is.character(simulations$fixed.area$id) | is.factor(simulations$fixed.area$id))
+    simulations$fixed.area$id <- as.numeric(as.factor(simulations$fixed.area$id))
+
+  if(!is.null(simulations$k.tree) & is.character(simulations$k.tree$id) | is.factor(simulations$k.tree$id))
+    simulations$k.tree$id <- as.numeric(as.factor(simulations$k.tree$id))
+
+  if(!is.null(simulations$angle.count) & is.character(simulations$angle.count$id) | is.factor(simulations$angle.count$id))
+    simulations$angle.count$id <- as.numeric(as.factor(simulations$angle.count$id))
 
 
   # Define a character vector containing index name (radius, k or BAF) for each
   # available plot design
-  .plot.design <- c(fixed.area.plot = "radius", k.tree.plot = "k",
-                    angle.count.plot = "BAF")
+  .plot.design <- c(fixed.area = "radius", k.tree = "k", angle.count = "BAF")
 
   # Define character vectors containing the implemented field variables and TLS
   # metrics
   .field.names <- c(
-                    # Density (trees/ha), basal area (m2/ha) and volume (m3/ha)
-                    "N", "G", "V",
+    # Density (trees/ha), basal area (m2/ha) and volume (m3/ha)
+    "N", "G", "V",
+    
+    # Volume (m3/ha) provided by user
+    "V.user",
+    
+    # Mean diameters (cm), and mean dominant diameters (cm)
+    "d", "dg", "dgeom", "dharm",
+    paste(c("d", "dg", "dgeom", "dharm"), "0", sep = "."),
 
-                    # Mean diameters (cm), and mean dominant diameters (cm)
-                    "d", "dg", "dgeom", "dharm",
-                    paste(c("d", "dg", "dgeom", "dharm"), "0", sep = "."),
-
-                    # Mean heights (m), and mean dominant heights (m)
-                    "h", "hg", "hgeom", "hharm",
-                    paste(c("h", "hg", "hgeom", "hharm"), "0", sep = "."))
+    # Mean heights (m), and mean dominant heights (m)
+    "h", "hg", "hgeom", "hharm",
+    paste(c("h", "hg", "hgeom", "hharm"), "0", sep = "."))
   .tls.names <- c(
-                  # Density (trees/ha)
-                  "N.tls", "N.hn", "N.hr", "N.hn.cov", "N.hr.cov", "N.sh",
-                  "N.pam",
+    # Density (trees/ha)
+    "N.tls", "N.hn", "N.hr", "N.hn.cov", "N.hr.cov", "N.sh",
+    "N.pam",
 
-                  # Number of points
-                  "num.points", "num.points.est", "num.points.hom",
-                  "num.points.hom.est",
+    # Number of points
+    "n.pts", "n.pts.est", "n.pts.red", "n.pts.red.est",
 
-                  # Basal area (m2/ha)
-                  "G.tls", "G.hn", "G.hr", "G.hn.cov", "G.hr.cov", "G.sh",
-                  "G.pam",
+    # Basal area (m2/ha)
+    "G.tls", "G.hn", "G.hr", "G.hn.cov", "G.hr.cov", "G.sh",
+    "G.pam",
 
-                  # Volume (m3/ha)
-                  "V.tls", "V.hn", "V.hr", "V.hn.cov", "V.hr.cov", "V.sh",
-                  "V.pam",
+    # Volume (m3/ha)
+    "V.tls", "V.hn", "V.hr", "V.hn.cov", "V.hr.cov", "V.sh",
+    "V.pam",
 
-                  # Mean diameters (cm), and mean dominant diameters (cm)
-                  paste(c("d", "dg", "dgeom", "dharm"), "tls", sep = "."),
-                  paste(c("d", "dg", "dgeom", "dharm"), "0.tls", sep = "."),
+    # Mean diameters (cm), and mean dominant diameters (cm)
+    paste(c("d", "dg", "dgeom", "dharm"), "tls", sep = "."),
+    paste(c("d", "dg", "dgeom", "dharm"), "0.tls", sep = "."),
 
-                  # Mean heights (m), and mean dominant heights (m)
-                  paste(c("h", "hg", "hgeom", "hharm"), "tls", sep = "."),
-                  paste(c("h", "hg", "hgeom", "hharm"), "0.tls", sep = "."),
+    # Mean heights (m), and mean dominant heights (m)
+    paste(c("h", "hg", "hgeom", "hharm"), "tls", sep = "."),
+    paste(c("h", "hg", "hgeom", "hharm"), "0.tls", sep = "."),
 
-                  # Height percentiles P99 (m)
-                  # Remark: only for relative bias regarding heights and
-                  # dominant heights
-                  sprintf("P%02i", 99))
+    # Height percentiles P99 (m)
+    # Remark: only for relative bias regarding heights and
+    # dominant heights
+    sprintf("P%02i", 99))
 
 
   # Check arguments
@@ -62,7 +74,7 @@ relative.bias <- function(simulations,
   if (!is.list(simulations)) stop("'simulations' must be a list")
   if (is.null(simulations) || all(!names(.plot.design) %in% names(simulations)))
     stop("'simulations' must have at least one of the following elements:",
-         "'fixed.area.plot', 'k.tree.plot' or 'angle.count.plot'")
+         "'fixed.area', 'k.tree' or 'angle.count'")
   if (any(!names(simulations) %in% names(.plot.design))) {
 
     simulations <- simulations[names(simulations) %in% names(.plot.design)]
@@ -74,8 +86,7 @@ relative.bias <- function(simulations,
   simulations <- simulations[!sapply(simulations, is.null)]
   if (length(simulations) == 0)
     stop("'simulations' must have at least one of the following elements ",
-         "different from 'NULL': 'fixed.area.plot', 'k.tree.plot' or ",
-         "'angle.count.plot'")
+         "different from 'NULL': 'fixed.area', 'k.tree' or 'angle.count'")
   for (.i in names(simulations)) {
 
     # All elements in 'simulations' must be data frames with at least one row,
@@ -222,8 +233,8 @@ relative.bias <- function(simulations,
     # Define initial time, and print message
     t0 <- Sys.time()
     message("Computing relative bias for ",
-        switch(.i, fixed.area.plot = "fixed area ", k.tree.plot = "k-tree ",
-               angle.count.plot = "angle-count "), "plots")
+            switch(.i, fixed.area = "fixed area ", k.tree = "k-tree ",
+                   angle.count = "angle-count "), "plots")
 
 
     # Rearrange simulated data ----
@@ -266,13 +277,16 @@ relative.bias <- function(simulations,
     # TLS metric to be considered for relative bias calculations
     .RB.pairs <- .tls.names[.tls.names %in% dimnames(.data)[[2]]]
     .RB.pairs <- cbind(field = rep(.field.names, each = length(.RB.pairs)),
-                        tls = rep(.RB.pairs, length(.field.names)))
+                       tls = rep(.RB.pairs, length(.field.names)))
     rownames(.RB.pairs) <- apply(.RB.pairs, 1, paste, collapse = ".")
     # Restrict possible pairs to comparable ones: field and corresponding TLS
     # counterpart; or field heights and TLS percentiles
     .row.names <-
       (substr(.RB.pairs[, "tls"], 1, nchar(.RB.pairs[, "field"])) ==
          .RB.pairs[, "field"]) |
+      (substr(.RB.pairs[, "tls"], 1, nchar(
+        gsub(".user", "", .RB.pairs[, "field"], fixed = TRUE))) ==
+         gsub(".user", "", .RB.pairs[, "field"], fixed = TRUE)) |
       ((substr(.RB.pairs[, "field"], 1, 1) == "h" &
           substr(.RB.pairs[, "tls"], 1, 1) == "P"))
     .RB.pairs <- .RB.pairs[.row.names, , drop = FALSE]
@@ -342,8 +356,8 @@ relative.bias <- function(simulations,
     if (length(.any.nona) == 0) {
 
       warning("All the computed relative bias for ",
-              switch(.i, fixed.area.plot = "fixed area", k.tree.plot = "k-tree",
-                     angle.count.plot = "angle-count"),
+              switch(.i, fixed.area = "fixed area", k.tree = "k-tree",
+                     angle.count = "angle-count"),
               " plot design case are 'NA' values")
 
     } else {
@@ -425,22 +439,24 @@ relative.bias <- function(simulations,
         .title <- switch(.j, N = "Density (N, trees/ha)",
                          G = "Basal area (G, m<sup>2</sup>/ha)",
                          V = "Volume (V, m<sup>3</sup>/ha)",
+                         V.user = paste("Volume (V, m<sup>3</sup>/ha) provided",
+                                        "by user"),
                          d = "Mean diameters (cm)",
                          h = "Mean heights (m)")
-        .subtitle <- paste("<br> <span style='font-size: 12px;'>",
-                           switch(.i, fixed.area.plot = "Fixed area",
-                                  k.tree.plot = "K-tree",
-                                  angle.count.plot = "Angle-count"),
+        .subtitle <- paste("<br> <span style='font-size: 20px;'>",
+                           switch(.i, fixed.area = "Circular fixed area plot",
+                                  k.tree = "K-tree plot",
+                                  angle.count = "Angle-count plot"),
                            "</span>", sep ="")
-        .xaxis <- switch(.i, fixed.area.plot = "Radius (m)",
-                         k.tree.plot = "K-tree (trees)",
-                         angle.count.plot = "BAF (m<sup>2</sup>/ha)")
+        .xaxis <- switch(.i, fixed.area = "Radius (m)",
+                         k.tree = "K-tree (trees)",
+                         angle.count = "BAF (m<sup>2</sup>/ha)")
         .yaxis <- "Relative bias (%)"
         fig <-
           plotly::plot_ly(.RB.data.j, type = 'scatter', mode = 'lines') %>%
-          plotly::layout(title = paste(.title, .subtitle, sep = ""),
+          plotly::layout(title = paste(.title, .subtitle, sep = ""), font = list(size = 25),
                          xaxis = list(title = .xaxis),
-                         yaxis = list (title = .yaxis), margin = list(t = 50))
+                         yaxis = list (title = .yaxis), margin = list(t = 100))
 
         # Add traces
         for (.k in

@@ -5,53 +5,99 @@ correlations <- function(simulations,
                          method = c("pearson", "spearman"), save.result = TRUE,
                          dir.result = NULL) {
 
+  # Checking if id columns are characters or factors, and converting to numeric in that cases
+  if(!is.null(simulations$fixed.area) & is.character(simulations$fixed.area$id) | is.factor(simulations$fixed.area$id))
+    simulations$fixed.area$id <- as.numeric(as.factor(simulations$fixed.area$id))
+
+  if(!is.null(simulations$k.tree) & is.character(simulations$k.tree$id) | is.factor(simulations$k.tree$id))
+    simulations$k.tree$id <- as.numeric(as.factor(simulations$k.tree$id))
+
+  if(!is.null(simulations$angle.count) & is.character(simulations$angle.count$id) | is.factor(simulations$angle.count$id))
+    simulations$angle.count$id <- as.numeric(as.factor(simulations$angle.count$id))
+
 
   # Define a character vector containing index name (radius, k or BAF) for each
   # available plot design
-  .plot.design <- c(fixed.area.plot = "radius", k.tree.plot = "k",
-                    angle.count.plot = "BAF")
+  .plot.design <- c(fixed.area = "radius", k.tree = "k", angle.count = "BAF")
 
   # Define character vectors containing the implemented field variables and TLS
   # metrics
   .field.names <- c(
-                    # Density (trees/ha), basal area (m2/ha) and volume (m3/ha)
-                    "N", "G", "V",
+    # Density (trees/ha), basal area (m2/ha) and volume (m3/ha)
+    "N", "G", "V",
 
-                    # Mean diameters (cm), and mean dominant diameters (cm)
-                    "d", "dg", "dgeom", "dharm",
-                    paste(c("d", "dg", "dgeom", "dharm"), "0", sep = "."),
+    # Volume (m3/ha) and biomass (Mg/ha) provided by user
+    # if("W" %in% colnames(simulations$fixed.area))
+    "V.user", "W.user",
 
-                    # Mean heights (m), and mean dominant heights (m)
-                    "h", "hg", "hgeom", "hharm",
-                    paste(c("h", "hg", "hgeom", "hharm"), "0", sep = "."))
+    # Mean diameters (cm), and mean dominant diameters (cm)
+    "d", "dg", "dgeom", "dharm",
+    paste(c("d", "dg", "dgeom", "dharm"), "0", sep = "."),
+
+    # Mean heights (m), and mean dominant heights (m)
+    "h", "hg", "hgeom", "hharm",
+    paste(c("h", "hg", "hgeom", "hharm"), "0", sep = "."))
   .tls.names <- c(
-                  # Density (trees/ha)
-                  "N.tls", "N.hn", "N.hr", "N.hn.cov", "N.hr.cov", "N.sh",
-                  "N.pam",
+    # Density (trees/ha)
+    "N.tls", "N.hn", "N.hr", "N.hn.cov", "N.hr.cov", "N.sh",
+    "N.pam",
 
-                  # Number of points
-                  "num.points", "num.points.est", "num.points.hom",
-                  "num.points.hom.est",
+    # Number of points
+    "n.pts", "n.pts.est", "n.pts.red", "n.pts.red.est",
 
-                  # Basal area (m2/ha)
-                  "G.tls", "G.hn", "G.hr", "G.hn.cov", "G.hr.cov", "G.sh",
-                  "G.pam",
+    # Basal area (m2/ha)
+    "G.tls", "G.hn", "G.hr", "G.hn.cov", "G.hr.cov", "G.sh",
+    "G.pam",
 
-                  # Volume (m3/ha)
-                  "V.tls", "V.hn", "V.hr", "V.hn.cov", "V.hr.cov", "V.sh",
-                  "V.pam",
+    # Volume (m3/ha)
+    "V.tls", "V.hn", "V.hr", "V.hn.cov", "V.hr.cov", "V.sh",
+    "V.pam",
 
-                  # Mean diameters (cm), and mean dominant diameters (cm)
-                  paste(c("d", "dg", "dgeom", "dharm"), "tls", sep = "."),
-                  paste(c("d", "dg", "dgeom", "dharm"), "0.tls", sep = "."),
+    # Mean diameters (cm), and mean dominant diameters (cm)
+    paste(c("d", "dg", "dgeom", "dharm"), "tls", sep = "."),
+    paste(c("d", "dg", "dgeom", "dharm"), "0.tls", sep = "."),
 
-                  # Mean heights (m), and mean dominant heights (m)
-                  paste(c("h", "hg", "hgeom", "hharm"), "tls", sep = "."),
-                  paste(c("h", "hg", "hgeom", "hharm"), "0.tls", sep = "."),
+    # Mean heights (m), and mean dominant heights (m)
+    paste(c("h", "hg", "hgeom", "hharm"), "tls", sep = "."),
+    paste(c("h", "hg", "hgeom", "hharm"), "0.tls", sep = "."),
 
-                  # Height percentiles (m)
-                  sprintf("P%02i", c(1, 5, 10, 20, 25, 30, 40, 50, 60, 70, 75,
-                                     80, 90, 95, 99)))
+    # Height percentiles (m)
+    sprintf("P%02i", c(1, 5, 10, 20, 25, 30, 40, 50, 60, 70, 75,
+                       80, 90, 95, 99)),
+
+    # Points metrics
+    # Z coordinate
+    "mean.z", "mean.q.z", "mean.g.z", "mean.h.z", "median.z", "mode.z",
+    "max.z", "min.z", "var.z", "sd.z", "CV.z", "D.z", "ID.z",
+    "kurtosis.z", "skewness.z",
+    "p.a.mean.z", "p.a.mode.z", "p.a.2m.z",
+    "p.b.mean.z", "p.b.mode.z", "p.b.2m.z", "CRR.z",
+    "L2.z", "L3.z", "L4.z", "L3.mu.z", "L4.mu.z",
+    "L.CV.z",
+    "median.a.d.z", "mode.a.d.z",
+    "weibull_c.z", "weibull_b.z",
+
+    # Rho coordinate
+    "mean.rho", "mean.q.rho", "mean.g.rho", "mean.h.rho", "median.rho", "mode.rho",
+    "max.rho", "min.rho", "var.rho", "sd.rho", "CV.rho", "D.rho", "ID.rho",
+    "kurtosis.rho", "skewness.rho",
+    "p.a.mean.rho", "p.a.mode.rho",
+    "p.b.mean.rho", "p.b.mode.rho", "CRR.rho",
+    "L2.rho", "L3.rho", "L4.rho", "L3.mu.rho", "L4.mu.rho",
+    "L.CV.rho",
+    "median.a.d.rho", "mode.a.d.rho",
+    "weibull_c.rho", "weibull_b.rho",
+
+    # R coordinate
+    "mean.r", "mean.q.r", "mean.g.r", "mean.h.r", "median.r", "mode.r",
+    "max.r", "min.r", "var.r", "sd.r", "CV.r", "D.r", "ID.r",
+    "kurtosis.r", "skewness.r",
+    "p.a.mean.r", "p.a.mode.r",
+    "p.b.mean.r", "p.b.mode.r", "CRR.r",
+    "L2.r", "L3.r", "L4.r", "L3.mu.r", "L4.mu.r",
+    "L.CV.r",
+    "median.a.d.r", "mode.a.d.r",
+    "weibull_c.r", "weibull_b.r")
 
   # Define a character vector containing the available correlation measurements
   .cor.method <- c("pearson", "spearman")
@@ -65,7 +111,7 @@ correlations <- function(simulations,
   if (!is.list(simulations)) stop("'simulations' must be a list")
   if (is.null(simulations) || all(!names(.plot.design) %in% names(simulations)))
     stop("'simulations' must have at least one of the following elements:",
-         "'fixed.area.plot', 'k.tree.plot' or 'angle.count.plot'")
+         "'fixed.area', 'k.tree' or 'angle.count'")
   if (any(!names(simulations) %in% names(.plot.design))) {
 
     simulations <- simulations[names(simulations) %in% names(.plot.design)]
@@ -77,8 +123,7 @@ correlations <- function(simulations,
   simulations <- simulations[!sapply(simulations, is.null)]
   if (length(simulations) == 0)
     stop("'simulations' must have at least one of the following elements ",
-         "different from 'NULL': 'fixed.area.plot', 'k.tree.plot' or ",
-         "'angle.count.plot'")
+         "different from 'NULL': 'fixed.area', 'k.tree' or 'angle.count'")
   for (.i in names(simulations)) {
 
     # All elements in 'simulations' must be data frames with at least one row,
@@ -219,9 +264,23 @@ correlations <- function(simulations,
     # Heights
     .tls.color[.tls.color == "h"] <-
       grDevices::hcl.colors(sum(.tls.color == "h"), "Magenta")
+
     # Percentiles
     .tls.color[.tls.color == "P"] <-
       grDevices::gray.colors(sum(.tls.color == "P"))
+
+    # Means
+    .tls.color[.tls.color == "m"] <-
+      grDevices::hcl.colors(sum(.tls.color == "m"), "Reds2")
+
+    # Percentages
+    .tls.color[.tls.color == "p"] <-
+      grDevices::hcl.colors(sum(.tls.color == "p"), "Greens2")
+
+    # Weibull
+    .tls.color[.tls.color == "w"] <-
+      grDevices::hcl.colors(sum(.tls.color == "w"), "Blues2")
+
 
   }
 
@@ -253,8 +312,8 @@ correlations <- function(simulations,
     # Define initial time, and print message
     t0 <- Sys.time()
     message("Computing correlations for ",
-            switch(.i, fixed.area.plot = "fixed area ", k.tree.plot = "k-tree ",
-                   angle.count.plot = "angle-count "), "plots")
+            switch(.i, fixed.area = "fixed area ", k.tree = "k-tree ",
+                   angle.count = "angle-count "), "plots")
 
 
     # Rearrange simulated data ----
@@ -368,9 +427,9 @@ correlations <- function(simulations,
                 switch(.j, pearson = "Pearson correlations",
                        spearman = "Spearman correlations"),
                 " for ",
-                switch(.i, fixed.area.plot = "fixed area",
-                       k.tree.plot = "k-tree",
-                       angle.count.plot = "angle-count"),
+                switch(.i, fixed.area = "fixed area",
+                       k.tree = "k-tree",
+                       angle.count = "angle-count"),
                 " plot design case are 'NA' values")
       } else {
 
@@ -477,6 +536,8 @@ correlations <- function(simulations,
             switch(.k, N = "Density (N, trees/ha)",
                    G = "Basal area (G, m<sup>2</sup>/ha)",
                    V = "Volume (V, m<sup>3</sup>/ha)",
+                   V.user = "Volume (V, m<sup>3</sup>/ha) provided by user",
+                   W.user = "Biomass (W, Mg/ha) provided by user",
                    d = "Arithmetic mean diameter (d, cm)",
                    dg = "Quadratic mean diameter (dg, cm)",
                    dgeom = "Geometric mean diameter (dgeom, cm)",
@@ -493,22 +554,22 @@ correlations <- function(simulations,
                    hg.0 = "Quadratic mean dominant height (hg.0, m)",
                    hgeom.0 = "Geometric mean dominant height (hgeom.0, m)",
                    hharm.0 = "Harmonic mean dominant height (hharm.0, m)")
-          .subtitle <- paste("<br> <span style='font-size: 12px;'>",
-                             switch(.i, fixed.area.plot = "Fixed area",
-                                    k.tree.plot = "K-tree",
-                                    angle.count.plot = "Angle-count"),
+          .subtitle <- paste("<br> <span style='font-size: 20px;'>",
+                             switch(.i, fixed.area = "Circular fixed area plot",
+                                    k.tree = "K-tree plot",
+                                    angle.count = "Angle-count plot"),
                              "</span>", sep ="")
-          .xaxis <- switch(.i, fixed.area.plot = "Radius (m)",
-                           k.tree.plot = "K-tree (trees)",
-                           angle.count.plot = "BAF (m<sup>2</sup>/ha)")
+          .xaxis <- switch(.i, fixed.area = "Radius (m)",
+                           k.tree = "K-tree (trees)",
+                           angle.count = "BAF (m<sup>2</sup>/ha)")
           .yaxis <- switch(.j, pearson = "Pearson correlation",
                            spearman = "Spearman correlation")
           fig <-
             plotly::plot_ly(.cor.data.k, type = 'scatter', mode = 'lines') %>%
-              plotly::layout(title = paste(.title, .subtitle, sep = ""),
-                             xaxis = list(title = .xaxis),
-                             yaxis = list (title = .yaxis),
-                             margin = list(t = 50))
+            plotly::layout(title = paste(.title, .subtitle, sep = ""), font = list(size = 25),
+                           xaxis = list(title = .xaxis),
+                           yaxis = list (title = .yaxis),
+                           margin = list(t = 100))
 
           # Add traces
           for (.l in colnames(.cor.data.k)[colnames(.cor.data.k) !=

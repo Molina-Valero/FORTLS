@@ -4,21 +4,50 @@
 
 \alias{metrics.variables}
 
-\title{Compute Metrics and Variables for TLS Plots}
+\title{Compute Metrics and Variables for Terrestrial-Based Technologies Point Clouds}
 
-\description{This function computes a set of TLS-based metrics and variables from the TLS point cloud data, which have a high potential to be related or used as direct estimates (in the case of TLS-based variables) of forest attributes at plot level. These can be obtained for different plot designs (circular fixed area, k-tree and angle-count plots). This function also includes methodologies for correcting occlusions generated in TLS point clouds.}
+\description{This function computes a set of metrics and variables from the Terrestrial-Based Technologies point cloud data, which have a high potential to be related or used as direct estimates (in the case of variables) of forest attributes at plot level. These can be obtained for different plot designs (circular fixed area, k-tree and angle-count plots). This function also includes methodologies for correcting occlusions generated in TLS single-scan point clouds.}
 
 \usage{
-metrics.variables(tree.list.tls,
-                  distance.sampling = NULL,
-                  plot.parameters,
-                  dir.data = NULL, save.result = TRUE, dir.result = NULL)}
+metrics.variables(tree.tls, tree.ds = NULL, tree.field = NULL,
+                  plot.design = c("fixed.area", "k.tree", "angle.count"),
+                  plot.parameters = data.frame(radius = 25, k = 10, BAF = 2),
+                  scan.approach = "single",
+                  var.metr = list(tls = NULL, field = NULL),
+                  v.calc = "parab", dbh.min = 4, h.min = 1.3,
+                  max.dist = Inf, dir.data = NULL,
+                  save.result = TRUE, dir.result = NULL)}
 
 \arguments{
 
-  \item{tree.list.tls}{Data frame with information about trees detected from TLS point clouds data in the same format as \code{\link{tree.detection}} \sQuote{Value}.}
+  \item{tree.tls}{Data frame with information about trees detected from terrestrial-based technologies point clouds data in the same format as \code{\link{tree.detection.single.scan}} or \code{\link{tree.detection.multi.scan}} \sQuote{Values}.}
 
-  \item{distance.sampling}{Optional list containing detection probabilities of trees with distance sampling methods. The format must be the same as the \sQuote{Value} obtained with \code{\link{distance.sampling}}. If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, TLS metrics using distance sampling based correction will not be calculated for circular fixed area and k-tree plot designs.}
+  \item{tree.ds}{Optional list containing detection probabilities of trees with distance sampling methods. The format must be the same as the \sQuote{Value} obtained with \code{\link{distance.sampling}}. If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, TLS metrics using distance sampling based correction will not be calculated for circular fixed area and k-tree plot designs.}
+
+    \item{tree.field}{
+  Data frame with information about trees measured in the field plots. Each
+  row must correspond to a (plot, tree) pair, and it must include at least the
+  following columns:
+    \itemize{
+      \item \code{id}: plot identification encoded as character string or
+      numeric. Plot identifications must coincide with those
+      included in \code{id} column of the \code{tree.tls} argument.
+      \item \code{tree}: trees numbering.
+      \item \code{h.dist}: horizontal distance (m) from plot
+      centre to tree centre. Centres of the field plots must coincide with
+      centres of their corresponding Terrestrial-based technologies plots.
+      \item \code{dbh}: tree diameter (cm) at breast height (1.3 m).
+      \item \code{h}: tree total height (m).
+      \item \code{h.blc}: height based live crown (m) (optional).
+      \item \code{h.bdc}: height based dead crown (m) (optional).
+      \item \code{v.user}: tree volume (m^3) (optional).
+      \item \code{w.user}: tree biomass (Mg) (optional).
+      \item \code{dead}: integer value indicating for each tree if it is dead
+      (1) or not (NA).
+    }
+  }
+
+  \item{plot.design}{Vector containing the plot designs considered. By default, all plot designs will be considered (circular fixed area, k-tree and angle-count plots).}
 
   \item{plot.parameters}{Data frame containing parameters for circular fixed area, k-tree and angle-count plot designs. If there is a \code{stratum} column in the \code{tree.list.tls} argument, it must have the same number of rows as strata values and they must be named using strata encoding. If plot parameters are not specified, the corresponding plot designs will not be considered in the function. If no parameter is specified, the function will stop giving an error message! The parameters are as follows:}
 
@@ -31,6 +60,18 @@ metrics.variables(tree.list.tls,
 \item{\code{BAF}}: basal area factor (\eqn{{m}^{2}/ha}{m^2/ha}) considered for angle-count plots. Absence of this argument rules out this plot design.
 
 \item{\code{num.trees}}: number of dominant trees per ha (tree/ha), i.e. those with largest \emph{dbh}, considered for calculating dominant diameters and heights. In the absence of this argument, the number will be assumed to be 100 trees/ha.}
+
+  \item{scan.approach}{Character parameter indicating TLS single-scan (\sQuote{single}) or TLS multi-scan approach or SLAM point clouds (\sQuote{multi}) approaches. If this argument is not specified by the user, it will be set to \sQuote{multi} approach.}
+
+  \item{var.metr}{Optional vector containing all the metrics and variables of interest. By default it will be set as NULL and thus, all the metrics and variables available will be generated.}
+
+  \item{v.calc}{Optional parameter to calculate volume when is not included in tree.tls input data.}
+
+  \item{dbh.min}{Optional minimum \emph{dbh} (cm) considered for detecting trees. By default it will be set at 4 cm.}
+
+  \item{h.min}{Optional minimum \emph{h} (m) considered for detecting trees. By default it will be set at 1.3 m.}
+
+  \item{max.dist}{Optional argument to specify the maximum horizontal distance considered in which trees will be included.}
 
   \item{dir.data}{Optional character string naming the absolute path of the directory where TXT
   files containing TLS point clouds are located. \code{.Platform$file.sep} must
@@ -60,7 +101,7 @@ At this stage, three plot designs are available:
     specified in the \code{plot.parameters} argument.
   }
 
-Volume is estimated modelling stem profile as a paraboloid and calculating the volumes of revolution; where trees \emph{dbh} are estimated in \code{\link{tree.detection}}, and total heights are estimated as percentile 99 of z coordinate of points delimited by Voronoi polygons.
+Volume is estimated modelling stem profile as a paraboloid and calculating the volumes of revolution; where trees \emph{dbh} are estimated in \code{\link{tree.detection.single.scan}} and \code{\link{tree.detection.multi.scan}}, and total heights are estimated as percentile 99 of z coordinate of points delimited by Voronoi polygons.
 
 Regarding occlusion corrections for estimating variables, apart from distance sampling methods considered in \code{\link{distance.sampling}}, another occlusion corection based on correcting the shadowing effect (Seidel & Ammer, 2014) has been included to estimate some variables in circular fixed area and k-tree plots. In the case of angle-count plots, occlusion corrections are based on gap probability attenuation with distance to TLS depending on Poisson model (Strahler et al., 2008; Lovell et al., 2011).}
 
@@ -79,7 +120,7 @@ Stratum, plot identification and radius:
       \code{distance.sampling} argument.
       \item \code{radius}: radius (m) of the simulated plot.}
 
-      TLS variables:
+      Terrestrial-Based Technologies variables:
 
       \itemize{
 
@@ -121,22 +162,29 @@ Stratum, plot identification and radius:
       \code{hharm.0.tls}: dominant mean tree heights (m), calculated from the arithmetic
       mean, quadratic mean, geometric mean and harmonic mean, respectively.}
 
-      TLS metrics:
+      Terrestrial-Based Technologies metrics:
 
       \itemize{
 
-      \item \code{num.points}, \code{num.points.est}, \code{num.points.hom},
-      \code{num.points.hom.est}: number of points and estimated number of
+      \item \code{n.pts}, \code{n.pts.est}, \code{n.pts.red}, \code{n.pts.red.est}: number of points and estimated number of
       points (points) belonging to trees normal sections (+/- 5 cm) in the
-      original point cloud (\code{num.points} and \code{num.points.est},
+      original point cloud (\code{n.pts} and \code{n.pts.est},
       respectively); and number of points and estimated number of points
       (points) belonging to trees normal sections (+/- 5 cm) in the reduced
-      point cloud (\code{num.points.hom} and \code{num.points.hom.est},
+      point cloud (\code{n.pts.red} and \code{n.pts.red.est},
       respectively).
       \item \code{P01}, \code{P05}, \code{P10}, \code{P20}, \code{P25},
       \code{P30}, \code{P40}, \code{P50}, \code{P60}, \code{P70}, \code{P75},
       \code{P80}, \code{P90}, \code{P95}, \code{P99}: height percentiles
-      derived from z coordinates of TLS point clouds relative to ground level (m).}}
+      derived from z coordinates of TLS point clouds relative to ground level (m).
+      \item \code{mean.arit.z/rho/phi}, \code{mean.qua.z/rho/phi}, \code{mean.geom.z/rho/phi}, \code{mean.harm.z/rho/phi}, \code{median.z/rho/phi}, \code{mode.z/rho/phi}: central tendency statistics for z, rho (horizontal distance) and r (euclidean distance) coordinates (arithmetic, quadratic, geometrical and harmonic means, median and mode, respectively).
+      \item \code{var.z/rho/phi}, \code{sd.z/rho/phi}, \code{CV.z/rho/phi}, \code{D.z/rho/phi}, \code{ID.z/rho/phi}, \code{max.z/rho/phi}, \code{min.z/rho/phi}: dispersion tendency statistics for z, rho and r coordinates (variance, standar deviation, coefficient of variation, range, interquartile range, maximum and minimum, respectively).
+      \item \code{kurt.z/rho/phi}, \code{skw.z/rho/phi}: curtosis and skewness, respectively.
+      \item \code{L1.z/rho/phi}, \code{L2.z/rho/phi}, \code{L3.z/rho/phi}, \code{L4.z/rho/phi}, \code{L-CV.z/rho/phi}, \code{MAD-median.z/rho/phi}, \code{MAD-mode.z/rho/phi}: L-moments of order 2, 3 and 4, median of the absolute deviations from the overall median and mode of the absolute deviations from the overall mode, respectively.
+      \item \code{L3.mu.z/rho/phi}, \code{L4.mu.z/rho/phi}: third and fourth central moments, respectively.
+      \item \code{PA.2m}, \code{PA.mean.z}, \code{PA.mode.z}: percentage of laser returns above 2 m, mean and mode, respectively.
+      \item \code{PB.2m}, \code{PB.mean.z}, \code{PB.median.z}, \code{PB.mode.z}: percentage of laser returns below 2 m, mean and mode, respectively.
+      \item \code{weibull.b.z/rho/phi}, \code{weibull.c.z/rho/phi}: scale and shape parameters, respectively, for Weibull distribution fitted for z coordinates of TLS point clouds relative to ground level.}}
 
 
 \item{k.tree.plot}{If no value for \code{k.tree} is specified in the \code{plot.parameters} argument, \code{NULL}; otherwise, the data frame will include TLS metrics and variables estimated in the k-tree plot design (rows represent simulations). The data frame will include the following columns (same description and format as indicated in \code{fixed.area.plot} element):
@@ -150,7 +198,7 @@ Stratum, plot identification and k:
       \code{distance.sampling} argument.
       \item \code{k}: number of trees in the simulated plot.}
 
-      TLS variables:
+      Terrestrial-Based Technologies variables:
     \itemize{
       \item \code{N.tls}, \code{N.hn}, \code{N.hr}, \code{N.hn.cov},
       \code{N.hr.cov}, \code{N.sh}, \cr
@@ -162,7 +210,7 @@ Stratum, plot identification and k:
       \code{dgeom.0.tls}, \code{dharm.0.tls}, \cr \code{h.0.tls}, \code{hg.0.tls},
       \code{hgeom.0.tls}, \code{hharm.0.tls}}
 
-    TLS metrics:
+    Terrestrial-Based Technologies metrics:
     \itemize{
       \item \code{num.points},
       \code{num.points.est}, \code{num.points.hom}, \code{num.points.hom.est}, \cr          \code{P01},\code{P05},
@@ -182,7 +230,7 @@ Stratum, plot identification and BAF:
       \item \code{BAF}: BAF (\eqn{{m}^{2}/ha}{m^2/ha}) of the simulated plot.}
 
 
-TLS variables:
+Terrestrial-Based Technologies variables:
     \itemize{
       \item \code{N.tls}: same description and format as indicated in the
       \code{fixed.area.plot} element.
@@ -202,7 +250,7 @@ TLS variables:
       \code{d.0.tls}, \code{dg.0.tls}, \code{dgeom.0.tls}, \code{dharm.0.tls}, \cr
       \code{h.0.tls}, \code{hg.0.tls}, \code{hgeom.0.tls}, \code{hharm.0.tls}}
 
-      TLS metrics:
+      Terrestrial-Based Technologies metrics:
     \itemize{
       \item \code{num.points}, \code{num.points.est}, \code{num.points.hom},
       \code{num.points.hom.est}, \cr
@@ -242,15 +290,10 @@ Sensing}, \bold{34(sup2)}, S426-S440. \doi{10.5589/m08-046}}
 
 \author{
 Juan Alberto Molina-Valero,
-María José Ginzo Villamayor,
-Manuel Antonio Novo Pérez,
-Adela Martínez-Calvo,
-Juan Gabriel Álvarez-González,
-Fernando Montes and
-César Pérez-Cruzado.}
+Adela Martínez-Calvo.}
 
 \seealso{
-\code{\link{tree.detection}}, \code{\link{tree.detection.multiple}}, \code{\link{distance.sampling}},
+\code{\link{tree.detection.single.scan}}, \code{\link{tree.detection.multi.scan}}, \code{\link{tree.detection.several.plots}}, \code{\link{distance.sampling}},
 \code{\link{normalize}}.
 }
 
@@ -268,55 +311,27 @@ dir.result <- getwd()
 # Loading example data included in FORTLS
 
 data("Rioja.data")
-tree.list.tls <- Rioja.data$tree.list.tls
+tree.tls <- Rioja.data$tree.tls
+tree.tls <- tree.tls[tree.tls$id == "1", ]
 
 # Download example of TXT file corresponding to plot 1 from Rioja data set
 
-download.file(url = "https://www.dropbox.com/s/w4fgcyezr2olj9m/1.txt?raw=1",
-              destfile = file.path(dir.data, "1.txt"), method = "wininet",
-              mode = "wb")
+download.file(url = "https://www.dropbox.com/s/w4fgcyezr2olj9m/Rioja_1.txt?dl=1",
+              destfile = file.path(dir.data, "1.txt"), mode = "wb")
 
 
-# Without considering distance sampling methods
+# Considering distance sampling methods (only for single-scan approaches)
 
-met.var.TLS <- metrics.variables(tree.list.tls = tree.list.tls,
-                                 plot.parameters = data.frame(radius = 10, k.tree = 10, BAF = 2),
+ds <- distance.sampling(tree.tls)
+
+met.var.TLS <- metrics.variables(tree.tls = tree.tls,
+                                 tree.ds = ds,
+                                 plot.parameters = data.frame(radius = 10, k = 10, BAF = 2),
                                  dir.data = dir.data, dir.result = dir.result)
 
 
-# Considering distance sampling methods
+  }
 
-ds <- distance.sampling(tree.list.tls)
-
-met.var.TLS <- metrics.variables(tree.list.tls = tree.list.tls,
-                                 distance.sampling = ds,
-                                 plot.parameters = data.frame(radius = 10, k.tree = 10, BAF = 2),
-                                 dir.data = dir.data, dir.result = dir.result)
-
-
-# Considering strata
-# Loading dataset with strata
-
-plot.attributes <- Rioja.data$plot.attributes
-
-# Merging the plot.attributes data set with strata information
-
-tree.list.tls <- merge(tree.list.tls, plot.attributes, by = "id")
-
-# Download example of TXT file corresponding to strata 2 (plot 9) from Rioja data set
-
-download.file(url = "https://www.dropbox.com/s/5rwmbyn8tmqc48m/9.txt?raw=1",
-              destfile = file.path(dir.data, "9.txt"), method = "wininet",
-              mode = "wb")
-
-plot.parameters <- data.frame(radius = c(10, 15), k.tree = c(8, 12), BAF = c(1.5, 2),
-num.trees = c(100, 75))
-
-met.var.TLS <- metrics.variables(tree.list.tls = tree.list.tls,
-                                 distance.sampling = ds,
-                                 plot.parameters = plot.parameters,
-                                 dir.data = dir.data, dir.result = dir.result)
-
-}}
+}
 
 

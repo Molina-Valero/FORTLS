@@ -3,7 +3,7 @@
 \alias{FORTLS}
 \alias{FORTLS-package}
 \docType{package}
-\title{FORTLS: Automatic processing of TLS point cloud data for forestry purposes}
+\title{FORTLS: Automatic Processing of Terrestrial-Based Technologies Point Cloud Data for Forestry Purposes}
 \description{
 \packageDescription{FORTLS}
 }
@@ -18,8 +18,9 @@ Usage of \pkg{FORTLS} includes the following functionalities:
 \enumerate{
 
 \item{\code{\link{normalize}}: mandatory first step for obtaining the relative coordinates of a TLS point cloud.}
-\item{\code{\link{tree.detection}}: detects as many trees as possible from a normalized TLS point cloud.}
-\item{\code{\link{tree.detection.multiple}}: includes the two previous functions for a better workflow when there are several plots to be sequentially analyzed.}}
+\item{\code{\link{tree.detection.single.scan}}: detects as many trees as possible from a normalized TLS single-scan point clouds.}
+\item{\code{\link{tree.detection.multi.scan}}: detects as many trees as possible from a normalized TLS multi-scan, SLAM, or similar terrestrial-based technologies point clouds.}
+\item{\code{\link{tree.detection.several.plots}}: includes the two previous functions for a better workflow when there are several plots to be sequentially analyzed.}}
 
 \item{Estimation of variables when no field data are available: this is the main functionality of \pkg{FORTLS} and can be achieved using the following functions:}
 

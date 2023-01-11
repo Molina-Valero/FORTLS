@@ -233,10 +233,8 @@ attributes of interest.
 
 
 \author{
-Juan Alberto Molina-Valero, María José Ginzo Villamayor,
-Manuel Antonio Novo Pérez, Adela Martínez-Calvo, Juan Gabriel Álvarez-González,
-Fernando Montes and César Pérez-Cruzado.
-}
+Juan Alberto Molina-Valero and
+Adela Martínez-Calvo.}
 
 
 \seealso{
@@ -274,11 +272,11 @@ rb <- relative.bias(simulations = Rioja.simulations, variables = "N",
 
 # Relative bias corresponding to angle-count design for all available variables
 
-rb <- relative.bias(simulations = Rioja.simulations["angle.count.plot"],
+rb <- relative.bias(simulations = Rioja.simulations["angle.count"],
                     variables <- c("N", "G", "V", "d", "dg", "dgeom", "dharm",
                                    "d.0", "dg.0", "dgeom.0", "dharm.0", "h",
                                    "hg", "hgeom", "hharm", "h.0", "hg.0",
                                    "hgeom.0", "hharm.0"),
                     dir.result = dir.result)
-}
+  }
 }

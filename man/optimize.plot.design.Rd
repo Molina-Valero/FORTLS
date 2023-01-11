@@ -179,10 +179,8 @@ definitive sampling design.
 
 
 \author{
-Juan Alberto Molina-Valero, María José Ginzo Villamayor,
-Manuel Antonio Novo Pérez, Adela Martínez-Calvo, Juan Gabriel Álvarez-González,
-Fernando Montes and César Pérez-Cruzado.
-}
+Juan Alberto Molina-Valero and
+Adela Martínez-Calvo.}
 
 
 \seealso{
@@ -202,7 +200,7 @@ data("Rioja.simulations")
 # to Rioja example, and select optimal correlations results
 
 corr <- correlations(simulations = Rioja.simulations,
-                     variables = c("N", "G", "V", "d", "dg", "dgeom","dharm",
+                     variables = c("N", "G", "d", "dg", "dgeom","dharm",
                                    "d.0", "dg.0", "dgeom.0", "dharm.0", "h",
                                    "hg", "hgeom", "hharm", "h.0", "hg.0",
                                    "hgeom.0", "hharm.0"),
@@ -221,30 +219,14 @@ dir.result <- getwd()
 # metrics corresponding to Rioja example
 # Optimal Pearson's and Spearman's correlations for variables by default
 
-optimize.plot.design(correlations = opt.corr, dir.result = dir.result)
+# optimize.plot.design(correlations = opt.corr, dir.result = dir.result)
 
 
-# Optimal Pearson's and Spearman's correlations for variables 'N', 'G' and 'V'
+# Optimal Pearson's and Spearman's correlations for variables 'N' and 'G'
 
-optimize.plot.design(correlations = opt.corr, variables = c("N", "G", "V"),
+optimize.plot.design(correlations = opt.corr, variables = c("N", "G"),
                      dir.result = dir.result)
 
 
-# Only optimal Pearson's correlations for variables by default
-
-optimize.plot.design(correlations = opt.corr["pearson"],
-                     dir.result = dir.result)
-
-
-# Optimal Pearson's and Spearman's correlations corresponding to angle-count
-# design for all available variables
-
-optimize.plot.design(
-  correlations = list(pearson = opt.corr$pearson["angle.count.plot"],
-                      spearman = opt.corr$spearman["angle.count.plot"]),
-  variables <- c("N", "G", "V", "d", "dg", "dgeom", "dharm", "d.0", "dg.0",
-                 "dgeom.0", "dharm.0", "h", "hg", "hgeom", "hharm", "h.0",
-                 "hg.0", "hgeom.0", "hharm.0"),
-  dir.result = dir.result)
-}
+  }
 }

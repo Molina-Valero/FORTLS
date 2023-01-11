@@ -1,18 +1,38 @@
-citHeader("To cite package FORTLS in publications use:")
+citHeader("To cite the FORTLS package in publications use both:")
 
-year <- sub("-.*", "", meta$Date)
-note <- sprintf("R package version %s", meta$Version)
+citEntry(entry="Article",
+         author = "Juan Alberto Molina-Valero and Adela Martínez-Calvo and Maria José Ginzo-Villamayor and Manuel Antonio Novo Pérez and Juan Gabriel Álvarez-González and Fernando Montes and César Pérez-Cruzado",
+         title = "Operationalizing the use of TLS in forest inventories: The R package FORTLS",
+         journal = "Environmental Modelling & Software",
+         volume = "",
+         pages = "105337",
+         year = "2022",
+         issn = "",
+         doi = "10.1016/j.envsoft.2022.105337",
+         url = "https://www.sciencedirect.com/science/article/pii/S1364815222000433",
+         textVersion =
+           paste("Molina-Valero, J. A., Martínez-Calvo, A., Ginzo Villamayor, M. J., Novo Pérez, M. A., Álvarez-González, J. G., Montes, F., Pérez-Cruzado, C. (2022).",
+           "Operationalizing the use of TLS in forest inventories: The R package FORTLS.",
+           "Environmental Modelling & Software, 105337. <doi.org/10.1016/j.envsoft.2022.105337>.")
+)
 
 
-bibentry(bibtype = "Manual",
-         title = "{FORTLS}: Automatic processing of TLS point cloud data for forestry purposes",
-         author = c(person("Juan", "Molina-Valero", "Alberto"),
-                    person("María", "Ginzo Villamayor", "José"),
-                    person("Antonio", "Novo Pérez", "Manuel"),
-                    person("Adela", "Martínez-Calvo"),
-                    person("Juan", "Álvarez-González", "Gabriel"),
-                    person("Fernando", "Montes"),
-                    person("César", "Pérez-Cruzado")),
+year <- sub(".*(2[[:digit:]]{3})-.*", "\\1", meta$Date, perl = TRUE)
+vers <- paste("R package version", meta$Version)
+authors <- meta$`Authors@R`
+authors <- utils:::.read_authors_at_R_field(authors)
+authors <- Filter(function(e) {!(is.null(e$given) && is.null(e$family)) && !is.na(match("aut", e$role))}, authors)
+authors <- format(authors, include = c("given", "family"))
+authors <- paste(paste(head(authors, -1L), collapse = ", "), tail(authors, 1L), sep = " and ")
+
+
+citEntry(entry = "Manual",
+         title = meta$Title,
+         author = authors,
          year = year,
-         note = note,
+         note = vers,
+         textVersion = paste(authors, " (",
+                 year,
+                 "). ", meta$Title, ". ",
+                 vers, ". https://CRAN.R-project.org/package=FORTLS", sep=""),
          url = "https://CRAN.R-project.org/package=FORTLS")

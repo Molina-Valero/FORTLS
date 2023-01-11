@@ -4,25 +4,34 @@ optimize.plot.design <- function(correlations,
                                                "h", "h.0"),
                                  dir.result = NULL) {
 
+  opt.cor <- correlations
+
+  if("W" %in% colnames(opt.cor$pearson$fixed.area) |
+     "W" %in% colnames(opt.cor$spearman$fixed.area))
+    variables = c(variables, "W")
 
   # Define a character vector containing index name (radius, k or BAF) for each
   # available plot design
-  .plot.design <- c(fixed.area.plot = "radius", k.tree.plot = "k",
-                    angle.count.plot = "BAF")
+  .plot.design <- c(fixed.area = "radius", k.tree = "k", angle.count = "BAF")
 
   # Define character vectors containing the implemented field variables and TLS
   # metrics
   .field.names <- c(
-                    # Density (trees/ha), basal area (m2/ha) and volume (m3/ha)
-                    "N", "G", "V",
+    # Density (trees/ha), basal area (m2/ha) and volume (m3/ha)
+    "N", "G", "V",
 
-                    # Mean diameters (cm), and mean dominant diameters (cm)
-                    "d", "dg", "dgeom", "dharm",
-                    paste(c("d", "dg", "dgeom", "dharm"), "0", sep = "."),
+    # Biomass (Mg/ha)
+    if("W" %in% colnames(opt.cor$pearson$fixed.area) |
+       "W" %in% colnames(opt.cor$spearman$fixed.area))
+      "W",
 
-                    # Mean heights (m), and mean dominant heights (m)
-                    "h", "hg", "hgeom", "hharm",
-                    paste(c("h", "hg", "hgeom", "hharm"), "0", sep = "."))
+    # Mean diameters (cm), and mean dominant diameters (cm)
+    "d", "dg", "dgeom", "dharm",
+    paste(c("d", "dg", "dgeom", "dharm"), "0", sep = "."),
+
+    # Mean heights (m), and mean dominant heights (m)
+    "h", "hg", "hgeom", "hharm",
+    paste(c("h", "hg", "hgeom", "hharm"), "0", sep = "."))
 
   # Define a character vector containing colors for heatmaps
   .color <- c("#2166ac", "#67a9cf", "#d1e5f0", "#f7f7f7", "#f7f7f7", "#fddbc7",
@@ -71,7 +80,7 @@ optimize.plot.design <- function(correlations,
     if (is.null(correlations[[.i]]) ||
         all(!names(.plot.design) %in% names(correlations[[.i]])))
       stop("'correlations$", .i, "' must have at least one of the following ",
-           "elements: 'fixed.area.plot', 'k.tree.plot' or 'angle.count.plot'")
+           "elements: 'fixed.area', 'k.tree' or 'angle.count'")
     if (any(!names(correlations[[.i]]) %in% names(.plot.design))) {
 
       correlations[[.i]] <- correlations[[.i]][names(correlations[[.i]]) %in%
@@ -85,8 +94,8 @@ optimize.plot.design <- function(correlations,
                                                      is.null)]
     if (length(correlations[[.i]]) == 0)
       stop("'correlations$", .i, "' must have at least one of the following ",
-           "elements different from 'NULL': 'fixed.area.plot', 'k.tree.plot' ",
-           "or 'angle.count.plot'")
+           "elements different from 'NULL': 'fixed.area', 'k.tree' ",
+           "or 'angle.count'")
     for (.j in names(correlations[[.i]])) {
 
       # All elements in each 'correlations' element must be data frames with at
@@ -176,8 +185,8 @@ optimize.plot.design <- function(correlations,
     # Define initial time, and print message
     t0 <- Sys.time()
     message("Plotting heatmap(s) for ",
-        switch(.i, pearson = "optimal Pearson's correlations ",
-               spearman = "optimal Spearman's correlations "))
+            switch(.i, pearson = "optimal Pearson's correlations ",
+                   spearman = "optimal Spearman's correlations "))
 
 
     # Loop for each plot design
@@ -198,14 +207,14 @@ optimize.plot.design <- function(correlations,
       # Define title, subtitle, and axis names
       .title <- switch(.i, pearson = "Pearson correlation",
                        spearman = "Spearman correlation")
-      .subtitle <- paste("<br> <span style='font-size: 12px;'>",
-                         switch(.j, fixed.area.plot = "Fixed area",
-                                k.tree.plot = "K-tree",
-                                angle.count.plot = "Angle-count"),
+      .subtitle <- paste("<br> <span style='font-size: 20px;'>",
+                         switch(.j, fixed.area = "Circular fixed area plot",
+                                k.tree = "K-tree plot",
+                                angle.count = "Angle-count plot"),
                          "</span>", sep ="")
-      .xaxis <- switch(.j, fixed.area.plot = "Radius (m)",
-                       k.tree.plot = "K-tree (trees)",
-                       angle.count.plot = "BAF (m<sup>2</sup>/ha)")
+      .xaxis <- switch(.j, fixed.area = "Radius (m)",
+                       k.tree = "K-tree (trees)",
+                       angle.count = "BAF (m<sup>2</sup>/ha)")
       .yaxis <- "Variables"
 
       # Create heatmap
@@ -217,9 +226,9 @@ optimize.plot.design <- function(correlations,
                                                  "<br>Metric:", t(.opt.metric)),
                                            nrow = ncol(.opt.cor),
                                            ncol = nrow(.opt.cor))) %>%
-        plotly::layout(title = paste(.title, .subtitle, sep = ""),
+        plotly::layout(title = paste(.title, .subtitle, sep = ""), font = list(size = 25),
                        xaxis = list(title = .xaxis),
-                       yaxis = list (title = .yaxis), margin = list(t = 50))
+                       yaxis = list (title = .yaxis), margin = list(t = 100))
 
       # Save heatmap
       suppressWarnings(

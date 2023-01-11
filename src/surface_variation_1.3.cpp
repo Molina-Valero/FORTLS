@@ -1,4 +1,3 @@
-
 #define STRICT_R_HEADERS
 #include <Rcpp.h>
 #include <RcppEigen.h>

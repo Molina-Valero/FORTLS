@@ -8,7 +8,7 @@
 The elements on this list correspond to \code{\link{simulations}} \sQuote{Value}, as follows:
 
 \enumerate{
-    \item \code{simulations.fixed.area.plot}: data frame with TLS metrics and variables estimated on the basis of simulated plots in a fixed area plot design with radius increment of 0.1 m (from smallest possible radius to 20 m). The following variables are provided for each pair (plot, radius) (see \code{\link{simulations}} \sQuote{Value} for more details):
+    \item \code{fixed.area}: data frame with TLS metrics and variables estimated on the basis of simulated plots in a fixed area plot design with radius increment of 0.1 m (from smallest possible radius to 20 m). The following variables are provided for each pair (plot, radius) (see \code{\link{simulations}} \sQuote{Value} for more details):
     \tabular{rlll}{
       [,1] \tab id   \tab character/numeric\cr
       [,2] \tab radius    \tab numeric\cr
@@ -27,7 +27,7 @@ The elements on this list correspond to \code{\link{simulations}} \sQuote{Value}
       [,56:59] \tab h.0, hg.0, hgeom.0, hharm.0   \tab numeric\cr
       [,60:74] \tab P01, P05, P10, P20, P25, P30, P40, P50, P60, P70, P75, P80, P90, P95, P99   \tab numeric\cr}
 
- \item \code{simulations.k.tree.plot}: data frame with TLS metrics and variables estimated on the basis of simulated plots under k-tree plot design for incremental values of 1 tree (from 1 to largest number of trees in one plot). The following variables are provided for each pair (plot, k) (see \code{\link{simulations}} \sQuote{Value} for more details):
+ \item \code{k.tree}: data frame with TLS metrics and variables estimated on the basis of simulated plots under k-tree plot design for incremental values of 1 tree (from 1 to largest number of trees in one plot). The following variables are provided for each pair (plot, k) (see \code{\link{simulations}} \sQuote{Value} for more details):
     \tabular{rlll}{
       [,1] \tab id   \tab character/numeric\cr
       [,2] \tab k    \tab numeric\cr
@@ -46,7 +46,7 @@ The elements on this list correspond to \code{\link{simulations}} \sQuote{Value}
       [,56:59] \tab h.0, hg.0, hgeom.0, hharm.0   \tab numeric\cr
       [,60:74] \tab P01, P05, P10, P20, P25, P30, P40, P50, P60, P70, P75, P80, P90, P95, P99   \tab numeric\cr}
 
-      \item \code{simulations.angle.count.plot}: data frame with TLS metrics and variables estimated on the basis of simulated
+      \item \code{angle.count}: data frame with TLS metrics and variables estimated on the basis of simulated
 plots in an angle-count plot design. They plots are simulated for correlative angle-count plots and incremental values of 0.1 \eqn{{m}^{2}/ha}{m^2/ha} for BAF. The following variables are provided for each pair (plot, BAF) (see \code{\link{simulations}} \sQuote{Value} for more details):
 
     \tabular{rlll}{

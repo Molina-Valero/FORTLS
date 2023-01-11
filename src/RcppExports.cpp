@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // weighted_mean_arit
 double weighted_mean_arit(std::vector<double> x, std::vector<double> w);
 RcppExport SEXP _FORTLS_weighted_mean_arit(SEXP xSEXP, SEXP wSEXP) {

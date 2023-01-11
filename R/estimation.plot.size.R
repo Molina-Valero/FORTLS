@@ -1,215 +1,42 @@
 
-estimation.plot.size <- function(tree.list.tls,
-                                 plot.parameters = list(radius.max = 25,
-                                                        k.tree.max = 50,
-                                                        BAF.max = 4),
-                                 average = FALSE, all.plot.designs = FALSE) {
+estimation.plot.size <- function(tree.tls,
+                                 plot.parameters = data.frame(radius.max = 25,
+                                                              k.max = 50,
+                                                              BAF.max = 4),
+                                 dbh.min = 4, average = FALSE,
+                                 all.plot.designs = FALSE) {
 
 
-  # Define id as 1 (by default) when tree.list$id is missed
+  # Define stratum as 1 (by default) when tree.list$stratum is missed
+  if(is.null(tree.tls$stratum) | all.plot.designs)
+    tree.tls$stratum <- 1
 
-  if (is.null(tree.list.tls$id))
-    tree.list.tls$id <- 1
+  if(is.factor(tree.tls$stratum))
+    tree.tls$stratum <- as.numeric(tree.tls$stratum)
 
-  # Define id as 1 (by default) when tree.list$id is missed
-
-  if (is.null(tree.list.tls$stratum) | all.plot.designs)
-    tree.list.tls$stratum <- 1
-
-  # Convert dbh (cm) to International System of Units (m)
-  tree.list.tls$dbh <- tree.list.tls$dbh / 100
-
-  # Define character vector containing metrics names for fixed area, k-tree
-  # and angle-count plots: density (trees/ha), and basal area (m2/ha)
-  .metrics.names <- c("N", "G")
+  if(is.character(tree.tls$stratum))
+    tree.tls$stratum <- as.numeric(as.factor(tree.tls$stratum))
 
 
-  # Define radius increment, and create an empty data.frame where results will
-  # be saved for fixed area plots
-  .fixed.area.plot <- NULL
-  if (!is.null(plot.parameters$radius.max)) {
 
-    # Define radius increment
-    .radius.increment <- 0.1
+  # Call internal function
+  .est <- .sim.calc(funct = "est", tree.tls = tree.tls,
+                    tree.ds = NULL, tree.field = NULL,
+                    plot.design = c("fixed.area", "k.tree", "angle.count"),
+                    plot.parameters = plot.parameters, scan.approach = "single",
+                    var.metr = list(tls = c("N.tls", "G.tls")), v.calc = "parab",
+                    dbh.min = dbh.min,  h.min = 1.3, max.dist = Inf,
+                    dir.data = NULL, save.result = FALSE, dir.result = NULL)
+  .fixed.area.plot <- .est$fixed.area
+  .k.tree.plot <- .est$k.tree
+  .angle.count.plot <- .est$angle.count
 
-    # Create an empty data.frame
-    .col.names <- c("stratum", "id", "radius", .metrics.names)
-    .fixed.area.plot <- data.frame(matrix(numeric(), ncol = length(.col.names),
-                                          dimnames = list(NULL, .col.names)),
-                                   stringsAsFactors = FALSE)
+  # Create labels for plot axis
+  .fixed.area.plot.axis <- list(main = "Circular fixed area plots", xlab = "Radius (m)")
+  .k.tree.plot.axis <- list(main = "k-tree plots", xlab = "k-tree (trees)")
+  .angle.count.plot.axis <- list(main = "Angle-count plots",
+                                 xlab = expression("BAF" ~ (m^{2}/ha)))
 
-    .fixed.area.plot.axis <- list(main = "Fixed area plots",
-                                  xlab = "Radius (m)")
-
-  }
-
-
-  # Create an empty data.frame where results will be saved for k-tree plots
-  .k.tree.plot <- NULL
-  if (!is.null(plot.parameters$k.tree.max)) {
-
-    # Create an empty data.frame
-    .col.names <- c("stratum", "id", "k", .metrics.names)
-    .k.tree.plot <- data.frame(matrix(numeric(), ncol = length(.col.names),
-                                      dimnames = list(NULL, .col.names)),
-                               stringsAsFactors = FALSE)
-
-    .k.tree.plot.axis <- list(main = "k-tree plots",
-                              xlab = "k-tree (trees)")
-
-  }
-
-
-  # Define BAF increment, and create an empty data.frame where results will be
-  # saved for angle-count plots
-  .angle.count.plot <- NULL
-  if (!is.null(plot.parameters$BAF.max)) {
-
-    # Define BAF increment
-    .BAF.increment <- 0.1
-
-    # Create an empty data.frame
-    .col.names <- c("stratum", "id", "BAF", .metrics.names)
-    .angle.count.plot <- data.frame(matrix(numeric(), ncol = length(.col.names),
-                                           dimnames = list(NULL, .col.names)),
-                                    stringsAsFactors = FALSE)
-
-    .angle.count.plot.axis <- list(main = "Angle-count plots",
-                                   xlab = expression("BAF" ~ (m^{2}/ha)))
-
-  }
-
-
-  # Loop for each TLS plot
-  for (.i in unique(tree.list.tls$id)) {
-
-    # Select data corresponding to the TLS plot from the trees' database
-    .tree.tls <- tree.list.tls[tree.list.tls$id == .i, , drop = FALSE]
-
-    # Select only columns required for calculations below
-    .col.names <- c("stratum", "tree", "horizontal.distance", "dbh")
-    .tree.tls <- .tree.tls[ , .col.names, drop = FALSE]
-    rownames(.tree.tls) <- NULL
-
-    # Order by horizontal distance, and compute variables/metrics: density,
-    # basal area, and/or BAF
-    .tree.tls <-
-      .metrics.calculation(tree = .tree.tls,
-                           fixed.area = !is.null(plot.parameters$radius.max),
-                           k.tree = !is.null(plot.parameters$k.tree.max),
-                           angle.count = !is.null(plot.parameters$BAF.max))
-
-
-    # Compute fixed area plot simulations for plot .i ----
-
-
-    if (!is.null(plot.parameters$radius.max)) {
-
-      # Define number of decimals places to be considered
-      .num.dec <- .decimals(.radius.increment)
-
-      # Define minimum and maximum value for radius sequence according to
-      # 'plot.parameters' argument, and horizontal distances in trees' database
-      .radius.min <- min(.customCeiling(.tree.tls[, "horizontal.distance"],
-                                        Decimals = .num.dec))
-      .radius.max <- min(plot.parameters$radius.max,
-                         max(.tree.tls[, "horizontal.distance"]))
-      if (.radius.min > .radius.max) .radius.max <- .radius.min
-
-      # Compute a radius sequence, select trees according to maximum radius,
-      # and create a data.frame containing the trees' data for each radius value
-      .fixedAreaPlot <-
-        .radius.fixed.area.calculation(radius.min = .radius.min,
-                                       radius.increment = .radius.increment,
-                                       radius.max = .radius.max,
-                                       tree = .tree.tls, num.dec = .num.dec)
-
-      # Compute expansion factors, and estimate variables per ha
-      .fixedAreaPlot <- .fixed.area.k.tree.calculation(data = .fixedAreaPlot)
-
-      # Select last row for each radius value
-      .fixedAreaPlot <- matrix(apply(.fixedAreaPlot, 2, tapply,
-                                     .fixedAreaPlot[, "radius"],
-                                     .select.last.value),
-                               ncol = ncol(.fixedAreaPlot),
-                               dimnames = list(NULL, colnames(.fixedAreaPlot)))
-
-      # Save fixed area plot results
-      .fixedAreaPlot <- data.frame(id = .i, .fixedAreaPlot, row.names = NULL,
-                                   stringsAsFactors = FALSE)
-      .fixedAreaPlot <- .fixedAreaPlot[, colnames(.fixed.area.plot),
-                                       drop = FALSE]
-      .fixed.area.plot <- rbind(.fixed.area.plot, .fixedAreaPlot)
-
-    }
-
-
-    # Compute k-tree plot simulations for plot .i ----
-
-
-    if (!is.null(plot.parameters$k.tree.max)) {
-
-      # Define number of decimals places to be considered
-      .num.dec <- 0
-
-      # Define maximum number of trees according to 'plot.parameters' argument,
-      # and number of trees' database
-      .k.tree.max <- nrow(.tree.tls)
-      if (.k.tree.max >= plot.parameters$k.tree.max)
-        .k.tree.max <- round(plot.parameters$k.tree.max)
-
-      # Compute radius for each k-tree plot, and select trees according to
-      # maximum number of trees
-      .kTreePlot <- .radius.k.tree.calculation(k.tree.max = .k.tree.max,
-                                               tree = .tree.tls)
-
-      # Compute expansion factors, and estimate variables per ha
-      .kTreePlot <- .fixed.area.k.tree.calculation(data = .kTreePlot)
-
-      # Save k-tree plot results
-      .kTreePlot <- data.frame(id = .i, .kTreePlot, row.names = NULL,
-                               stringsAsFactors = FALSE)
-      .kTreePlot <- .kTreePlot[, colnames(.k.tree.plot), drop = FALSE]
-      .k.tree.plot <- rbind(.k.tree.plot, .kTreePlot)
-
-    }
-
-
-    # Compute angle-count plot simulations for plot .i ----
-
-
-    if (!is.null(plot.parameters$BAF.max)) {
-
-      # Define number of decimals places to be considered
-      .num.dec <- .decimals(.BAF.increment)
-
-      # Define minimum and maximum value for BAF sequence according to
-      # 'plot.parameters' argument, and BAF values in trees' database
-      .BAF.rang <- range(.customFloor(.tree.tls[, "BAF"], Decimals = .num.dec))
-      .BAF.min <- .BAF.rang[1]
-      .BAF.max <- plot.parameters$BAF.max
-      if (.BAF.rang[2] < .BAF.max) .BAF.max <- .BAF.rang[2]
-
-      # Compute a BAF sequence for angle-count plots
-      .BAF.seq <- seq(from = .BAF.max, to = .BAF.min, by = - .BAF.increment)
-      .BAF.seq <- sort(unique(round(.BAF.seq, .num.dec)))
-      names(.BAF.seq) <- .format.numb(x = .BAF.seq, dec = .num.dec)
-
-      # Compute estimate variables per ha
-      .angleCountPlot <- lapply(.BAF.seq, .angle.count.calculation,
-                                data = .tree.tls)
-      .angleCountPlot <- do.call(rbind, .angleCountPlot)
-
-      # Save angle-count plot results
-      .angleCountPlot <- data.frame(id = .i, .angleCountPlot, row.names = NULL,
-                                    stringsAsFactors = FALSE)
-      .angleCountPlot <- .angleCountPlot[, colnames(.angle.count.plot),
-                                         drop = FALSE]
-      .angle.count.plot <- rbind(.angle.count.plot, .angleCountPlot)
-
-    }
-
-  }
 
 
   # Obtaining mean values and standard deviation when mean argument
@@ -321,7 +148,7 @@ estimation.plot.size <- function(tree.list.tls,
       plot(.data[, 3], .data$N, type = "n",
            main = .axis[[1]],
            xlab = .axis[[2]],
-           ylab = expression(italic("N") ~ (trees/ha)),
+           ylab = expression("N.tls" ~ (trees/ha)),
            xlim = c(min(.data[, 3]), max(.data[, 3])),
            ylim = c(min(.data$N), max(.data$N)))
 
@@ -349,7 +176,7 @@ estimation.plot.size <- function(tree.list.tls,
       plot(.data[, 3], .data$G, type = "n",
            main = .axis[[1]],
            xlab = .axis[[2]],
-           ylab = expression(italic("G") ~ (m^{2}/ha)),
+           ylab = expression("G.tls" ~ (m^{2}/ha)),
            xlim = c(min(.data[, 3]), max(.data[, 3])),
            ylim = c(min(.data$G), max(.data$G)))
 
@@ -401,7 +228,7 @@ estimation.plot.size <- function(tree.list.tls,
       plot(.data[, 2], .data$N, type = "n",
            main = .axis[[1]],
            xlab = .axis[[2]],
-           ylab = expression(italic("N") ~ (trees/ha)),
+           ylab = expression("N.tls" ~ (trees/ha)),
            xlim = c(min(.data[, 2]), max(.data[, 2])),
            ylim = c(min(.data[, c("N", "N.min", "N.max")], na.rm = TRUE),
                     max(.data[, c("N", "N.min", "N.max")], na.rm = TRUE)))
@@ -453,7 +280,7 @@ estimation.plot.size <- function(tree.list.tls,
       plot(.data[, 2], .data$G, type = "n",
            main = .axis[[1]],
            xlab = .axis[[2]],
-           ylab = expression(italic("G") ~ (m^{2}/ha)),
+           ylab = expression("G.tls" ~ (m^{2}/ha)),
            xlim = c(min(.data[, 2]), max(.data[, 2])),
            ylim = c(min(.data[, c("G", "G.min", "G.max")], na.rm = TRUE),
                     max(.data[, c("G", "G.min", "G.max")], na.rm = TRUE)))
@@ -543,7 +370,7 @@ estimation.plot.size <- function(tree.list.tls,
            main = "Density",
            xlab = "",
            xaxt = "n",
-           ylab = expression(italic("N") ~ (trees/ha)),
+           ylab = expression("N.tls" ~ (trees/ha)),
            xlim = c(0, max(.data[, 2])),
            ylim = c(.N.min, .N.max))
 
@@ -611,7 +438,7 @@ estimation.plot.size <- function(tree.list.tls,
            main = "Basal Area",
            xlab = "",
            xaxt = "n",
-           ylab = expression(italic("G") ~ (m^{2}/ha)),
+           ylab = expression("G.tls" ~ (m^{2}/ha)),
            xlim = c(0, max(.data[, 2])),
            ylim = c(.G.min, .G.max))
 
