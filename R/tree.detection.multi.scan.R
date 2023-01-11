@@ -929,6 +929,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                      row.names = FALSE)
   }
 
+
   if(isTRUE(save.result)){
 
     .data.red <- noise[which(noise$prob.selec == 1), , drop = FALSE]

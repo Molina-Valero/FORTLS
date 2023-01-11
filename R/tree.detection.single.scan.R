@@ -67,12 +67,12 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
   woody <- woody[, c("x", "y", "z")]
   woody <- VoxR::filter_noise(data = data.table::setDT(woody), store_noise = TRUE, message = FALSE)
 
-  # noise <- woody[woody$Noise == 2, ]
+  noise <- woody[woody$Noise == 2, ]
 
   woody <- woody[woody$Noise == 1, ]
 
   woody <- merge(data, woody[, c("x", "y", "z")], by = c("x", "y", "z"), all = FALSE)
-  # noise <- merge(data, noise, by = c("x", "y", "z"), all = FALSE)
+  noise <- merge(data, noise, by = c("x", "y", "z"), all = FALSE)
 
   # Detection of stem part without shrub vegetation and crown
 
@@ -935,6 +935,14 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
     utils::write.csv(.tree,
                      file = file.path(dir.result, "tree.tls.csv"),
                      row.names = FALSE)
+  }
+
+  if(isTRUE(save.result)){
+
+    .data.red <- noise[which(noise$prob.selec == 1), , drop = FALSE]
+
+    vroom::vroom_write(.data.red, path = file.path(dir.result, paste("noise_", .data.red$file[1], sep = "")), delim = ",", progress = FALSE)
+
   }
 
 
