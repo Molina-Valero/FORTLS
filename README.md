@@ -5,7 +5,7 @@
 <!-- badges: start -->
 
 ![license](https://img.shields.io/badge/Licence-GPL--3-blue.svg)
-![CRAN Status](https://www.r-pkg.org/badges/version/FORTLS)](https://cran.r-project.org/package=FORTLS){.FORTLS-release}
+[![CRAN Status](https://www.r-pkg.org/badges/version/FORTLS)](https://cran.r-project.org/package=FORTLS){.FORTLS-release}
 [![DOI](https://zenodo.org/badge/DOI/10.3390/IECF2020-08066.svg)](https://doi.org/10.1016/j.envsoft.2022.105337)
 
 <!-- badges: end -->
