@@ -30,5 +30,5 @@ Development of the `FORTLS` package is being possible thanks to the following pr
 * Design of forest monitoring systems on a regional scale (ED431F 2020/02) supported by the Regional Government of Galicia.
 
 <img src="man/figures/logo_ux.jpg" align="left" alt="" width="200" />
-<img src="man/figures/xunta.jpg" align="center" alt="" width="200" />
+<img src="man/figures/xunta.png" align="center" alt="" width="200" />
 <img src="man/figures/logo_ux.jpg" align="right" alt="" width="200" />
