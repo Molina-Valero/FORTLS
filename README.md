@@ -29,5 +29,6 @@ Development of the `FORTLS` package is being possible thanks to the following pr
 * Development of the Galician continuous forest inventory (2020-CP031) supported by the Regional Government of Galicia.
 * Design of forest monitoring systems on a regional scale (ED431F 2020/02) supported by the Regional Government of Galicia.
 
-# Collaborating entities
 <img src="man/figures/logo_ux.jpg" align="left" alt="" width="250" />
+<img src="man/figures/logo_ux.jpg" align="center" alt="" width="250" />
+<img src="man/figures/logo_ux.jpg" align="right" alt="" width="250" />
