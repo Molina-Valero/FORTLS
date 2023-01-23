@@ -5,7 +5,7 @@
 <!-- badges: start -->
 
 ![license](https://img.shields.io/badge/Licence-GPL--3-blue.svg)
-[![](https://www.r-pkg.org/badges/version/FORTLS)](https://CRAN.R-project.org/package=FORTLS)
+[![CRAN Status](https://www.r-pkg.org/badges/version/FORTLS)](https://cran.r-project.org/package=FORTLS)
 [![DOI](https://zenodo.org/badge/DOI/10.3390/IECF2020-08066.svg)](https://doi.org/10.1016/j.envsoft.2022.105337)
 
 <!-- badges: end -->
@@ -29,3 +29,4 @@ Development of the `FORTLS` package is being possible thanks to the following pr
 * Development of the Galician continuous forest inventory (2020-CP031) supported by the Regional Government of Galicia.
 * Design of forest monitoring systems on a regional scale (ED431F 2020/02) supported by the Regional Government of Galicia.
 
+<img src="man/figures/logo_ux.jpg" align="" alt="" width="200"> <img src="man/figures/xunta.png" align="" alt="" width="350"> <img src="man/figures/MICINN_Gob_Web_AEI_2.jpg" align="" alt="" width="400">
