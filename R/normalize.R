@@ -268,12 +268,12 @@ normalize <- function(las, normalized = NULL,
 
     .data$prob <- (.data$r / max(.data$r)) ^ 2
     .data$prob.random <- stats::runif(nrow(.data))
-    .data$prob.selec <- ifelse(.data$prob >= .data$prob.random, 1, 0)}
+    .data$prob.selec <- ifelse(.data$prob > .data$prob.random, 1, 0)}
 
   if(scan.approach == "multi"){
 
     .data$prob <- stats::runif(nrow(.data))
-    .data$prob.selec <- ifelse(.data$prob >= 0.5, 1, 0)}
+    .data$prob.selec <- ifelse(.data$prob > 0.5, 1, 0)}
 
   # Assign id
 

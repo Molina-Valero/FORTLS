@@ -448,7 +448,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   if(nrow(.filter) < 1) stop("No tree was detected")
 
-  # .filter <- .filteraux
   rm(.filteraux)
 
 
@@ -733,7 +732,9 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   # Obtaining reduced point cloud
 
-  data <- data[data$z >= h.min & data$prob > 0.9, ]
+  data <- data[data$z >= h.min, ]
+  s <- sample(nrow(data), round(nrow(data)*0.1))
+  data <- data[s, ]
   data <- data[, c("id", "file", "x", "y", "z", "rho")]
 
   # If only one tree is detected, Voronoi tessellation is not working
