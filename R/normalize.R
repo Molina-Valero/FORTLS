@@ -25,6 +25,13 @@ normalize <- function(las, normalized = NULL,
   if(is.null(dir.result))
     dir.result <- getwd()
 
+  # Reading input (LAS file)
+
+  if(class(las)[1]=="LAS"){
+
+    .las <- las
+
+    } else {
 
   # Loading input (LAS file)
 
@@ -36,6 +43,7 @@ normalize <- function(las, normalized = NULL,
           .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyzRGB")))}
             else{
               .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyzIntensityRGB")))}
+    }
 
 
   .pb$tick()
