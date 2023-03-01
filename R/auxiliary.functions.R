@@ -29,6 +29,8 @@
   # Select cluster i
   .dat <- cut
 
+  # write.csv(.dat, paste(cuts, .dat$cluster[1], ".csv", sep = ""))
+
   # plot(.dat$x, .dat$y, asp = 1)
   # kk <- data.frame(x = tapply(.dat$x, .dat$cluster, mean),
   #                  y = tapply(.dat$y, .dat$cluster, mean),
@@ -409,7 +411,9 @@
 
   if(nrow(.dat) < 25){return(.filter)}
 
-  # plot(.dat$x, .dat$y, asp = 1, main = i)
+  # plot(.dat$x, .dat$y, asp = 1)
+  # write.csv(.dat, paste(.dat$cluster[1], ".csv", sep = ""))
+
 
   # Generate mesh
 

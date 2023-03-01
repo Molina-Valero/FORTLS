@@ -654,6 +654,12 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
 
     # Detecting possible trees overlaped
 
+    if(nrow(.tree) < 2 & !is.null(single.tree)){
+
+      .tree.2 <- .tree
+
+    } else {
+
     .tree.2 <- data.frame(tree = as.numeric(), filter = as.numeric(),
 
                           x = as.numeric(), y = as.numeric(),
@@ -705,6 +711,7 @@ tree.detection.single.scan <- function(data, dbh.min = 4, dbh.max = 200, h.min =
 
     }
 
+    }
 
     .tree <- .tree.2
 

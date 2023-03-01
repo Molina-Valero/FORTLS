@@ -108,7 +108,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   stem.i <- do.call(rbind, lapply(split(stem, stem$tree), .n.w.ratio))
   .Q1 <- stats::quantile(stem.i$n.w.ratio, prob = 0.25, na.rm = TRUE)
   .Q3 <- stats::quantile(stem.i$n.w.ratio, prob = 0.75, na.rm = TRUE)
-  stem.i <- stem.i[stem.i$n.w.ratio > .Q1 - 1.5 * (.Q3 - .Q1) & stem.i$n.w.ratio < .Q3 + 1.5 * (.Q3 - .Q1), ]
+  stem.i <- stem.i[stem.i$n.w.ratio >= .Q1 - 1.5 * (.Q3 - .Q1) & stem.i$n.w.ratio <= .Q3 + 1.5 * (.Q3 - .Q1), ]
   stem <- stem[stem$tree %in% stem.i$tree, ]
 
   rm(stem.i)
@@ -138,7 +138,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   eje <- do.call(rbind, lapply(split(stem, stem$tree), .stem.axis, scan.approach = "multi"))
   .Q1 <- stats::quantile(eje$n.w.ratio, prob = 0.25, na.rm = TRUE)
   .Q3 <- stats::quantile(eje$n.w.ratio, prob = 0.75, na.rm = TRUE)
-  eje <- eje[eje$n.w.ratio > .Q1 - 1.5 * (.Q3 - .Q1), ]
+  eje <- eje[eje$n.w.ratio >= .Q1 - 1.5 * (.Q3 - .Q1), ]
   eje <- eje[eje$tree %in% eje$tree, ]
   eje <- eje[eje$sec %in% as.character(breaks) & !is.na(eje$x), ]
 
@@ -632,6 +632,12 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   # Detecting possible trees overlaped
 
+  if(nrow(.tree) < 2 & !is.null(single.tree)){
+
+    .tree.2 <- .tree
+
+  } else {
+
   .tree.2 <- data.frame(tree = as.numeric(), filter = as.numeric(),
 
                         x = as.numeric(), y = as.numeric(),
@@ -684,6 +690,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   }
 
   .tree <- .tree.2
+
+  }
 
   rm(.tree.2)
 
