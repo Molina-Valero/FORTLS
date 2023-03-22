@@ -258,7 +258,7 @@ normalize <- function(las, normalized = NULL,
   .data$r <- sqrt(.data$z ^ 2 + .data$rho ^ 2)
   .data$theta <- atan2(.data$z, .data$rho)
 
-  .data$point <- (1:nrow(.data))
+  .data$point <- as.integer((1:nrow(.data)))
 
   # Green Leaf Algorithm (GLA) (Louhaichi et al., (2001))
   if(!is.null(RGB))
@@ -276,12 +276,12 @@ normalize <- function(las, normalized = NULL,
 
     .data$prob <- (.data$r / max(.data$r)) ^ 2
     .data$prob.random <- stats::runif(nrow(.data))
-    .data$prob.selec <- ifelse(.data$prob > .data$prob.random, 1, 0)}
+    .data$prob.selec <- as.integer(ifelse(.data$prob > .data$prob.random, 1, 0))}
 
   if(scan.approach == "multi"){
 
     .data$prob <- stats::runif(nrow(.data))
-    .data$prob.selec <- ifelse(.data$prob > 0.5, 1, 0)}
+    .data$prob.selec <- as.integer(ifelse(.data$prob > 0.5, 1, 0))}
 
   # Assign id
 
@@ -291,7 +291,7 @@ normalize <- function(las, normalized = NULL,
 
   } else {
 
-    .data$id <- 1
+    .data$id <- as.integer(1)
 
   }
 

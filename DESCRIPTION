@@ -4,7 +4,7 @@ Version: 1.2.1
 Date: 2023-01-08
 Authors@R: c(
     person("Juan Alberto", "Molina-Valero", role = c("aut", "cph", "cre"),
-    email = "juanalberto.molina.valero@usc.es"),
+    email = "jamolinavalero@gmail.com"),
     person("Adela", "Martínez-Calvo", role = c("aut", "com")),
     person("María José", "Ginzo Villamayor", role = c("com")),
     person("Manuel Antonio", "Novo Pérez", role = c("com")),
@@ -20,13 +20,13 @@ Author: Juan Alberto Molina-Valero [aut, cph, cre],
   Juan Gabriel Álvarez-González [aut, ths],
   Fernando Montes [aut],
   César Pérez-Cruzado [aut, ths]
-Maintainer: Juan Alberto Molina-Valero <juanalberto.molina.valero@usc.es>
+Maintainer: Juan Alberto Molina-Valero <jamolinavalero@gmail.com>
 Description: Process automation of point cloud data derived from terrestrial-based technologies such as Terrestrial Laser Scanner (TLS) or Simultaneous Localization and Mapping (SLAM). 'FORTLS' enables (i) detection of trees and estimation of tree-level attributes (e.g. diameters and heights), (ii) estimation of stand-level variables (e.g. density, basal area, mean and dominant height), (iii) computation of metrics related to important forest attributes estimated in Forest Inventories at stand-level, and (iv) optimization of plot design for combining TLS data and field measured data. Documentation about 'FORTLS' is described in Molina-Valero et al. (2022, <doi:10.1016/j.envsoft.2022.105337>). 
 URL: https://github.com/Molina-Valero/FORTLS
 BugReports: https://github.com/Molina-Valero/FORTLS/issues
 License: GPL-3
 Depends: R (>= 3.5.0)
-Imports: data.table, dbscan, Distance, htmlwidgets, lidR, methods, moments, plotly, progress, raster, Rcpp(>= 1.0.7), RCSF, rgeos, scales, sf, sp, tidyr, VoxR, vroom
+Imports: data.table, dbscan, Distance, htmlwidgets, lidR, methods, moments, plotly, progress, raster, Rcpp(>= 1.0.7), RCSF, rgeos, rTLS, scales, sf, sp, tidyr, VoxR, vroom
 Suggests: devtools, kableExtra, knitr, rmarkdown, systemfonts, testthat
 LinkingTo: Rcpp, RcppEigen
 Encoding: UTF-8

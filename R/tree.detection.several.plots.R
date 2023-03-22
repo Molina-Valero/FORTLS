@@ -36,7 +36,7 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
     } else {
 
-      .id <- i
+      .id <- as.integer(i)
 
     }
 
@@ -81,7 +81,7 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
     if(scan.approach == "single"){
 
-    .tree.tls.i <- tree.detection.single.scan(data = .data,
+    .tree.tls.i <- tree.detection.single.scan(data = .data, single.tree = single.tree,
 
                                               dbh.min = dbh.min, dbh.max = dbh.max, h.min = h.min,
 
@@ -97,7 +97,11 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
                                               plot.attributes = plot.attributes,
 
-                                              save.result = FALSE, dir.result = dir.result)}
+                                              save.result = FALSE, dir.result = dir.result)
+
+    rm(.data)
+
+    }
 
     if(scan.approach == "multi"){
 
@@ -118,6 +122,8 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
                                              plot.attributes = plot.attributes,
 
                                              save.result = FALSE, dir.result = dir.result)
+
+    rm(.data)
 
     }
 
