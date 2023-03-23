@@ -29,7 +29,9 @@
   # Select cluster i
   .dat <- cut
 
-  # print(.dat$cluster[1])
+  if(nrow(.dat) < 15){return(.filter)}
+
+  # print(.dat$cluster[i])
 
   # write.csv(.dat, paste(cuts, .dat$cluster[1], ".csv", sep = ""))
 
@@ -39,7 +41,7 @@
   #                  cluster = tapply(.dat$cluster, .dat$cluster, mean))
   # text(kk$x, kk$y, col = "red")
 
-  # .dat <- .cut[.cut$cluster == 55, ]
+  #.dat <- .cut[.cut$cluster == 23, ]
   # plot(.dat$phi, .dat$z)
 
   # First filter
@@ -151,8 +153,10 @@
   }
 
   .dat <- merge(.dat, .remove, by = "point", all.y = TRUE)
+  .dat <- .dat[!duplicated(.dat$point), ]
+  .dat <- .dat[!duplicated(.dat$x) & !duplicated(.dat$y), ]
 
-  if(nrow(.dat) < 1){return(.filter)}
+  if(nrow(.dat) < 5){return(.filter)}
 
   if(is.nan(mean(.dat$slope, na.rm = TRUE))){
 
@@ -208,7 +212,7 @@
   .dat <- merge(.dat, .remove, by = "point", all.y = TRUE)
 
   # If no points remain in .dat after removing, go to next iteration
-  if(nrow(.dat) < 1){return(.filter)}
+  if(nrow(.dat) < 5){return(.filter)}
 
   # Estimate points number for both the original cloud (.n.pts) and the
   # point cloud reduced by the point cropping process (.n.pts.red)
@@ -378,7 +382,7 @@
 
   if(.n.w.ratio > 1 | is.nan(.n.w.ratio)){return(.filter)}
 
-  if(nrow(.dat) < 2){return(.filter)}
+  if(nrow(.dat) < 5){return(.filter)}
 
 
   # Results
@@ -549,10 +553,11 @@
   }
 
   .dat <- merge(.dat, .remove, by = "point", all.y = TRUE)
-  # .noise <- subset(.dat, !(point %in% .remove$point))
+  .dat <- .dat[!duplicated(.dat$point), ]
+  .dat <- .dat[!duplicated(.dat$x) & !duplicated(.dat$y), ]
 
 
-  if(nrow(.dat) < 1){return(.filter)}
+  if(nrow(.dat) < 10){return(.filter)}
 
   # plot(.dat$x, .dat$y, asp = 1, main = i)
 
