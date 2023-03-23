@@ -919,6 +919,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   }
 
+  .tree$tree <- 1:nrow(.tree)
+
   # Removing values of 0 in n.pts
   .tree$n.pts <- ifelse(.tree$n.pts < 1, 0.01, .tree$n.pts)
   .tree$n.pts.red <- ifelse(.tree$n.pts.red < 1, 0.01, .tree$n.pts.red)

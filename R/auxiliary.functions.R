@@ -638,16 +638,21 @@
     .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)]) / .radio
     .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
     .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)]) / .radio
+    if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
+
   } else if(bark.roughness == 2){
     .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)])
     .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)]) / .radio
     .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
     .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)]) / .radio
+    if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
+
   } else {
     .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)])
     .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)]) / .radio
     .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.75) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
     .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.75) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)]) / .radio
+    if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
 
     }
 
@@ -1602,19 +1607,33 @@ if(nrow(.filter) < 1){
 
                     if (any(c("weibull_c.z", "weibull_b.z") %in% names(.metr))) {
 
-                      .metr["weibull_c.z"] <-
-                        stats::uniroot(.c_function, media = .metr["mean.z"],
-                                       varianza = .metr["var.z"],
-                                       interval = c(.metr["min.z"],
-                                                    .metr["max.z"]))$root
+                      .error <- try(stats::uniroot(.c_function, media = .metr["mean.z"],
+                                                   varianza = .metr["var.z"],
+                                                   interval = c(.metr["min.z"],
+                                                                .metr["max.z"]))$root)
+
+                      if(class(.error)[1] == "try-error"){
+
+                        .metr["weibull_c.z"] <- NA
+                        .metr["weibull_b.z"] <- NA
+
+                      } else {
+
+                        .metr["weibull_c.z"] <-
+                          stats::uniroot(.c_function, media = .metr["mean.z"],
+                                         varianza = .metr["var.z"],
+                                         interval = c(.metr["min.z"],
+                                                      .metr["max.z"]))$root
+
+                      }
+
+                      if ("weibull_b.z" %in% names(.metr)) {
+
+                        .metr["weibull_b.z"] <-
+                          .metr["mean.z"] / gamma(1 + 1 / .metr["weibull_c.z"])}
 
                     }
-                    if ("weibull_b.z" %in% names(.metr)) {
 
-                      .metr["weibull_b.z"] <-
-                        .metr["mean.z"] / gamma(1 + 1 / .metr["weibull_c.z"])
-
-                    }
 
 
                     # Compute metrics for coordinate rho
@@ -1707,7 +1726,8 @@ if(nrow(.filter) < 1){
                                        interval = c(.metr["min.rho"],
                                                     .metr["max.rho"]))$root
 
-                    }
+                      }
+
                     if ("weibull_b.rho" %in% names(.metr)) {
 
                       .metr["weibull_b.rho"] <-
@@ -1806,6 +1826,7 @@ if(nrow(.filter) < 1){
                                                       .metr["max.r"]))$root
 
                       }
+
                       if ("weibull_b.r" %in% names(.metr)) {
 
                         .metr["weibull_b.r"] <-
@@ -1816,6 +1837,7 @@ if(nrow(.filter) < 1){
                     return(.metr)
 
                   },
+
                   data = data, metr = metr)
 
   .metr <- do.call(rbind, .metr)
