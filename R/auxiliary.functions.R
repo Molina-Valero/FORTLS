@@ -243,12 +243,6 @@
   .center.x <- .x.values[.a[2]]
   .center.y <- .y.values[.a[1]]
 
-  .center.phi <- atan2(.center.y, .center.x)
-  .center.phi <- ifelse(.center.phi < 0, .center.phi + (2 * pi), .center.phi)
-  .center.rho <- sqrt(.center.x ^ 2 + .center.y ^ 2)
-  .center.r <- sqrt(.dat$sec[1] ^ 2 + .center.rho ^ 2)
-  .center.theta <- atan2(.dat$sec[1], .center.rho)
-
 
   # Distances between points and center
   .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)
@@ -290,34 +284,47 @@
     if(bark.roughness == 1){
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)]) / .radio
-      .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
-      .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)]) / .radio
+      # .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
+      .radioRANSAC <- .centerRANSAC$radius
+      .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)]) / .radioRANSAC
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
 
     } else if(bark.roughness == 2){
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)]) / .radio
-      .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
-      .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)]) / .radio
+      # .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
+      .radioRANSAC <- .centerRANSAC$radius
+      .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)]) / .radioRANSAC
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
 
     } else {
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)]) / .radio
-      .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.75) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
-      .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.75) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)]) / .radio
+      # .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.75) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
+      .radioRANSAC <- .centerRANSAC$radius
+      .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.75) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)]) / .radioRANSAC
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
     }
 
-    if(.cv >= .cvRANSAC){.radio <- .radioRANSAC}
-    if(.cv >= .cvRANSAC){.cv <- .cvRANSAC}
-    if(.cv >= .cvRANSAC){.dat$dist <- .dat$distRANSAC}
+    if(.cv >= .cvRANSAC){
+      .radio <- .radioRANSAC
+      .cv <- .cvRANSAC
+      .dat$dist <- .dat$distRANSAC
+
+      .center.x <- .centerRANSAC$X
+      .center.y <- .centerRANSAC$Y}
 
     .dat <- .dat[, -ncol(.dat)]
 
     if(.radio <= 0 | is.na(.radio)){return(.filter)}
 
   }
+
+  .center.phi <- atan2(.center.y, .center.x)
+  .center.phi <- ifelse(.center.phi < 0, .center.phi + (2 * pi), .center.phi)
+  .center.rho <- sqrt(.center.x ^ 2 + .center.y ^ 2)
+  .center.r <- sqrt(.dat$sec[1] ^ 2 + .center.rho ^ 2)
+  .center.theta <- atan2(.dat$sec[1], .center.rho)
 
   if(.cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25)]) < 2) {return(.filter)}
 
@@ -591,18 +598,9 @@
   .center.x <- .x.values[.a[2]]
   .center.y <- .y.values[.a[1]]
 
-  # centro <- data.frame(x = .center.x, y = .center.y)
-  # write.csv(centro, paste("centro_", cod, sep = ""), row.names = FALSE)
 
-  .center.phi <- atan2(.center.y, .center.x)
-  .center.phi <- ifelse(.center.phi < 0, .center.phi + (2 * pi), .center.phi)
-  .center.rho <- sqrt(.center.x ^ 2 + .center.y ^ 2)
-  .center.r <- sqrt(.dat$sec[1] ^ 2 + .center.rho ^ 2)
-  .center.theta <- atan2(.dat$sec[1], .center.rho)
-
-  # points(.center.x, .center.y, col = "red", pch = 19)
-  # abline(h = .center.y)
-  # abline(v = .center.x)
+  # Distances between points and center
+  .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)
 
   # Distances between points and center
   .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)
@@ -637,39 +635,51 @@
 
     .dat$distRANSAC <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.centerRANSAC$X, .centerRANSAC$Y), lonlat = FALSE)
 
-  # Radius value as the mean distance
-  if(bark.roughness == 1){
-    .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)])
-    .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)]) / .radio
-    .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
-    .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)]) / .radio
-    if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
+    # Radius value as the mean distance
+    if(bark.roughness == 1){
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)]) / .radio
+      # .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
+      .radioRANSAC <- .centerRANSAC$radius
+      .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)]) / .radioRANSAC
+      if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
 
-  } else if(bark.roughness == 2){
-    .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)])
-    .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)]) / .radio
-    .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
-    .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)]) / .radio
-    if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
+    } else if(bark.roughness == 2){
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)]) / .radio
+      # .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
+      .radioRANSAC <- .centerRANSAC$radius
+      .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)]) / .radioRANSAC
+      if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
 
-  } else {
-    .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)])
-    .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)]) / .radio
-    .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.75) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
-    .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.75) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)]) / .radio
-    if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
-
+    } else {
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)]) / .radio
+      # .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.75) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
+      .radioRANSAC <- .centerRANSAC$radius
+      .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.75) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)]) / .radioRANSAC
+      if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
     }
 
-  if(.cv >= .cvRANSAC){.radio <- .radioRANSAC}
-  if(.cv >= .cvRANSAC){.cv <- .cvRANSAC}
-  if(.cv >= .cvRANSAC){.dat$dist <- .dat$distRANSAC}
+    if(.cv >= .cvRANSAC){
+      .radio <- .radioRANSAC
+      .cv <- .cvRANSAC
+      .dat$dist <- .dat$distRANSAC
 
-  .dat <- .dat[, -ncol(.dat)]
+      .center.x <- .centerRANSAC$X
+      .center.y <- .centerRANSAC$Y}
 
-  if(.radio <= 0 | is.na(.radio)){return(.filter)}
+    .dat <- .dat[, -ncol(.dat)]
+
+    if(.radio <= 0 | is.na(.radio)){return(.filter)}
 
   }
+
+  .center.phi <- atan2(.center.y, .center.x)
+  .center.phi <- ifelse(.center.phi < 0, .center.phi + (2 * pi), .center.phi)
+  .center.rho <- sqrt(.center.x ^ 2 + .center.y ^ 2)
+  .center.r <- sqrt(.dat$sec[1] ^ 2 + .center.rho ^ 2)
+  .center.theta <- atan2(.dat$sec[1], .center.rho)
 
   if(.cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25)]) < 2){return(.filter)}
 
