@@ -31,4 +31,4 @@ Development of the `FORTLS` package is being possible thanks to the following pr
 
 <img src="man/figures/logo_ux.jpg" align="left" alt="right" width="200"> 
 <img src="man/figures/xunta.png" align="" alt="" width="350"> 
-<img src="man/figures/MICINN_Gob_Web_AEI_2.jpg" align="" alt="" width="400">
+<img src="man/figures/MICINN_Gob_Web_AEI_2.jpg" align="right" alt="" width="400">
