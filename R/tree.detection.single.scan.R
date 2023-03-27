@@ -3,7 +3,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
                                        dbh.min = 4, dbh.max = 200, h.min = 1.3,
                                        ncr.threshold = 0.1, tls.resolution = list(),
                                        stem.section = NULL, breaks = NULL,
-                                       slice = 0.1, understory = NULL, bark.roughness = 2,
+                                       slice = 0.1, understory = NULL, bark.roughness = NULL,
                                        den.type = 1, d.top = NULL,
                                        plot.attributes = NULL,
                                        save.result = TRUE, dir.result = NULL){
@@ -186,7 +186,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     .cut <- .cut[which(.cut$cluster > 0), , drop = FALSE]}
 
     # Checking if there are clusters
-    if(nrow(.cut) < 1){next}
+    if(nrow(.cut) < 15){next}
 
     .cut$sec <- cuts
 
