@@ -852,8 +852,10 @@ if(nrow(.filter) < 1){
 
 .volume <- function(data, d.top = NULL){
 
-  datos <- data.frame(hi = as.numeric(), dhi = as.numeric(), h = as.numeric(),
-                      dbh = as.numeric())
+  datos <- data.frame(tree = as.numeric(),
+                      x = as.numeric(), y = as.numeric(),
+                      hi = as.numeric(), dhi = as.numeric(),
+                      h = as.numeric(), dbh = as.numeric())
 
   for (i in unique(data$tree)) {
 
@@ -862,7 +864,7 @@ if(nrow(.filter) < 1){
 
     if (nrow(tree) < 2 | suppressWarnings(min(abs(diff(tree$dhi)))) > 10) {
 
-      datos <- rbind(datos, tree[tree$hi == 1.3, c("hi", "dhi", "h", "dbh")])
+      datos <- rbind(datos, tree[tree$hi == 1.3, c("tree", "x", "y", "hi", "dhi", "h", "dbh")])
 
     } else {
 
@@ -886,7 +888,7 @@ if(nrow(.filter) < 1){
 
     }
 
-    datos <- rbind(datos, tree[, c("hi", "dhi", "h", "dbh")])
+    datos <- rbind(datos, tree[, c("tree", "x", "y", "hi", "dhi", "h", "dbh")])
 
     # Add additional values if the largest break is smaller than total height
     # minus 0.5 m
@@ -894,7 +896,8 @@ if(nrow(.filter) < 1){
 
       aux <- tree[which.max(tree$hi)[1], , drop = FALSE]
       datos <- rbind(datos,
-                     data.frame(hi = aux$h - .5,
+                     data.frame(tree = aux$tree, x = aux$x, y = aux$y,
+                                hi = aux$h - .5,
                                 dhi = .5 * aux$dhi / (aux$h - aux$hi),
                                 aux[, c("h", "dbh"), drop = FALSE]))
 
@@ -912,6 +915,10 @@ if(nrow(.filter) < 1){
   datos <- merge(datos, loes, all = FALSE)
   datos$sep <- abs(datos$dhi - datos$dhi.mean)
   datos <- datos[datos$sep < stats::quantile(datos$sep, prob = 0.9), ]
+
+  utils::write.csv(datos[, c("tree", "x", "y", "hi", "dhi", "h", "dbh")],
+                   "stem.curve.csv",
+                   row.names = FALSE)
 
   ajuste <- stats::nls(dhi ~ dbh * ((h - hi) / (h - 1.3)) ** b1, data = datos,
                        start = c(b1 = 1), max)

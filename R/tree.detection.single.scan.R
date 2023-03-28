@@ -881,6 +881,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
       .stem$id <- data$id[1]
       .stem <- .stem[, c("id", "tree", "x", "y", "dhi", "dbh", "hi", "h")]}
 
+
     utils::write.csv(.stem,
                      file = file.path(dir.result, "tree.tls.stem.csv"),
                      row.names = FALSE)
@@ -926,7 +927,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   }
 
-  .tree$tree <- 1:nrow(.tree)
 
   # Removing values of 0 in n.pts
   .tree$n.pts <- ifelse(.tree$n.pts < 1, 0.01, .tree$n.pts)
