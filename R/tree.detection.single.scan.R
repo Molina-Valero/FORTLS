@@ -882,9 +882,9 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
       .stem <- .stem[, c("id", "tree", "x", "y", "dhi", "dbh", "hi", "h")]}
 
 
-    utils::write.csv(.stem,
-                     file = file.path(dir.result, "tree.tls.stem.csv"),
-                     row.names = FALSE)
+    # utils::write.csv(.stem,
+    #                  file = file.path(dir.result, "tree.tls.stem.csv"),
+    #                  row.names = FALSE)
 
 
     # If plot identification (id) is not available
