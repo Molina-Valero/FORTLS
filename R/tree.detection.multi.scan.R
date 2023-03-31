@@ -504,6 +504,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   # .filter$radio.est <- ifelse(is.na(.filter$radio.est), .filter$radius, .filter$radio.est)
   # .filter$radio.est2 <- ifelse(is.na(.filter$radio.est2), .filter$radius2, .filter$radio.est2)
 
+  top.lim <- max(1.3, abs(max(stem.section) - 1.3))
+
   .radio.est <- data.frame(radio.est = as.numeric())
 
   for (i in unique(.filter$tree)) {
@@ -511,7 +513,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     .dat <- .filter[which(.filter$tree == i), ]
     .dat$dif <- abs(.dat$dif)
 
-    if(min(.dat$dif) > 1.3)
+    if(min(.dat$dif) > top.lim)
       next
 
     .dat <- .dat[order(.dat$dif), ]
@@ -580,12 +582,14 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     if(nrow(.dat) > 3)
       .dat <- .dat[1:3, ]
 
-    if(min(abs(.dat$dif)) > 1.3)
+    if(min(abs(.dat$dif)) > top.lim)
       next
 
     .filteraux <- rbind(.filteraux, .dat)
 
   }
+
+  if(nrow(.filteraux) < 1) stop("No tree was detected")
 
 
   # Genrating dendrometric variables
@@ -841,9 +845,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   } else if (length(table(.stem$hi)) > 3 & !is.null(d.top)) {
 
-    stem.v <- .volume(.stem, d.top)
-    .tree <- merge(.tree, stem.v, all = TRUE)
-
+  stem.v <- .volume(.stem, d.top)
+  .tree <- merge(.tree, stem.v, all = TRUE)
 
   } else if (length(table(.stem$hi)) <= 3 & !is.null(d.top)) {
 
@@ -860,8 +863,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   } else {
 
-    den.type <- 1
-    n <- den.type
+  den.type <- 1
+  n <- den.type
 
   .tree$v <- pi * (.tree[, "h"] ^ (n + 1) / (n + 1)) * ((.tree[, "dbh"] / 200) ^ 2 / (.tree[, "h"] - 1.3) ^ n)
 

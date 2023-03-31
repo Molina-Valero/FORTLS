@@ -519,6 +519,8 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     # .filter$radio.est <- ifelse(is.na(.filter$radio.est), .filter$radius, .filter$radio.est)
     # .filter$radio.est2 <- ifelse(is.na(.filter$radio.est2), .filter$radius2, .filter$radio.est2)
 
+    top.lim <- max(1.3, abs(max(stem.section) - 1.3))
+
     .radio.est <- data.frame(radio.est = as.numeric())
 
     for (i in unique(.filter$tree)) {
@@ -526,7 +528,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
       .dat <- .filter[which(.filter$tree == i), ]
       .dat$dif <- abs(.dat$dif)
 
-      if(min(.dat$dif) > 1.3)
+      if(min(.dat$dif) > top.lim)
         next
 
       .dat <- .dat[order(.dat$dif), ]
@@ -605,12 +607,15 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
       if(nrow(.dat) > 3)
         .dat <- .dat[1:3, ]
 
-      if(min(abs(.dat$dif)) > 1.3)
+
+      if(min(abs(.dat$dif)) > top.lim)
         next
 
       .filteraux <- rbind(.filteraux, .dat)
 
     }
+
+    if(nrow(.filteraux) < 1) stop("No tree was detected")
 
     # Dendrometric variables
     .tree <- data.frame(tree = tapply(.filteraux$tree, .filteraux$tree, mean, na.rm = TRUE),

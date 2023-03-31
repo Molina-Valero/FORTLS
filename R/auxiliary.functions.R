@@ -920,6 +920,32 @@ if(nrow(.filter) < 1){
                    "stem.curve.csv",
                    row.names = FALSE)
 
+  if(nrow(datos) < 3){
+
+    if(is.null(d.top)){
+
+      den.type <- 1
+      n <- den.type
+
+      v <- pi * (unique(data$h) ^ (n + 1) / (n + 1)) * ((unique(data$dbh) / 200) ^ 2 / (unique(data$h) - 1.3) ^ n)
+
+      volume <- data.frame(tree = unique(data$tree), v = v)}
+
+    else {
+
+      den.type <- 1
+      n <- den.type
+
+      v <- pi * (unique(data$h) ^ (n + 1) / (n + 1)) * ((unique(data$dbh) / 200) ^ 2 / (unique(data$h) - 1.3) ^ n)
+      h.lim <- (((d.top / 200) ^ 2) / ((unique(data$dbh) / 200) ^ 2 / (unique(data$h) - 1.3) ^ n)) ^ (1 / n)
+      v.com <- pi * ((unique(data$h) ^ (n + 1) - h.lim ^ (n + 1)) / (n + 1)) * ((unique(data$dbh) / 200) ^ 2 / (unique(data$h) - 1.3) ^ n)
+      v.com <- ifelse(v.com < 0, 0, v.com)
+
+      volume <- data.frame(tree = unique(data$tree), v = v, v.com = v.com, h.com = h.lim)}
+
+  } else {
+
+
   ajuste <- stats::nls(dhi ~ dbh * ((h - hi) / (h - 1.3)) ** b1, data = datos,
                        start = c(b1 = 1), max)
   b1 <- stats::coef(ajuste)[1]
@@ -985,7 +1011,7 @@ if(nrow(.filter) < 1){
 
     }
 
-  }
+  }}
 
   return(volume)
 
