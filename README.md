@@ -7,6 +7,7 @@
 ![license](https://img.shields.io/badge/Licence-GPL--3-blue.svg)
 [![CRAN Status](https://www.r-pkg.org/badges/version/FORTLS)](https://cran.r-project.org/package=FORTLS)
 [![DOI](https://zenodo.org/badge/DOI/10.3390/IECF2020-08066.svg)](https://doi.org/10.1016/j.envsoft.2022.105337)
+![](https://cranlogs.r-pkg.org/badges/grand-total/FORTLS)
 
 <!-- badges: end -->
 
