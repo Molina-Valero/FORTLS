@@ -10,6 +10,9 @@ normalize <- function(las, normalized = NULL,
                       id = NULL, file = NULL,
                       dir.data = NULL, save.result = TRUE, dir.result = NULL){
 
+
+  set.seed(123)
+
   if(is.null(normalized)){
   .pb <- progress::progress_bar$new(total = 12)} else {
     .pb <- progress::progress_bar$new(total = 6)}

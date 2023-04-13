@@ -8,6 +8,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                                       plot.attributes = NULL,
                                       save.result = TRUE, dir.result = NULL){
 
+  set.seed(123)
 
   #### Checking some function arguments ####
 
@@ -156,11 +157,11 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   # Estimating NCR threshold when RGB is available
 
-  if(!is.null(data$GLA)){
-    ncr <- data[data$GLA > 0, ]
-    ncr <- as.matrix(ncr[, c("point", "x", "y", "z")])
-    ncr.threshold <- ncr_point_cloud_double(ncr[1:10000, ])
-    ncr.threshold <- mean(ncr.threshold$ncr, na.rm = TRUE)}
+  # if(!is.null(data$GLA)){
+  #   ncr <- data[data$GLA > 0, ]
+  #   ncr <- as.matrix(ncr[, c("point", "x", "y", "z")])
+  #   ncr.threshold <- ncr_point_cloud_double(ncr[1:10000, ])
+  #   ncr.threshold <- mean(ncr.threshold$ncr, na.rm = TRUE)}
 
 
   # Assigning points to trees previously detected
