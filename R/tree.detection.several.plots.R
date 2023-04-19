@@ -1,5 +1,5 @@
 
-tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
+tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
 
                                          scan.approach = "single",
 

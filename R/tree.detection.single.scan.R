@@ -53,6 +53,14 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   }
 
+  # Obtaining Cartesian coordinates (x,y) from center
+
+  kk <- data[data$phi < (pi/2) & data$prob.selec == 1, c("x", "y", "phi", "rho")]
+
+  x.center <- mean(kk$x - sin(kk$phi) * kk$rho)
+  y.center <- mean(kk$y - cos(kk$phi) * kk$rho)
+
+  rm(kk)
 
   #### Detecting possible areas with trees in the point cloud ####
 
@@ -194,7 +202,8 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     .filter <- do.call(rbind, lapply(split(.cut, .cut$cluster), .sections.single.scan, .cut = .cut,
                                      .alpha.v = .alpha.v, .alpha.h = .alpha.h,
                                      .dbh.min = .dbh.min, .dbh.max = .dbh.max,
-                                     slice = slice * 2, bark.roughness = bark.roughness))
+                                     slice = slice * 2, bark.roughness = bark.roughness,
+                                     x.center = x.center, y.center = y.center))
 
     .filteraux<-rbind(.filteraux, .filter)
 
@@ -258,19 +267,23 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     kk <- data.frame(sec = table(.filter$sec[.filter$arc.circ == 1]))
     kk[, 1] <- as.numeric(as.character(kk[, 1]))
     kk <- kk[kk[,2] == max(kk[,2]), ]
+
     if(nrow(kk) > 1){
       kk$dif <- abs(kk[, 1] - 1.3)
       kk <- kk[kk$dif == min(kk$dif), ]}
+
     if(nrow(kk) > 1){
       kk <- kk[kk[, 1] == min(kk[, 1]), ]}
+
     if(kk[, 1] > 1){
     eje <- .filter[.filter$sec < kk[, 1] + 1 &
                    .filter$sec > kk[, 1] - 1,
-                   c("center.x", "center.y", "center.rho", "center.phi", "radius", "sec")]}else{
-      eje <- .filter[.filter$sec < as.numeric(as.character(kk[, 1])) + 1,
-                     c("center.x", "center.y", "center.rho", "center.phi", "radius", "sec")]}
+                   c("center.x", "center.y", "center.rho", "center.phi", "radius", "sec")]} else{
+                     eje <- .filter[.filter$sec < as.numeric(as.character(kk[, 1])) + 1,
+                  c("center.x", "center.y", "center.rho", "center.phi", "radius", "sec")]}
 
-    .dbscan <- dbscan::dbscan(eje[, c("center.x", "center.y"), drop = FALSE], eps = mean(eje$radius), minPts = 1)
+    .dbscan <- dbscan::dbscan(eje[, c("center.x", "center.y"), drop = FALSE],
+                              eps = mean(eje$radius[eje$sec == kk[, 1]]), minPts = 1)
     eje$tree <- .dbscan$cluster
     eje <- eje[, c("tree", "sec", "center.x", "center.y", "center.rho", "center.phi")]
     colnames(eje) <- c("tree", "sec", "x", "y", "rho", "phi")
@@ -345,11 +358,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
         if(nrow(.filt) > 1)
           .filt <- .filt[1, ]
 
-        if(.filt$dist > 2.5){next}
-        if(.filt$dist.rho > 2.5){next}
-        if(.filt$dist.phi > 0.25){next}
-
-
+        if(.filt$dist > 2.5 | .filt$dist.rho > 2.5 | .filt$dist.phi > 0.25){next}
 
         .filt <- .filt[, c("tree", "sec", "dist",
                            "center.x", "center.y", "center.phi", "phi.left", "phi.right",
@@ -548,19 +557,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
       }
 
-
-
-
-      # if(max(.dat$circ) == 1){
-      #
-      #   .dat <- .dat[which(.dat$circ > 0), ]
-      #
-      # } else if(max(.dat$circ) == 0 & max(.dat$arc.circ) == 1){
-      #
-      #   .dat <- .dat[which(.dat$arc.circ > 0), ]
-      #
-      # } else {.dat <- .dat}
-
       .out <- data.frame(radio.est = mean(.dat$radio.est, na.rm = TRUE))
       .radio.est <- rbind(.radio.est, .out)
 
@@ -654,7 +650,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     # Remove duplicated trees and ordering by distance and numbering trees from 1 to n trees
 
     .tree <- .tree[!duplicated(.tree$x) & !duplicated(.tree$y), ]
-    # .tree <- .tree[!duplicated(.tree$sec.x) & !duplicated(.tree$sec.y), ]
+    .tree <- .tree[!duplicated(.tree$sec.x) & !duplicated(.tree$sec.y), ]
     .tree <- .tree[.tree$radius > 0, ]
     .tree <- .tree[order(.tree$rho), ]
     .tree$tree <- 1:nrow(.tree)
@@ -692,11 +688,11 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
       .filteraux$dist <- sqrt((.filteraux$x - .filt$x) ^ 2 + (.filteraux$y - .filt$y) ^ 2) - .filteraux$radius - .filt$radius
 
-      if(min(.filteraux$dist) < 0){
+      if(min(.filteraux$dist) < 0.05){
 
-        .filteraux <- .filteraux[.filteraux$dist < 0, ]
+        .filteraux <- .filteraux[.filteraux$dist < 0.05, ]
         .filt <- rbind(.filt, .filteraux[ , -ncol(.filteraux)])
-        .filt <- .filt[.filt$filter == max(.filt$filter), ]
+        .filt <- .filt[.filt$filter == max(.filt$filter) & .filt$sec.max ==  min(.filt$sec.max), ]
 
         if(nrow(.filt) > 1)
           .filt <- .filt[.filt$partial.occlusion > 0, ]
@@ -705,7 +701,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
         if(nrow(.filt) > 1)
           .filt <- .filt[1, ]
 
-        .tree <- .tree[.tree$tree != .filteraux$tree[.filteraux$dist < 0], ]
+        .tree <- .tree[.tree$tree != .filteraux$tree[.filteraux$dist < 0.05], ]
 
         .tree.2 <- rbind(.tree.2, .filt)
 

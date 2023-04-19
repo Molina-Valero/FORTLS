@@ -22,6 +22,15 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   .dbh.min <- dbh.min / 100
   .dbh.max <- dbh.max / 100
 
+  # Obtaining Cartesian coordinates (x,y) from center
+
+  kk <- data[data$phi < (pi/2) & data$prob.selec == 1, c("x", "y", "phi", "rho")]
+
+  x.center <- mean(kk$x - sin(kk$phi) * kk$rho)
+  y.center <- mean(kk$y - cos(kk$phi) * kk$rho)
+
+  rm(kk)
+
 
   #### Detecting possible areas with trees in the point cloud ####
 
@@ -247,7 +256,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     .filter <- do.call(rbind, lapply(split(.cut, .cut$cluster), .sections.multi.scan,
                                      tls.precision = tls.precision,
                                      .dbh.min = .dbh.min, .dbh.max = .dbh.max,
-                                     slice = slice * 2, bark.roughness = bark.roughness))
+                                     slice = slice * 2, bark.roughness = bark.roughness,
+                                     x.center = x.center, y.center = y.center))
 
     .filteraux <- rbind(.filteraux, .filter)
 
@@ -668,11 +678,11 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     .filteraux$dist <- sqrt((.filteraux$x - .filt$x) ^ 2 + (.filteraux$y - .filt$y) ^ 2) - .filteraux$radius - .filt$radius
 
-    if(min(.filteraux$dist) < 0){
+    if(min(.filteraux$dist) < 0.05){
 
-      .filteraux <- .filteraux[.filteraux$dist < 0, ]
+      .filteraux <- .filteraux[.filteraux$dist < 0.05, ]
       .filt <- rbind(.filt, .filteraux[ , -ncol(.filteraux)])
-      .filt <- .filt[.filt$filter == max(.filt$filter), ]
+      .filt <- .filt[.filt$filter == max(.filt$filter) & .filt$sec.x ==  min(.filt$sec.x), ]
 
       if(nrow(.filt) > 1)
         .filt <- .filt[.filt$partial.occlusion > 0, ]
@@ -681,7 +691,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
       if(nrow(.filt) > 1)
         .filt <- .filt[1, ]
 
-      .tree <- .tree[.tree$tree != .filteraux$tree[.filteraux$dist < 0], ]
+      .tree <- .tree[.tree$tree != .filteraux$tree[.filteraux$dist < 0.05], ]
 
       .tree.2 <- rbind(.tree.2, .filt)
 

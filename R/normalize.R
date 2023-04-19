@@ -273,8 +273,6 @@ normalize <- function(las, normalized = NULL,
   # This is based on the principle that closer objects (with the same size and shape)
   # have more probability to recieve points
 
-  set.seed(12345)
-
   if(scan.approach == "single"){
 
     .data$prob <- (.data$r / max(.data$r)) ^ 2
@@ -285,6 +283,12 @@ normalize <- function(las, normalized = NULL,
 
     .data$prob <- stats::runif(nrow(.data))
     .data$prob.selec <- as.integer(ifelse(.data$prob > 0.5, 1, 0))}
+
+
+  # Assign Cartesian (x,y) coordinates
+
+  .data$x <- .data$x + x.center
+  .data$y <- .data$y + y.center
 
   # Assign id
 
