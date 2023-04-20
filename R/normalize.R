@@ -65,8 +65,6 @@ normalize <- function(las, normalized = NULL,
 
   }
 
-  .las@data$X <- .las@data$X - x.center
-  .las@data$Y <- .las@data$Y - y.center
 
   # Giving the same scale factor to all coordinates
 
@@ -82,13 +80,13 @@ normalize <- function(las, normalized = NULL,
 
       if(!is.null(max.dist)){
 
-      .data <- lidR::clip_circle(.las, 0, 0, max.dist)
+      .data <- lidR::clip_circle(.las, x.center, y.center, max.dist)
       .data <- data.frame(.data@data)}
 
       else if (!is.null(x.side) | !is.null(y.side)){
 
-      .data <- lidR::clip_rectangle(.las, 0 - (x.side / 2), 0 - (y.side / 2),
-                                          0 + (x.side / 2), 0 + (y.side / 2))
+      .data <- lidR::clip_rectangle(.las, x.center - (x.side / 2), y.center - (y.side / 2),
+                                    x.center + (x.side / 2), y.center + (y.side / 2))
       .data <- data.frame(.data@data)
 
       } else {
@@ -178,12 +176,12 @@ normalize <- function(las, normalized = NULL,
 
   if(!is.null(max.dist)){
 
-    .data <- lidR::clip_circle(.data, 0, 0, max.dist)
+    .data <- lidR::clip_circle(.data, x.center, y.center, max.dist)
 
     } else if (!is.null(x.side) | !is.null(y.side)){
 
-    .data <- lidR::clip_rectangle(.data, 0 - (x.side / 2), 0 - (y.side / 2),
-                                  0 + (x.side / 2), 0 + (y.side / 2))
+    .data <- lidR::clip_rectangle(.data, x.center - (x.side / 2), y.center - (y.side / 2),
+                                  x.center + (x.side / 2), y.center + (y.side / 2))
 
   }
 
@@ -249,8 +247,8 @@ normalize <- function(las, normalized = NULL,
   # rho, axial distance or radial distance (euclidean distance from the z-axis to the point P)
   # phi, azimuth is the angle between the reference direction on the chosen plane and the line from the origin to the projection of P on the plane
   # z, axial coordinate or height z is the signed distance from the chosen plane to the point P
-  .data$rho <- sqrt(.data$x ^ 2 + .data$y ^ 2)
-  .data$phi <- atan2(.data$y, .data$x)
+  .data$rho <- sqrt((.data$x - x.center) ^ 2 + (.data$y - y.center) ^ 2)
+  .data$phi <- atan2(.data$y - y.center, .data$x - x.center)
   .data$phi <- ifelse(.data$phi < 0, .data$phi + (2 * pi), .data$phi)
 
   # Spherical coordinates system (https://en.wikipedia.org/wiki/Spherical_coordinate_system)
@@ -284,11 +282,6 @@ normalize <- function(las, normalized = NULL,
     .data$prob <- stats::runif(nrow(.data))
     .data$prob.selec <- as.integer(ifelse(.data$prob > 0.5, 1, 0))}
 
-
-  # Assign Cartesian (x,y) coordinates
-
-  .data$x <- .data$x + x.center
-  .data$y <- .data$y + y.center
 
   # Assign id
 
