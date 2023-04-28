@@ -283,7 +283,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
                   c("center.x", "center.y", "center.rho", "center.phi", "radius", "sec")]}
 
     .dbscan <- dbscan::dbscan(eje[, c("center.x", "center.y"), drop = FALSE],
-                              eps = mean(eje$radius[eje$sec == kk[, 1]]), minPts = 1)
+                              eps = mean(eje$radius[eje$sec == kk[, 1]], na.rm = TRUE), minPts = 1)
     eje$tree <- .dbscan$cluster
     eje <- eje[, c("tree", "sec", "center.x", "center.y", "center.rho", "center.phi")]
     colnames(eje) <- c("tree", "sec", "x", "y", "rho", "phi")
