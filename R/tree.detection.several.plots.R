@@ -4,7 +4,7 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
                                          scan.approach = "single",
 
                                          pcd.red = NULL, normalized = NULL,
-                                         x.center = NULL, y.center = NULL,
+                                         center.coord = NULL,
                                          x.side = NULL, y.side = NULL,
                                          max.dist = NULL, min.height = NULL, max.height = 50,
                                          algorithm.dtm = "knnidw", res.dtm = 0.2, csf = list(cloth_resolution = 0.5),
@@ -30,15 +30,31 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
 
     # Assign id
 
-    if(!is.null(id)){
+    if(!is.null(id.list)){
 
-      .id <- id[i]
+      .id <- id.list[i]
 
     } else {
 
       .id <- as.integer(i)
 
     }
+
+    # Assign coordinates
+
+    if(!is.null(center.coord)){
+
+      x.center <- center.coord$x[i]
+      y.center <- center.coord$y[i]
+
+    } else {
+
+      x.center = NULL
+      y.center = NULL
+
+    }
+
+
 
     # Messages
 
