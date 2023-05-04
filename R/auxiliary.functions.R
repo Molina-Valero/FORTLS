@@ -850,7 +850,7 @@ if(nrow(.filter) < 1){
 
 
 
-.volume <- function(data, d.top = NULL){
+.volume <- function(data, d.top = NULL, id){
 
   datos <- data.frame(tree = as.numeric(),
                       x = as.numeric(), y = as.numeric(),
@@ -916,8 +916,10 @@ if(nrow(.filter) < 1){
   datos$sep <- abs(datos$dhi - datos$dhi.mean)
   datos <- datos[datos$sep < stats::quantile(datos$sep, prob = 0.9, na.rm = T), ]
 
-  utils::write.csv(datos[, c("tree", "x", "y", "hi", "dhi", "h", "dbh")],
-                   "stem.curve.csv",
+  datos$id <- id
+
+  utils::write.csv(datos[, c("id", "tree", "x", "y", "hi", "dhi", "h", "dbh")],
+                   paste("stem.curve.", id, ".csv", sep = ""),
                    row.names = FALSE)
 
   if(nrow(datos) < 3){

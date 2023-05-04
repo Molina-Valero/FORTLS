@@ -851,12 +851,12 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   # Stem curve
 
-  stem.v <- .volume(.stem)
+  stem.v <- .volume(.stem, id = data$id[1])
   .tree <- merge(.tree, stem.v, all = TRUE)
 
   } else if (length(table(.stem$hi)) > 3 & !is.null(d.top)) {
 
-  stem.v <- .volume(.stem, d.top)
+  stem.v <- .volume(.stem, d.top, id = data$id[1])
   .tree <- merge(.tree, stem.v, all = TRUE)
 
   } else if (length(table(.stem$hi)) <= 3 & !is.null(d.top)) {
