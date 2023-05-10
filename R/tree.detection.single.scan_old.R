@@ -1,5 +1,5 @@
 
-tree.detection.single.scan_old <- function(data, single.tree = NULL,
+tree.detection.single.scan <- function(data, single.tree = NULL,
                                        dbh.min = 4, dbh.max = 200, h.min = 1.3,
                                        ncr.threshold = 0.1, tls.resolution = list(),
                                        stem.section = NULL, breaks = NULL,
@@ -680,7 +680,6 @@ tree.detection.single.scan_old <- function(data, single.tree = NULL,
 
     for (i in unique(.tree$tree)) {
 
-
       if(nrow(.tree[.tree$tree == i, ]) < 1)
         next
 
@@ -688,19 +687,12 @@ tree.detection.single.scan_old <- function(data, single.tree = NULL,
       .filteraux <- .tree[.tree$tree != i, ]
 
       .filteraux$dist <- sqrt((.filteraux$x - .filt$x) ^ 2 + (.filteraux$y - .filt$y) ^ 2) - .filteraux$radius - .filt$radius
-      .filteraux$rho.dist <- abs(.filteraux$rho - .filt$rho) - .filteraux$radius - .filt$radius
-      .filteraux$phi.dist <- abs(.filteraux$phi - .filt$phi)
 
-      if(min(.filteraux$dist) < mean(.tree$radius) |
-         .filteraux$rho.dist[.filteraux$dist == min(.filteraux$dist)] < mean(.tree$radius) &
-         .filteraux$phi.dist[.filteraux$dist == min(.filteraux$dist)] < 0.1){
+      if(min(.filteraux$dist) < 0.05){
 
-        .filteraux <- .filteraux[.filteraux$dist < mean(.tree$radius) | .filteraux$rho.dist < mean(.tree$radius) & .filteraux$phi.dist < 0.1, ]
-
-        .filteraux <- rbind(.filt, .filteraux[ , 1:(ncol(.filteraux)-3)])
-
-        .filt <- .filteraux[.filteraux$filter == max(.filteraux$filter) & .filteraux$sec.max ==  min(.filteraux$sec.max), ]
-
+        .filteraux <- .filteraux[.filteraux$dist < 0.05, ]
+        .filt <- rbind(.filt, .filteraux[ , -ncol(.filteraux)])
+        .filt <- .filt[.filt$filter == max(.filt$filter) & .filt$sec.max ==  min(.filt$sec.max), ]
 
         if(nrow(.filt) > 1)
           .filt <- .filt[.filt$partial.occlusion > 0, ]
@@ -709,13 +701,7 @@ tree.detection.single.scan_old <- function(data, single.tree = NULL,
         if(nrow(.filt) > 1)
           .filt <- .filt[1, ]
 
-        .tree.remove <- .filteraux[.filteraux$tree != .filt$tree, ]$tree
-
-
-        if(length(.tree.remove) < 1){.tree <- .tree} else {
-          suppressWarnings(.tree <- .tree[.tree$tree != .tree.remove, ])
-        }
-
+        .tree <- .tree[.tree$tree != .filteraux$tree[.filteraux$dist < 0.05], ]
 
         .tree.2 <- rbind(.tree.2, .filt)
 
@@ -723,7 +709,6 @@ tree.detection.single.scan_old <- function(data, single.tree = NULL,
       } else {
 
         .tree.2 <- rbind(.tree.2, .filt)
-        .tree <- .tree[.tree$tree != .filt$tree, ]
 
       }
 
