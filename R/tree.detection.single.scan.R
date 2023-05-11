@@ -255,7 +255,7 @@ tree.detection.single.scan_old <- function(data, single.tree = NULL,
 
     }
 
-     <-  <- data.frame(matrix(nrow = 0, ncol = length(.colnames), dimnames = list(NULL, .colnames)))
+    .tree <- data.frame(matrix(nrow = 0, ncol = length(.colnames), dimnames = list(NULL, .colnames)))
 
   }
 
