@@ -694,11 +694,11 @@ tree.detection.single.scan_old <- function(data, single.tree = NULL,
         .filteraux$rho.dist <- abs(.filteraux$rho - .filt$rho) - .filteraux$radius - .filt$radius
         .filteraux$phi.dist <- abs(.filteraux$phi - .filt$phi)
 
-        if(min(.filteraux$dist) < 0 |
+        if(min(.filteraux$dist) < mean(.tree$radius) |
            .filteraux$rho.dist[.filteraux$dist == min(.filteraux$dist)] < mean(.tree$radius) &
            .filteraux$phi.dist[.filteraux$dist == min(.filteraux$dist)] < 0.1){
 
-          .filteraux <- .filteraux[.filteraux$dist < 0 | .filteraux$rho.dist < mean(.tree$radius) & .filteraux$phi.dist < 0.1, ]
+          .filteraux <- .filteraux[.filteraux$dist < mean(.tree$radius) | .filteraux$rho.dist < mean(.tree$radius) & .filteraux$phi.dist < 0.1, ]
 
           .filteraux <- rbind(.filt, .filteraux[ , 1:(ncol(.filteraux)-3)])
 
