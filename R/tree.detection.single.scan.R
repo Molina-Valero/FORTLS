@@ -118,7 +118,8 @@ tree.detection.single.scan_old <- function(data, single.tree = NULL,
 
 
   buf <- sp::SpatialPoints(cbind(stem$x,stem$y))
-  buf <- suppressWarnings(raster::buffer(buf, width = 37500, dissolve = TRUE))
+  raster::crs(buf) <- "+proj=utm +zone=19 +ellps=GRS80 +datum=NAD83"
+  buf <- suppressWarnings(raster::buffer(buf, width = .dbh.min, dissolve = TRUE))
   buf <- buf@polygons[[1]]@Polygons
   buf <- lapply(seq_along(buf), function(i) sp::Polygons(list(buf[[i]]), ID = i))
   buf <- sp::SpatialPolygons(buf)
@@ -657,84 +658,86 @@ tree.detection.single.scan_old <- function(data, single.tree = NULL,
 
     # Detecting possible trees overlaped
 
-    if(nrow(.tree) < 2 & !is.null(single.tree)){
-
-      .tree.2 <- .tree
-
-    } else {
-
-    .tree.2 <- data.frame(tree = as.numeric(), filter = as.numeric(),
-
-                          x = as.numeric(), y = as.numeric(),
-
-                          sec.x = as.numeric(), sec.y = as.numeric(), sec.max = as.numeric(),
-
-                          phi = as.numeric(), rho = as.numeric(), r = as.numeric(), theta = as.numeric(),
-
-                          horizontal.distance = as.numeric(), radius = as.numeric(),
-
-                          partial.occlusion = as.numeric(),
-
-                          n.pts = as.numeric(), n.pts.red = as.numeric())
+    if(nrow(.tree) < 2 & !is.null(single.tree)){.tree.2 <- .tree}
 
 
-    for (i in unique(.tree$tree)) {
+    if(nrow(.tree) > 1 & is.null(single.tree)){
+
+      .tree.2 <- data.frame(tree = as.numeric(), filter = as.numeric(),
+
+                            x = as.numeric(), y = as.numeric(),
+
+                            sec.x = as.numeric(), sec.y = as.numeric(), sec.max = as.numeric(),
+
+                            phi = as.numeric(), rho = as.numeric(), r = as.numeric(), theta = as.numeric(),
+
+                            horizontal.distance = as.numeric(), radius = as.numeric(),
+
+                            partial.occlusion = as.numeric(),
+
+                            n.pts = as.numeric(), n.pts.red = as.numeric())
 
 
-      if(nrow(.tree[.tree$tree == i, ]) < 1)
-        next
-
-      .filt <- .tree[.tree$tree == i, ]
-      .filteraux <- .tree[.tree$tree != i, ]
-
-      .filteraux$dist <- sqrt((.filteraux$x - .filt$x) ^ 2 + (.filteraux$y - .filt$y) ^ 2) - .filteraux$radius - .filt$radius
-      .filteraux$rho.dist <- abs(.filteraux$rho - .filt$rho) - .filteraux$radius - .filt$radius
-      .filteraux$phi.dist <- abs(.filteraux$phi - .filt$phi)
-
-      if(min(.filteraux$dist) < mean(.tree$radius) |
-         .filteraux$rho.dist[.filteraux$dist == min(.filteraux$dist)] < mean(.tree$radius) &
-         .filteraux$phi.dist[.filteraux$dist == min(.filteraux$dist)] < 0.1){
-
-        .filteraux <- .filteraux[.filteraux$dist < mean(.tree$radius) | .filteraux$rho.dist < mean(.tree$radius) & .filteraux$phi.dist < 0.1, ]
-
-        .filteraux <- rbind(.filt, .filteraux[ , 1:(ncol(.filteraux)-3)])
-
-        .filt <- .filteraux[.filteraux$filter == max(.filteraux$filter) & .filteraux$sec.max ==  min(.filteraux$sec.max), ]
+      for (i in unique(.tree$tree)) {
 
 
-        if(nrow(.filt) > 1)
-          .filt <- .filt[.filt$partial.occlusion > 0, ]
+        if(nrow(.tree[.tree$tree == i, ]) < 1)
+          next
+
+        .filt <- .tree[.tree$tree == i, ]
+        .filteraux <- .tree[.tree$tree != i, ]
+
+        if(nrow(.filteraux) < 1)
+          next
+
+        .filteraux$dist <- sqrt((.filteraux$x - .filt$x) ^ 2 + (.filteraux$y - .filt$y) ^ 2) - .filteraux$radius - .filt$radius
+        .filteraux$rho.dist <- abs(.filteraux$rho - .filt$rho) - .filteraux$radius - .filt$radius
+        .filteraux$phi.dist <- abs(.filteraux$phi - .filt$phi)
+
+        if(min(.filteraux$dist) < 0 |
+           .filteraux$rho.dist[.filteraux$dist == min(.filteraux$dist)] < mean(.tree$radius) &
+           .filteraux$phi.dist[.filteraux$dist == min(.filteraux$dist)] < 0.1){
+
+          .filteraux <- .filteraux[.filteraux$dist < 0 | .filteraux$rho.dist < mean(.tree$radius) & .filteraux$phi.dist < 0.1, ]
+
+          .filteraux <- rbind(.filt, .filteraux[ , 1:(ncol(.filteraux)-3)])
+
+          .filt <- .filteraux[.filteraux$filter == max(.filteraux$filter) & .filteraux$sec.max ==  min(.filteraux$sec.max), ]
 
 
-        if(nrow(.filt) > 1)
-          .filt <- .filt[1, ]
-
-        .tree.remove <- .filteraux[.filteraux$tree != .filt$tree, ]$tree
+          if(nrow(.filt) > 1)
+            .filt <- .filt[.filt$partial.occlusion > 0, ]
 
 
-        if(length(.tree.remove) < 1){.tree <- .tree} else {
-          suppressWarnings(.tree <- .tree[.tree$tree != .tree.remove, ])
+          if(nrow(.filt) > 1)
+            .filt <- .filt[1, ]
+
+          .tree.remove <- .filteraux[.filteraux$tree != .filt$tree, ]$tree
+
+
+          if(length(.tree.remove) < 1){.tree <- .tree} else {
+            suppressWarnings(.tree <- .tree[.tree$tree != .tree.remove, ])
+          }
+
+
+          .tree.2 <- rbind(.tree.2, .filt)
+
+
+        } else {
+
+          .tree.2 <- rbind(.tree.2, .filt)
+          .tree <- .tree[.tree$tree != .filt$tree, ]
+
         }
-
-
-        .tree.2 <- rbind(.tree.2, .filt)
-
-
-      } else {
-
-        .tree.2 <- rbind(.tree.2, .filt)
-        .tree <- .tree[.tree$tree != .filt$tree, ]
 
       }
 
     }
 
-    }
-
     .tree <- .tree.2
-
     rm(.tree.2)
 
+    .tree <- .tree[order(.tree$rho), ]
     .tree$tree <- 1:nrow(.tree)
 
     # Indicate trees with partial occlusions, those for which none of the sections
@@ -898,6 +901,8 @@ tree.detection.single.scan_old <- function(data, single.tree = NULL,
       .stem$id <- data$id[1]
       .stem <- .stem[, c("id", "tree", "x", "y", "dhi", "dbh", "hi", "h")]}
 
+    rm(.stem)
+
 
     # utils::write.csv(.stem,
     #                  file = file.path(dir.result, "tree.tls.stem.csv"),
@@ -938,12 +943,10 @@ tree.detection.single.scan_old <- function(data, single.tree = NULL,
 
     }
 
-
-    rm(.stem)
-
-
   }
 
+  .tree <- .tree[order(.tree$rho), ]
+  .tree$tree <- 1:nrow(.tree)
 
   # Removing values of 0 in n.pts
   .tree$n.pts <- ifelse(.tree$n.pts < 1, 0.01, .tree$n.pts)

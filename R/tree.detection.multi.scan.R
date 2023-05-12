@@ -90,18 +90,22 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   # Filtering pixels - double branch peeling
 
   stem <- stem[stem$npts > mean(stem$npts) & stem$ratio > mean(stem$ratio) & stem$nvox > mean(stem$nvox), ]
+  plot(stem$x, stem$y, asp = 1, col = "grey")
 
   if(!is.null(understory)){
   stem <- stem[stem$npts > mean(stem$npts) & stem$ratio > mean(stem$ratio) & stem$nvox > mean(stem$nvox), ]}
+  points(stem$x, stem$y)
 
   # Creation polygon to extract those projected areas in the original point cloud
   # where trees are probably located
 
   buf <- sp::SpatialPoints(cbind(stem$x,stem$y))
-  buf <- suppressWarnings(raster::buffer(buf, width = 37500, dissolve = TRUE))
+  raster::crs(buf) <- "+proj=utm +zone=19 +ellps=GRS80 +datum=NAD83 +unit=m"
+  buf <- suppressWarnings(raster::buffer(buf, width = 0.5, dissolve = TRUE))
   buf <- buf@polygons[[1]]@Polygons
   buf <- lapply(seq_along(buf), function(i) sp::Polygons(list(buf[[i]]), ID = i))
   buf <- sp::SpatialPolygons(buf)
+  raster::plot(buf)
 
   # Detection of stem part without shrub vegetation and crown
 
@@ -112,6 +116,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   stem$tree <- sp::over(sp::SpatialPoints(coords = cbind(stem$x,stem$y,stem$z)), buf, returnlist=TRUE)
   stem <- stem[!is.na(stem$tree), ]
+  # points(stem$x, stem$y, col = "red")
 
   # Filtering stems axis
 
@@ -315,9 +320,9 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   eje$sec <- as.character(eje$sec)
 
-  eje$phi <- atan2(eje$y, eje$x)
+  eje$phi <- atan2(eje$y - y.center, eje$x - x.center)
   eje$phi <- ifelse(eje$phi < 0, eje$phi + (2 * pi), eje$phi)
-  eje$rho <- sqrt(eje$x ^ 2 + eje$y ^ 2)
+  eje$rho <- sqrt((eje$x - x.center) ^ 2 + (eje$y - y.center) ^ 2)
 
   .filter$cluster <- 1:nrow(.filter)
   .filter$sec <- as.character(.filter$sec)
@@ -647,11 +652,10 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   # Detecting possible trees overlaped
 
-  if(nrow(.tree) < 2 & !is.null(single.tree)){
+  if(nrow(.tree) < 2 & !is.null(single.tree)){.tree.2 <- .tree}
 
-    .tree.2 <- .tree
 
-  } else {
+  if(nrow(.tree) > 1 & is.null(single.tree)){
 
   .tree.2 <- data.frame(tree = as.numeric(), filter = as.numeric(),
 
@@ -677,15 +681,18 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     .filt <- .tree[.tree$tree == i, ]
     .filteraux <- .tree[.tree$tree != i, ]
 
+    if(nrow(.filteraux) < 1)
+      next
+
     .filteraux$dist <- sqrt((.filteraux$x - .filt$x) ^ 2 + (.filteraux$y - .filt$y) ^ 2) - .filteraux$radius - .filt$radius
     .filteraux$rho.dist <- abs(.filteraux$rho - .filt$rho) - .filteraux$radius - .filt$radius
     .filteraux$phi.dist <- abs(.filteraux$phi - .filt$phi)
 
-    if(min(.filteraux$dist) < mean(.tree$radius) |
+    if(min(.filteraux$dist) < 0 |
        .filteraux$rho.dist[.filteraux$dist == min(.filteraux$dist)] < mean(.tree$radius) &
        .filteraux$phi.dist[.filteraux$dist == min(.filteraux$dist)] < 0.1){
 
-      .filteraux <- .filteraux[.filteraux$dist < mean(.tree$radius) | .filteraux$rho.dist < mean(.tree$radius) & .filteraux$phi.dist < 0.1, ]
+      .filteraux <- .filteraux[.filteraux$dist < 0 | .filteraux$rho.dist < mean(.tree$radius) & .filteraux$phi.dist < 0.1, ]
 
       .filteraux <- rbind(.filt, .filteraux[ , 1:(ncol(.filteraux)-3)])
 
@@ -722,9 +729,10 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   }
 
   .tree <- .tree.2
-
   rm(.tree.2)
 
+
+  .tree <- .tree[order(.tree$rho), ]
   .tree$tree <- 1:nrow(.tree)
 
 
@@ -903,6 +911,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     .stem$id <- data$id[1]
     .stem <- .stem[, c("id", "tree", "x", "y", "dhi", "dbh", "hi", "h")]}
 
+  rm(.stem)
 
   # utils::write.csv(.stem,
   #                  file = file.path(dir.result, "tree.tls.stem.csv"),
@@ -942,12 +951,11 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     .tree <- .tree[, c("id", "file", "tree", "x", "y", "phi", "horizontal.distance", "dbh", "h", "h.com", "v", "v.com", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion"), drop = FALSE]
     colnames(.tree) <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "h.com", "v", "v.com", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
-  }
-
-  rm(.stem)
+    }
 
   }
 
+  .tree <- .tree[order(.tree$rho), ]
   .tree$tree <- 1:nrow(.tree)
 
   # Removing values of 0 in n.pts
