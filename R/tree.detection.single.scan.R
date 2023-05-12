@@ -945,7 +945,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   }
 
-  .tree <- .tree[order(.tree$rho), ]
+  .tree <- .tree[order(.tree$h.dist), ]
   .tree$tree <- 1:nrow(.tree)
 
   # Removing values of 0 in n.pts
