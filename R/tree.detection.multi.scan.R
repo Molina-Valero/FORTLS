@@ -90,11 +90,9 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   # Filtering pixels - double branch peeling
 
   stem <- stem[stem$npts > mean(stem$npts) & stem$ratio > mean(stem$ratio) & stem$nvox > mean(stem$nvox), ]
-  plot(stem$x, stem$y, asp = 1, col = "grey")
 
   if(!is.null(understory)){
   stem <- stem[stem$npts > mean(stem$npts) & stem$ratio > mean(stem$ratio) & stem$nvox > mean(stem$nvox), ]}
-  points(stem$x, stem$y)
 
   # Creation polygon to extract those projected areas in the original point cloud
   # where trees are probably located
@@ -105,7 +103,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   buf <- buf@polygons[[1]]@Polygons
   buf <- lapply(seq_along(buf), function(i) sp::Polygons(list(buf[[i]]), ID = i))
   buf <- sp::SpatialPolygons(buf)
-  raster::plot(buf)
 
   # Detection of stem part without shrub vegetation and crown
 

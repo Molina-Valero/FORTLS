@@ -1,5 +1,5 @@
 
-tree.detection.single.scan_old <- function(data, single.tree = NULL,
+tree.detection.single.scan <- function(data, single.tree = NULL,
                                        dbh.min = 4, dbh.max = 200, h.min = 1.3,
                                        ncr.threshold = 0.1, tls.resolution = list(),
                                        stem.section = NULL, breaks = NULL,
