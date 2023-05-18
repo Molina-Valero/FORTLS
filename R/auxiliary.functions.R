@@ -494,8 +494,6 @@
                         occlusion = as.numeric())
 
 
-  par(mfrow=c(2,2))
-
   .dat <- cut
   # .dat <- .cut[.cut$cluster == 12, ]
 
@@ -590,7 +588,7 @@
 
   if(nrow(.dat) < 10){return(.filter)}
 
-  points(.dat$x, .dat$y, asp = 1, main = .dat$cluster[1])
+  points(.dat$x, .dat$y, asp = 1, col = "red")
 
 
   # Estimate points number for both the original cloud (.n.pts) and the
@@ -722,8 +720,7 @@
   .center.theta <- atan2(.dat$sec[1], .center.rho)
 
   points(.center.x, .center.y, col = "green", pch = 19, cex = 2)
-  arrows(x0=.center.x, y0=.center.y, x0=.center.x+.radio, y0=.center.y+.radio,
-         col = "green")
+  arrows(.center.x, .center.y, .center.x+.radio, col = "green")
 
   if(.cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2){return(.filter)}
 
