@@ -494,13 +494,15 @@
                         occlusion = as.numeric())
 
 
+  par(mfrow=c(2,2))
+
   .dat <- cut
   # .dat <- .cut[.cut$cluster == 12, ]
 
   if(nrow(.dat) < 25){return(.filter)}
 
   # cod <- paste(sample(1:1000, 1), sample(1:1000, 1), "csv", sep = ".")
-  # plot(.dat$x, .dat$y, asp = 1, main = cod)
+  plot(.dat$x, .dat$y, asp = 1, main = .dat$cluster[1])
   # write.csv(.dat, cod, row.names = FALSE)
 
 
@@ -588,7 +590,7 @@
 
   if(nrow(.dat) < 10){return(.filter)}
 
-  # plot(.dat$x, .dat$y, asp = 1, main = i)
+  points(.dat$x, .dat$y, asp = 1, main = .dat$cluster[1])
 
 
   # Estimate points number for both the original cloud (.n.pts) and the
@@ -718,6 +720,10 @@
   .center.rho <- sqrt((.center.x-x.center) ^ 2 + (.center.y-y.center) ^ 2)
   .center.r <- sqrt(.dat$sec[1] ^ 2 + .center.rho ^ 2)
   .center.theta <- atan2(.dat$sec[1], .center.rho)
+
+  points(.center.x, .center.y, col = "green", pch = 19, cex = 2)
+  arrows(x0=.center.x, y0=.center.y, x0=.center.x+.radio, y0=.center.y+.radio,
+         col = "green")
 
   if(.cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2){return(.filter)}
 
