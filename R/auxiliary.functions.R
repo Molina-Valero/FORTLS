@@ -921,9 +921,9 @@ if(nrow(.filter) < 1){
 
   datos$id <- id
 
-  utils::write.csv(datos[, c("id", "tree", "x", "y", "hi", "dhi", "h", "dbh")],
-                   paste("stem.curve.", id, ".csv", sep = ""),
-                   row.names = FALSE)
+  # utils::write.csv(datos[, c("id", "tree", "x", "y", "hi", "dhi", "h", "dbh")],
+  #                  paste("stem.curve.", id, ".csv", sep = ""),
+  #                  row.names = FALSE)
 
   if(nrow(datos) < 3){
 
@@ -1068,10 +1068,10 @@ if(nrow(.filter) < 1){
 
   # plot(data$z, data$rho, asp = 1)
   # plot(data$z, data$phi, asp = 1)
-  # plot(data$z, data$x, asp = 1, xlab = "Z (m)", ylab = "X (m)", main = data$tree[1])
-  # abline(mod.x, col = 2, lwd = 3)
-  # plot(data$z, data$y, asp = 1, xlab = "Z (m)", ylab = "Y (m)", main = eje$n.w.ratio[1])
-  # abline(mod.y, col = 2, lwd = 3)
+  plot(data$z, data$x, asp = 1, xlab = "Z (m)", ylab = "X (m)", main = data$tree[1])
+  abline(mod.x, col = 2, lwd = 3)
+  plot(data$z, data$y, asp = 1, xlab = "Z (m)", ylab = "Y (m)", main = eje$n.w.ratio[1])
+  abline(mod.y, col = 2, lwd = 3)
   }
 
   return(eje)
