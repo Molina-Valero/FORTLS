@@ -160,9 +160,9 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   stem.2 <- stem.2[!is.na(stem.2$tree), ]
   stem.2 <- stem.2[stem.2$tree %in% retained$tree, ]
 
-  filter <- data.frame(table(stem.2$tree))
-  filter <- filter[filter$Freq > stats::quantile(filter$Freq, prob = 0.75, na.rm = TRUE), ]
-  stem.2 <- stem.2[stem.2$tree %in% filter$Var1, ]
+  # filter <- data.frame(table(stem.2$tree))
+  # filter <- filter[filter$Freq > stats::quantile(filter$Freq, prob = 0.75, na.rm = TRUE), ]
+  # stem.2 <- stem.2[stem.2$tree %in% filter$Var1, ]
 
   rm(buf.2, retained)
 
@@ -460,7 +460,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     }
 
 
-  .filter <- .stem.assignment.multi.scan(.filter, eje, stem.section, x.center, y.center, single.tree)
+  if(length(breaks) > 1){
+  .filter <- .stem.assignment.multi.scan(.filter, eje, stem.section, x.center, y.center, single.tree)}
 
 
   if(nrow(.filter) < 1) stop("No tree was detected")
@@ -471,9 +472,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   # Export all section detected
 
   .filter <- .filter[order(.filter$tree, .filter$sec), , drop = FALSE]
-  # .filteraux <- .sections.filter(.filter)
-  # .filter <- merge(.filter, .filteraux, by = c("tree", "sec"))
-
   .stem <- .filter[, c("tree", "sec", "center.x",  "center.y", "radius")]
   .stem$radius <- .stem$radius * 200
   colnames(.stem) <- c("tree", "sec", "x",  "y", "dbh")
@@ -651,7 +649,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
 
   if(length(breaks) > 3)
-    .tree <- .tree[.tree$filter >  stats::quantile(.tree$filter, prob = 0.1, na.rm = TRUE), ]
+    .tree <- .tree[.tree$filter >  1, ]
 
   # Ordering by distance and numbering trees from 1 to n trees
 
