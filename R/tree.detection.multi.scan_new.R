@@ -460,12 +460,10 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     }
 
 
-  if(length(breaks) > 1){
-  .filter <- .stem.assignment.multi.scan(.filter, eje, stem.section, x.center, y.center, single.tree)}
+  .filter <- .stem.assignment.multi.scan(.filter, eje, stem.section, x.center, y.center, single.tree)
 
 
   if(nrow(.filter) < 1) stop("No tree was detected")
-
 
 
 
@@ -643,6 +641,11 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                       n.pts.red = tapply(.filteraux$n.pts.red, .filteraux$tree, mean, na.rm = TRUE))
 
   rm(.filteraux)
+
+
+  # Cheking minimum and maximum radius defined in the arguments
+
+  .tree <- .tree[.tree$radius >= .dbh.min / 2 & .tree$radius <= .dbh.max / 2, ]
 
 
   # Selecting only those trees with more than one section detected when more than two breaks have been specified
