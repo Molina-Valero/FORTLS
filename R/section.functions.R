@@ -185,11 +185,11 @@
 
     .filt <- filteraux[filteraux$tree == i, ]
 
-    plot(.filt$radius~.filt$sec)
+    # plot(.filt$radius~.filt$sec)
 
     .filt <- .filt[.filt$dist < mean(.filt$dist, na.rm = TRUE) + mean(.filt$radius, na.rm = TRUE), ]
 
-    points(.filt$radius~.filt$sec, pch = 19)
+    # points(.filt$radius~.filt$sec, pch = 19)
 
 
     if(nrow(.filt) < 1){next}
@@ -235,13 +235,13 @@
 
     }
 
-    points(.filt$radius~.filt$sec, pch = 19, col = "red")
+    # points(.filt$radius~.filt$sec, pch = 19, col = "red")
 
     .filt <- .filt[, -ncol(.filt)]
     filter <- rbind(filter, .filt)
 
     NW.h20 <- ksmooth(x=.filt$sec, y=.filt$radius, kernel="normal", bandwidth=2)
-    lines(NW.h20, lwd=2)
+    # lines(NW.h20, lwd=2)
 
   }
 
@@ -377,11 +377,11 @@
 
     .filt <- filteraux[filteraux$tree == i, ]
 
-    plot(.filt$radius~.filt$sec)
+    # plot(.filt$radius~.filt$sec)
 
     .filt <- .filt[.filt$dist < mean(.filt$dist, na.rm = TRUE) + mean(.filt$radius, na.rm = TRUE), ]
 
-    points(.filt$radius~.filt$sec, pch = 19)
+    # points(.filt$radius~.filt$sec, pch = 19)
 
 
     if(nrow(.filt) < 1){next}
@@ -427,13 +427,13 @@
 
     }
 
-    points(.filt$radius~.filt$sec, pch = 19, col = "red")
+    # points(.filt$radius~.filt$sec, pch = 19, col = "red")
 
     .filt <- .filt[, -ncol(.filt)]
     filter <- rbind(filter, .filt)
 
     NW.h20 <- ksmooth(x=.filt$sec, y=.filt$radius, kernel="normal", bandwidth=2)
-    lines(NW.h20, lwd=2)
+    # lines(NW.h20, lwd=2)
 
   }
 

@@ -109,7 +109,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   stem <- stem[, c("x", "y", "z", "npts")]
 
   stem <- VoxR::project_voxels(stem)
-  plot(stem$x, stem$y, asp = 1, col = "grey")
+  # plot(stem$x, stem$y, asp = 1, col = "grey")
 
 
   # Filtering pixels - double branch peeling
@@ -117,7 +117,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   stem.2 <- NULL
 
   stem <- stem[stem$npts > mean(stem$npts) & stem$ratio > mean(stem$ratio) & stem$nvox > mean(stem$nvox), ]
-  points(stem$x, stem$y, col = "green")
+  # points(stem$x, stem$y, col = "green")
 
 
   if(!is.null(understory)){
@@ -127,7 +127,9 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     stem <- stem[stem$npts > mean(stem$npts) & stem$ratio > mean(stem$ratio) & stem$nvox > mean(stem$nvox), ]
 
-    points(stem$x, stem$y, col = "red")}
+    # points(stem$x, stem$y, col = "red")
+
+    }
 
 
 
@@ -180,7 +182,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     rm(buf.2, retained)
 
-    points(stem.2$x, stem.2$y, col = "blue")
+    # points(stem.2$x, stem.2$y, col = "blue")
 
   }
 
