@@ -329,7 +329,7 @@
 
     if(is.na(.cv)){return(.filter)}
 
-    if(2 * .cv >= .cvRANSAC){
+    if(3 * .cv >= .cvRANSAC){
 
       .radio <- .radioRANSAC
       .cv <- .cvRANSAC
@@ -700,7 +700,7 @@
 
     if(is.na(.cv)){return(.filter)}
 
-    if(2 * .cv >= .cvRANSAC){
+    if(3 * .cv >= .cvRANSAC){
 
       .radio <- .radioRANSAC
       .cv <- .cvRANSAC
