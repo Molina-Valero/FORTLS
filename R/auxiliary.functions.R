@@ -259,7 +259,7 @@
   .datRANSAC <- .dat[, c("x", "y")]
   colnames(.datRANSAC) <- c("X", "Y")
 
-  .centerRANSAC <- suppressWarnings(try(rTLS::circleRANSAC(data.table::setDT(.datRANSAC), fpoints = 0.2, pconf = 0.95, poutlier = c(0.5, 0.5), max_iterations = 100, plot = FALSE), silent = TRUE))
+  .centerRANSAC <- suppressWarnings(try(rTLS::circleRANSAC(data.table::setDT(.datRANSAC), fpoints = 0.2, pconf = 0.95, poutlier = c(0.75, 0.75), max_iterations = 100, plot = FALSE), silent = TRUE))
 
   if(class(.centerRANSAC)[1] == "try-error"){
 
@@ -329,7 +329,8 @@
 
     if(is.na(.cv)){return(.filter)}
 
-    if(.cv >= .cvRANSAC){
+    if(2 * .cv >= .cvRANSAC){
+
       .radio <- .radioRANSAC
       .cv <- .cvRANSAC
       .dat$dist <- .dat$distRANSAC
