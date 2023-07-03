@@ -438,8 +438,8 @@
   .filter <- .filter[which(.filter$tree == 1), , drop = FALSE]
 
   # Dbh maximum and minimum
-  .filter$tree <- ifelse(.filter$radius > (.dbh.max / 2) | .filter$radius < (.dbh.min / 2), 0, 1)
-  .filter <- subset(.filter, .filter$tree == 1)
+  # .filter$tree <- ifelse(.filter$radius > (.dbh.max / 2) | .filter$radius < (.dbh.min / 2), 0, 1)
+  # .filter <- subset(.filter, .filter$tree == 1)
 
 
   if(nrow(.filter) < 1){
@@ -815,8 +815,8 @@
 .filter <- .filter[which(.filter$tree == 1), , drop = FALSE]
 
 # Dbh maximum and minimum
-.filter$tree <- ifelse(.filter$radius > (.dbh.max / 2) | .filter$radius < (.dbh.min / 2), 0, 1)
-.filter <- subset(.filter, .filter$tree == 1)
+# .filter$tree <- ifelse(.filter$radius > (.dbh.max / 2) | .filter$radius < (.dbh.min / 2), 0, 1)
+# .filter <- subset(.filter, .filter$tree == 1)
 
 
 if(nrow(.filter) < 1){
