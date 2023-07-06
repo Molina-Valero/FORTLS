@@ -61,6 +61,12 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   stem <- woody[woody$prob.selec == 1, ]
 
+  if(!is.null(data$intensity)){
+
+    stem <- stem[stem$intensity > mean(stem$intensity), ]
+
+  }
+
 
   # Defining the vertical section in which trees are detected
 
@@ -85,14 +91,14 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   # Creation of raster with projected voxels
 
   stem <- VoxR::project_voxels(stem)
-  # plot(stem$x, stem$y, asp = 1, col = "grey")
+  plot(stem$x, stem$y, asp = 1, col = "grey")
 
   # Filtering pixels - double branch peeling
 
   stem.2 <- NULL
 
   stem <- stem[stem$npts > mean(stem$npts) & stem$ratio > mean(stem$ratio) & stem$nvox > mean(stem$nvox), ]
-  # points(stem$x, stem$y, col = "green")
+  points(stem$x, stem$y, col = "green")
 
   if(!is.null(understory)){
 
@@ -101,7 +107,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     stem <- stem[stem$npts > mean(stem$npts) & stem$ratio > mean(stem$ratio) & stem$nvox > mean(stem$nvox), ]
 
-    # points(stem$x, stem$y, col = "red")
+    points(stem$x, stem$y, col = "red")
 
     }
 

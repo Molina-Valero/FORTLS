@@ -1,6 +1,5 @@
 
 
-
 .sections.single.scan <- function(cut, .cut, .alpha.v, .alpha.h, .dbh.min, .dbh.max, slice, bark.roughness, x.center, y.center){
 
   .filter <- data.frame(cluster = as.numeric(),
@@ -265,23 +264,23 @@
 
     if(is.null(bark.roughness)){
 
-      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)])
-      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)]) / .radio
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
 
     } else if(bark.roughness == 1){
 
-      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)])
-      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)]) / .radio
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
 
     } else if(bark.roughness == 2){
 
-      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)])
-      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)]) / .radio
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
 
     } else {
 
-      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)])
-      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)]) / .radio
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
 
     }
 
@@ -293,37 +292,37 @@
 
     # Radius value as the mean distance
     if(is.null(bark.roughness)){
-      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)])
-      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)]) / .radio
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
       # .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25, na.rm = T)) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T))])
       .radioRANSAC <- .centerRANSAC$radius
-      .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.05, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
+      .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.05, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.99, na.rm = T)]) / .radioRANSAC
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
 
     } else if(bark.roughness == 1){
-      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)])
-      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)]) / .radio
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
       # .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25, na.rm = T)) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T))])
       .radioRANSAC <- .centerRANSAC$radius
-      .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
+      .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.99, na.rm = T)]) / .radioRANSAC
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
 
     } else if(bark.roughness == 2){
 
-      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)])
-      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)]) / .radio
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
       # .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
       .radioRANSAC <- .centerRANSAC$radius
-      .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
+      .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.99, na.rm = T)]) / .radioRANSAC
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
 
     } else {
 
-      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)])
-      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)]) / .radio
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
       # .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.75) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
       .radioRANSAC <- .centerRANSAC$radius
-      .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.75, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
+      .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.75, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.99, na.rm = T)]) / .radioRANSAC
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
     }
 
@@ -496,7 +495,7 @@
 
 
   .dat <- cut
-  # .dat <- .cut[.cut$cluster == 12, ]
+  #.dat <- .cut[.cut$cluster == 237, ]
 
   if(nrow(.dat) < 25){return(.filter)}
 
@@ -638,23 +637,23 @@
 
     if(is.null(bark.roughness)){
 
-      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)])
-      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)]) / .radio
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
 
     } else if(bark.roughness == 1){
 
-      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)])
-      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)]) / .radio
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
 
     } else if(bark.roughness == 2){
 
-      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)])
-      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)]) / .radio
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
 
     } else {
 
-      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)])
-      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)]) / .radio
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
 
     }
 
@@ -666,32 +665,32 @@
 
     # Radius value as the mean distance
     if(is.null(bark.roughness)){
-      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)])
-      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)]) / .radio
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
       # .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
       .radioRANSAC <- .centerRANSAC$radius
-      .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.05, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
+      .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.05, na.rm = T) & .dat$distRANSAC<stats::qu9antile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
 
     } else if(bark.roughness == 1){
-      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)])
-      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)]) / .radio
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
       # .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
       .radioRANSAC <- .centerRANSAC$radius
       .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
 
     } else if(bark.roughness == 2){
-      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)])
-      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)]) / .radio
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
       # .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
       .radioRANSAC <- .centerRANSAC$radius
       .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
 
     } else {
-      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)])
-      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95, na.rm = T)]) / .radio
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
       # .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.75) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
       .radioRANSAC <- .centerRANSAC$radius
       .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.75, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
