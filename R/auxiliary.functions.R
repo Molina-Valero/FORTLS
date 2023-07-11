@@ -669,7 +669,7 @@
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
       # .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
       .radioRANSAC <- .centerRANSAC$radius
-      .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.05, na.rm = T) & .dat$distRANSAC<stats::qu9antile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
+      .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.05, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
 
     } else if(bark.roughness == 1){
