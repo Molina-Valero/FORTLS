@@ -63,7 +63,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   if(!is.null(data$intensity)){
 
-    stem <- stem[stem$intensity > mean(stem$intensity), ]
+    stem <- stem[stem$intensity > mean(stem$intensity, na.rm = T), ]
 
   }
 
