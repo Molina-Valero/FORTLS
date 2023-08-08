@@ -165,16 +165,16 @@ dir.result <- getwd()
 
 # Loading example data (LAZ file) to dir.data
 
-download.file("https://www.dropbox.com/s/4qvrh7tp3kq0hyo/Galicia_single_scan.laz?dl=1",
-              destfile = file.path(dir.data, "Galicia_single_scan.laz"),
+download.file("https://www.dropbox.com/s/17yl25pbrapat52/PinusRadiata.laz?dl=1",
+              destfile = file.path(dir.data, "PinusRadiata.laz"),
               mode = "wb")
 
 
 # Normalizing the whole point cloud data without considering arguments
 
-pcd <- normalize(las = "Galicia_single_scan.laz",
+pcd <- normalize(las = "PinusRadiata.laz",
 
-                 max.dist = 10,
+                 id = "PinusRadiata",
 
                  dir.data = dir.data, dir.result = dir.result)
 
@@ -187,7 +187,7 @@ tree.tls <- tree.detection.single.scan(data = pcd,
 
                                        tls.resolution = list(point.dist = 6.34, tls.dist = 10),
 
-                                       breaks = 1.3, stem.section = c(1, 5),
+                                       breaks = c(1, 1.3, 1.6), stem.section = c(1, 5),
 
                                        dir.result = dir.result)
 

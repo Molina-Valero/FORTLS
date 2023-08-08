@@ -157,12 +157,12 @@ dir.result <- getwd()
 
 # Loading example data (LAZ files) to dir.data
 
-download.file("https://www.dropbox.com/s/2nem6tfbsw7eyd7/Galicia_multi_scan.laz?dl=1",
-              destfile = file.path(dir.data, "Galicia_multi_scan.laz"),
+download.file("https://www.dropbox.com/scl/fi/hzzrt0a39crdy6uvcj9el/PinusSylvestris1.laz?rlkey=svpwvorkm8889fgbnj14ns1f2&dl=1",
+              destfile = file.path(dir.data, "PinusSylvestris1.laz"),
               mode = "wb")
 
-download.file("https://www.dropbox.com/s/7pnzxsjf8d2x84f/Go_Fagus_SLAM.laz?dl=1",
-              destfile = file.path(dir.data, "Go_Fagus_SLAM.laz"),
+download.file("https://www.dropbox.com/scl/fi/zeszze31jh5m1g4o3ns1o/PinusSylvestris2.laz?rlkey=wx72bi6ggdc7wedwgzupekp9k&dl=1",
+              destfile = file.path(dir.data, "PinusSylvestris2.laz"),
               mode = "wb")
 
 
@@ -171,15 +171,18 @@ download.file("https://www.dropbox.com/s/7pnzxsjf8d2x84f/Go_Fagus_SLAM.laz?dl=1"
 files <- list.files(pattern = "laz$", path = dir.data)
 
 
-# Tree detection
+# Tree detection (TLS single-scan aproach)
 
 tree.tls <- tree.detection.several.plots(las.list =
-                                         c("Galicia_multi_scan.laz",
-                                         "Go_Fagus_SLAM.laz"),
+                                           c("PinusSylvestris1.laz",
+                                             "PinusSylvestris2.laz"),
 
-                                         scan.approach = "multi",
+                                         id = c("PinusSylvestris1",
+                                                "PinusSylvestris2"),
 
-                                         breaks = 1.3, stem.section = c(1,5))
+                                         tls.resolution = list(point.dist = 7.67, tls.dist = 10),
+
+                                         breaks = c(1, 1.3, 1.6), stem.section = c(0.5, 4.5))
 
   }
 }

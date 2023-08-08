@@ -156,17 +156,17 @@ dir.result <- getwd()
 
 # Loading example data of TLS multi-scan approach point cloud (LAZ file) to dir.data
 
-download.file("https://www.dropbox.com/s/2nem6tfbsw7eyd7/Galicia_multi_scan.laz?dl=1",
-              destfile = file.path(dir.data, "Galicia_multi_scan.laz"),
+download.file("https://www.dropbox.com/scl/fi/es5pfj87wj0g6y8414dpo/PiceaAbies.laz?rlkey=ayt21mbndc6i6fyiz2e7z6oap&dl=1",
+              destfile = file.path(dir.data, "PiceaAbies.laz"),
               mode = "wb")
 
 # Normalizing the whole point cloud data without considering arguments
 
-pcd <- normalize(las = "Galicia_multi_scan.laz",
+pcd <- normalize(las = "PiceaAbies.laz",
+
+                 id = "PiceaAbies",
 
                  scan.approach = "multi",
-
-                 max.dist = 10,
 
                  dir.data = dir.data, dir.result = dir.result)
 
@@ -175,7 +175,7 @@ pcd <- normalize(las = "Galicia_multi_scan.laz",
 
 tree.tls <- tree.detection.multi.scan(data = pcd[pcd$prob.selec == 1, ],
 
-                                      breaks = 1.3, stem.section = c(1, 5),
+                                      stem.section = c(1, 5),
 
                                       dir.result = dir.result)
 
