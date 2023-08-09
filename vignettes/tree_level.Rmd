@@ -20,17 +20,18 @@ FORTLS is used for processing of point cloud data derived from terrestrial-based
 
 ```{r include=FALSE}
 dir.data <- getwd()
-download.file("https://www.dropbox.com/s/17yl25pbrapat52/Galicia_single_scan_red.laz?dl=1",
-              destfile = file.path(dir.data, "Galicia_single_scan.laz"),
+download.file("https://www.dropbox.com/s/17yl25pbrapat52/PinusRadiata.laz?dl=1",
+              destfile = file.path(dir.data, "PinusRadiata.laz"),
               mode = "wb")
-download.file("https://www.dropbox.com/s/i905wj0lavklczb/Galicia_multi_scan_red.laz?dl=1",
-              destfile = file.path(dir.data, "Galicia_multi_scan.laz"),
+download.file("https://www.dropbox.com/scl/fi/es5pfj87wj0g6y8414dpo/PiceaAbies.laz?rlkey=ayt21mbndc6i6fyiz2e7z6oap&dl=1",
+              destfile = file.path(dir.data, "PiceaAbies.laz"),
               mode = "wb")
-download.file("https://www.dropbox.com/s/qrps8om12tzi2a1/Rioja_1_red.laz?dl=1",
-              destfile = file.path(dir.data, "Rioja_1.laz"),
+download.file("https://www.dropbox.com/scl/fi/hzzrt0a39crdy6uvcj9el/PinusSylvestris1.laz?rlkey=svpwvorkm8889fgbnj14ns1f2&dl=1",
+              destfile = file.path(dir.data, "PinusSylvestris1.laz"),
               mode = "wb")
-download.file("https://www.dropbox.com/s/vgau7yy1rezvn2d/Rioja_2_red.laz?dl=1",
-              destfile = file.path(dir.data, "Rioja_2.laz"),
+
+download.file("https://www.dropbox.com/scl/fi/zeszze31jh5m1g4o3ns1o/PinusSylvestris2.laz?rlkey=wx72bi6ggdc7wedwgzupekp9k&dl=1",
+              destfile = file.path(dir.data, "PinusSylvestris2.laz"),
               mode = "wb")
 library(FORTLS)
 ```
@@ -47,8 +48,8 @@ The aim of the normalization process is to obtain the coordinates relative to th
 The following figure shows the normalized point cloud which is used as example data below. The function `plot` from the [lidR](https://CRAN.R-project.org/package=lidR) package is used to generate the figure. 
 
 ```{r eval = FALSE, include = TRUE}
-multiLAS <- lidR::readLAS(paste(dir.data, "Galicia_multi_scan.laz", sep = "/"))
-lidR::plot(multiLAS, color = "RGB")
+multiLAS <- lidR::readLAS(paste(dir.data, "PinusRadiata.laz", sep = "/"))
+lidR::plot(singleLAS, color = "RGB")
 ```
 
 <img src="pointcloud1.jpg" alt="drawing" width="300"/>
@@ -58,7 +59,7 @@ lidR::plot(multiLAS, color = "RGB")
 The `normalize` function is applied as follows:
 
 ```{r eval = TRUE, include = TRUE}
-pcd.single <- normalize(las = "Galicia_single_scan.laz", 
+pcd.single <- normalize(las = "PinusRadiata.laz", 
                  normalized = NULL,
                  x.center = 0, y.center = 0,
                  max.dist = 10, min.height = NULL, max.height = NULL, 
@@ -188,8 +189,8 @@ The data frame is saved as .csv file without row names using the `write.csv` fun
 When multiple scans were performed in the same sampling plot (multi-scan approach) or SLAM devices were used, the function `tree.detection.multi.scan` can be applied as follows below. Additionally, the function `normalize` must be adjusted by specifying `scan.approach = "multi"`.
 
 ```{r eval = TRUE, warning=FALSE, include=TRUE}
-pcd.multi <- normalize(las = "Galicia_multi_scan.laz", 
-                 x.center = 0, y.center = 0, RGB = TRUE,
+pcd.multi <- normalize(las = "PiceaAbies.laz", 
+                 x.center = 0, y.center = 0,
                  scan.approach = "multi", file = "multi.txt",
                  dir.data = dir.data, save.result = FALSE)
 
@@ -197,7 +198,7 @@ tree.list.multi.tls <- tree.detection.multi.scan(data = pcd.multi[pcd.multi$prob
                           dbh.min = 4, dbh.max = 200, h.min = 1.3,
                           ncr.threshold = 0.1,
                           tls.precision = 0.03,
-                          breaks = 1.3, stem.section = c(1,5),
+                          breaks = NULL, stem.section = c(1,5),
                           d.top = NULL,
                           plot.attributes = NULL,
                           save.result = FALSE, dir.result = NULL)
@@ -214,11 +215,11 @@ kableExtra::scroll_box(kable_input = kableExtra::kable(head(tree.list.multi.tls)
                                                        format = "html"), width = "100%")
 ```
 
-The following figure shows the same point cloud (`"Galicia_multi_scan.laz"`) as above. The trees that were detected by the `tree.detection.multi.scan` function are labeled with a red belt at 1.3 m. 
+The following figure shows the same point cloud (`"PiceaAbies.laz"`) as above. The trees that were detected by the `tree.detection.multi.scan` function are labeled with a red belt at 1.3 m. 
 
 ```{r eval = FALSE, include = FALSE}
 diameter <- readLAS(paste(dir.data, "diameters.laz", sep = "/"))
-lidR::plot(multiLAS, color = "RGB", add = plot(diameter, color = "Intensity"))
+lidR::plot(singleLAS, color = "RGB", add = plot(diameter, color = "Intensity"))
 ```
 
 <img src="pointcloud1diameter.jpg" alt="drawing" width="300"/>
@@ -232,9 +233,9 @@ In the function, the arguments for both the `normalize` and `tree.detection` fun
 ```{r eval = FALSE, include= TRUE}
 tls.resolution = list(point.dist = 7.67, tls.dist = 10)
 
-tree.list.tls <- tree.detection.several.plots(las.list = c("Rioja_1.laz", "Rioja_2.laz"), 
+tree.list.tls <- tree.detection.several.plots(las.list = c("PinusSylvestris1.laz", "PinusSylvestris2.laz"), 
                       id = NULL, file = NULL,
-                      scan.approach = "multi",
+                      scan.approach = "single",
                       x.center = 0, y.center = 0,
                       max.dist = 10, min.height = 0.1, max.height = NULL,
                       algorithm.dtm = "knnidw", res.dtm = 0.2, 
