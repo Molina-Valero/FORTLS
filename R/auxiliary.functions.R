@@ -30,18 +30,6 @@
 
   if(nrow(.dat) < 15){return(.filter)}
 
-  # print(.dat$cluster[1])
-
-  # write.csv(.dat, paste(cuts, .dat$cluster[1], ".csv", sep = ""))
-
-  # plot(.dat$x, .dat$y, asp = 1)
-  # kk <- data.frame(x = tapply(.dat$x, .dat$cluster, mean),
-  #                  y = tapply(.dat$y, .dat$cluster, mean),
-  #                  cluster = tapply(.dat$cluster, .dat$cluster, mean))
-  # text(kk$x, kk$y, col = "red")
-
-  # .dat <- .cut[.cut$cluster == 1, ]
-  # plot(.dat$x, .dat$y, asp = 1)
 
   # First filter
 
@@ -121,8 +109,7 @@
 
 
   # Estimate mean density by cell
-  # .threeshold <- stats::median(.density, na.rm = T)
-  # .threeshold <- mean(.density, na.rm = T)
+
   .threeshold <- stats::quantile(.density, prob = 0.25, na.rm = T)
 
   if(is.nan(.threeshold) | is.na(.threeshold)){return(.filter)}
@@ -157,9 +144,7 @@
   .dat <- merge(.dat, .remove, by = "point", all.y = TRUE)
 
   .dat <- .dat[!duplicated(.dat$point), ]
-  # .dat <- .dat[!duplicated(.dat$x) & !duplicated(.dat$y)  & !duplicated(.dat$z), ]
 
-  # plot(.dat$x, .dat$y, asp = 1)
 
   if(nrow(.dat) < 5){return(.filter)}
 
@@ -294,7 +279,6 @@
     if(is.null(bark.roughness)){
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
-      # .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25, na.rm = T)) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T))])
       .radioRANSAC <- .centerRANSAC$radius
       .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.05, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.99, na.rm = T)]) / .radioRANSAC
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
@@ -302,7 +286,6 @@
     } else if(bark.roughness == 1){
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
-      # .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25, na.rm = T)) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T))])
       .radioRANSAC <- .centerRANSAC$radius
       .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.99, na.rm = T)]) / .radioRANSAC
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
@@ -311,7 +294,6 @@
 
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
-      # .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
       .radioRANSAC <- .centerRANSAC$radius
       .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.99, na.rm = T)]) / .radioRANSAC
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
@@ -320,7 +302,6 @@
 
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
-      # .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.75) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
       .radioRANSAC <- .centerRANSAC$radius
       .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.75, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.99, na.rm = T)]) / .radioRANSAC
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
@@ -358,12 +339,6 @@
   if(stats::quantile(.dat$dist, prob = 0.05, na.rm = T) < (.radio / 2)) {return(.filter)}
 
 
-  # Evaluamos aqui el ratio
-
-  # .ratio <- nrow(.dat.2) / (.n * ((max(.dat.2$phi) - min(.dat.2$phi)) / .alpha.h))
-  # if(.ratio < 0.5){next}
-
-
   # Select 1st percentil, if necessary for strange points
   # It remains to be seen what happens if cluster is located in 0 +/- phi
   .pto.left <- stats::quantile(.dat.2$phi, prob = 0.01, na.rm = T)
@@ -396,8 +371,7 @@
   # numeration and phi must be found when they are ordered with respect to
   # phi
   .dat.2$n <- c(1:nrow(.dat.2))
-  .cor <- try(stats::cor.test(x = .dat.2$n, y = .dat.2$phi, method = 'pearson'), silent = TRUE) # cor function could be used instead
-  # .cor <- try(stats::cor.test(x = .dat2$n, y = .dat2$phi, method = 'spearman'))
+  .cor <- try(stats::cor.test(x = .dat.2$n, y = .dat.2$phi, method = 'pearson'), silent = TRUE)
 
   # If error, go to next iteration
   if(methods::is(.cor) == "try-error"){return(.filter)} else{
@@ -435,10 +409,6 @@
   .filter$tree <- ifelse(.filter$arc.circ == 1, 1,
                          ifelse(.filter$arc.circ == 0 & .filter$occlusion > 0.975, 1, 0))
   .filter <- .filter[which(.filter$tree == 1), , drop = FALSE]
-
-  # Dbh maximum and minimum
-  # .filter$tree <- ifelse(.filter$radius > (.dbh.max / 2) | .filter$radius < (.dbh.min / 2), 0, 1)
-  # .filter <- subset(.filter, .filter$tree == 1)
 
 
   if(nrow(.filter) < 1){
@@ -495,13 +465,8 @@
 
 
   .dat <- cut
-  #.dat <- .cut[.cut$cluster == 237, ]
 
   if(nrow(.dat) < 25){return(.filter)}
-
-  # cod <- paste(sample(1:1000, 1), sample(1:1000, 1), "csv", sep = ".")
-  # plot(.dat$x, .dat$y, asp = 1, main = .dat$cluster[1])
-  # write.csv(.dat, cod, row.names = FALSE)
 
 
   # Generate mesh
@@ -584,11 +549,8 @@
 
   .dat <- merge(.dat, .remove, by = "point", all.y = TRUE)
   .dat <- .dat[!duplicated(.dat$point), ]
-  # .dat <- .dat[!duplicated(.dat$x) & !duplicated(.dat$y)  & !duplicated(.dat$z), ]
 
   if(nrow(.dat) < 10){return(.filter)}
-
-  # points(.dat$x, .dat$y, asp = 1, col = "red")
 
 
   # Estimate points number for both the original cloud (.n.pts) and the
@@ -667,7 +629,6 @@
     if(is.null(bark.roughness)){
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
-      # .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
       .radioRANSAC <- .centerRANSAC$radius
       .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.05, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
@@ -675,7 +636,6 @@
     } else if(bark.roughness == 1){
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
-      # .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
       .radioRANSAC <- .centerRANSAC$radius
       .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
@@ -683,7 +643,6 @@
     } else if(bark.roughness == 2){
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
-      # .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
       .radioRANSAC <- .centerRANSAC$radius
       .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
@@ -691,7 +650,6 @@
     } else {
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
-      # .radioRANSAC <- mean(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.75) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95)])
       .radioRANSAC <- .centerRANSAC$radius
       .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.75, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
@@ -720,8 +678,6 @@
   .center.r <- sqrt(.dat$sec[1] ^ 2 + .center.rho ^ 2)
   .center.theta <- atan2(.dat$sec[1], .center.rho)
 
-  # points(.center.x, .center.y, col = "green", pch = 19, cex = 2)
-  # arrows(.center.x, .center.y, .center.x+.radio, col = "green")
 
   if(.cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2){return(.filter)}
 
@@ -754,13 +710,10 @@
   # numeration and phi must be found when they are ordered with respect to phi
 
   .dat.2 <- .dat.2[order(.dat.2$alpha, decreasing = F), ]
-  # .cv <- stats::sd(diff(.dat.2$alpha)) / mean(diff(.dat.2$alpha))
-  # if(.cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T))]) < 2){next}
+
   .dat.2$n <- c(1:nrow(.dat.2))
   .cor <- try(stats::cor.test(x = .dat.2$n, y = .dat.2$alpha, method = 'pearson'), silent = TRUE) # cor function could be used instead
 
-  # plot(.dat.2$n, .dat.2$alpha)
-  # .cor <- try(stats::cor.test(x = .dat.2$n, y = .dat.2$phi, method = 'spearman'))
 
   # If error, go to next iteration
   if(methods::is(.cor) == "try-error"){return(.filter)} else{
@@ -812,10 +765,6 @@
                        ifelse(.filter$arc.circ == 1 & .filter$occlusion >= 0.95 & .filter$density.radio >= .outliers, 1,
                               ifelse(.filter$circ == 0 & .filter$arc.circ == 0 & .filter$occlusion >= 0.975 & .filter$density.radio >= .outliers, 1, 0)))
 .filter <- .filter[which(.filter$tree == 1), , drop = FALSE]
-
-# Dbh maximum and minimum
-# .filter$tree <- ifelse(.filter$radius > (.dbh.max / 2) | .filter$radius < (.dbh.min / 2), 0, 1)
-# .filter <- subset(.filter, .filter$tree == 1)
 
 
 if(nrow(.filter) < 1){
@@ -922,9 +871,6 @@ if(nrow(.filter) < 1){
 
   datos$id <- id
 
-  # utils::write.csv(datos[, c("id", "tree", "x", "y", "hi", "dhi", "h", "dbh")],
-  #                  paste("stem.curve.", id, ".csv", sep = ""),
-  #                  row.names = FALSE)
 
   if(nrow(datos) < 3){
 
@@ -1067,60 +1013,12 @@ if(nrow(.filter) < 1){
 
   eje$n.w.ratio <- n.w.ratio
 
-  # plot(data$z, data$rho, asp = 1)
-  # plot(data$z, data$phi, asp = 1)
-  # plot(data$z, data$x, asp = 1, xlab = "Z (m)", ylab = "X (m)", main = data$tree[1])
-  # abline(mod.x, col = 2, lwd = 3)
-  # plot(data$z, data$y, asp = 1, xlab = "Z (m)", ylab = "Y (m)", main = eje$n.w.ratio[1])
-  # abline(mod.y, col = 2, lwd = 3)
   }
 
   return(eje)
 
 
 }
-
-
-
-# .stem.axis <- function(data){
-#
-#   dat <- as.matrix(cov(data[, c("x", "y", "z")]))
-#   out <- eigen(dat)
-#
-#   pca <- prcomp(data[, c("x", "y", "z")], scale. = TRUE)
-#   #
-#   # x <- pca$center[1]
-#   # y <- pca$center[2]
-#   # z <- pca$center[3]
-#   #
-#   #
-#   x.inc <- pca$scale[1]
-#   y.inc <- pca$scale[2]
-#   z.inc <- pca$scale[3]
-#
-#
-#
-#   x <- c(mean(data$x), mean(data$x) + out$vectors[1, 1])
-#   y <- c(mean(data$y), mean(data$y) + out$vectors[2, 1])
-#   z <- c(mean(data$z), mean(data$z) + out$vectors[3, 1])
-#
-#   out <- data.frame(tree = data$tree[1],
-#                     x = x[1], x.inc = x[2] - x[1],
-#                     y = y[1], y.inc = y[2] - y[1],
-#                     z = z[1], z.inc = z[2] - z[1])
-#
-#   # out <- data.frame(tree = data$tree[1],
-#   #                   x = x, x.inc = x.inc,
-#   #                   y = y, y.inc = y.inc,
-#   #                   z = z, z.inc = z.inc)
-#
-#   out$alpha.x <- atan2(out$x.inc, out$z.inc)
-#   out$alpha.y <- atan2(out$y.inc, out$z.inc)
-#
-#
-#   return(out)
-#
-# }
 
 
 # Select part of point cloud free of low vegetation and crown
@@ -1141,26 +1039,14 @@ if(nrow(.filter) < 1){
 
 
   den$dev1 <- c(diff(den$y), 0)
-  # den$dev2 <- c(diff(den$dev1), 0)
-
-  # plot(den$x, den$y, ylim = c(-0.3,0.3))
-  # lines(den$x, den$dev1 * 10, col = 2)
-  # lines(den$x, den$dev2 * 10, col = 3)
 
   den$dev1 <- abs(den$dev1)
   den <- den[den$dev1 > stats::quantile(den$dev1, probs = 0.75, na.rm = T), ]
-  # points(den$x, den$dev1, col = "blue")
 
-
-
-  # den <- data.frame(x = k$x, y = c(abs(diff(k$y)),0))
-  # den$lim <- ifelse(den$y < quantile(den$y, probs = 0.5, na.rm = T)), 1, 2)
-  # den <- den[den$y > quantile(den$y, probs = 0.25, na.rm = T)), ]
   den$diff <- c(diff(den$x), 0)
   den$cut <- ifelse(den$diff > .getmode(den$diff) + 0.01, 1, 0)
   den <- den[den$cut == 1, ]
   den <- den[den$diff == max(den$diff), ]
-  # den <- den[den$diff == max(den$diff) | den$x < 1.3 & den$x + den$diff > 1.3, ]
 
   return(den[, c("x", "diff")])
 

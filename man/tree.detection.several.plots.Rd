@@ -9,23 +9,23 @@
 \description{This function integrates both, the \code{\link{normalize}} and \code{\link{tree.detection.single.scan}} or \code{\link{tree.detection.multi.scan}} functions, generating the same \sQuote{Output Files} as indicated for these, and it returs the same \sQuote{Value} as described for \code{\link{tree.detection.single.scan}} or \code{\link{tree.detection.multi.scan}} respectively. However, this function is designed for working with several plots, producing a list of all scans considered automatically from LAS files.}
 
 \usage{
-tree.detection.several.plots(las.list, id = NULL, file = NULL,
+tree.detection.several.plots(las.list, id.list = NULL, file = NULL,
 
                              scan.approach = "single",
                              pcd.red = NULL, normalized = NULL,
-                             x.center = NULL, y.center = NULL,
+                             center.coord = NULL,
                              x.side = NULL, y.side = NULL,
                              max.dist = NULL, min.height = NULL, max.height = 50,
                              algorithm.dtm = "knnidw", res.dtm = 0.2,
                              csf = list(cloth_resolution = 0.5),
-                             RGB = NULL,
+                             intensity = NULL, RGB = NULL,
 
                              single.tree = NULL,
                              dbh.min = 4, dbh.max = 200, h.min = 1.3,
                              ncr.threshold = 0.1,
                              tls.resolution = NULL, tls.precision = NULL,
                              stem.section = NULL, breaks = NULL,
-                             slice = 0.1, understory = NULL, bark.roughness = 2,
+                             slice = 0.1, understory = NULL, bark.roughness = 1,
                              den.type = 1, d.top = NULL,
 
                              plot.attributes = NULL,

@@ -14,7 +14,7 @@ tree.detection.multi.scan(data, single.tree = NULL,
                           ncr.threshold = 0.1,
                           tls.precision = NULL,
                           stem.section = NULL, breaks = NULL,
-                          slice = 0.1, understory = NULL, bark.roughness = 2,
+                          slice = 0.1, understory = NULL, bark.roughness = 1,
                           den.type = 1, d.top = NULL,
                           plot.attributes = NULL,
                           save.result = TRUE, dir.result = NULL)}
