@@ -23,6 +23,8 @@ tree.detection.single.scan(data, single.tree = NULL,
 
   \item{data}{Data frame with same description and format as indicated for \code{\link{normalize}} \sQuote{Value}.}
 
+  \item{single.tree}{Optional argument to indicate if there is only one tree.}
+
   \item{dbh.min}{Optional minimum \emph{dbh} (cm) considered for detecting trees. By default it will be set at 4 cm.}
 
   \item{dbh.max}{Optional maximum \emph{dbh} (cm) considered for detecting trees. By default it will be set at 200 cm.}
@@ -53,7 +55,7 @@ tree.detection.single.scan(data, single.tree = NULL,
 
   \item{understory}{Optional argument to indicate if there is dense understory vegetation.}
 
-  \item{bark.roughness}{Bark roughness established in 3 degrees (1 < 2 < 3). By default it will be considered as 2.}
+  \item{bark.roughness}{Bark roughness established in 3 degrees (1 < 2 < 3). By default it will be considered as 1.}
 
   \item{den.type}{Numeric argument indicating the dendrometic type used to estimate volumen when there are not sections enough to fit a taper equation. Dendrometrics types available are the following: cylinder = 0, paraboloid = 1 (by default), cone = 2 and neiloid = 3.}
 

@@ -36,7 +36,7 @@ tree.detection.several.plots(las.list, id.list = NULL, file = NULL,
 
   \item{las.list}{Character vector containing the names of all LAS files for analysis and belonging to TLS point cloud, including .las extension (see \sQuote{Examples})}
 
-  \item{id}{Optional vector with plots identification encoded as character string or numeric. If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, the plots will be encoded with correlative numbers from 1 to n plots.}
+  \item{id.list}{Optional vector with plots identification encoded as character string or numeric. If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, the plots will be encoded with correlative numbers from 1 to n plots.}
 
   \item{file}{Optional vector containing files name identification encoded as character string or numeric value. If it is null, file will be encoded as \code{id} by default.}
 
@@ -46,9 +46,7 @@ tree.detection.several.plots(las.list, id.list = NULL, file = NULL,
 
   \item{normalized}{Optional argument to establish as \code{TRUE} when point cloud is already normalized.}
 
-  \item{x.center}{Planimetric x center coordinate of point cloud data.}
-
-  \item{y.center}{Planimetric y center coordinate of point cloud data.}
+  \item{center.coord}{Planimetric x and y center coordinate of the plots. They has to be introduced as a data frame object with the following columns names: 'id',  'x' and 'y'. They represent plot id, and center coordinates respectively.}
 
   \item{x.side}{x-side (m) of the plot when the plot is square or rectangular.}
 
@@ -70,7 +68,10 @@ tree.detection.several.plots(las.list, id.list = NULL, file = NULL,
 
   \item {\code{cloth_resolution}}: by default 0.5.}
 
+  \item{intensity}{Logical parameter useful when point clouds have intensity values. It may be useful in some internal process to filter data.}
+
   \item{RGB}{Logical parameter useful when point clouds are colorized, thus including values of RGB colors. It is based on the Green Leaf Algorithm (GLA) (see \sQuote{Details}).}
+
 
   \item{single.tree}{Optional argument to indicate if there is only one tree.}
 

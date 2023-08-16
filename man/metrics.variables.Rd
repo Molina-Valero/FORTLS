@@ -322,10 +322,10 @@ download.file(url = "https://www.dropbox.com/s/w4fgcyezr2olj9m/Rioja_1.txt?dl=1"
 
 # Considering distance sampling methods (only for single-scan approaches)
 
-ds <- distance.sampling(tree.tls)
+# ds <- distance.sampling(tree.tls)
 
 met.var.TLS <- metrics.variables(tree.tls = tree.tls,
-                                 tree.ds = ds,
+                                 # tree.ds = ds,
                                  plot.parameters = data.frame(radius = 10, k = 10, BAF = 2),
                                  dir.data = dir.data, dir.result = dir.result)
 
