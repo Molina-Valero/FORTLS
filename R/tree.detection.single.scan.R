@@ -298,9 +298,9 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
       .cut <- .cut[which(.cut$z > (cuts-slice) & .cut$z < (cuts+slice)), , drop = FALSE]
 
-      # Dbscan parameters
+      # DBSCAN parameters
 
-      if(is.null(tls.precision)){.eps <- 0.03} else {.eps <- tls.precision}
+      .eps <- 2 * (tan(.alpha.h / 2) * (max(.cut$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2)
 
       # Clustering
 
