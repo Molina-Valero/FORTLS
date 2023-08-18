@@ -127,19 +127,17 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     stem <- stem[stem$npts > mean(stem$npts) & stem$ratio > mean(stem$ratio) & stem$nvox > mean(stem$nvox), ]
 
-    # points(stem$x, stem$y, col = "red")
-
     }
 
 
 
   buf <- sp::SpatialPoints(cbind(stem$x,stem$y))
   raster::crs(buf) <- "+proj=utm +zone=19 +ellps=GRS80 +datum=NAD83"
-  buf <- suppressWarnings(raster::buffer(buf, width = .dbh.min, dissolve = TRUE))
+  buf <- suppressWarnings(raster::buffer(buf, width = max(.dbh.min, 0.5), dissolve = TRUE))
   buf <- buf@polygons[[1]]@Polygons
   buf <- lapply(seq_along(buf), function(i) sp::Polygons(list(buf[[i]]), ID = i))
   buf <- sp::SpatialPolygons(buf)
-
+  # raster::plot(buf)
 
   if(!is.null(understory) & is.null(single.tree)){
 
@@ -185,6 +183,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     # points(stem.2$x, stem.2$y, col = "blue")
 
   }
+
 
 
   stem <- woody[woody$prob.selec == 1, ]
@@ -338,44 +337,10 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   if(nrow(.filteraux) < 1 & nrow(.filteraux.2) < 1) {
 
-    # Generate a warning and create empty data.frame to be returned, if no row
-    # was included in .filter
+    warning("No tree was detected")
 
-    if(is.null(data$id) & is.null(d.top)){
-
-      # If plot identification (id) is not available
-
-      warning("No tree was detected")
-
-      .colnames <- c("tree", "x", "y", "phi", "h.dist", "dbh", "dbh2", "h", "v", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
-
-    } else if (is.null(data$id) & !is.null(d.top)) {
-
-      # If plot identification (id) is not available
-
-      warning("No tree was detected")
-
-      .colnames <- c("tree", "x", "y", "phi", "h.dist", "dbh", "dbh2", "h", "v", "v.com", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
-
-    } else if (!is.null(data$id) & is.null(d.top)) {
-
-      # If plot identification (id) is available
-
-      warning("No tree was detected for plot ", data$id[1])
-
-      .colnames <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "dbh2", "h", "v", "v.com", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
-
-    } else {
-
-      # If plot identification (id) is available
-
-      warning("No tree was detected for plot ", data$id[1])
-
-      .colnames <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "dbh2", "h", "v", "v.com", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
-
-    }
-
-    .tree <- data.frame(matrix(nrow = 0, ncol = length(.colnames), dimnames = list(NULL, .colnames)))
+    .tree <- .no.trees.detected.single(data, d.top, plot.attributes, dir.result, save.result)
+    return(.tree)
 
   }
 
@@ -407,60 +372,13 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     .filter <- .stem.assignment.single.scan.2(.filter, eje, stem.section, x.center, y.center, single.tree)
 
+
     if(nrow(.filter) < 1){
 
-      if(is.null(data$id) & is.null(d.top)){
+    warning("No tree was detected")
 
-        # If plot identification (id) is not available
-
-        warning("No tree was detected")
-
-        .colnames <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
-
-      } else if (is.null(data$id) & !is.null(d.top)) {
-
-        # If plot identification (id) is not available
-
-        warning("No tree was detected")
-
-        .colnames <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "v.com", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
-
-      } else if (!is.null(data$id) & is.null(d.top)) {
-
-        # If plot identification (id) is available
-
-        warning("No tree was detected for plot ", data$id[1])
-
-        .colnames <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "v.com", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
-
-      } else {
-
-        # If plot identification (id) is available
-
-        warning("No tree was detected for plot ", data$id[1])
-
-        .colnames <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "v.com", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
-
-      }
-
-      .tree <- data.frame(matrix(nrow = 0, ncol = length(.colnames), dimnames = list(NULL, .colnames)))
-
-      # Lastly, aggregate attributes table
-      if(!is.null(plot.attributes))
-        .tree <- merge(.tree, plot.attributes, by = "id", all = FALSE)
-
-
-      if(isTRUE(save.result)){
-
-        utils::write.csv(.tree,
-                         file = file.path(dir.result, "tree.tls.csv"),
-                         row.names = FALSE)
-      }
-
-
-      #####
-      return(.tree)
-
+    .tree <- .no.trees.detected.single(data, d.top, plot.attributes, dir.result, save.result)
+    return(.tree)
 
     }
 
@@ -601,7 +519,15 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     }
 
-    if(nrow(.filteraux) < 1) stop("No tree was detected")
+
+    if(nrow(.filteraux) < 1){
+
+      warning("No tree was detected")
+
+      .tree <- .no.trees.detected.single(data, d.top, plot.attributes, dir.result, save.result)
+      return(.tree)
+
+    }
 
     # Dendrometric variables
     .tree <- data.frame(tree = tapply(.filteraux$tree, .filteraux$tree, mean, na.rm = TRUE),
@@ -651,7 +577,8 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     # Detecting possible trees overlaped
 
-    if(nrow(.tree) < 2 & !is.null(single.tree)){.tree.2 <- .tree}
+    # if(nrow(.tree) < 2 & !is.null(single.tree)){.tree.2 <- .tree}
+    if(nrow(.tree) < 2){.tree.2 <- .tree}
 
 
     if(nrow(.tree) > 1 & is.null(single.tree)){

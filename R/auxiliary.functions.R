@@ -3271,3 +3271,128 @@ if(nrow(.filter) < 1){
   return(.data)
 
 }
+
+
+
+.no.trees.detected.single <- function(data, d.top, plot.attributes, dir.result, save.result){
+
+  if(is.null(data$id) & is.null(d.top)){
+
+    # If plot identification (id) is not available
+
+    .colnames <- c("tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "v", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+
+  } else if (is.null(data$id) & !is.null(d.top)) {
+
+    # If plot identification (id) is not available
+
+    .colnames <- c("tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "h.com", "v", "v.com", "n.pts", "SS.max", "sinuosity", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+
+  } else if (!is.null(data$id) & is.null(d.top)) {
+
+    # If plot identification (id) is available
+
+    .colnames <- c("id", "file", "tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "v", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+
+  } else {
+
+    # If plot identification (id) is available
+
+    .colnames <- c("id", "file", "tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+
+  }
+
+  .tree <- data.frame(matrix(nrow = 1, ncol = length(.colnames), dimnames = list(NULL, .colnames)))
+
+  if(!is.null(data$id)){
+
+  .tree$id <- data$id[1]
+  .tree$file <- data$file[1]
+
+  }
+
+  # Lastly, aggregate attributes table
+  if(!is.null(plot.attributes))
+    .tree <- merge(.tree, plot.attributes, by = "id", all = FALSE)
+
+
+  if(isTRUE(save.result)){
+
+    utils::write.csv(.tree,
+                     file = file.path(dir.result, "tree.tls.csv"),
+                     row.names = FALSE)
+  }
+
+
+  #####
+  return(.tree)
+
+
+}
+
+
+
+.no.trees.detected.multi <- function(data, d.top, plot.attributes, dir.result, save.result){
+
+  if(is.null(data$id) & is.null(d.top)){
+
+    # If plot identification (id) is not available
+
+    .colnames <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+
+  } else if (is.null(data$id) & !is.null(d.top)) {
+
+    # If plot identification (id) is not available
+
+    .colnames <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+
+  } else if (!is.null(data$id) & is.null(d.top)) {
+
+    # If plot identification (id) is available
+
+    .colnames <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+
+  } else {
+
+    # If plot identification (id) is available
+
+    .colnames <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+
+  }
+
+  .tree <- data.frame(matrix(nrow = 1, ncol = length(.colnames), dimnames = list(NULL, .colnames)))
+
+
+  if(!is.null(data$id)){
+
+    .tree$id <- data$id[1]
+    .tree$file <- data$file[1]
+
+  }
+
+  # Lastly, aggregate attributes table
+  if(!is.null(plot.attributes))
+    .tree <- merge(.tree, plot.attributes, by = "id", all = FALSE)
+
+
+  if(isTRUE(save.result)){
+
+    utils::write.csv(.tree,
+                     file = file.path(dir.result, "tree.tls.csv"),
+                     row.names = FALSE)
+  }
+
+
+  #####
+  return(.tree)
+
+
+}
+
+
+
+
+
+
+
+

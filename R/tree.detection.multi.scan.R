@@ -91,14 +91,12 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   # Creation of raster with projected voxels
 
   stem <- VoxR::project_voxels(stem)
-  plot(stem$x, stem$y, asp = 1, col = "grey")
 
   # Filtering pixels - double branch peeling
 
   stem.2 <- NULL
 
   stem <- stem[stem$npts > mean(stem$npts) & stem$ratio > mean(stem$ratio) & stem$nvox > mean(stem$nvox), ]
-  points(stem$x, stem$y, col = "green")
 
   if(!is.null(understory)){
 
@@ -106,8 +104,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
       stem.2 <- stem[stem$npts > mean(stem$npts), ]
 
     stem <- stem[stem$npts > mean(stem$npts) & stem$ratio > mean(stem$ratio) & stem$nvox > mean(stem$nvox), ]
-
-    points(stem$x, stem$y, col = "red")
 
     }
 
@@ -117,7 +113,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   buf <- sp::SpatialPoints(cbind(stem$x,stem$y))
   raster::crs(buf) <- "+proj=utm +zone=19 +ellps=GRS80 +datum=NAD83 +unit=m"
-  buf <- suppressWarnings(raster::buffer(buf, width = 0.5, dissolve = TRUE))
+  buf <- suppressWarnings(raster::buffer(buf, width = max(.dbh.min, 0.5), dissolve = TRUE))
   buf <- buf@polygons[[1]]@Polygons
   buf <- lapply(seq_along(buf), function(i) sp::Polygons(list(buf[[i]]), ID = i))
   buf <- sp::SpatialPolygons(buf)
@@ -126,19 +122,9 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   if(!is.null(understory) & is.null(single.tree)){
 
-  # stem.2 <- stem
-  # stem <- stem[stem$npts > mean(stem$npts) & stem$ratio > mean(stem$ratio) & stem$nvox > mean(stem$nvox), ]
-  #
-  # points(stem.2$x, stem.2$y, col = "green")
-  # points(stem$x, stem$y, col = "red")
-
-
-  # if(!is.null(understory) & is.null(single.tree)){
-
   buf.2 <- sp::SpatialPoints(cbind(stem.2$x,stem.2$y))
   raster::crs(buf.2) <- "+proj=utm +zone=19 +ellps=GRS80 +datum=NAD83 +unit=m"
   buf.2 <- suppressWarnings(raster::buffer(buf.2, width = 0.1, dissolve = TRUE))
-  # raster::plot(buf.2)
 
   buf.1 <- sf::st_as_sf(buf)
   sf::st_crs(buf.1) <- "+proj=utm +zone=19 +ellps=GRS80 +datum=NAD83 +unit=m"
@@ -147,7 +133,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
 
   buf.2 <- sf::st_difference(sf::st_union(buf.2), sf::st_buffer(sf::st_union(buf.1), 0.1))
-  # raster::plot(buf.2)
 
   rm(buf.1)
 
@@ -168,13 +153,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   stem.2 <- stem.2[!is.na(stem.2$tree), ]
   stem.2 <- stem.2[stem.2$tree %in% retained$tree, ]
 
-  # filter <- data.frame(table(stem.2$tree))
-  # filter <- filter[filter$Freq > stats::quantile(filter$Freq, prob = 0.75, na.rm = TRUE), ]
-  # stem.2 <- stem.2[stem.2$tree %in% filter$Var1, ]
-
   rm(buf.2, retained)
-
-  # points(stem.2$x, stem.2$y, col = "blue")
 
   }
 
@@ -408,41 +387,10 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     # Generate a warning and create empty data.frame to be returned, if no row
     # was included in .filter
 
-    if (is.null(data$id) & is.null(d.top)){
+    warning("No tree was detected")
 
-      # If plot identification (id) is not available
-
-      warning("No tree was detected")
-
-      .colnames <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
-
-    } else if (is.null(data$id) & !is.null(d.top)) {
-
-      # If plot identification (id) is not available
-
-      warning("No tree was detected")
-
-      .colnames <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "v.com", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
-
-    } else if (!is.null(data$id) & is.null(d.top)) {
-
-      # If plot identification (id) is available
-
-      warning("No tree was detected for plot ", data$id[1])
-
-      .colnames <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "v.com", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
-
-    } else {
-
-      # If plot identification (id) is available
-
-      warning("No tree was detected for plot ", data$id[1])
-
-      .colnames <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "v.com", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
-
-    }
-
-    .tree <- data.frame(matrix(nrow = 0, ncol = length(.colnames), dimnames = list(NULL, .colnames)))
+    .tree <- .no.trees.detected.multi(data, d.top, plot.attributes, dir.result, save.result)
+    return(.tree)
 
   } else {
 
@@ -471,8 +419,14 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   .filter <- .stem.assignment.multi.scan(.filter, eje, stem.section, x.center, y.center, single.tree)
 
 
-  if(nrow(.filter) < 1) stop("No tree was detected")
+  if(nrow(.filteraux) < 1){
 
+    warning("No tree was detected")
+
+    .tree <- .no.trees.detected.multi(data, d.top, plot.attributes, dir.result, save.result)
+    return(.tree)
+
+  }
 
 
   # Export all section detected
@@ -673,7 +627,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   # Detecting possible trees overlaped
 
-  if(nrow(.tree) < 2 & !is.null(single.tree)){.tree.2 <- .tree}
+  # if(nrow(.tree) < 2 & !is.null(single.tree)){.tree.2 <- .tree}
+  if(nrow(.tree) < 2){.tree.2 <- .tree}
 
 
   if(nrow(.tree) > 1 & is.null(single.tree)){
