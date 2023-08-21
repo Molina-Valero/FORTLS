@@ -558,20 +558,66 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     rm(.filteraux)
 
 
+    # Cheking if there are negative radious
+
+    .tree <- .tree[.tree$radius > 0, ]
+
+    if(nrow(.tree) < 1){
+
+      warning("No tree was detected")
+
+      .tree <- .no.trees.detected.single(data, d.top, plot.attributes, dir.result, save.result)
+      return(.tree)
+
+    }
+
+
     # Cheking minimum and maximum radius defined in the arguments
 
     .tree <- .tree[.tree$radius >= .dbh.min / 2 & .tree$radius <= .dbh.max / 2, ]
+
+
+    if(nrow(.tree) < 1){
+
+      warning("No tree was detected")
+
+      .tree <- .no.trees.detected.single(data, d.top, plot.attributes, dir.result, save.result)
+      return(.tree)
+
+    }
+
 
     # Selecting only those trees with more than one section detected when more than two breaks have been specified
 
     if(length(breaks) > 3)
       .tree <- .tree[.tree$filter > 1, ]
 
+
+    if(nrow(.tree) < 1){
+
+      warning("No tree was detected")
+
+      .tree <- .no.trees.detected.single(data, d.top, plot.attributes, dir.result, save.result)
+      return(.tree)
+
+    }
+
+
     # Remove duplicated trees and ordering by distance and numbering trees from 1 to n trees
 
     .tree <- .tree[!duplicated(.tree$x) & !duplicated(.tree$y), ]
     .tree <- .tree[!duplicated(.tree$sec.x) & !duplicated(.tree$sec.y), ]
-    .tree <- .tree[.tree$radius > 0, ]
+
+    if(nrow(.tree) < 1){
+
+      warning("No tree was detected")
+
+      .tree <- .no.trees.detected.single(data, d.top, plot.attributes, dir.result, save.result)
+      return(.tree)
+
+    }
+
+
     .tree <- .tree[order(.tree$rho), ]
     .tree$tree <- 1:nrow(.tree)
 

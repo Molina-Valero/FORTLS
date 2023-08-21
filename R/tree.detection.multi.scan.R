@@ -419,7 +419,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   .filter <- .stem.assignment.multi.scan(.filter, eje, stem.section, x.center, y.center, single.tree)
 
 
-  if(nrow(.filteraux) < 1){
+  if(nrow(.filter) < 1){
 
     warning("No tree was detected")
 
@@ -574,8 +574,15 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   }
 
-  if(nrow(.filteraux) < 1) stop("No tree was detected")
 
+  if(nrow(.filteraux) < 1){
+
+    warning("No tree was detected")
+
+    .tree <- .no.trees.detected.multi(data, d.top, plot.attributes, dir.result, save.result)
+    return(.tree)
+
+  }
 
   # Genrating dendrometric variables
 
@@ -605,9 +612,33 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   rm(.filteraux)
 
 
+
+  # Cheking if there are negative radious
+
+  .tree <- .tree[.tree$radius > 0, ]
+
+  if(nrow(.tree) < 1){
+
+    warning("No tree was detected")
+
+    .tree <- .no.trees.detected.multi(data, d.top, plot.attributes, dir.result, save.result)
+    return(.tree)
+
+  }
+
+
   # Cheking minimum and maximum radius defined in the arguments
 
   .tree <- .tree[.tree$radius >= .dbh.min / 2 & .tree$radius <= .dbh.max / 2, ]
+
+  if(nrow(.tree) < 1){
+
+    warning("No tree was detected")
+
+    .tree <- .no.trees.detected.multi(data, d.top, plot.attributes, dir.result, save.result)
+    return(.tree)
+
+  }
 
 
   # Selecting only those trees with more than one section detected when more than two breaks have been specified
@@ -616,11 +647,31 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   if(length(breaks) > 3)
     .tree <- .tree[.tree$filter >  1, ]
 
+  if(nrow(.tree) < 1){
+
+    warning("No tree was detected")
+
+    .tree <- .no.trees.detected.multi(data, d.top, plot.attributes, dir.result, save.result)
+    return(.tree)
+
+  }
+
+
   # Ordering by distance and numbering trees from 1 to n trees
 
   .tree <- .tree[!duplicated(.tree$x) & !duplicated(.tree$y), ]
-  # .tree <- .tree[!duplicated(.tree$sec.x) & !duplicated(.tree$sec.y), ]
-  .tree <- .tree[.tree$radius > 0, ]
+  .tree <- .tree[!duplicated(.tree$sec.x) & !duplicated(.tree$sec.y), ]
+
+  if(nrow(.tree) < 1){
+
+    warning("No tree was detected")
+
+    .tree <- .no.trees.detected.multi(data, d.top, plot.attributes, dir.result, save.result)
+    return(.tree)
+
+  }
+
+
   .tree <- .tree[order(.tree$rho), ]
   .tree$tree <- 1:nrow(.tree)
 
