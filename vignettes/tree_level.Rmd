@@ -48,7 +48,7 @@ The aim of the normalization process is to obtain the coordinates relative to th
 The following figure shows the normalized point cloud which is used as example data below. The function `plot` from the [lidR](https://CRAN.R-project.org/package=lidR) package is used to generate the figure. 
 
 ```{r eval = FALSE, include = TRUE}
-multiLAS <- lidR::readLAS(paste(dir.data, "PinusRadiata.laz", sep = "/"))
+singleLAS <- lidR::readLAS(paste(dir.data, "PinusRadiata.laz", sep = "/"))
 lidR::plot(singleLAS, color = "RGB")
 ```
 
@@ -123,7 +123,7 @@ tree.list.single.tls <- tree.detection.single.scan(data = pcd.single,
                            tls.resolution = tls.resolution,
                            d.top = NULL,
                            plot.attributes = NULL,
-                           breaks = 1.3, stem.section = c(1,5),
+                           breaks = 1.3, stem.range = NULL, stem.section = c(1,5),
                            save.result = FALSE, dir.result = NULL)
 ```
 

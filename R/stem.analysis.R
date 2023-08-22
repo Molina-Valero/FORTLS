@@ -2,7 +2,7 @@
 
 .straightness <- function(data, stem.range = NULL){
 
-  if(!is.null(stem.range) & nrow(data) > 2 & min(data$hi) < stem.range[2] | max(data$hi) > stem.range[1]){
+  if(!is.null(stem.range) & nrow(data) > 2){
 
     data <- data[data$hi >= stem.range[1] & data$hi <= stem.range[2], ]
 
