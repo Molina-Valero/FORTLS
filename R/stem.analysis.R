@@ -1,6 +1,13 @@
 
 
-.straightness <- function(data){
+.straightness <- function(data, stem.range = NULL){
+
+  if(!is.null(stem.range) & nrow(data) > 2 & min(data$hi) < stem.range[2] | max(data$hi) > stem.range[1]){
+
+    data <- data[data$hi >= stem.range[1] & data$hi <= stem.range[2], ]
+
+  }
+
 
   if(nrow(data) < 3){
 
@@ -8,6 +15,7 @@
     sinuosity <- NA
 
   } else {
+
 
   mod.x <- lm(data$x[c(1,nrow(data))]~data$hi[c(1,nrow(data))])
   mod.y <- lm(data$y[c(1,nrow(data))]~data$hi[c(1,nrow(data))])
@@ -18,6 +26,7 @@
   data$sagita <- sqrt((data$sagita.x-data$x)^2+(data$sagita.y-data$y)^2)
 
   S.max <- max(data$sagita)
+
   # h.range <- max(data$hi)-min(data$hi)
   h.range <- sqrt((data$x[1]-data$x[nrow(data)]) ^ 2 + (data$y[1]-data$y[nrow(data)]) ^ 2 + (data$hi[1]-data$hi[nrow(data)]) ^ 2)
 

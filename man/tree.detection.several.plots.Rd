@@ -24,7 +24,7 @@ tree.detection.several.plots(las.list, id.list = NULL, file = NULL,
                              dbh.min = 4, dbh.max = 200, h.min = 1.3,
                              ncr.threshold = 0.1,
                              tls.resolution = NULL, tls.precision = NULL,
-                             stem.section = NULL, breaks = NULL,
+                             stem.section = NULL, stem.range = NULL, breaks = NULL,
                              slice = 0.1, understory = NULL, bark.roughness = 1,
                              den.type = 1, d.top = NULL,
 
@@ -102,6 +102,8 @@ tree.detection.several.plots(las.list, id.list = NULL, file = NULL,
   \item{stem.section}{Section free of noise (shurb, branches, etc.) considered to detect trees. If not specified, an automatic internal algorithm will be applied (see \sQuote{Details}).}
 
   \item{breaks}{Height above ground level (m) of slices considered for detecting trees. By default it will be considered all possible sections from 0.1 m to maximum height by 0.3 m intervals (+/- 5 cm).}
+
+  \item{stem.range}{Section considered to estimate straightness tree attributes.}
 
   \item{slice}{Slice width considered for detecting trees. By default it will be considered as 0.1 m.}
 

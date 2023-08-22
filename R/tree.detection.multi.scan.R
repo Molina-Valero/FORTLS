@@ -2,7 +2,7 @@
 tree.detection.multi.scan <- function(data, single.tree = NULL,
                                       dbh.min = 4, dbh.max = 200, h.min = 1.3,
                                       ncr.threshold = 0.1, tls.precision = NULL,
-                                      stem.section = NULL, breaks = NULL,
+                                      stem.section = NULL, stem.range = NULL, breaks = NULL,
                                       slice = 0.1, understory = NULL, bark.roughness = 1,
                                       den.type = 1, d.top = NULL,
                                       plot.attributes = NULL,
@@ -942,7 +942,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   # Straighness analysis
 
-  straightness <- do.call(rbind, lapply(split(.stem, .stem$tree), .straightness))
+  straightness <- do.call(rbind, lapply(split(.stem, .stem$tree), .straightness, stem.range = stem.range))
 
   .tree <- merge(.tree, straightness, by = "tree")
 

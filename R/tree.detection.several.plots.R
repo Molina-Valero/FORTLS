@@ -14,7 +14,7 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
                                          dbh.min = 4, dbh.max = 200, h.min = 1.3,
                                          ncr.threshold = 0.1,
                                          tls.resolution = NULL, tls.precision = NULL,
-                                         stem.section = NULL, breaks = NULL,
+                                         stem.section = NULL, stem.range = NULL, breaks = NULL,
                                          slice = 0.1, understory = NULL, bark.roughness = 1,
                                          den.type = 1, d.top = NULL,
                                          plot.attributes = NULL,
@@ -108,7 +108,7 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
 
                                               tls.resolution = tls.resolution,
 
-                                              stem.section = stem.section, breaks = breaks,
+                                              stem.section = stem.section, stem.range = stem.range, breaks = breaks,
 
                                               slice = slice, understory = understory, bark.roughness = bark.roughness,
 
@@ -135,7 +135,7 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
 
                                              tls.precision = tls.precision,
 
-                                             stem.section = stem.section, breaks = breaks,
+                                             stem.section = stem.section, stem.range = stem.range, breaks = breaks,
 
                                              slice = slice, understory = understory, bark.roughness = bark.roughness,
 
