@@ -8,6 +8,8 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
                                        plot.attributes = NULL,
                                        save.result = TRUE, dir.result = NULL){
 
+  data <- data.table::setDT(data)
+
   set.seed(123)
 
   #### Checking some function arguments ####
