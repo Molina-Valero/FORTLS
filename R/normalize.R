@@ -199,6 +199,7 @@ normalize <- function(las, normalized = NULL,
   # Test for getting a smaller file - data frame
 
   .data <- data.frame(.data@data)
+  .data <- data.table::setDT(.data)
 
 
   # Removing points classified as ground
