@@ -318,7 +318,7 @@
       .center.x <- .centerRANSAC$X
       .center.y <- .centerRANSAC$Y}
 
-    .dat <- .dat[, -ncol(.dat)]
+    .dat <- .dat[, 1:(ncol(.dat)-1)]
 
     if(.radio <= 0 | is.na(.radio)){return(.filter)}
 
@@ -666,7 +666,7 @@
       .center.x <- .centerRANSAC$X
       .center.y <- .centerRANSAC$Y}
 
-    .dat <- .dat[, -ncol(.dat)]
+    .dat <- .dat[, 1:(ncol(.dat)-1)]
 
     if(.radio <= 0 | is.na(.radio)){return(.filter)}
 

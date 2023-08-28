@@ -8,9 +8,11 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                                       plot.attributes = NULL,
                                       save.result = TRUE, dir.result = NULL){
 
-  data <- data.table::setDT(data)
+
 
   set.seed(123)
+
+  data <- data.table::setDT(data)
 
   #### Checking some function arguments ####
 
@@ -36,6 +38,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   #### Detecting possible areas with trees in the point cloud ####
 
+
   if(!is.null(data$GLA)){
     woody <- data[data$GLA <= 0, ]
     woody <- woody[!is.na(woody$x) & !is.na(woody$y) & !is.na(woody$z), ]} else {woody <- data}
@@ -54,6 +57,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   woody <- merge(data, woody[, c("x", "y", "z")], by = c("x", "y", "z"), all = FALSE)
   noise <- merge(data, noise, by = c("x", "y", "z"), all = FALSE)
+
+  # data <- as.data.frame(data)
 
 
   # Detection of stem part without shrub vegetation and crown
@@ -112,13 +117,11 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   # Creation polygon to extract those projected areas in the original point cloud
   # where trees are probably located
 
-  buf <- sp::SpatialPoints(cbind(stem$x,stem$y))
-  raster::crs(buf) <- "+proj=utm +zone=19 +ellps=GRS80 +datum=NAD83 +unit=m"
-  buf <- suppressWarnings(raster::buffer(buf, width = max(.dbh.min, 0.5), dissolve = TRUE))
-  buf <- buf@polygons[[1]]@Polygons
-  buf <- lapply(seq_along(buf), function(i) sp::Polygons(list(buf[[i]]), ID = i))
-  buf <- sp::SpatialPolygons(buf)
-  # raster::plot(buf)
+
+  buf <- sf::st_as_sf(stem, coords = c("x","y"))
+  # sf::st_crs(buf) <- "+proj=utm +zone=19 +ellps=GRS80 +datum=NAD83 +unit=m"
+  buf <- sf::st_buffer(buf, max(.dbh.min, 0.5))
+  buf <- sf::st_cast(sf::st_union(buf), "POLYGON")
 
 
   if(!is.null(understory) & is.null(single.tree)){
@@ -163,7 +166,15 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   stem <- woody[woody$prob.selec == 1, ]
 
-  stem$tree <- sp::over(sp::SpatialPoints(coords = cbind(stem$x,stem$y,stem$z)), buf, returnlist=TRUE)
+  stem$tree <- NA
+
+
+  for (i in 1:length(buf)) {
+
+    stem[sf::st_intersects(buf, sf::st_as_sf(stem, coords = c("x","y")))[[i]], "tree"] <- i
+
+  }
+
   stem <- stem[!is.na(stem$tree), ]
 
 
@@ -231,8 +242,17 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   # Assigning points to trees previously detected
 
-  woody$tree <- sp::over(sp::SpatialPoints(coords = cbind(woody$x,woody$y,woody$z)), buf, returnlist=TRUE)
-  woody <- woody[woody$tree %in% eje$tree, ]
+  # woody$tree <- sp::over(sp::SpatialPoints(coords = cbind(woody$x,woody$y,woody$z)), buf, returnlist=TRUE)
+
+  woody$tree <- NA
+
+  for (i in unique(eje$tree)) {
+
+    woody[sf::st_intersects(buf, sf::st_as_sf(woody, coords = c("x","y")))[[i]], "tree"] <- i
+
+  }
+
+  # woody <- woody[woody$tree %in% eje$tree, ]
   woody <- woody[!is.na(woody$tree), ]
 
   rm(buf)
