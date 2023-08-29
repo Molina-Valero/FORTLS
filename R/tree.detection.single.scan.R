@@ -134,15 +134,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     }
 
 
-
-  # buf <- sp::SpatialPoints(cbind(stem$x,stem$y))
-  # raster::crs(buf) <- "+proj=utm +zone=19 +ellps=GRS80 +datum=NAD83"
-  # buf <- suppressWarnings(raster::buffer(buf, width = max(.dbh.min, 0.5), dissolve = TRUE))
-  # buf <- buf@polygons[[1]]@Polygons
-  # buf <- lapply(seq_along(buf), function(i) sp::Polygons(list(buf[[i]]), ID = i))
-  # buf <- sp::SpatialPolygons(buf)
-  # # raster::plot(buf)
-
   buf <- sf::st_as_sf(stem, coords = c("x","y"))
   # sf::st_crs(buf) <- "+proj=utm +zone=19 +ellps=GRS80 +datum=NAD83 +unit=m"
   buf <- sf::st_buffer(buf, max(.dbh.min, 0.5))
@@ -150,46 +141,44 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   if(!is.null(understory) & is.null(single.tree)){
 
-    buf.2 <- sp::SpatialPoints(cbind(stem.2$x,stem.2$y))
-    raster::crs(buf.2) <- "+proj=utm +zone=19 +ellps=GRS80 +datum=NAD83 +unit=m"
-    buf.2 <- suppressWarnings(raster::buffer(buf.2, width = 0.1, dissolve = TRUE))
-    # raster::plot(buf.2)
-
-    buf.1 <- sf::st_as_sf(buf)
-    sf::st_crs(buf.1) <- "+proj=utm +zone=19 +ellps=GRS80 +datum=NAD83 +unit=m"
-    buf.2 <- sf::st_as_sf(buf.2)
-    sf::st_crs(buf.2) <- "+proj=utm +zone=19 +ellps=GRS80 +datum=NAD83 +unit=m"
+    buf.2 <- sf::st_as_sf(stem.2, coords = c("x","y"))
+    # sf::st_crs(buf) <- "+proj=utm +zone=19 +ellps=GRS80 +datum=NAD83 +unit=m"
+    buf.2 <- sf::st_buffer(buf.2, max(.dbh.min, 0.5))
 
 
-    buf.2 <- sf::st_difference(sf::st_union(buf.2), sf::st_buffer(sf::st_union(buf.1), 0.1))
-    # raster::plot(buf.2)
-
-    rm(buf.1)
-
+    buf.2 <- sf::st_difference(sf::st_union(buf.2), buf, 0.1)
 
     # Detection of stem part without shrub vegetation and crown
 
     stem.2 <- woody[woody$prob.selec == 1, ]
 
-    buf.2 <- sf::as_Spatial(buf.2)
-    buf.2 <- buf.2@polygons[[1]]@Polygons
-    retained <- data.frame(tree = 1:length(buf.2),
-                           T = unlist(lapply(seq_along(buf.2), function(i) buf.2[[i]]@area>(pi/4)*(.dbh.min+0.1)^2)))
-    retained <- retained[retained$T == TRUE, ]
+    stem.2$tree <- 0
 
-    buf.2 <- lapply(seq_along(buf.2), function(i) sp::Polygons(list(buf.2[[i]]), ID = i))
-    buf.2 <- sp::SpatialPolygons(buf.2)
-    stem.2$tree <- sp::over(sp::SpatialPoints(coords = cbind(stem.2$x,stem.2$y,stem.2$z)), buf.2, returnlist=TRUE)
-    stem.2 <- stem.2[!is.na(stem.2$tree), ]
-    stem.2 <- stem.2[stem.2$tree %in% retained$tree, ]
+    kk <- data.frame(id = c(1:length(buf.2)), area = sf::st_area(buf.2))
 
-    # filter <- data.frame(table(stem.2$tree))
-    # filter <- filter[filter$Freq > stats::quantile(filter$Freq, prob = 0.75, na.rm = TRUE), ]
-    # stem.2 <- stem.2[stem.2$tree %in% filter$Var1, ]
+    kk <- kk[kk$area > (pi / 4)*(.dbh.min + 0.1) ^ 2, ]
 
-    rm(buf.2, retained)
+    if(nrow(kk) < 1){
 
-    # points(stem.2$x, stem.2$y, col = "blue")
+      stem.2 <- NULL
+
+    } else {
+
+      for (i in kk$id) {
+
+        stem.2[sf::st_intersects(buf, sf::st_as_sf(stem.2, coords = c("x","y")))[[i]], "tree"] <- i
+
+      }
+
+
+      stem.2 <- stem.2[stem.2$tree > 0, ]
+
+      if(nrow(stem.2) < 1)
+        stem.2 <- NULL
+
+    }
+
+    rm(buf.2, kk)
 
   }
 
@@ -227,9 +216,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
 
   # Assigning points to trees previously detected
-
-  # woody$tree <- sp::over(sp::SpatialPoints(coords = cbind(woody$x,woody$y,woody$z)), buf, returnlist=TRUE)
-  # woody <- woody[!is.na(woody$tree), ]
 
 
   #### Starting with clustering process ####

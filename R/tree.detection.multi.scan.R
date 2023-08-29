@@ -133,9 +133,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   buf.2 <- sf::st_difference(sf::st_union(buf.2), buf, 0.1)
 
-  # rm(buf.1)
-
-
   # Detection of stem part without shrub vegetation and crown
 
   stem.2 <- woody[woody$prob.selec == 1, ]
@@ -160,7 +157,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
 
   stem.2 <- stem.2[stem.2$tree > 0, ]
-  # stem.2 <- stem.2[stem.2$tree %in% retained$tree, ]
 
   if(nrow(stem.2) < 1)
     stem.2 <- NULL
@@ -251,8 +247,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
 
   # Assigning points to trees previously detected
-
-  # woody$tree <- sp::over(sp::SpatialPoints(coords = cbind(woody$x,woody$y,woody$z)), buf, returnlist=TRUE)
 
   woody$tree <- NA
 

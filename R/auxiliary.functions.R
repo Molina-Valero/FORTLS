@@ -243,7 +243,8 @@
   .datRANSAC <- .dat[, c("x", "y")]
   colnames(.datRANSAC) <- c("X", "Y")
 
-  .centerRANSAC <- suppressWarnings(try(rTLS::circleRANSAC(data.table::setDT(.datRANSAC), fpoints = 0.2, pconf = 0.95, poutlier = c(0.75, 0.75), max_iterations = 100, plot = FALSE), silent = TRUE))
+  .centerRANSAC <- suppressWarnings(try(suppressWarnings(rTLS::circleRANSAC(data.table::setDT(.datRANSAC),
+                                                                            fpoints = 0.2, pconf = 0.95, poutlier = c(0.75, 0.75), max_iterations = 100, plot = FALSE), silent = TRUE)))
 
   if(class(.centerRANSAC)[1] == "try-error"){
 
@@ -309,7 +310,7 @@
 
     if(is.na(.cv)){return(.filter)}
 
-    if(3 * .cv >= .cvRANSAC){
+    if(2 * .cv >= .cvRANSAC){
 
       .radio <- .radioRANSAC
       .cv <- .cvRANSAC
@@ -592,7 +593,8 @@
   .datRANSAC <- .dat[, c("x", "y")]
   colnames(.datRANSAC) <- c("X", "Y")
 
-  .centerRANSAC <- suppressWarnings(try(rTLS::circleRANSAC(data.table::setDT(.datRANSAC), fpoints = 0.2, pconf = 0.95, poutlier = c(0.75, 0.75), max_iterations = 100, plot = FALSE), silent = TRUE))
+  .centerRANSAC <- suppressWarnings(try(suppressWarnings(rTLS::circleRANSAC(data.table::setDT(.datRANSAC),
+                                                           fpoints = 0.2, pconf = 0.95, poutlier = c(0.75, 0.75), max_iterations = 100, plot = FALSE), silent = TRUE)))
 
   if(class(.centerRANSAC)[1] == "try-error"){
 
@@ -657,7 +659,7 @@
 
     if(is.na(.cv)){return(.filter)}
 
-    if(3 * .cv >= .cvRANSAC){
+    if(2 * .cv >= .cvRANSAC){
 
       .radio <- .radioRANSAC
       .cv <- .cvRANSAC
@@ -3160,19 +3162,6 @@ if(nrow(.filter) < 1){
 # Cálculo del índice de curvatura
 ##############################################################################
 
-
-# .pol create polygons as regular squares overlapped 0.05
-
-.pol <- function(data, dist){
-
-  .xpol <- c(data$x.1-dist, data$x.2+dist, data$x.3+dist, data$x.4-dist)
-  .ypol <- c(data$y.1-dist, data$y.2-dist, data$y.3+dist, data$y.4+dist)
-
-  return(sp::Polygons(list(sp::Polygon(cbind(.xpol,.ypol))), ID = data$id))
-
-}
-
-
 # This functions apply calculated ncr index for all points.
 # For that purpose, voxelize point cloud by means of regular
 # grid in x any z coordinates
@@ -3189,7 +3178,10 @@ if(nrow(.filter) < 1){
   .x = seq(min(.data$x), max(.data$x))
   .y = seq(min(.data$y), max(.data$y))
 
-  if(length(.x) < 2 | length(.y) < 2){
+  kk <- data.frame(x = rep(seq(min(.data$x), max(.data$x)), each = length(.y)),
+                   y = rep(seq(min(.data$y), max(.data$y)), times = length(.x)))
+
+  if(length(kk$x) < 2 | length(kk$y) < 2){
 
     data$ncr <- NA
     .data <- data} else{
@@ -3197,58 +3189,29 @@ if(nrow(.filter) < 1){
   # Empty data frame where coordinates neccesaries for
   # creating grid will be saved
 
-  .grid <- data.frame(id = as.character(),
-                      x.1 = as.numeric(), x.2 = as.numeric(),
-                      x.3 = as.numeric(), x.4 = as.numeric(),
-                      y.1 = as.numeric(), y.2 = as.numeric(),
-                      y.3 = as.numeric(), y.4 = as.numeric())
+  grid <- sf::st_as_sf(kk, coords = c("x","y"))
+
+  rm(kk)
+
+  grid <- sf::st_buffer(grid, dist = 0.55, endCapStyle = "SQUARE")
+  grid <- sf::st_cast(grid, "POLYGON")
+  output <- sf::st_intersection(sf::st_as_sf(.data, coords = c("x","y")), grid)
+
+  .data$id <- 0
 
 
-  # Fill the empty data frame .grid created just before
+  for (i in 1:nrow(grid)) {
 
-  for (i in 1:(length(.x)-1)) {
-    for (j in 1:(length(.y)-1)) {
+    .data[sf::st_intersects(grid, sf::st_as_sf(.data, coords = c("x","y")))[[i]], "id"] <- i
 
-      .out <- data.frame(id = paste("x", i, "y", j, sep="."),
-                         x.1 = .x[i], x.2 = .x[i+1], x.3 = .x[i+1], x.4 = .x[i],
-                         y.1 = .y[j], y.2 = .y[j], y.3 = .y[j+1], y.4 = .y[j+1])
-
-      .grid <- rbind(.grid, .out)
-
-    }
   }
 
-  .row.names <- .grid$id
+  .data <- .data[.data$id > 0, ]
 
-  # Split .grid by id into a list for using lapply function and
-  # applying .pol function over all elements of the list
+  rm(grid)
 
-  .grid <- split(.grid, .grid$id)
+  .dat <- lapply(split(.data, .data$id), as.matrix, ncol = 4)
 
-  # Apply .pol function to every element of the list and create
-  # and object SpatialPolygons
-
-  .grid <- sp::SpatialPolygons(lapply(.grid, .pol, dist = 0.05))
-
-
-  # Generate and SpatialPoints object to extract those points
-  # which are avor the polygons of .grid
-
-  .pts <- .data[, c("x", "y")]
-  # dimnames(.pts)[[1]] <- c(.data$point)
-  .pts <- sp::SpatialPoints(.pts)
-
-  .attributes <- .data[, c("point", "x", "y", "z")]
-
-  .pts = sp::SpatialPointsDataFrame(.pts, .attributes)
-
-  .attributes <- data.frame(row.names = .row.names)
-
-  .grid = sp::SpatialPolygonsDataFrame(.grid, .attributes)
-
-  .pts <- sp::over(.grid, .pts, returnList = TRUE)
-
-  .dat <- lapply(.pts, as.matrix, ncol = 4)
   .dat <- .dat[names(which(lapply(.dat, length) > 4))]
   # .dat <- .dat[names(which(lapply(.dat, length) < 40000))]
 
@@ -3256,6 +3219,7 @@ if(nrow(.filter) < 1){
   .ncr <- do.call(rbind, lapply(.dat, ncr_point_cloud_double))
 
   .ncr <- .ncr[which(.ncr$ncr > 0 & .ncr$ncr < 9999), ]
+
 
   if(is.null(.ncr)){
     data$ncr <- NA
