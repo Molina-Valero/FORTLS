@@ -139,6 +139,9 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   buf <- sf::st_buffer(buf, max(.dbh.min, 0.5))
   buf <- sf::st_cast(sf::st_union(buf), "POLYGON")
 
+  rm(stem)
+
+
   if(!is.null(understory) & is.null(single.tree)){
 
     buf.2 <- sf::st_as_sf(stem.2, coords = c("x","y"))
@@ -150,61 +153,86 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     # Detection of stem part without shrub vegetation and crown
 
-    stem.2 <- woody[woody$prob.selec == 1, ]
+    buf.2 <- buf.2[sf::st_area(buf.2) > (pi / 4)*(.dbh.min + 0.1) ^ 2]
 
-    stem.2$tree <- 0
-
-    kk <- data.frame(id = c(1:length(buf.2)), area = sf::st_area(buf.2))
-
-    kk <- kk[kk$area > (pi / 4)*(.dbh.min + 0.1) ^ 2, ]
-
-    if(nrow(kk) < 1){
+    if(length(buf.2) < 1){
 
       stem.2 <- NULL
 
     } else {
 
-      for (i in kk$id) {
+      stem.2 <- woody[woody$prob.selec == 1, ]
 
-        stem.2[sf::st_intersects(buf, sf::st_as_sf(stem.2, coords = c("x","y")))[[i]], "tree"] <- i
+      stem.3 <- sf::st_intersects(buf, sf::st_as_sf(stem.2, coords = c("x","y")))
+      stem.3 <- data.table::setDT(as.data.frame(stem.3))
+      colnames(stem.3) <- c("tree", "code")
+      stem.2$code <- as.numeric(row.names(stem.2))
+      stem.2 <- merge(stem.2, stem.3, by = "code", all = FALSE)
+      # stem.2 <- subset(stem.2, select = -code)
+      stem.2 <- stem.2[, 2:ncol(stem.2)]
 
-      }
+      rm(stem.3)
 
-
-      stem.2 <- stem.2[stem.2$tree > 0, ]
 
       if(nrow(stem.2) < 1)
         stem.2 <- NULL
 
     }
 
-    rm(buf.2, kk)
+    rm(buf.2)
 
   }
 
 
 
-  stem <- woody[woody$prob.selec == 1, ]
+  woody.2 <- sf::st_intersects(buf, sf::st_as_sf(woody, coords = c("x","y")))
+  woody.2 <- data.table::setDT(as.data.frame(woody.2))
+  colnames(woody.2) <- c("tree", "code")
+  woody$code <- as.numeric(row.names(woody))
+  woody <- merge(woody, woody.2, by = "code", all = FALSE)
+  # woody <- subset(woody, select = -code)
+  woody <- woody[, 2:ncol(woody)]
 
-  stem$tree <- NA
+  # woody <- woody[woody$tree %in% eje$tree, ]
+  woody <- woody[!is.na(woody$tree), ]
 
-  for (i in 1:length(buf)) {
 
-    stem[sf::st_intersects(buf, sf::st_as_sf(stem, coords = c("x","y")))[[i]], "tree"] <- i
+  rm(buf, woody.2)
+
+  # If there is only one tree in the point cloud
+
+  if(!is.null(single.tree)){
+
+    filter <- data.frame(table(stem$tree))
+    filter <- filter[order(filter$Freq, decreasing = TRUE), ]
+    stem <- stem[stem$tree == filter$Var1[1], ]
+    # stem$tree <- 1
 
   }
-
-  stem <- stem[!is.na(stem$tree), ]
 
 
   # Breaks argument
 
   if(is.null(breaks)){
-    breaks <- seq(from = 0.4, to = max(stem$z), by = 0.3)
+    breaks <- seq(from = 0.4, to = max(woody$z), by = 0.3)
     breaks <- breaks[-length(breaks)]}
 
-  rm(stem)
+  # rm(stem)
 
+
+  # Assigning points to trees previously detected
+
+  # woody.2 <- sf::st_intersects(buf, sf::st_as_sf(woody, coords = c("x","y")))
+  # woody.2 <- data.table::setDT(as.data.frame(woody.2))
+  # colnames(woody.2) <- c("tree", "code")
+  # woody$code <- as.numeric(row.names(woody))
+  # woody <- merge(woody, woody.2, by = "code", all = FALSE)
+  # woody <- subset(woody, select = -code)
+  #
+  # woody <- woody[!is.na(woody$tree), ]
+  #
+  #
+  # rm(buf, woody.2)
 
   # Estimating NCR threshold when RGB are available
 
@@ -213,9 +241,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   #   ncr <- as.matrix(ncr[, c("point", "x", "y", "z")])
   #   ncr.threshold <- ncr_point_cloud_double(ncr[1:10000, ])
   #   ncr.threshold <- mean(ncr.threshold$ncr, na.rm = TRUE)}
-
-
-  # Assigning points to trees previously detected
 
 
   #### Starting with clustering process ####

@@ -135,35 +135,33 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   # Detection of stem part without shrub vegetation and crown
 
-  stem.2 <- woody[woody$prob.selec == 1, ]
+  buf.2 <- buf.2[sf::st_area(buf.2) > (pi / 4)*(.dbh.min + 0.1) ^ 2]
 
-  stem.2$tree <- 0
-
-  kk <- data.frame(id = c(1:length(buf.2)), area = sf::st_area(buf.2))
-
-  kk <- kk[kk$area > (pi / 4)*(.dbh.min + 0.1) ^ 2, ]
-
-  if(nrow(kk) < 1){
+  if(length(buf.2) < 1){
 
     stem.2 <- NULL
 
   } else {
 
-  for (i in kk$id) {
+  stem.2 <- woody[woody$prob.selec == 1, ]
 
-    stem.2[sf::st_intersects(buf, sf::st_as_sf(stem.2, coords = c("x","y")))[[i]], "tree"] <- i
+  stem.3 <- sf::st_intersects(buf, sf::st_as_sf(stem.2, coords = c("x","y")))
+  stem.3 <- data.table::setDT(as.data.frame(stem.3))
+  colnames(stem.3) <- c("tree", "code")
+  stem.2$code <- as.numeric(row.names(stem.2))
+  stem.2 <- merge(stem.2, stem.3, by = "code", all = FALSE)
+  # stem.2 <- subset(stem.2, select = -code)
+  stem.2 <- stem.2[, 2:ncol(stem.2)]
 
-  }
+  rm(stem.3)
 
-
-  stem.2 <- stem.2[stem.2$tree > 0, ]
 
   if(nrow(stem.2) < 1)
     stem.2 <- NULL
 
   }
 
-  rm(buf.2, kk)
+  rm(buf.2)
 
   }
 
@@ -172,17 +170,15 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   stem <- woody[woody$prob.selec == 1, ]
 
-  stem$tree <- 0
+  stem.3 <- sf::st_intersects(buf, sf::st_as_sf(stem, coords = c("x","y")))
+  stem.3 <- data.table::setDT(as.data.frame(stem.3))
+  colnames(stem.3) <- c("tree", "code")
+  stem$code <- as.numeric(row.names(stem))
+  stem <- merge(stem, stem.3, by = "code", all = FALSE)
+  # stem <- subset(stem, select = -code)
+  stem <- stem[, 2:ncol(stem)]
 
-
-  for (i in 1:length(buf)) {
-
-    stem[sf::st_intersects(buf, sf::st_as_sf(stem, coords = c("x","y")))[[i]], "tree"] <- i
-
-  }
-
-  stem <- stem[stem$tree > 0, ]
-
+  rm(stem.3)
 
   # Filtering stems axis
 
@@ -237,6 +233,22 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   rm(eje.2)
 
 
+  # Assigning points to trees previously detected
+
+  woody.2 <- sf::st_intersects(buf, sf::st_as_sf(woody, coords = c("x","y")))
+  woody.2 <- data.table::setDT(as.data.frame(woody.2))
+  colnames(woody.2) <- c("tree", "code")
+  woody$code <- as.numeric(row.names(woody))
+  woody <- merge(woody, woody.2, by = "code", all = FALSE)
+  # woody <- subset(woody, select = -code)
+  woody <- woody[, 2:ncol(woody)]
+
+  woody <- woody[woody$tree %in% eje$tree, ]
+  woody <- woody[!is.na(woody$tree), ]
+
+
+  rm(buf, woody.2)
+
   # Estimating NCR threshold when RGB is available
 
   # if(!is.null(data$GLA)){
@@ -245,33 +257,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   #   ncr.threshold <- ncr_point_cloud_double(ncr[1:10000, ])
   #   ncr.threshold <- mean(ncr.threshold$ncr, na.rm = TRUE)}
 
-
-  # Assigning points to trees previously detected
-
-  woody$tree <- NA
-
-  for (i in unique(eje$tree)) {
-
-    woody[sf::st_intersects(buf, sf::st_as_sf(woody, coords = c("x","y")))[[i]], "tree"] <- i
-
-  }
-
-  # woody <- woody[woody$tree %in% eje$tree, ]
-  woody <- woody[!is.na(woody$tree), ]
-
-  rm(buf)
-
-
-  # If there is only one tree in the point cloud
-
-  # if(!is.null(single.tree)){
-  #
-  #   filter <- data.frame(table(woody$tree))
-  #   filter <- filter[order(filter$Freq, decreasing = TRUE), ]
-  #   woody <- woody[woody$tree == filter$Var1[1], ]
-  #   woody$tree <- 1
-  #
-  # }
 
 
   #### Starting with clustering process ####
@@ -304,18 +289,21 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     message("Computing section: ", cuts, " m")
 
-    .cut <- woody[which(woody$z > (cuts-slice-0.05) & woody$z < (cuts+slice+0.05)), , drop = FALSE]
+    .cut <- woody[woody$z > (cuts-slice-0.05) & woody$z < (cuts+slice+0.05), , drop = FALSE]
+
 
     if(nrow(.cut) < 50){next}
 
     .cut <- .ncr.remove.slice.double(.cut)
 
-    .cut <- .cut[which(.cut$ncr < ncr.threshold | is.na(.cut$ncr)), , drop = FALSE]
 
+    .cut <- .cut[.cut$ncr < ncr.threshold | is.na(.cut$ncr), , drop = FALSE]
 
     # Restrict to slice corresponding to cuts m +/- 5 cm
 
-    .cut <- .cut[which(.cut$z > (cuts-slice) & .cut$z < (cuts+slice)), , drop = FALSE]
+    .cut <- .cut[.cut$z > (cuts-slice) & .cut$z < (cuts+slice), , drop = FALSE]
+
+
 
     # Dbscan parameters
 
@@ -329,7 +317,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
       next} else {
     .dbscan <- dbscan::dbscan(.cut[, c("x", "y"), drop = FALSE], eps = .eps)
     .cut$cluster <- .dbscan$cluster
-    .cut <- .cut[which(.cut$cluster > 0), , drop = FALSE]}
+    .cut <- .cut[.cut$cluster > 0, , drop = FALSE]}
 
     # Checking if there are clusters
 

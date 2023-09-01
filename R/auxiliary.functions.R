@@ -243,8 +243,8 @@
   .datRANSAC <- .dat[, c("x", "y")]
   colnames(.datRANSAC) <- c("X", "Y")
 
-  .centerRANSAC <- suppressWarnings(try(suppressWarnings(rTLS::circleRANSAC(data.table::setDT(.datRANSAC),
-                                                                            fpoints = 0.2, pconf = 0.95, poutlier = c(0.75, 0.75), max_iterations = 100, plot = FALSE), silent = TRUE)))
+  .centerRANSAC <- suppressWarnings(try(rTLS::circleRANSAC(data.table::setDT(.datRANSAC),
+                                                                            fpoints = 0.2, pconf = 0.95, poutlier = c(0.75, 0.75), max_iterations = 100, plot = FALSE), silent = TRUE))
 
   if(class(.centerRANSAC)[1] == "try-error"){
 
@@ -310,7 +310,7 @@
 
     if(is.na(.cv)){return(.filter)}
 
-    if(2 * .cv >= .cvRANSAC){
+    if(1 * .cv >= .cvRANSAC){
 
       .radio <- .radioRANSAC
       .cv <- .cvRANSAC
@@ -593,8 +593,8 @@
   .datRANSAC <- .dat[, c("x", "y")]
   colnames(.datRANSAC) <- c("X", "Y")
 
-  .centerRANSAC <- suppressWarnings(try(suppressWarnings(rTLS::circleRANSAC(data.table::setDT(.datRANSAC),
-                                                           fpoints = 0.2, pconf = 0.95, poutlier = c(0.75, 0.75), max_iterations = 100, plot = FALSE), silent = TRUE)))
+  .centerRANSAC <- suppressWarnings(try(rTLS::circleRANSAC(data.table::setDT(.datRANSAC),
+                                                           fpoints = 0.2, pconf = 0.95, poutlier = c(0.75, 0.75), max_iterations = 100, plot = FALSE), silent = TRUE))
 
   if(class(.centerRANSAC)[1] == "try-error"){
 
@@ -659,7 +659,7 @@
 
     if(is.na(.cv)){return(.filter)}
 
-    if(2 * .cv >= .cvRANSAC){
+    if(1 * .cv >= .cvRANSAC){
 
       .radio <- .radioRANSAC
       .cv <- .cvRANSAC
@@ -3166,22 +3166,22 @@ if(nrow(.filter) < 1){
 # For that purpose, voxelize point cloud by means of regular
 # grid in x any z coordinates
 
+
 .ncr.remove.slice.double <- function(data){
+
+  # code <- NULL
 
   # Select necessary fields from original txt file of point cloud
 
-  .data <- data[,c("point", "x", "y", "z")]
-
+  .data <- as.data.frame(data[,c("point", "x", "y", "z")])
 
   # Create x and y coordinates for grid
 
-  .x = seq(min(.data$x), max(.data$x))
-  .y = seq(min(.data$y), max(.data$y))
+  .x <- seq(min(.data$x), max(.data$x)+1)
+  .y <- seq(min(.data$y), max(.data$y)+1)
 
-  kk <- data.frame(x = rep(seq(min(.data$x), max(.data$x)), each = length(.y)),
-                   y = rep(seq(min(.data$y), max(.data$y)), times = length(.x)))
 
-  if(length(kk$x) < 2 | length(kk$y) < 2){
+  if(length(.x) < 2 | length(.y) < 2){
 
     data$ncr <- NA
     .data <- data} else{
@@ -3189,36 +3189,33 @@ if(nrow(.filter) < 1){
   # Empty data frame where coordinates neccesaries for
   # creating grid will be saved
 
-  grid <- sf::st_as_sf(kk, coords = c("x","y"))
+  .grid <- data.frame(x = rep(.x, each = length(.y)),
+                      y = rep(.y, times = length(.x)))
 
-  rm(kk)
-
-  grid <- sf::st_buffer(grid, dist = 0.55, endCapStyle = "SQUARE")
-  grid <- sf::st_cast(grid, "POLYGON")
-  output <- sf::st_intersection(sf::st_as_sf(.data, coords = c("x","y")), grid)
-
-  .data$id <- 0
+  .grid <- sf::st_as_sf(.grid, coords = c("x","y"))
 
 
-  for (i in 1:nrow(grid)) {
+  .grid <- sf::st_buffer(.grid, dist = 0.55, endCapStyle = "SQUARE")
+  .grid <- sf::st_cast(.grid, "POLYGON")
 
-    .data[sf::st_intersects(grid, sf::st_as_sf(.data, coords = c("x","y")))[[i]], "id"] <- i
+  .grid.2 <- sf::st_intersects(.grid, sf::st_as_sf(.data, coords = c("x","y")))
+  .grid.2 <- as.data.frame(.grid.2)
+  colnames(.grid.2) <- c("id", "code")
+  .data$code <- as.numeric(row.names(.data))
+  .data <- merge(.data, .grid.2, by = "code", all = TRUE)
+  # .data <- subset(.data, select = -code)
+  .data <- .data[, 2:ncol(.data)]
 
-  }
+  rm(.grid, .grid.2)
 
-  .data <- .data[.data$id > 0, ]
+  .dat <- lapply(split(.data[, 1:4], .data$id), as.matrix)
 
-  rm(grid)
-
-  .dat <- lapply(split(.data, .data$id), as.matrix, ncol = 4)
-
-  .dat <- .dat[names(which(lapply(.dat, length) > 4))]
-  # .dat <- .dat[names(which(lapply(.dat, length) < 40000))]
-
+  .dat <- .dat[(lapply(.dat, nrow)) > 4]
+  # .dat <- .dat[(lapply(.dat, nrow)) < 40000]
 
   .ncr <- do.call(rbind, lapply(.dat, ncr_point_cloud_double))
 
-  .ncr <- .ncr[which(.ncr$ncr > 0 & .ncr$ncr < 9999), ]
+  .ncr <- .ncr[.ncr$ncr > 0 & .ncr$ncr < 9999, ]
 
 
   if(is.null(.ncr)){
