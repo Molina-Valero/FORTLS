@@ -237,16 +237,21 @@
   # Distances between points and center
   .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)
 
-  # Distances between points and center
-  .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)
 
-  .datRANSAC <- .dat[, c("x", "y")]
-  colnames(.datRANSAC) <- c("X", "Y")
+  # dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 100)
+  dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 600)
+  kk <- try(do.call(rbind, (lapply(dat.i, .RANSAC))), silent = TRUE)
+  # print(.dat$cluster[1])
 
-  .centerRANSAC <- suppressWarnings(try(rTLS::circleRANSAC(data.table::setDT(.datRANSAC),
-                                                                            fpoints = 0.2, pconf = 0.95, poutlier = c(0.75, 0.75), max_iterations = 100, plot = FALSE), silent = TRUE))
+  rm(dat.i)
 
-  if(class(.centerRANSAC)[1] == "try-error"){
+  # colnames(.datRANSAC) <- c("X", "Y")
+
+  # .centerRANSAC <- suppressWarnings(try(rTLS::circleRANSAC(data.table::setDT(.datRANSAC),
+  #                                                          fpoints = 0.2, pconf = 0.95, poutlier = c(0.75, 0.75), max_iterations = 100, plot = FALSE), silent = TRUE))
+
+  if(class(kk)[1] == "try-error"){
+    # if(max(kk$n) < 3){
 
     if(is.null(bark.roughness)){
 
@@ -274,37 +279,50 @@
 
   } else {
 
-    .dat$distRANSAC <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.centerRANSAC$X, .centerRANSAC$Y), lonlat = FALSE)
+    kk <- kk[kk$n >= max(kk$n), ]
+    if(nrow(kk) > 1)
+      kk <- kk[kk$mae <= min(kk$mae), ]
+
+    kk <- kk[1, ]
+
+    # .dat$distRANSAC <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.centerRANSAC$X, .centerRANSAC$Y), lonlat = FALSE)
+    .dat$distRANSAC <- raster::pointDistance(cbind(.dat$x,.dat$y), c(kk$x, kk$y), lonlat = FALSE)
 
     # Radius value as the mean distance
     if(is.null(bark.roughness)){
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
-      .radioRANSAC <- .centerRANSAC$radius
-      .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.05, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.99, na.rm = T)]) / .radioRANSAC
+      # .radioRANSAC <- .centerRANSAC$radius
+      .radioRANSAC <- kk$radio
+      # .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.05, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
+      .cvRANSAC <- kk$cv
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
 
     } else if(bark.roughness == 1){
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
-      .radioRANSAC <- .centerRANSAC$radius
-      .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.99, na.rm = T)]) / .radioRANSAC
+      # .radioRANSAC <- .centerRANSAC$radius
+      .radioRANSAC <- kk$radio
+      # .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
+      .cvRANSAC <- kk$cv
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
 
     } else if(bark.roughness == 2){
-
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
-      .radioRANSAC <- .centerRANSAC$radius
-      .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.99, na.rm = T)]) / .radioRANSAC
+      # .radioRANSAC <- .centerRANSAC$radius
+      .radioRANSAC <- kk$radio
+      # .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
+      .cvRANSAC <- kk$cv
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
 
     } else {
-
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
-      .radioRANSAC <- .centerRANSAC$radius
-      .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.75, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.99, na.rm = T)]) / .radioRANSAC
+      # .radioRANSAC <- .centerRANSAC$radius
+      .radioRANSAC <- kk$radio
+      # .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.75, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
+      .cvRANSAC <- kk$cv
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
     }
 
@@ -316,8 +334,8 @@
       .cv <- .cvRANSAC
       .dat$dist <- .dat$distRANSAC
 
-      .center.x <- .centerRANSAC$X
-      .center.y <- .centerRANSAC$Y}
+      .center.x <- kk$x
+      .center.y <- kk$y}
 
     .dat <- .dat[, 1:(ncol(.dat)-1)]
 
@@ -582,9 +600,6 @@
   .center.x <- .x.values[.a[2]]
   .center.y <- .y.values[.a[1]]
 
-
-  # Distances between points and center
-  .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)
 
   # Distances between points and center
   .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)

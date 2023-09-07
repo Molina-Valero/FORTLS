@@ -289,7 +289,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     message("Computing section: ", cuts, " m")
 
-    .cut <- woody[woody$z > (cuts-slice-0.05) & woody$z < (cuts+slice+0.05), , drop = FALSE]
+    # .cut <- woody[woody$z > (cuts-slice-0.05) & woody$z < (cuts+slice+0.05), , drop = FALSE]
+    .cut <- woody[woody$z > (cuts-2*slice-0.05) & woody$z < cuts, , drop = FALSE]
 
 
     if(nrow(.cut) < 50){next}
@@ -301,7 +302,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     # Restrict to slice corresponding to cuts m +/- 5 cm
 
-    .cut <- .cut[.cut$z > (cuts-slice) & .cut$z < (cuts+slice), , drop = FALSE]
+    # .cut <- .cut[.cut$z > (cuts-slice) & .cut$z < (cuts+slice), , drop = FALSE]
+    .cut <- .cut[.cut$z > (cuts-2*slice) & .cut$z < cuts, , drop = FALSE]
 
 
 
