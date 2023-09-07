@@ -430,3 +430,77 @@
 
 }
 
+
+
+.RANSAC <- function(data){
+
+  dat <- data
+
+  dist <- 0.05
+
+  # i <- 1
+
+  # while (nrow(dat) < 3 | is.null(length(dat))){
+
+    inliers <- dat[sample(nrow(dat), 3), ]
+
+    fit <- circular::lsfit.circle(inliers)
+
+    radio <- sqrt((dat[, "x"] - coef(fit)[2]) ^ 2 + (dat[, "y"] - coef(fit)[3]) ^ 2)
+    dat <- cbind(dat, radio)
+    inliers <- abs(coef(fit)[1]-dat[, "radio"])
+    dat <- cbind(dat, inliers)
+    dat <- dat[dat[, "inliers"] < dist, ]
+
+    # if (i > 5)
+    #   {break}
+    #
+    # i <- i + 1
+
+  # }
+
+  if(length(dat) == 0 | nrow(dat) < 2){
+
+    out <- data.frame(x = as.numeric(), y = as.numeric(),
+                      radio = as.numeric(), n = as.numeric(), mae = as.numeric(), cv = as.numeric())
+
+    return(out)
+
+  } else {
+
+    # i <- 1
+
+
+  # while (nrow(dat) < 3 | is.null(length(dat))){
+
+    dat <- dat[, c("x", "y")]
+
+    inliers <- dat[sample(nrow(dat), 3), ]
+
+    fit <- circular::lsfit.circle(inliers)
+
+    radio <- sqrt((dat[, "x"] - coef(fit)[2]) ^ 2 + (dat[, "y"] - coef(fit)[3]) ^ 2)
+    dat <- cbind(dat, radio)
+    inliers <- abs(coef(fit)[1]-dat[, "radio"])
+    dat <- cbind(dat, inliers)
+    dat <- dat[dat[, "inliers"] < dist, ]
+    mae <- abs(sum(coef(fit)[1]-dat[, 3])) / nrow(dat)
+    cv <- stats::sd(raster::pointDistance(dat[, c("x", "y")], c(coef(fit)[2], coef(fit)[3]), lonlat = FALSE)) / coef(fit)[1]
+
+    # if (i > 5)
+    #   {break}
+    #
+    # i <- i + 1
+
+  # }
+
+    out <- data.frame(x = coef(fit)[2], y = coef(fit)[3], radio = coef(fit)[1], n = nrow(dat), mae = mae, cv = cv)
+
+    return(out)
+
+  }
+
+}
+
+
+
