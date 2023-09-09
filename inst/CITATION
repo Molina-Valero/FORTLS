@@ -26,7 +26,7 @@ authors <- format(authors, include = c("given", "family"))
 authors <- paste(paste(head(authors, -1L), collapse = ", "), tail(authors, 1L), sep = " and ")
 
 
-citEntry(entry = "Manual",
+bibentry(bibtype = "Manual",
          title = meta$Title,
          author = authors,
          year = year,
