@@ -29,7 +29,3 @@ Development of the `FORTLS` package is being possible thanks to the following pr
 * Modelling the effects of intensity of perturbation on the structure of natural forests and their carbon stocks by using data from the National Forestry Inventory (AGL2016-76769-C2-2-R) supported by the Spanish Ministry of Science and Innovation.
 * Development of the Galician continuous forest inventory (2020-CP031) supported by the Regional Government of Galicia.
 * Design of forest monitoring systems on a regional scale (ED431F 2020/02) supported by the Regional Government of Galicia.
-
-<img src="man/figures/logo_ux.jpg" align="left" alt="right" width="200"> 
-<img src="man/figures/xunta.png" align="" alt="" width="350"> 
-<img src="man/figures/MICINN_Gob_Web_AEI_2.jpg" align="right" alt="" width="400">
