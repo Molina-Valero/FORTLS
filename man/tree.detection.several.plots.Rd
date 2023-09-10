@@ -160,11 +160,13 @@ dir.result <- getwd()
 
 # Loading example data (LAZ files) to dir.data
 
-download.file("https://www.dropbox.com/scl/fi/hzzrt0a39crdy6uvcj9el/PinusSylvestris1.laz?rlkey=svpwvorkm8889fgbnj14ns1f2&dl=1",
+download.file(
+"www.dropbox.com/scl/fi/hzzrt0a39crdy6uvcj9el/PinusSylve1.laz?rlkey=svpwvorkm8889fgbnj14ns1f2&dl=1",
               destfile = file.path(dir.data, "PinusSylvestris1.laz"),
               mode = "wb")
 
-download.file("https://www.dropbox.com/scl/fi/zeszze31jh5m1g4o3ns1o/PinusSylvestris2.laz?rlkey=wx72bi6ggdc7wedwgzupekp9k&dl=1",
+download.file(
+"www.dropbox.com/scl/fi/zeszze31jh5m1g4o3ns1o/PinusSylve2.laz?rlkey=wx72bi6ggdc7wedwgzupekp9k&dl=1",
               destfile = file.path(dir.data, "PinusSylvestris2.laz"),
               mode = "wb")
 

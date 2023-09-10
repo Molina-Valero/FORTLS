@@ -180,7 +180,8 @@ pcd <- normalize(las = "PinusRadiata.laz",
 
 # Loading example MLS data (LAZ file) to dir.data
 
-download.file("https://www.dropbox.com/scl/fi/es5pfj87wj0g6y8414dpo/PiceaAbies.laz?rlkey=ayt21mbndc6i6fyiz2e7z6oap&dl=1",
+download.file(
+"www.dropbox.com/scl/fi/es5pfj87wj0g6y8414dpo/PiceaAbies.laz?rlkey=ayt21mbndc6i6fyiz2e7z6oap&dl=1",
               destfile = file.path(dir.data, "PiceaAbies.laz"),
               mode = "wb")
 
