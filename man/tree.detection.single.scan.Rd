@@ -9,12 +9,12 @@
 \description{Detects trees from TLS point clouds corresponding to a single scan. For each tree detected, the function calculates the central coordinates and estimates the diameter at 1.3 m above ground level (which is known as \emph{dbh}, diameter at breast height) and classifies it as fully visible or partially occluded. Finally, the function obtains the number of points belonging to normal sections of trees (those corresponding to \emph{dbh} +/- 5 cm) and estimates them for both original and reduced (with point cropping process) point clouds.}
 
 \usage{
-tree.detection.single.scan(data,
+tree.detection.single.scan(data, single.tree = NULL,
                            dbh.min = 4, dbh.max = 200, h.min = 1.3,
                            ncr.threshold = 0.1,
                            tls.resolution = list(),
-                           stem.section = NULL, breaks = NULL,
-                           slice = 0.1, understory = NULL, bark.roughness = 2,
+                           stem.section = NULL, stem.range = NULL, breaks = NULL,
+                           slice = 0.1, understory = NULL, bark.roughness = 1,
                            den.type = 1, d.top = NULL,
                            plot.attributes = NULL,
                            save.result = TRUE, dir.result = NULL)}
@@ -22,6 +22,8 @@ tree.detection.single.scan(data,
 \arguments{
 
   \item{data}{Data frame with same description and format as indicated for \code{\link{normalize}} \sQuote{Value}.}
+
+  \item{single.tree}{Optional argument to indicate if there is only one tree.}
 
   \item{dbh.min}{Optional minimum \emph{dbh} (cm) considered for detecting trees. By default it will be set at 4 cm.}
 
@@ -47,13 +49,15 @@ tree.detection.single.scan(data,
 
   \item{stem.section}{Section free of noise (shurb, branches, etc.) considered to detect trees. If not specified, an automatic internal algorithm will be applied (see \sQuote{Details}).}
 
+  \item{stem.range}{Section considered to estimate straightness tree attributes.}
+
   \item{breaks}{Height above ground level (m) of slices considered for detecting trees. By default it will be considered all possible sections from 0.1 m to maximum height by 0.3 m intervals (+/- 5 cm).}
 
   \item{slice}{Slice width considered for detecting trees. By default it will be considered as 0.1 m.}
 
   \item{understory}{Optional argument to indicate if there is dense understory vegetation.}
 
-  \item{bark.roughness}{Bark roughness established in 3 degrees (1 < 2 < 3). By default it will be considered as 2.}
+  \item{bark.roughness}{Bark roughness established in 3 degrees (1 < 2 < 3). By default it will be considered as 1.}
 
   \item{den.type}{Numeric argument indicating the dendrometic type used to estimate volumen when there are not sections enough to fit a taper equation. Dendrometrics types available are the following: cylinder = 0, paraboloid = 1 (by default), cone = 2 and neiloid = 3.}
 
@@ -165,16 +169,16 @@ dir.result <- getwd()
 
 # Loading example data (LAZ file) to dir.data
 
-download.file("https://www.dropbox.com/s/4qvrh7tp3kq0hyo/Galicia_single_scan.laz?dl=1",
-              destfile = file.path(dir.data, "Galicia_single_scan.laz"),
+download.file("https://www.dropbox.com/s/17yl25pbrapat52/PinusRadiata.laz?dl=1",
+              destfile = file.path(dir.data, "PinusRadiata.laz"),
               mode = "wb")
 
 
 # Normalizing the whole point cloud data without considering arguments
 
-pcd <- normalize(las = "Galicia_single_scan.laz",
+pcd <- normalize(las = "PinusRadiata.laz",
 
-                 max.dist = 10,
+                 id = "PinusRadiata",
 
                  dir.data = dir.data, dir.result = dir.result)
 
@@ -187,7 +191,7 @@ tree.tls <- tree.detection.single.scan(data = pcd,
 
                                        tls.resolution = list(point.dist = 6.34, tls.dist = 10),
 
-                                       breaks = 1.3, stem.section = c(1, 5),
+                                       breaks = c(1, 1.3, 1.6), stem.section = c(1, 5),
 
                                        dir.result = dir.result)
 

@@ -1,6 +1,6 @@
 citHeader("To cite the FORTLS package in publications use both:")
 
-citEntry(entry="Article",
+bibentry(bibtype="Article",
          author = "Juan Alberto Molina-Valero and Adela Martínez-Calvo and Maria José Ginzo-Villamayor and Manuel Antonio Novo Pérez and Juan Gabriel Álvarez-González and Fernando Montes and César Pérez-Cruzado",
          title = "Operationalizing the use of TLS in forest inventories: The R package FORTLS",
          journal = "Environmental Modelling & Software",
@@ -26,7 +26,7 @@ authors <- format(authors, include = c("given", "family"))
 authors <- paste(paste(head(authors, -1L), collapse = ", "), tail(authors, 1L), sep = " and ")
 
 
-citEntry(entry = "Manual",
+bibentry(bibtype = "Manual",
          title = meta$Title,
          author = authors,
          year = year,

@@ -483,37 +483,40 @@ Adela Martínez-Calvo.}
 \donttest{
 
 # Load information of trees detected from TLS point clouds data corresponding to
-# plot 1 from Rioja data set
+# plots 1 and 2 from Rioja data set
 
 data("Rioja.data")
-example.tls <- subset(Rioja.data$tree.tls, id == 1)
+example.tls <- subset(Rioja.data$tree.tls, id < 3)
 
 # Compute detection probabilities using distance sampling methods
 
 example.ds <- distance.sampling(example.tls)
 
-# Load information of trees measured in field plots corresponding to plot 1 from
-# Rioja data set
+# Load information of trees measured in field plots corresponding to plot 1 and 2
+# from Rioja data set
 
-example.field <- subset(Rioja.data$tree.field, id == 1)
+example.field <- subset(Rioja.data$tree.field, id < 3)
 
 # Establish directory where TXT file containing TLS point cloud corresponding to
 # plot 1 from Rioja data set is located. For instance, current working directory
 
 dir.data <- getwd()
 
-# Download example of TXT file corresponding to plot 1 from Rioja data set
+# Download example of TXT file corresponding to plots 1 and 2 from Rioja data set
 
 download.file(url = "https://www.dropbox.com/s/w4fgcyezr2olj9m/Rioja_1.txt?dl=1",
               destfile = file.path(dir.data, "1.txt"), mode = "wb")
 
-# Establish directory where simulation results corresponding to plot 1 from
-# Rioja data set will be saved. For instance, current working directory
+download.file(url = "https://www.dropbox.com/s/sghmw3zud424s11/Rioja_2.txt?dl=1",
+              destfile = file.path(dir.data, "2.txt"), mode = "wb")
+
+# Establish directory where simulation results corresponding to plots 1 and 2
+# from Rioja data set will be saved. For instance, current working directory
 
 dir.result <- getwd()
 
 # Compute metrics and variables for simulated TLS and field plots corresponding
-# to plot 1 from Rioja data set
+# to plots 1 and 2 from Rioja data set
 # Without occlusion correction based on distance sampling methods
 
 sim <- simulations(tree.tls = example.tls, tree.field = example.field,

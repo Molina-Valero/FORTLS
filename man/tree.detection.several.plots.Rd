@@ -9,23 +9,23 @@
 \description{This function integrates both, the \code{\link{normalize}} and \code{\link{tree.detection.single.scan}} or \code{\link{tree.detection.multi.scan}} functions, generating the same \sQuote{Output Files} as indicated for these, and it returs the same \sQuote{Value} as described for \code{\link{tree.detection.single.scan}} or \code{\link{tree.detection.multi.scan}} respectively. However, this function is designed for working with several plots, producing a list of all scans considered automatically from LAS files.}
 
 \usage{
-tree.detection.several.plots(las.list, id = NULL, file = NULL,
+tree.detection.several.plots(las.list, id.list = NULL, file = NULL,
 
                              scan.approach = "single",
                              pcd.red = NULL, normalized = NULL,
-                             x.center = NULL, y.center = NULL,
+                             center.coord = NULL,
                              x.side = NULL, y.side = NULL,
                              max.dist = NULL, min.height = NULL, max.height = 50,
                              algorithm.dtm = "knnidw", res.dtm = 0.2,
                              csf = list(cloth_resolution = 0.5),
-                             RGB = NULL,
+                             intensity = NULL, RGB = NULL,
 
                              single.tree = NULL,
                              dbh.min = 4, dbh.max = 200, h.min = 1.3,
                              ncr.threshold = 0.1,
                              tls.resolution = NULL, tls.precision = NULL,
-                             stem.section = NULL, breaks = NULL,
-                             slice = 0.1, understory = NULL, bark.roughness = 2,
+                             stem.section = NULL, stem.range = NULL, breaks = NULL,
+                             slice = 0.1, understory = NULL, bark.roughness = 1,
                              den.type = 1, d.top = NULL,
 
                              plot.attributes = NULL,
@@ -36,7 +36,7 @@ tree.detection.several.plots(las.list, id = NULL, file = NULL,
 
   \item{las.list}{Character vector containing the names of all LAS files for analysis and belonging to TLS point cloud, including .las extension (see \sQuote{Examples})}
 
-  \item{id}{Optional vector with plots identification encoded as character string or numeric. If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, the plots will be encoded with correlative numbers from 1 to n plots.}
+  \item{id.list}{Optional vector with plots identification encoded as character string or numeric. If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, the plots will be encoded with correlative numbers from 1 to n plots.}
 
   \item{file}{Optional vector containing files name identification encoded as character string or numeric value. If it is null, file will be encoded as \code{id} by default.}
 
@@ -46,9 +46,7 @@ tree.detection.several.plots(las.list, id = NULL, file = NULL,
 
   \item{normalized}{Optional argument to establish as \code{TRUE} when point cloud is already normalized.}
 
-  \item{x.center}{Planimetric x center coordinate of point cloud data.}
-
-  \item{y.center}{Planimetric y center coordinate of point cloud data.}
+  \item{center.coord}{Planimetric x and y center coordinate of the plots. They has to be introduced as a data frame object with the following columns names: 'id',  'x' and 'y'. They represent plot id, and center coordinates respectively.}
 
   \item{x.side}{x-side (m) of the plot when the plot is square or rectangular.}
 
@@ -70,7 +68,10 @@ tree.detection.several.plots(las.list, id = NULL, file = NULL,
 
   \item {\code{cloth_resolution}}: by default 0.5.}
 
+  \item{intensity}{Logical parameter useful when point clouds have intensity values. It may be useful in some internal process to filter data.}
+
   \item{RGB}{Logical parameter useful when point clouds are colorized, thus including values of RGB colors. It is based on the Green Leaf Algorithm (GLA) (see \sQuote{Details}).}
+
 
   \item{single.tree}{Optional argument to indicate if there is only one tree.}
 
@@ -101,6 +102,8 @@ tree.detection.several.plots(las.list, id = NULL, file = NULL,
   \item{stem.section}{Section free of noise (shurb, branches, etc.) considered to detect trees. If not specified, an automatic internal algorithm will be applied (see \sQuote{Details}).}
 
   \item{breaks}{Height above ground level (m) of slices considered for detecting trees. By default it will be considered all possible sections from 0.1 m to maximum height by 0.3 m intervals (+/- 5 cm).}
+
+  \item{stem.range}{Section considered to estimate straightness tree attributes.}
 
   \item{slice}{Slice width considered for detecting trees. By default it will be considered as 0.1 m.}
 
@@ -157,12 +160,14 @@ dir.result <- getwd()
 
 # Loading example data (LAZ files) to dir.data
 
-download.file("https://www.dropbox.com/s/2nem6tfbsw7eyd7/Galicia_multi_scan.laz?dl=1",
-              destfile = file.path(dir.data, "Galicia_multi_scan.laz"),
+download.file(
+"www.dropbox.com/scl/fi/hzzrt0a39crdy6uvcj9el/PinusSylve1.laz?rlkey=svpwvorkm8889fgbnj14ns1f2&dl=1",
+              destfile = file.path(dir.data, "PinusSylvestris1.laz"),
               mode = "wb")
 
-download.file("https://www.dropbox.com/s/7pnzxsjf8d2x84f/Go_Fagus_SLAM.laz?dl=1",
-              destfile = file.path(dir.data, "Go_Fagus_SLAM.laz"),
+download.file(
+"www.dropbox.com/scl/fi/zeszze31jh5m1g4o3ns1o/PinusSylve2.laz?rlkey=wx72bi6ggdc7wedwgzupekp9k&dl=1",
+              destfile = file.path(dir.data, "PinusSylvestris2.laz"),
               mode = "wb")
 
 
@@ -171,15 +176,18 @@ download.file("https://www.dropbox.com/s/7pnzxsjf8d2x84f/Go_Fagus_SLAM.laz?dl=1"
 files <- list.files(pattern = "laz$", path = dir.data)
 
 
-# Tree detection
+# Tree detection (TLS single-scan aproach)
 
 tree.tls <- tree.detection.several.plots(las.list =
-                                         c("Galicia_multi_scan.laz",
-                                         "Go_Fagus_SLAM.laz"),
+                                           c("PinusSylvestris1.laz",
+                                             "PinusSylvestris2.laz"),
 
-                                         scan.approach = "multi",
+                                         id = c("PinusSylvestris1",
+                                                "PinusSylvestris2"),
 
-                                         breaks = 1.3, stem.section = c(1,5))
+                                         tls.resolution = list(point.dist = 7.67, tls.dist = 10),
+
+                                         breaks = c(1, 1.3, 1.6), stem.section = c(0.5, 4.5))
 
   }
 }

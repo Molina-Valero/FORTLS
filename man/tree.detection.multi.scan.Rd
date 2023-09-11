@@ -13,8 +13,8 @@ tree.detection.multi.scan(data, single.tree = NULL,
                           dbh.min = 4, dbh.max = 200, h.min = 1.3,
                           ncr.threshold = 0.1,
                           tls.precision = NULL,
-                          stem.section = NULL, breaks = NULL,
-                          slice = 0.1, understory = NULL, bark.roughness = 2,
+                          stem.section = NULL, stem.range = NULL, breaks = NULL,
+                          slice = 0.1, understory = NULL, bark.roughness = 1,
                           den.type = 1, d.top = NULL,
                           plot.attributes = NULL,
                           save.result = TRUE, dir.result = NULL)}
@@ -37,13 +37,15 @@ tree.detection.multi.scan(data, single.tree = NULL,
 
   \item{stem.section}{Section free of noise (shurb, branches, etc.) considered to detect trees. If not specified, an automatic internal algorithm will be applied (see \sQuote{Details}).}
 
+  \item{stem.range}{Section considered to estimate straightness tree attributes.}
+
   \item{breaks}{Height above ground level (m) of slices considered for detecting trees. By default it will be considered all possible sections from 0.4 m to maximum height by 0.3 m intervals (+/- 5 cm).}
 
   \item{slice}{Slice width considered for detecting trees. By default it will be considered as 0.1 m.}
 
   \item{understory}{Optional argument to indicate if there is dense understory vegetation.}
 
-  \item{bark.roughness}{Bark roughness established in 3 degrees (1 < 2 < 3). By default it will be considered as 2.}
+  \item{bark.roughness}{Bark roughness established in 3 degrees (1 < 2 < 3). By default it will be considered as 1.}
 
   \item{den.type}{Numeric argument indicating the dendrometic type used to estimate volumen when there are not sections enough to fit a taper equation. Dendrometrics types available are the following: cylinder = 0, paraboloid = 1 (by default), cone = 2 and neiloid = 3.}
 
@@ -156,17 +158,18 @@ dir.result <- getwd()
 
 # Loading example data of TLS multi-scan approach point cloud (LAZ file) to dir.data
 
-download.file("https://www.dropbox.com/s/2nem6tfbsw7eyd7/Galicia_multi_scan.laz?dl=1",
-              destfile = file.path(dir.data, "Galicia_multi_scan.laz"),
+download.file(
+"www.dropbox.com/scl/fi/es5pfj87wj0g6y8414dpo/PiceaAbies.laz?rlkey=ayt21mbndc6i6fyiz2e7z6oap&dl=1",
+              destfile = file.path(dir.data, "PiceaAbies.laz"),
               mode = "wb")
 
 # Normalizing the whole point cloud data without considering arguments
 
-pcd <- normalize(las = "Galicia_multi_scan.laz",
+pcd <- normalize(las = "PiceaAbies.laz",
+
+                 id = "PiceaAbies",
 
                  scan.approach = "multi",
-
-                 max.dist = 10,
 
                  dir.data = dir.data, dir.result = dir.result)
 
@@ -175,7 +178,7 @@ pcd <- normalize(las = "Galicia_multi_scan.laz",
 
 tree.tls <- tree.detection.multi.scan(data = pcd[pcd$prob.selec == 1, ],
 
-                                      breaks = 1.3, stem.section = c(1, 5),
+                                      stem.section = c(1, 5),
 
                                       dir.result = dir.result)
 

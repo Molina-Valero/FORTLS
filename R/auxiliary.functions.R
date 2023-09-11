@@ -1,7 +1,6 @@
 
 
-
-.sections.single.scan <- function(cut, .cut, .alpha.v, .alpha.h, .dbh.min, .dbh.max, slice, bark.roughness){
+.sections.single.scan <- function(cut, .cut, .alpha.v, .alpha.h, .dbh.min, .dbh.max, slice, bark.roughness, x.center, y.center){
 
   .filter <- data.frame(cluster = as.numeric(),
 
@@ -29,16 +28,11 @@
   # Select cluster i
   .dat <- cut
 
-  # plot(.dat$x, .dat$y, asp = 1)
-  # kk <- data.frame(x = tapply(.dat$x, .dat$cluster, mean),
-  #                  y = tapply(.dat$y, .dat$cluster, mean),
-  #                  cluster = tapply(.dat$cluster, .dat$cluster, mean))
-  # text(kk$x, kk$y, col = "red")
+  if(nrow(.dat) < 10){return(.filter)}
 
-  # .dat <- .cut[.cut$cluster == 19, ]
-  # plot(.dat$phi, .dat$z)
 
   # First filter
+
   .n <- (slice / (tan(.alpha.v / 2) * (mean(.dat$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2))
 
   if(nrow(.dat) < .n){return(.filter)}
@@ -87,12 +81,13 @@
 
 
   # Filter
+
   .h <- 2 * (tan(.alpha.h / 2) * (mean(.dat$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2)
 
   .x.values <- seq(from = .xmin, to = .xmax, by = .h)
   .y.values <- seq(from = .ymin, to = .ymax, by = .h)
 
-  # .h <- .h / 2
+  .h <- .h / 2
 
   .density <- matrix(0, ncol = length(.x.values), nrow = length(.y.values))
 
@@ -100,12 +95,12 @@
     for(j in 1:length(.y.values)){
 
       .den <- .dat[which(.dat$x <= ((.x.values[i]) + .h) &
-                           .dat$x > ((.x.values[i]) - .h) &
-                           .dat$y <= ((.y.values[j]) + .h) &
-                           .dat$y > ((.y.values[j]) - .h)), , drop = FALSE]
+                         .dat$x > ((.x.values[i]) - .h) &
+                         .dat$y <= ((.y.values[j]) + .h) &
+                         .dat$y > ((.y.values[j]) - .h)), , drop = FALSE]
 
-      # Discard cells with less than 2 points for computing mean points
-      # density by cell
+      # Discard cells with less than 2 points for computing mean points density by cell
+
       .density[j, i] <- ifelse(nrow(.den) < 1, NA, nrow(.den))
 
     }
@@ -114,13 +109,13 @@
 
 
   # Estimate mean density by cell
-  # .threeshold <- stats::median(.density, na.rm = T)
-  # .threeshold <- mean(.density, na.rm = T)
+
   .threeshold <- stats::quantile(.density, prob = 0.25, na.rm = T)
 
   if(is.nan(.threeshold) | is.na(.threeshold)){return(.filter)}
 
   .density <- matrix(0, ncol = length(.x.values), nrow = length(.y.values))
+
   .remove <- data.frame(point = as.numeric())
 
   for(i in 1:length(.x.values)){
@@ -131,8 +126,8 @@
                            .dat$y <= ((.y.values[j]) + .h) &
                            .dat$y > ((.y.values[j]) - .h)), , drop = FALSE]
 
-      # Discard cells with less than 2 points for computing mean density by
-      # cell
+      # Discard cells with less than 2 points for computing mean density by cell
+
       .density[j, i] <- ifelse(nrow(.den) < 1, NA, nrow(.den))
 
       if(nrow(.den) > .threeshold){
@@ -148,7 +143,10 @@
 
   .dat <- merge(.dat, .remove, by = "point", all.y = TRUE)
 
-  if(nrow(.dat) < 1){return(.filter)}
+  .dat <- .dat[!duplicated(.dat$point), ]
+
+
+  if(nrow(.dat) < 5){return(.filter)}
 
   if(is.nan(mean(.dat$slope, na.rm = TRUE))){
 
@@ -204,7 +202,7 @@
   .dat <- merge(.dat, .remove, by = "point", all.y = TRUE)
 
   # If no points remain in .dat after removing, go to next iteration
-  if(nrow(.dat) < 1){return(.filter)}
+  if(nrow(.dat) < 5){return(.filter)}
 
   # Estimate points number for both the original cloud (.n.pts) and the
   # point cloud reduced by the point cropping process (.n.pts.red)
@@ -235,53 +233,139 @@
   .center.x <- .x.values[.a[2]]
   .center.y <- .y.values[.a[1]]
 
-  .center.phi <- atan2(.center.y, .center.x)
-  .center.phi <- ifelse(.center.phi < 0, .center.phi + (2 * pi), .center.phi)
-  .center.rho <- sqrt(.center.x ^ 2 + .center.y ^ 2)
-  .center.r <- sqrt(.dat$sec[1] ^ 2 + .center.rho ^ 2)
-  .center.theta <- atan2(.dat$sec[1], .center.rho)
-
 
   # Distances between points and center
   .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)
 
-  # Radius value as the mean distance
-  # .dat <- .dat[order(.dat$dist, decreasing = FALSE), , drop = FALSE]
-  if(bark.roughness == 1){
-    .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99)])
-  } else if(bark.roughness == 2){
-    .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99)])
+
+  # dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 100)
+  dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 600)
+  kk <- try(do.call(rbind, (lapply(dat.i, .RANSAC))), silent = TRUE)
+  # print(.dat$cluster[1])
+
+  rm(dat.i)
+
+  # colnames(.datRANSAC) <- c("X", "Y")
+
+  # .centerRANSAC <- suppressWarnings(try(rTLS::circleRANSAC(data.table::setDT(.datRANSAC),
+  #                                                          fpoints = 0.2, pconf = 0.95, poutlier = c(0.75, 0.75), max_iterations = 100, plot = FALSE), silent = TRUE))
+
+  if(class(kk)[1] == "try-error"){
+    # if(max(kk$n) < 3){
+
+    if(is.null(bark.roughness)){
+
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
+
+    } else if(bark.roughness == 1){
+
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
+
+    } else if(bark.roughness == 2){
+
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
+
+    } else {
+
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
+
+    }
+
+    if(.radio <= 0 | is.na(.radio)){return(.filter)}
+
   } else {
-  .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99)])}
 
-  if(.radio <= 0 | is.na(.radio)){return(.filter)}
+    kk <- kk[kk$n >= max(kk$n), ]
+    if(nrow(kk) > 1)
+      kk <- kk[kk$mae <= min(kk$mae), ]
 
-  # Coefficient of variation for distances among cluster points and the estimated center
-  .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25)], na.rm = TRUE) / .radio
+    kk <- kk[1, ]
 
-  if(.cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25)]) < 2) {return(.filter)}
+    # .dat$distRANSAC <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.centerRANSAC$X, .centerRANSAC$Y), lonlat = FALSE)
+    .dat$distRANSAC <- raster::pointDistance(cbind(.dat$x,.dat$y), c(kk$x, kk$y), lonlat = FALSE)
+
+    # Radius value as the mean distance
+    if(is.null(bark.roughness)){
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
+      # .radioRANSAC <- .centerRANSAC$radius
+      .radioRANSAC <- kk$radio
+      # .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.05, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
+      .cvRANSAC <- kk$cv
+      if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
+
+    } else if(bark.roughness == 1){
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
+      # .radioRANSAC <- .centerRANSAC$radius
+      .radioRANSAC <- kk$radio
+      # .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
+      .cvRANSAC <- kk$cv
+      if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
+
+    } else if(bark.roughness == 2){
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
+      # .radioRANSAC <- .centerRANSAC$radius
+      .radioRANSAC <- kk$radio
+      # .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
+      .cvRANSAC <- kk$cv
+      if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
+
+    } else {
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
+      # .radioRANSAC <- .centerRANSAC$radius
+      .radioRANSAC <- kk$radio
+      # .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.75, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
+      .cvRANSAC <- kk$cv
+      if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
+    }
+
+    if(is.na(.cv)){return(.filter)}
+
+    if(1 * .cv >= .cvRANSAC){
+
+      .radio <- .radioRANSAC
+      .cv <- .cvRANSAC
+      .dat$dist <- .dat$distRANSAC
+
+      .center.x <- kk$x
+      .center.y <- kk$y}
+
+    .dat <- .dat[, 1:(ncol(.dat)-1)]
+
+    if(.radio <= 0 | is.na(.radio)){return(.filter)}
+
+  }
+
+  .center.phi <- atan2(.center.y-y.center, .center.x-x.center)
+  .center.phi <- ifelse(.center.phi < 0, .center.phi + (2 * pi), .center.phi)
+  .center.rho <- sqrt((.center.x-x.center) ^ 2 + (.center.y-y.center) ^ 2)
+  .center.r <- sqrt(.dat$sec[1] ^ 2 + .center.rho ^ 2)
+  .center.theta <- atan2(.dat$sec[1], .center.rho)
+
+  if(.cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2) {return(.filter)}
 
   # Center behind tree surface
-  if(stats::quantile(.dat$rho, prob = 0.05) > .center.r) {return(.filter)}
+  if(stats::quantile(.dat$rho, prob = 0.05, na.rm = T) > .center.r) {return(.filter)}
 
   # At least 95 % of distances should be greater than .radio / 2
-  if(stats::quantile(.dat$dist, prob = 0.05) < (.radio / 2)) {return(.filter)}
-
-
-  # Evaluamos aqui el ratio
-
-  # .ratio <- nrow(.dat.2) / (.n * ((max(.dat.2$phi) - min(.dat.2$phi)) / .alpha.h))
-  # if(.ratio < 0.5){next}
+  if(stats::quantile(.dat$dist, prob = 0.05, na.rm = T) < (.radio / 2)) {return(.filter)}
 
 
   # Select 1st percentil, if necessary for strange points
   # It remains to be seen what happens if cluster is located in 0 +/- phi
-  .pto.left <- stats::quantile(.dat.2$phi, prob = 0.01)
+  .pto.left <- stats::quantile(.dat.2$phi, prob = 0.01, na.rm = T)
   .rho.left <- mean(.dat.2$rho[which(.dat.2$phi <= .pto.left)])
   .phi.left <- mean(.dat.2$phi[which(.dat.2$phi <= .pto.left)])
 
   # Select 99th percentil, if necessary for strange points
-  .pto.right <- stats::quantile(.dat.2$phi, prob = 0.99)
+  .pto.right <- stats::quantile(.dat.2$phi, prob = 0.99, na.rm = T)
   .rho.right <- mean(.dat.2$rho[which(.dat.2$phi >= .pto.right)])
   .phi.right <- mean(.dat.2$phi[which(.dat.2$phi >= .pto.right)])
 
@@ -306,8 +390,7 @@
   # numeration and phi must be found when they are ordered with respect to
   # phi
   .dat.2$n <- c(1:nrow(.dat.2))
-  .cor <- try(stats::cor.test(x = .dat.2$n, y = .dat.2$phi, method = 'pearson'), silent = TRUE) # cor function could be used instead
-  # .cor <- try(stats::cor.test(x = .dat2$n, y = .dat2$phi, method = 'spearman'))
+  .cor <- try(stats::cor.test(x = .dat.2$n, y = .dat.2$phi, method = 'pearson'), silent = TRUE)
 
   # If error, go to next iteration
   if(methods::is(.cor) == "try-error"){return(.filter)} else{
@@ -322,7 +405,7 @@
 
   if(.n.w.ratio > 1 | is.nan(.n.w.ratio)){return(.filter)}
 
-  if(nrow(.dat) < 2){return(.filter)}
+  if(nrow(.dat) < 5){return(.filter)}
 
 
   # Results
@@ -345,10 +428,6 @@
   .filter$tree <- ifelse(.filter$arc.circ == 1, 1,
                          ifelse(.filter$arc.circ == 0 & .filter$occlusion > 0.975, 1, 0))
   .filter <- .filter[which(.filter$tree == 1), , drop = FALSE]
-
-  # Dbh maximum and minimum
-  .filter$tree <- ifelse(.filter$radius > (.dbh.max / 2) | .filter$radius < (.dbh.min / 2), 0, 1)
-  .filter <- subset(.filter, .filter$tree == 1)
 
 
   if(nrow(.filter) < 1){
@@ -379,7 +458,7 @@
 
 
 
-.sections.multi.scan <- function(cut, tls.precision, .dbh.min, .dbh.max, slice, bark.roughness){
+.sections.multi.scan <- function(cut, tls.precision, .dbh.min, .dbh.max, slice, bark.roughness, x.center, y.center){
 
   .filter <- data.frame(cluster = as.numeric(),
 
@@ -405,11 +484,8 @@
 
 
   .dat <- cut
-  # .dat <- .cut[.cut$cluster == 12, ]
 
-  if(nrow(.dat) < 25){return(.filter)}
-
-  # plot(.dat$x, .dat$y, asp = 1, main = i)
+  if(nrow(.dat) < 15){return(.filter)}
 
   # Generate mesh
 
@@ -490,12 +566,9 @@
   }
 
   .dat <- merge(.dat, .remove, by = "point", all.y = TRUE)
-  # .noise <- subset(.dat, !(point %in% .remove$point))
+  .dat <- .dat[!duplicated(.dat$point), ]
 
-
-  if(nrow(.dat) < 1){return(.filter)}
-
-  # plot(.dat$x, .dat$y, asp = 1, main = i)
+  if(nrow(.dat) < 10){return(.filter)}
 
 
   # Estimate points number for both the original cloud (.n.pts) and the
@@ -527,36 +600,128 @@
   .center.x <- .x.values[.a[2]]
   .center.y <- .y.values[.a[1]]
 
-  .center.phi <- atan2(.center.y, .center.x)
-  .center.phi <- ifelse(.center.phi < 0, .center.phi + (2 * pi), .center.phi)
-  .center.rho <- sqrt(.center.x ^ 2 + .center.y ^ 2)
-  .center.r <- sqrt(.dat$sec[1] ^ 2 + .center.rho ^ 2)
-  .center.theta <- atan2(.dat$sec[1], .center.rho)
-
-  # points(.center.x, .center.y, col = "red", pch = 19)
-  # abline(h = .center.y)
-  # abline(v = .center.x)
-
 
   # Distances between points and center
   .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)
 
-  # Radius value as the mean distance
-  if(bark.roughness == 1){
-    .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)])
-  } else if(bark.roughness == 2){
-    .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)])
+  # .datRANSAC <- .dat[, c("x", "y")]
+
+  # dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 100)
+  dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 600)
+  kk <- try(do.call(rbind, (lapply(dat.i, .RANSAC))), silent = TRUE)
+  # print(.dat$cluster[1])
+
+  rm(dat.i)
+
+  # colnames(.datRANSAC) <- c("X", "Y")
+
+  # .centerRANSAC <- suppressWarnings(try(rTLS::circleRANSAC(data.table::setDT(.datRANSAC),
+  #                                                          fpoints = 0.2, pconf = 0.95, poutlier = c(0.75, 0.75), max_iterations = 100, plot = FALSE), silent = TRUE))
+
+  if(class(kk)[1] == "try-error"){
+  # if(max(kk$n) < 3){
+
+    if(is.null(bark.roughness)){
+
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
+
+    } else if(bark.roughness == 1){
+
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
+
+    } else if(bark.roughness == 2){
+
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
+
+    } else {
+
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
+
+    }
+
+    if(.radio <= 0 | is.na(.radio)){return(.filter)}
+
   } else {
-    .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75) & .dat$dist<stats::quantile(.dat$dist, prob = 0.95)])}
 
-  if(.radio <= 0 | is.na(.radio)){return(.filter)}
+    kk <- kk[kk$n >= max(kk$n), ]
+    if(nrow(kk) > 1)
+      kk <- kk[kk$mae <= min(kk$mae), ]
 
-  # Coefficient of variation for distances among cluster points and the estimated center
-  .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25)]) / .radio
-  if(.cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25)]) < 2){return(.filter)}
+    kk <- kk[1, ]
+
+    # .dat$distRANSAC <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.centerRANSAC$X, .centerRANSAC$Y), lonlat = FALSE)
+    .dat$distRANSAC <- raster::pointDistance(cbind(.dat$x,.dat$y), c(kk$x, kk$y), lonlat = FALSE)
+
+    # Radius value as the mean distance
+    if(is.null(bark.roughness)){
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
+      # .radioRANSAC <- .centerRANSAC$radius
+      .radioRANSAC <- kk$radio
+      # .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.05, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
+      .cvRANSAC <- kk$cv
+      if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
+
+    } else if(bark.roughness == 1){
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
+      # .radioRANSAC <- .centerRANSAC$radius
+      .radioRANSAC <- kk$radio
+      # .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
+      .cvRANSAC <- kk$cv
+      if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
+
+    } else if(bark.roughness == 2){
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
+      # .radioRANSAC <- .centerRANSAC$radius
+      .radioRANSAC <- kk$radio
+      # .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
+      .cvRANSAC <- kk$cv
+      if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
+
+    } else {
+      .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
+      .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
+      # .radioRANSAC <- .centerRANSAC$radius
+      .radioRANSAC <- kk$radio
+      # .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.75, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
+      .cvRANSAC <- kk$cv
+      if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
+    }
+
+    if(is.na(.cv)){return(.filter)}
+
+    if(1 * .cv >= .cvRANSAC){
+
+      .radio <- .radioRANSAC
+      .cv <- .cvRANSAC
+      .dat$dist <- .dat$distRANSAC
+
+      .center.x <- kk$x
+      .center.y <- kk$y}
+
+    .dat <- .dat[, 1:(ncol(.dat)-1)]
+
+    if(.radio <= 0 | is.na(.radio)){return(.filter)}
+
+  }
+
+  .center.phi <- atan2(.center.y-y.center, .center.x-x.center)
+  .center.phi <- ifelse(.center.phi < 0, .center.phi + (2 * pi), .center.phi)
+  .center.rho <- sqrt((.center.x-x.center) ^ 2 + (.center.y-y.center) ^ 2)
+  .center.r <- sqrt(.dat$sec[1] ^ 2 + .center.rho ^ 2)
+  .center.theta <- atan2(.dat$sec[1], .center.rho)
+
+
+  if(.cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2){return(.filter)}
 
   # At least 95 % of distances should be greater than .radio / 2
-  if(stats::quantile(.dat$dist, prob = 0.05) < (.radio / 2)){return(.filter)}
+  if(stats::quantile(.dat$dist, prob = 0.05, na.rm = T) < (.radio / 2)){return(.filter)}
 
 
   .dat.2 <- .dat[order(.dat$x, .dat$y, decreasing = F), ]
@@ -584,13 +749,10 @@
   # numeration and phi must be found when they are ordered with respect to phi
 
   .dat.2 <- .dat.2[order(.dat.2$alpha, decreasing = F), ]
-  # .cv <- stats::sd(diff(.dat.2$alpha)) / mean(diff(.dat.2$alpha))
-  # if(.cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25)]) < 2){next}
+
   .dat.2$n <- c(1:nrow(.dat.2))
   .cor <- try(stats::cor.test(x = .dat.2$n, y = .dat.2$alpha, method = 'pearson'), silent = TRUE) # cor function could be used instead
 
-  # plot(.dat.2$n, .dat.2$alpha)
-  # .cor <- try(stats::cor.test(x = .dat.2$n, y = .dat.2$phi, method = 'spearman'))
 
   # If error, go to next iteration
   if(methods::is(.cor) == "try-error"){return(.filter)} else{
@@ -630,8 +792,8 @@
 
 
 # Arch of circumference or partial arch of circumference?
-.Q1 <- stats::quantile(.filter$density.radio, prob = 0.25)
-.Q3 <- stats::quantile(.filter$density.radio, prob = 0.75)
+.Q1 <- stats::quantile(.filter$density.radio, prob = 0.25, na.rm = T)
+.Q3 <- stats::quantile(.filter$density.radio, prob = 0.75, na.rm = T)
 .outliers <- .Q1 - 1.5 * (.Q3 - .Q1)
 
 # Minimum number of points
@@ -642,10 +804,6 @@
                        ifelse(.filter$arc.circ == 1 & .filter$occlusion >= 0.95 & .filter$density.radio >= .outliers, 1,
                               ifelse(.filter$circ == 0 & .filter$arc.circ == 0 & .filter$occlusion >= 0.975 & .filter$density.radio >= .outliers, 1, 0)))
 .filter <- .filter[which(.filter$tree == 1), , drop = FALSE]
-
-# Dbh maximum and minimum
-.filter$tree <- ifelse(.filter$radius > (.dbh.max / 2) | .filter$radius < (.dbh.min / 2), 0, 1)
-.filter <- subset(.filter, .filter$tree == 1)
 
 
 if(nrow(.filter) < 1){
@@ -684,10 +842,12 @@ if(nrow(.filter) < 1){
 
 
 
-.volume <- function(data, d.top = NULL){
+.volume <- function(data, d.top = NULL, id){
 
-  datos <- data.frame(hi = as.numeric(), dhi = as.numeric(), h = as.numeric(),
-                      dbh = as.numeric())
+  datos <- data.frame(tree = as.numeric(),
+                      x = as.numeric(), y = as.numeric(),
+                      hi = as.numeric(), dhi = as.numeric(),
+                      h = as.numeric(), dbh = as.numeric())
 
   for (i in unique(data$tree)) {
 
@@ -696,7 +856,7 @@ if(nrow(.filter) < 1){
 
     if (nrow(tree) < 2 | suppressWarnings(min(abs(diff(tree$dhi)))) > 10) {
 
-      datos <- rbind(datos, tree[tree$hi == 1.3, c("hi", "dhi", "h", "dbh")])
+      datos <- rbind(datos, tree[tree$hi == 1.3, c("tree", "x", "y", "hi", "dhi", "h", "dbh")])
 
     } else {
 
@@ -720,7 +880,7 @@ if(nrow(.filter) < 1){
 
     }
 
-    datos <- rbind(datos, tree[, c("hi", "dhi", "h", "dbh")])
+    datos <- rbind(datos, tree[, c("tree", "x", "y", "hi", "dhi", "h", "dbh")])
 
     # Add additional values if the largest break is smaller than total height
     # minus 0.5 m
@@ -728,7 +888,8 @@ if(nrow(.filter) < 1){
 
       aux <- tree[which.max(tree$hi)[1], , drop = FALSE]
       datos <- rbind(datos,
-                     data.frame(hi = aux$h - .5,
+                     data.frame(tree = aux$tree, x = aux$x, y = aux$y,
+                                hi = aux$h - .5,
                                 dhi = .5 * aux$dhi / (aux$h - aux$hi),
                                 aux[, c("h", "dbh"), drop = FALSE]))
 
@@ -745,7 +906,36 @@ if(nrow(.filter) < 1){
   loes <- loes[!duplicated(loes), ]
   datos <- merge(datos, loes, all = FALSE)
   datos$sep <- abs(datos$dhi - datos$dhi.mean)
-  datos <- datos[datos$sep < stats::quantile(datos$sep, prob = 0.9), ]
+  datos <- datos[datos$sep < stats::quantile(datos$sep, prob = 0.9, na.rm = T), ]
+
+  datos$id <- id
+
+
+  if(nrow(datos) < 3){
+
+    if(is.null(d.top)){
+
+      den.type <- 1
+      n <- den.type
+
+      v <- pi * (unique(data$h) ^ (n + 1) / (n + 1)) * ((unique(data$dbh) / 200) ^ 2 / (unique(data$h) - 1.3) ^ n)
+
+      volume <- data.frame(tree = unique(data$tree), v = v)}
+
+    else {
+
+      den.type <- 1
+      n <- den.type
+
+      v <- pi * (unique(data$h) ^ (n + 1) / (n + 1)) * ((unique(data$dbh) / 200) ^ 2 / (unique(data$h) - 1.3) ^ n)
+      h.lim <- (((d.top / 200) ^ 2) / ((unique(data$dbh) / 200) ^ 2 / (unique(data$h) - 1.3) ^ n)) ^ (1 / n)
+      v.com <- pi * ((unique(data$h) ^ (n + 1) - h.lim ^ (n + 1)) / (n + 1)) * ((unique(data$dbh) / 200) ^ 2 / (unique(data$h) - 1.3) ^ n)
+      v.com <- ifelse(v.com < 0, 0, v.com)
+
+      volume <- data.frame(tree = unique(data$tree), v = v, v.com = v.com, h.com = h.lim)}
+
+  } else {
+
 
   ajuste <- stats::nls(dhi ~ dbh * ((h - hi) / (h - 1.3)) ** b1, data = datos,
                        start = c(b1 = 1), max)
@@ -812,7 +1002,7 @@ if(nrow(.filter) < 1){
 
     }
 
-  }
+  }}
 
   return(volume)
 
@@ -822,7 +1012,11 @@ if(nrow(.filter) < 1){
 .stem.axis <- function(data, scan.approach = "single"){
 
   if(scan.approach == "multi"){
-    data <- data[data$prob > 0.75, ]} else {
+
+    s <- sample(nrow(data), round(nrow(data)*0.25))
+    data <- data[s, ]
+
+    } else {
 
     data <- data[data$prob < 0.1 | data$prob > 0.9, ]}
 
@@ -858,60 +1052,12 @@ if(nrow(.filter) < 1){
 
   eje$n.w.ratio <- n.w.ratio
 
-  # plot(data$z, data$rho, asp = 1)
-  # plot(data$z, data$phi, asp = 1)
-  # plot(data$z, data$x, asp = 1, xlab = "Z (m)", ylab = "X (m)", main = data$tree[1])
-  # abline(mod.x, col = 2, lwd = 3)
-  # plot(data$z, data$y, asp = 1, xlab = "Z (m)", ylab = "Y (m)", main = eje$n.w.ratio[1])
-  # abline(mod.y, col = 2, lwd = 3)
   }
 
   return(eje)
 
 
 }
-
-
-
-# .stem.axis <- function(data){
-#
-#   dat <- as.matrix(cov(data[, c("x", "y", "z")]))
-#   out <- eigen(dat)
-#
-#   pca <- prcomp(data[, c("x", "y", "z")], scale. = TRUE)
-#   #
-#   # x <- pca$center[1]
-#   # y <- pca$center[2]
-#   # z <- pca$center[3]
-#   #
-#   #
-#   x.inc <- pca$scale[1]
-#   y.inc <- pca$scale[2]
-#   z.inc <- pca$scale[3]
-#
-#
-#
-#   x <- c(mean(data$x), mean(data$x) + out$vectors[1, 1])
-#   y <- c(mean(data$y), mean(data$y) + out$vectors[2, 1])
-#   z <- c(mean(data$z), mean(data$z) + out$vectors[3, 1])
-#
-#   out <- data.frame(tree = data$tree[1],
-#                     x = x[1], x.inc = x[2] - x[1],
-#                     y = y[1], y.inc = y[2] - y[1],
-#                     z = z[1], z.inc = z[2] - z[1])
-#
-#   # out <- data.frame(tree = data$tree[1],
-#   #                   x = x, x.inc = x.inc,
-#   #                   y = y, y.inc = y.inc,
-#   #                   z = z, z.inc = z.inc)
-#
-#   out$alpha.x <- atan2(out$x.inc, out$z.inc)
-#   out$alpha.y <- atan2(out$y.inc, out$z.inc)
-#
-#
-#   return(out)
-#
-# }
 
 
 # Select part of point cloud free of low vegetation and crown
@@ -927,31 +1073,19 @@ if(nrow(.filter) < 1){
   n <- sum(den[den$x < den[den$y == max(den$y), ]$x, ]$y)
   if(n < n.ini / 2){
     den <- den[den$x > den[den$y == max(den$y), ]$x, ]
-    den <- den[den$y > stats::quantile(den$y, probs = 0.25), ]} else {
+    den <- den[den$y > stats::quantile(den$y, probs = 0.25, na.rm = T), ]} else {
       den <- den[den$x < den[den$y == max(den$y), ]$x, ]}
 
 
   den$dev1 <- c(diff(den$y), 0)
-  # den$dev2 <- c(diff(den$dev1), 0)
-
-  # plot(den$x, den$y, ylim = c(-0.3,0.3))
-  # lines(den$x, den$dev1 * 10, col = 2)
-  # lines(den$x, den$dev2 * 10, col = 3)
 
   den$dev1 <- abs(den$dev1)
-  den <- den[den$dev1 > stats::quantile(den$dev1, probs = 0.75), ]
-  # points(den$x, den$dev1, col = "blue")
+  den <- den[den$dev1 > stats::quantile(den$dev1, probs = 0.75, na.rm = T), ]
 
-
-
-  # den <- data.frame(x = k$x, y = c(abs(diff(k$y)),0))
-  # den$lim <- ifelse(den$y < quantile(den$y, probs = 0.5), 1, 2)
-  # den <- den[den$y > quantile(den$y, probs = 0.25), ]
   den$diff <- c(diff(den$x), 0)
   den$cut <- ifelse(den$diff > .getmode(den$diff) + 0.01, 1, 0)
   den <- den[den$cut == 1, ]
   den <- den[den$diff == max(den$diff), ]
-  # den <- den[den$diff == max(den$diff) | den$x < 1.3 & den$x + den$diff > 1.3, ]
 
   return(den[, c("x", "diff")])
 
@@ -1442,7 +1576,7 @@ if(nrow(.filter) < 1){
                     if ("D.z" %in% names(.metr))
                       .metr["D.z"] <- .metr["max.z"] - .metr["min.z"]
                     if ("ID.z" %in% names(.metr))
-                      .metr["ID.z"] <- stats::quantile(.sub, prob = 0.75) - stats::quantile(.sub, prob = 0.25)
+                      .metr["ID.z"] <- stats::quantile(.sub, prob = 0.75, na.rm = T) - stats::quantile(.sub, prob = 0.25, na.rm = T)
 
                     if ("kurtosis.z" %in% names(.metr))
                       .metr["kurtosis.z"] <- moments::kurtosis(.sub)
@@ -1490,19 +1624,33 @@ if(nrow(.filter) < 1){
 
                     if (any(c("weibull_c.z", "weibull_b.z") %in% names(.metr))) {
 
-                      .metr["weibull_c.z"] <-
-                        stats::uniroot(.c_function, media = .metr["mean.z"],
-                                       varianza = .metr["var.z"],
-                                       interval = c(.metr["min.z"],
-                                                    .metr["max.z"]))$root
+                      .error <- try(stats::uniroot(.c_function, media = .metr["mean.z"],
+                                                   varianza = .metr["var.z"],
+                                                   interval = c(.metr["min.z"],
+                                                                .metr["max.z"]))$root)
+
+                      if(class(.error)[1] == "try-error"){
+
+                        .metr["weibull_c.z"] <- NA
+                        .metr["weibull_b.z"] <- NA
+
+                      } else {
+
+                        .metr["weibull_c.z"] <-
+                          stats::uniroot(.c_function, media = .metr["mean.z"],
+                                         varianza = .metr["var.z"],
+                                         interval = c(.metr["min.z"],
+                                                      .metr["max.z"]))$root
+
+                      }
+
+                      if ("weibull_b.z" %in% names(.metr)) {
+
+                        .metr["weibull_b.z"] <-
+                          .metr["mean.z"] / gamma(1 + 1 / .metr["weibull_c.z"])}
 
                     }
-                    if ("weibull_b.z" %in% names(.metr)) {
 
-                      .metr["weibull_b.z"] <-
-                        .metr["mean.z"] / gamma(1 + 1 / .metr["weibull_c.z"])
-
-                    }
 
 
                     # Compute metrics for coordinate rho
@@ -1534,7 +1682,7 @@ if(nrow(.filter) < 1){
                     if ("D.rho" %in% names(.metr))
                       .metr["D.rho"] <- .metr["max.rho"] - .metr["min.rho"]
                     if ("ID.rho" %in% names(.metr))
-                      .metr["ID.rho"] <- stats::quantile(.sub, prob = 0.75) - stats::quantile(.sub, prob = 0.25)
+                      .metr["ID.rho"] <- stats::quantile(.sub, prob = 0.75, na.rm = T) - stats::quantile(.sub, prob = 0.25, na.rm = T)
 
                     if ("kurtosis.rho" %in% names(.metr))
                       .metr["kurtosis.rho"] <- moments::kurtosis(.sub)
@@ -1595,7 +1743,8 @@ if(nrow(.filter) < 1){
                                        interval = c(.metr["min.rho"],
                                                     .metr["max.rho"]))$root
 
-                    }
+                      }
+
                     if ("weibull_b.rho" %in% names(.metr)) {
 
                       .metr["weibull_b.rho"] <-
@@ -1633,7 +1782,7 @@ if(nrow(.filter) < 1){
                     if ("D.r" %in% names(.metr))
                       .metr["D.r"] <- .metr["max.r"] - .metr["min.r"]
                     if ("ID.r" %in% names(.metr))
-                      .metr["ID.r"] <- stats::quantile(.sub, prob = 0.75) - stats::quantile(.sub, prob = 0.25)
+                      .metr["ID.r"] <- stats::quantile(.sub, prob = 0.75, na.rm = T) - stats::quantile(.sub, prob = 0.25, na.rm = T)
 
                     if ("kurtosis.r" %in% names(.metr))
                       .metr["kurtosis.r"] <- moments::kurtosis(.sub)
@@ -1694,6 +1843,7 @@ if(nrow(.filter) < 1){
                                                       .metr["max.r"]))$root
 
                       }
+
                       if ("weibull_b.r" %in% names(.metr)) {
 
                         .metr["weibull_b.r"] <-
@@ -1704,6 +1854,7 @@ if(nrow(.filter) < 1){
                     return(.metr)
 
                   },
+
                   data = data, metr = metr)
 
   .metr <- do.call(rbind, .metr)
@@ -3048,34 +3199,24 @@ if(nrow(.filter) < 1){
 # Cálculo del índice de curvatura
 ##############################################################################
 
-
-# .pol create polygons as regular squares overlapped 0.05
-
-.pol <- function(data, dist){
-
-  .xpol <- c(data$x.1-dist, data$x.2+dist, data$x.3+dist, data$x.4-dist)
-  .ypol <- c(data$y.1-dist, data$y.2-dist, data$y.3+dist, data$y.4+dist)
-
-  return(sp::Polygons(list(sp::Polygon(cbind(.xpol,.ypol))), ID = data$id))
-
-}
-
-
 # This functions apply calculated ncr index for all points.
 # For that purpose, voxelize point cloud by means of regular
 # grid in x any z coordinates
 
+
 .ncr.remove.slice.double <- function(data){
+
+  # code <- NULL
 
   # Select necessary fields from original txt file of point cloud
 
-  .data <- data[,c("point", "x", "y", "z")]
-
+  .data <- as.data.frame(data[,c("point", "x", "y", "z")])
 
   # Create x and y coordinates for grid
 
-  .x = seq(min(.data$x), max(.data$x))
-  .y = seq(min(.data$y), max(.data$y))
+  .x <- seq(min(.data$x), max(.data$x)+1)
+  .y <- seq(min(.data$y), max(.data$y)+1)
+
 
   if(length(.x) < 2 | length(.y) < 2){
 
@@ -3085,65 +3226,34 @@ if(nrow(.filter) < 1){
   # Empty data frame where coordinates neccesaries for
   # creating grid will be saved
 
-  .grid <- data.frame(id = as.character(),
-                      x.1 = as.numeric(), x.2 = as.numeric(),
-                      x.3 = as.numeric(), x.4 = as.numeric(),
-                      y.1 = as.numeric(), y.2 = as.numeric(),
-                      y.3 = as.numeric(), y.4 = as.numeric())
+  .grid <- data.frame(x = rep(.x, each = length(.y)),
+                      y = rep(.y, times = length(.x)))
+
+  .grid <- sf::st_as_sf(.grid, coords = c("x","y"))
 
 
-  # Fill the empty data frame .grid created just before
+  .grid <- sf::st_buffer(.grid, dist = 0.55, endCapStyle = "SQUARE")
+  .grid <- sf::st_cast(.grid, "POLYGON")
 
-  for (i in 1:(length(.x)-1)) {
-    for (j in 1:(length(.y)-1)) {
+  .grid.2 <- sf::st_intersects(.grid, sf::st_as_sf(.data, coords = c("x","y")))
+  .grid.2 <- as.data.frame(.grid.2)
+  colnames(.grid.2) <- c("id", "code")
+  .data$code <- as.numeric(row.names(.data))
+  .data <- merge(.data, .grid.2, by = "code", all = TRUE)
+  # .data <- subset(.data, select = -code)
+  .data <- .data[, 2:ncol(.data)]
 
-      .out <- data.frame(id = paste("x", i, "y", j, sep="."),
-                         x.1 = .x[i], x.2 = .x[i+1], x.3 = .x[i+1], x.4 = .x[i],
-                         y.1 = .y[j], y.2 = .y[j], y.3 = .y[j+1], y.4 = .y[j+1])
+  rm(.grid, .grid.2)
 
-      .grid <- rbind(.grid, .out)
+  .dat <- lapply(split(.data[, 1:4], .data$id), as.matrix)
 
-    }
-  }
-
-  .row.names <- .grid$id
-
-  # Split .grid by id into a list for using lapply function and
-  # applying .pol function over all elements of the list
-
-  .grid <- split(.grid, .grid$id)
-
-  # Apply .pol function to every element of the list and create
-  # and object SpatialPolygons
-
-  .grid <- sp::SpatialPolygons(lapply(.grid, .pol, dist = 0.05))
-
-
-  # Generate and SpatialPoints object to extract those points
-  # which are avor the polygons of .grid
-
-  .pts <- .data[, c("x", "y")]
-  # dimnames(.pts)[[1]] <- c(.data$point)
-  .pts <- sp::SpatialPoints(.pts)
-
-  .attributes <- .data[, c("point", "x", "y", "z")]
-
-  .pts = sp::SpatialPointsDataFrame(.pts, .attributes)
-
-  .attributes <- data.frame(row.names = .row.names)
-
-  .grid = sp::SpatialPolygonsDataFrame(.grid, .attributes)
-
-  .pts <- sp::over(.grid, .pts, returnList = TRUE)
-
-  .dat <- lapply(.pts, as.matrix, ncol = 4)
-  .dat <- .dat[names(which(lapply(.dat, length) > 4))]
-  # .dat <- .dat[names(which(lapply(.dat, length) < 40000))]
-
+  .dat <- .dat[(lapply(.dat, nrow)) > 4]
+  # .dat <- .dat[(lapply(.dat, nrow)) < 40000]
 
   .ncr <- do.call(rbind, lapply(.dat, ncr_point_cloud_double))
 
-  .ncr <- .ncr[which(.ncr$ncr > 0 & .ncr$ncr < 9999), ]
+  .ncr <- .ncr[.ncr$ncr > 0 & .ncr$ncr < 9999, ]
+
 
   if(is.null(.ncr)){
     data$ncr <- NA
@@ -3159,3 +3269,128 @@ if(nrow(.filter) < 1){
   return(.data)
 
 }
+
+
+
+.no.trees.detected.single <- function(data, d.top, plot.attributes, dir.result, save.result){
+
+  if(is.null(data$id) & is.null(d.top)){
+
+    # If plot identification (id) is not available
+
+    .colnames <- c("tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "v", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+
+  } else if (is.null(data$id) & !is.null(d.top)) {
+
+    # If plot identification (id) is not available
+
+    .colnames <- c("tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "h.com", "v", "v.com", "n.pts", "SS.max", "sinuosity", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+
+  } else if (!is.null(data$id) & is.null(d.top)) {
+
+    # If plot identification (id) is available
+
+    .colnames <- c("id", "file", "tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "v", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+
+  } else {
+
+    # If plot identification (id) is available
+
+    .colnames <- c("id", "file", "tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+
+  }
+
+  .tree <- data.frame(matrix(nrow = 1, ncol = length(.colnames), dimnames = list(NULL, .colnames)))
+
+  if(!is.null(data$id)){
+
+  .tree$id <- data$id[1]
+  .tree$file <- data$file[1]
+
+  }
+
+  # Lastly, aggregate attributes table
+  if(!is.null(plot.attributes))
+    .tree <- merge(.tree, plot.attributes, by = "id", all = FALSE)
+
+
+  if(isTRUE(save.result)){
+
+    utils::write.csv(.tree,
+                     file = file.path(dir.result, "tree.tls.csv"),
+                     row.names = FALSE)
+  }
+
+
+  #####
+  return(.tree)
+
+
+}
+
+
+
+.no.trees.detected.multi <- function(data, d.top, plot.attributes, dir.result, save.result){
+
+  if(is.null(data$id) & is.null(d.top)){
+
+    # If plot identification (id) is not available
+
+    .colnames <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+
+  } else if (is.null(data$id) & !is.null(d.top)) {
+
+    # If plot identification (id) is not available
+
+    .colnames <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+
+  } else if (!is.null(data$id) & is.null(d.top)) {
+
+    # If plot identification (id) is available
+
+    .colnames <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+
+  } else {
+
+    # If plot identification (id) is available
+
+    .colnames <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+
+  }
+
+  .tree <- data.frame(matrix(nrow = 1, ncol = length(.colnames), dimnames = list(NULL, .colnames)))
+
+
+  if(!is.null(data$id)){
+
+    .tree$id <- data$id[1]
+    .tree$file <- data$file[1]
+
+  }
+
+  # Lastly, aggregate attributes table
+  if(!is.null(plot.attributes))
+    .tree <- merge(.tree, plot.attributes, by = "id", all = FALSE)
+
+
+  if(isTRUE(save.result)){
+
+    utils::write.csv(.tree,
+                     file = file.path(dir.result, "tree.tls.csv"),
+                     row.names = FALSE)
+  }
+
+
+  #####
+  return(.tree)
+
+
+}
+
+
+
+
+
+
+
+

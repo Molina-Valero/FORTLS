@@ -11,8 +11,8 @@
 
 <!-- badges: end -->
 
-## Automatic Processing of Terrestrial-Based Technologies Point Cloud Data for Forestry Purposes
-Process automation of point cloud data derived from terrestrial-based technologies such as Terrestrial Laser Scanner (TLS) or Simultaneous Localization and Mapping (SLAM). 'FORTLS' enables (i) detection of trees and estimation of tree-level attributes (e.g. diameters and heights), (ii) estimation of stand-level variables (e.g. density, basal area, mean and dominant height), (iii) computation of metrics related to important forest attributes estimated in Forest Inventories (FIs) at stand-level, and (iv) optimization of plot design for combining TLS data and field measured data. Documentation about 'FORTLS' is described in Molina-Valero et al. (2022, <https://doi.org/10.1016/j.envsoft.2022.105337>).
+## Automatic Processing of Close-Range Technologies Point Cloud Data for Forestry Purposes
+Process automation of point cloud data derived from terrestrial-based technologies such as Terrestrial Laser Scanner (TLS) or Mobile Laser Scanner (MLS). 'FORTLS' enables (i) detection of trees and estimation of tree-level attributes (e.g. diameters and heights), (ii) estimation of stand-level variables (e.g. density, basal area, mean and dominant height), (iii) computation of metrics related to important forest attributes estimated in Forest Inventories (FIs) at stand-level, and (iv) optimization of plot design for combining TLS data and field measured data. Documentation about 'FORTLS' is described in Molina-Valero et al. (2022, <https://doi.org/10.1016/j.envsoft.2022.105337>).
 
 Get the lat stable version of FORTLS from GitHub (included in the master branch)
 
@@ -26,8 +26,6 @@ remotes::install_github("Molina-Valero/FORTLS", dependencies = TRUE)
 
 Development of the `FORTLS` package is being possible thanks to the following projects:
 
-* Modelling the effects of intensity of perturbation on the structure of natural forests and their carbon stocks by using data from the National Forestry Inventory (AL2016-76769-C2-2-R) supported by the Spanish Ministry of Science and Innovation.
+* Modelling the effects of intensity of perturbation on the structure of natural forests and their carbon stocks by using data from the National Forestry Inventory (AGL2016-76769-C2-2-R) supported by the Spanish Ministry of Science and Innovation.
 * Development of the Galician continuous forest inventory (2020-CP031) supported by the Regional Government of Galicia.
 * Design of forest monitoring systems on a regional scale (ED431F 2020/02) supported by the Regional Government of Galicia.
-
-<img src="man/figures/logo_ux.jpg" align="" alt="right" width="200"> <img src="man/figures/xunta.png" align="" alt="" width="350"> <img src="man/figures/MICINN_Gob_Web_AEI_2.jpg" align="" alt="" width="400">

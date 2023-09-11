@@ -1,21 +1,21 @@
 
-tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
+tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
 
                                          scan.approach = "single",
 
                                          pcd.red = NULL, normalized = NULL,
-                                         x.center = NULL, y.center = NULL,
+                                         center.coord = NULL,
                                          x.side = NULL, y.side = NULL,
                                          max.dist = NULL, min.height = NULL, max.height = 50,
                                          algorithm.dtm = "knnidw", res.dtm = 0.2, csf = list(cloth_resolution = 0.5),
-                                         RGB = NULL,
+                                         intensity = NULL, RGB = NULL,
 
                                          single.tree = NULL,
                                          dbh.min = 4, dbh.max = 200, h.min = 1.3,
                                          ncr.threshold = 0.1,
                                          tls.resolution = NULL, tls.precision = NULL,
-                                         stem.section = NULL, breaks = NULL,
-                                         slice = 0.1, understory = NULL, bark.roughness = 2,
+                                         stem.section = NULL, stem.range = NULL, breaks = NULL,
+                                         slice = 0.1, understory = NULL, bark.roughness = 1,
                                          den.type = 1, d.top = NULL,
                                          plot.attributes = NULL,
 
@@ -30,15 +30,31 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
     # Assign id
 
-    if(!is.null(id)){
+    if(!is.null(id.list)){
 
-      .id <- id[i]
+      .id <- id.list[i]
 
     } else {
 
-      .id <- i
+      .id <- as.integer(i)
 
     }
+
+    # Assign coordinates
+
+    if(!is.null(center.coord)){
+
+      x.center <- center.coord$x[i]
+      y.center <- center.coord$y[i]
+
+    } else {
+
+      x.center = NULL
+      y.center = NULL
+
+    }
+
+
 
     # Messages
 
@@ -66,7 +82,7 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
                        algorithm.dtm = algorithm.dtm, res.dtm = res.dtm, csf = csf,
 
-                       RGB = RGB,
+                       intensity = intensity, RGB = RGB,
 
                        scan.approach = scan.approach,
 
@@ -81,7 +97,10 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
     if(scan.approach == "single"){
 
-    .tree.tls.i <- tree.detection.single.scan(data = .data,
+    if(i > 1)
+      .stem.curve <- read.csv("stem.curve.csv")
+
+    .tree.tls.i <- tree.detection.single.scan(data = .data, single.tree = single.tree,
 
                                               dbh.min = dbh.min, dbh.max = dbh.max, h.min = h.min,
 
@@ -89,7 +108,7 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
                                               tls.resolution = tls.resolution,
 
-                                              stem.section = stem.section, breaks = breaks,
+                                              stem.section = stem.section, stem.range = stem.range, breaks = breaks,
 
                                               slice = slice, understory = understory, bark.roughness = bark.roughness,
 
@@ -97,9 +116,16 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
                                               plot.attributes = plot.attributes,
 
-                                              save.result = FALSE, dir.result = dir.result)}
+                                              save.result = FALSE, dir.result = dir.result)
+
+    rm(.data)
+
+    }
 
     if(scan.approach == "multi"){
+
+    if(i > 1)
+      .stem.curve <- read.csv("stem.curve.csv")
 
     .tree.tls.i <- tree.detection.multi.scan(data = .data, single.tree = single.tree,
 
@@ -109,7 +135,7 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
                                              tls.precision = tls.precision,
 
-                                             stem.section = stem.section, breaks = breaks,
+                                             stem.section = stem.section, stem.range = stem.range, breaks = breaks,
 
                                              slice = slice, understory = understory, bark.roughness = bark.roughness,
 
@@ -118,6 +144,8 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
                                              plot.attributes = plot.attributes,
 
                                              save.result = FALSE, dir.result = dir.result)
+
+    rm(.data)
 
     }
 
@@ -128,6 +156,12 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
     } else {
 
       .tree.tls <- rbind(.tree.tls, .tree.tls.i)
+
+      .stem.curve <- rbind(.stem.curve, read.csv("stem.curve.csv"))
+
+      utils::write.csv(.stem.curve,
+                       file = file.path(dir.result, "stem.curve.csv"),
+                       row.names = FALSE)
 
     }
 
@@ -142,7 +176,9 @@ tree.detection.several.plots <- function(las.list, id = NULL, file = NULL,
 
   }
 
+
   #####
   return(.tree.tls)
 
 }
+

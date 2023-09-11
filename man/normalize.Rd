@@ -6,7 +6,7 @@
 
 \title{Relative Coordinates and Density Reduction for Terrestrial-Based Technologies Point Clouds}
 
-\description{This function obtains coordinates relative to the plot centre for Terrestrial Laser Scanner (TLS) and Simultaneous Localization and Mapping (SLAM) point clouds (supplied as LAS files) derived from single scans (with TLS scanner point as plot centre). In addition, the point cropping process developed by Molina-Valero et al., (2019) is applied as a criterion for reducing point density homogeneously in space and proportionally to object size.}
+\description{This function obtains coordinates relative to the plot centre speciefied for Terrestrial Laser Scanner (TLS) and Mobile Laser Scanner (MLS) point clouds (supplied as LAS or LAZ files). Point clouds obtained from other devices/approaches (e.g. photogrammetry) can be also used, but the guarantee of good performance is likely to be lower. In addition, the point cropping process developed by Molina-Valero et al., (2019) is applied as a criterion for reducing point density homogeneously in space and proportionally to object size when TLS single-scans are provided.}
 
 \usage{
 normalize(las, normalized = NULL,
@@ -158,33 +158,38 @@ dir.data <- getwd()
 dir.result <- getwd()
 
 
-# SINGLE-SCAN APPROACH
+# TLS SINGLE-SCAN APPROACH
 
-# Loading example data (LAZ file) to dir.data
+# Loading example TLS data (LAZ file) to dir.data
 
-download.file("https://www.dropbox.com/s/4qvrh7tp3kq0hyo/Galicia_single_scan.laz?dl=1",
-              destfile = file.path(dir.data, "Galicia_single_scan.laz"),
+download.file("https://www.dropbox.com/s/17yl25pbrapat52/PinusRadiata.laz?dl=1",
+              destfile = file.path(dir.data, "PinusRadiata.laz"),
               mode = "wb")
 
 
 # Normalizing the whole point cloud data without considering arguments
 
-pcd <- normalize(las = "Galicia_single_scan.laz",
+pcd <- normalize(las = "PinusRadiata.laz",
+
+                 id = "PinusRadiata",
 
                  dir.data = dir.data, dir.result = dir.result)
 
 
-# MULTI-SCAN APPROACH
+# MLS OR TLS MULTI-SCAN APPROACHES
 
-# Loading example data (LAZ file) to dir.data
+# Loading example MLS data (LAZ file) to dir.data
 
-download.file("https://www.dropbox.com/s/2nem6tfbsw7eyd7/Galicia_multi_scan.laz?dl=1",
-              destfile = file.path(dir.data, "Galicia_multi_scan.laz"),
+download.file(
+"www.dropbox.com/scl/fi/es5pfj87wj0g6y8414dpo/PiceaAbies.laz?rlkey=ayt21mbndc6i6fyiz2e7z6oap&dl=1",
+              destfile = file.path(dir.data, "PiceaAbies.laz"),
               mode = "wb")
 
 # Normalizing the whole point cloud data without considering arguments
 
-pcd <- normalize(las = "Galicia_multi_scan.laz",
+pcd <- normalize(las = "PiceaAbies.laz",
+
+                 id = "PiceaAbies",
 
                  scan.approach = "multi",
 
