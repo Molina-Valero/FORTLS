@@ -48,6 +48,8 @@ normalize <- function(las, normalized = NULL,
               .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyzIntensityRGB")))}
     }
 
+  .las <- lidR::filter_duplicates(.las)
+
 
   .pb$tick()
 

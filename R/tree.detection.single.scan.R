@@ -278,10 +278,12 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     .cut <- .ncr.remove.slice.double(.cut)
 
-    .cut <- .cut[which(.cut$ncr < ncr.threshold | is.na(.cut$ncr)), , drop = FALSE]
+    # .cut <- .cut[which(.cut$ncr < ncr.threshold | is.na(.cut$ncr)), , drop = FALSE]
+    .cut <- woody[woody$z > (cuts-2*slice-0.05) & woody$z < cuts, , drop = FALSE]
 
     # Restrict to slice corresponding to cuts m +/- 5 cm
-    .cut <- .cut[which(.cut$z > (cuts-slice) & .cut$z < (cuts+slice)), , drop = FALSE]
+    # .cut <- .cut[which(.cut$z > (cuts-slice) & .cut$z < (cuts+slice)), , drop = FALSE]
+    .cut <- .cut[.cut$z > (cuts-2*slice) & .cut$z < cuts, , drop = FALSE]
 
     # DBSCAN parameters
     .eps <- 2 * (tan(.alpha.h / 2) * (max(.cut$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2)
