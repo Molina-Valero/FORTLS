@@ -7,7 +7,7 @@ normalize <- function(las, normalized = NULL,
                       csf = list(cloth_resolution = 0.5),
                       intensity = NULL, RGB = NULL,
                       scan.approach = "single",
-                      id = NULL, file = NULL,
+                      id = NULL, file = NULL, plot = TRUE,
                       dir.data = NULL, save.result = TRUE, dir.result = NULL){
 
 
@@ -159,6 +159,10 @@ normalize <- function(las, normalized = NULL,
 
 
   }
+
+
+  if(!is.null(plot))
+    lidR::plot(.las)
 
   rm(.las)
 

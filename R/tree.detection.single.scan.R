@@ -5,7 +5,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
                                        stem.section = NULL, stem.range = NULL, breaks = NULL,
                                        slice = 0.1, understory = NULL, bark.roughness = 1,
                                        den.type = 1, d.top = NULL,
-                                       plot.attributes = NULL,
+                                       plot.attributes = NULL, plot = TRUE,
                                        save.result = TRUE, dir.result = NULL){
 
 
@@ -775,6 +775,11 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     data <- data[data$prob.selec == 1, ]
     data <- data[, c("id", "file", "x", "y", "z", "rho")]
 
+
+    if(!is.null(plot))
+      plotTree <- suppressMessages(lidR::plot(lidR::LAS(data[, c("x","y","z")])))
+
+
     # If only one tree is detected, Voronoi tessellation is not working
 
     if(nrow(.tree) == 1){
@@ -979,6 +984,58 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     .data.red <- noise[which(noise$prob.selec == 1), , drop = FALSE]
 
     vroom::vroom_write(.data.red, path = file.path(dir.result, paste("noise_", .data.red$file[1], sep = "")), delim = ",", progress = FALSE)
+
+  }
+
+
+  diameter <- data.frame(tree = as.numeric(),
+                         x = as.numeric(),
+                         y = as.numeric(),
+                         z = as.numeric())
+
+  phi <- seq(from = 0, to = 2*pi, by = 2 * pi / 10000)
+
+
+  for (i in .tree$tree) {
+
+    tree <- rep(i, times = 10001)
+    x <- .tree$x[i] + cos(phi) * ((.tree$dbh[i] / 100) / 2)
+    y <- .tree$y[i] + sin(phi) * ((.tree$dbh[i] / 100) / 2)
+    z <- runif(10001, 1.2, 1.4)
+
+    .diameter <- data.frame(tree = tree,
+                            x = x, y = y, z = z)
+
+    diameter <- rbind(diameter, .diameter)
+
+  }
+
+
+  if(!is.null(plot)){
+
+    diameter <- data.frame(tree = as.numeric(),
+                           x = as.numeric(),
+                           y = as.numeric(),
+                           z = as.numeric())
+
+    phi <- seq(from = 0, to = 2*pi, by = 2 * pi / 10000)
+
+
+    for (i in .tree$tree) {
+
+      tree <- rep(i, times = 10001)
+      x <- .tree$x[i] + cos(phi) * ((.tree$dbh[i] / 100) / 2)
+      y <- .tree$y[i] + sin(phi) * ((.tree$dbh[i] / 100) / 2)
+      z <- runif(10001, 1.2, 1.4)
+
+      .diameter <- data.frame(tree = tree,
+                              x = x, y = y, z = z)
+
+      diameter <- rbind(diameter, .diameter)
+
+    }
+
+    suppressMessages(lidR::plot(lidR::LAS(diameter[, c("x","y","z")]), add = plotTree, size = 5))
 
   }
 
