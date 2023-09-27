@@ -2,7 +2,7 @@
 tree.detection.single.scan <- function(data, single.tree = NULL,
                                        dbh.min = 4, dbh.max = 200, h.min = 1.3,
                                        ncr.threshold = 0.1, tls.resolution = list(),
-                                       stem.section = NULL, stem.range = NULL, breaks = NULL,
+                                       stem.section = c(0.7, 3.5), stem.range = NULL, breaks = NULL,
                                        slice = 0.1, understory = NULL, bark.roughness = 1,
                                        den.type = 1, d.top = NULL,
                                        plot.attributes = NULL, plot = TRUE,

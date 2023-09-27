@@ -17,7 +17,7 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
                                          stem.section = NULL, stem.range = NULL, breaks = NULL,
                                          slice = 0.1, understory = NULL, bark.roughness = 1,
                                          den.type = 1, d.top = NULL,
-                                         plot.attributes = NULL,
+                                         plot.attributes = NULL, plot = NULL,
 
                                          dir.data = NULL, save.result = TRUE, dir.result = NULL){
 
@@ -86,7 +86,7 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
 
                        scan.approach = scan.approach,
 
-                       id = .id, file = .file,
+                       id = .id, file = .file, plot = plot,
 
                        dir.data = dir.data, save.result = save.result, dir.result = dir.result)
 
@@ -114,7 +114,7 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
 
                                               den.type = den.type, d.top = d.top,
 
-                                              plot.attributes = plot.attributes,
+                                              plot.attributes = plot.attributes, plot = plot,
 
                                               save.result = FALSE, dir.result = dir.result)
 
@@ -141,7 +141,7 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
 
                                              den.type = den.type, d.top = d.top,
 
-                                             plot.attributes = plot.attributes,
+                                             plot.attributes = plot.attributes, plot = plot,
 
                                              save.result = FALSE, dir.result = dir.result)
 
