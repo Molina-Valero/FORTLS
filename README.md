@@ -31,10 +31,10 @@ Development of the `FORTLS` package is being possible thanks to the following fe
 * Ramón Areces Foundation Grants for Postdoctoral Studies [XXXV Call for Expansion of Studies Abroad in Life and Matter Sciences](https://www.fundacionareces.es/fundacionareces/es/tratarAplicacionInvestigador.do?paginaActual=2&idConvocatoria=2770&tipo=2)
 
 <p>
-  <img src="https://www.dropbox.com/scl/fi/55vu2hhj8dlp9kfoo43b9/czu_en.png?rlkey=n998kau20f0isb5h2zqftk26d&raw=1" width="250" align="left">
-  <img src="https://www.dropbox.com/scl/fi/g7dyqq5yzzvg2vu2dk6jv/usc.png?rlkey=z3x7mwx1ebsioivrwg9fpgdyq&raw=1" width="100" align="center">
-  <img src="https://www.dropbox.com/scl/fi/jsffwdcmkk3c0442aml7m/cpei-positivo.png?rlkey=s6ntxd9q53hhm527lboofplk8&raw=1" width="250" align="righttop">
-  <img src="https://www.dropbox.com/scl/fi/zk0ktudsu0caszlw2z3dm/logotipo-fra-color.jpg?rlkey=1fiee4ra7mm98pdrozirlyo1p&raw=1" width="250" align="right">
+  <img src="https://www.dropbox.com/scl/fi/55vu2hhj8dlp9kfoo43b9/czu_en.png?rlkey=n998kau20f0isb5h2zqftk26d&raw=1" width="250">
+  <img src="https://www.dropbox.com/scl/fi/g7dyqq5yzzvg2vu2dk6jv/usc.png?rlkey=z3x7mwx1ebsioivrwg9fpgdyq&raw=1" width="100">
+  <img src="https://www.dropbox.com/scl/fi/jsffwdcmkk3c0442aml7m/cpei-positivo.png?rlkey=s6ntxd9q53hhm527lboofplk8&raw=1" width="250">
+  <img src="https://www.dropbox.com/scl/fi/zk0ktudsu0caszlw2z3dm/logotipo-fra-color.jpg?rlkey=1fiee4ra7mm98pdrozirlyo1p&raw=1" width="250">
 </p>
 
 <img src="https://www.dropbox.com/scl/fi/ec1m3266bcoq8qrgjqykv/logolink-RGB_LAB-LIFE-NATURA-MZP_en-okraje-1000x156.jpg?rlkey=bi5018o95zq63rwhhwa6wfs2y&raw=1">
