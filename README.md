@@ -30,11 +30,11 @@ Development of the `FORTLS` package is being possible thanks to the following fe
 * Design of forest monitoring systems on a regional scale [ED431F 2020/02] supported by the Regional Government of Galicia
 * Ramón Areces Foundation Grants for Postdoctoral Studies [XXXV Call for Expansion of Studies Abroad in Life and Matter Sciences](https://www.fundacionareces.es/fundacionareces/es/tratarAplicacionInvestigador.do?paginaActual=2&idConvocatoria=2770&tipo=2)
 
-<p align="center" width="200" height="150">
-  <img src="https://www.dropbox.com/scl/fi/cy3cfikrgwl54eovz3ncn/CZU_logotype_V_ENG_green.png?rlkey=hbbggghvn93412oqa85m0fpm0&raw=1" width="250">
-  <img src="https://www.dropbox.com/scl/fi/g7dyqq5yzzvg2vu2dk6jv/usc.png?rlkey=z3x7mwx1ebsioivrwg9fpgdyq&raw=1" width="75">
-  <img src="https://www.dropbox.com/scl/fi/jsffwdcmkk3c0442aml7m/cpei-positivo.png?rlkey=s6ntxd9q53hhm527lboofplk8&raw=1" width="300">
-  <img src="https://www.dropbox.com/scl/fi/zk0ktudsu0caszlw2z3dm/logotipo-fra-color.jpg?rlkey=1fiee4ra7mm98pdrozirlyo1p&raw=1" width="250">
+<p align="center">
+  <img src="https://www.dropbox.com/scl/fi/cy3cfikrgwl54eovz3ncn/CZU_logotype_V_ENG_green.png?rlkey=hbbggghvn93412oqa85m0fpm0&raw=1" width="250" height="150">
+  <img src="https://www.dropbox.com/scl/fi/g7dyqq5yzzvg2vu2dk6jv/usc.png?rlkey=z3x7mwx1ebsioivrwg9fpgdyq&raw=1" width="75" height="150">
+  <img src="https://www.dropbox.com/scl/fi/jsffwdcmkk3c0442aml7m/cpei-positivo.png?rlkey=s6ntxd9q53hhm527lboofplk8&raw=1" width="300" height="150">
+  <img src="https://www.dropbox.com/scl/fi/zk0ktudsu0caszlw2z3dm/logotipo-fra-color.jpg?rlkey=1fiee4ra7mm98pdrozirlyo1p&raw=1" width="250" height="150">
 </p>
 
 <img src="https://www.dropbox.com/scl/fi/ec1m3266bcoq8qrgjqykv/logolink-RGB_LAB-LIFE-NATURA-MZP_en-okraje-1000x156.jpg?rlkey=bi5018o95zq63rwhhwa6wfs2y&raw=1" align="center">
