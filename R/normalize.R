@@ -161,9 +161,6 @@ normalize <- function(las, normalized = NULL,
   }
 
 
-  if(!is.null(plot))
-    lidR::plot(.las)
-
   rm(.las)
 
   .pb$tick()
@@ -192,6 +189,10 @@ normalize <- function(las, normalized = NULL,
   }
 
   .pb$tick()
+
+
+  if(!is.null(plot))
+    lidR::plot(.data)
 
 
   # Assigning slope to point cloud
