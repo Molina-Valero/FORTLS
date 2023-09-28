@@ -26,6 +26,6 @@ remotes::install_github("Molina-Valero/FORTLS", ref = "devel", dependencies = TR
 
 Development of the `FORTLS` package is being possible thanks to the following fellowships/projects:
 
-* Design of forest monitoring systems on a regional scale (ED431F 2020/02) supported by the Regional Government of Galicia
 * Climate Change Adaptation of Forests in the Brdy Highland [LIFE21-CCA-CZ-LIFE-Adapt-Brdy/101074426](https://adaptbrdy.czu.cz/en)
+* Design of forest monitoring systems on a regional scale [ED431F 2020/02] supported by the Regional Government of Galicia
 * Ramón Areces Foundation Grants for Postdoctoral Studies [XXXV Call for Expansion of Studies Abroad in Life and Matter Sciences](https://www.fundacionareces.es/fundacionareces/es/tratarAplicacionInvestigador.do?paginaActual=2&idConvocatoria=2770&tipo=2)
