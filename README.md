@@ -31,7 +31,7 @@ Development of the `FORTLS` package is being possible thanks to the following fe
 * Ramón Areces Foundation Grants for Postdoctoral Studies [XXXV Call for Expansion of Studies Abroad in Life and Matter Sciences](https://www.fundacionareces.es/fundacionareces/es/tratarAplicacionInvestigador.do?paginaActual=2&idConvocatoria=2770&tipo=2)
 
 <p align="center">
-  <img src="https://www.dropbox.com/scl/fi/55vu2hhj8dlp9kfoo43b9/czu_en.png?rlkey=n998kau20f0isb5h2zqftk26d&raw=1" width="300">
+  <img src="https://www.dropbox.com/scl/fi/cy3cfikrgwl54eovz3ncn/CZU_logotype_V_ENG_green.png?rlkey=hbbggghvn93412oqa85m0fpm0&raw=1" width="300">
   <img src="https://www.dropbox.com/scl/fi/g7dyqq5yzzvg2vu2dk6jv/usc.png?rlkey=z3x7mwx1ebsioivrwg9fpgdyq&raw=1" width="75">
   <img src="https://www.dropbox.com/scl/fi/jsffwdcmkk3c0442aml7m/cpei-positivo.png?rlkey=s6ntxd9q53hhm527lboofplk8&raw=1" width="300">
   <img src="https://www.dropbox.com/scl/fi/zk0ktudsu0caszlw2z3dm/logotipo-fra-color.jpg?rlkey=1fiee4ra7mm98pdrozirlyo1p&raw=1" width="250">
