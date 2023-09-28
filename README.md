@@ -22,10 +22,10 @@ remotes::install_github("Molina-Valero/FORTLS", ref = "devel", dependencies = TR
 
 # Acknowledgements 
 
-**FORTLS** it is being developed at [University of Santiago de Compostela](https://www.usc.gal/en).
+**FORTLS** it is being developed at [Czech University of Life Sciences Prague](https://www.czu.cz/en) and [University of Santiago de Compostela](https://www.usc.gal/en).
 
-Development of the `FORTLS` package is being possible thanks to the following projects:
+Development of the `FORTLS` package is being possible thanks to the following fellowships/projects:
 
-* Modelling the effects of intensity of perturbation on the structure of natural forests and their carbon stocks by using data from the National Forestry Inventory (AGL2016-76769-C2-2-R) supported by the Spanish Ministry of Science and Innovation.
-* Development of the Galician continuous forest inventory (2020-CP031) supported by the Regional Government of Galicia.
-* Design of forest monitoring systems on a regional scale (ED431F 2020/02) supported by the Regional Government of Galicia.
+* Design of forest monitoring systems on a regional scale (ED431F 2020/02) supported by the Regional Government of Galicia
+* Climate Change Adaptation of Forests in the Brdy Highland [LIFE21-CCA-CZ-LIFE-Adapt-Brdy/101074426](https://adaptbrdy.czu.cz/en)
+* Ramón Areces Foundation Grants for Postdoctoral Studies [XXXV Call for Expansion of Studies Abroad in Life and Matter Sciences](https://www.fundacionareces.es/fundacionareces/es/tratarAplicacionInvestigador.do?paginaActual=2&idConvocatoria=2770&tipo=2)
