@@ -30,6 +30,6 @@ Development of the `FORTLS` package is being possible thanks to the following fe
 * Design of forest monitoring systems on a regional scale [ED431F 2020/02] supported by the Regional Government of Galicia
 * Ramón Areces Foundation Grants for Postdoctoral Studies [XXXV Call for Expansion of Studies Abroad in Life and Matter Sciences](https://www.fundacionareces.es/fundacionareces/es/tratarAplicacionInvestigador.do?paginaActual=2&idConvocatoria=2770&tipo=2)
 
-<img src="https://www.dropbox.com/scl/fi/55vu2hhj8dlp9kfoo43b9/czu_en.png?rlkey=n998kau20f0isb5h2zqftk26d&raw=1" width="150" align="left">
+<img src="https://www.dropbox.com/scl/fi/55vu2hhj8dlp9kfoo43b9/czu_en.png?rlkey=n998kau20f0isb5h2zqftk26d&raw=1" width="250" align="left">
 <img src="https://www.dropbox.com/scl/fi/g7dyqq5yzzvg2vu2dk6jv/usc.png?rlkey=z3x7mwx1ebsioivrwg9fpgdyq&raw=1" width="150" align="center">
 <img src="https://www.dropbox.com/scl/fi/zk0ktudsu0caszlw2z3dm/logotipo-fra-color.jpg?rlkey=1fiee4ra7mm98pdrozirlyo1p&raw=1" width="150" align="right">
