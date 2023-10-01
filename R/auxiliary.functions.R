@@ -608,7 +608,17 @@
 
   # dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 100)
   dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 600)
+
+  # cl <- parallel::makeCluster(parallel::detectCores()-1)
+
+  # start_time <- Sys.time()
+  # kk <- try(do.call(rbind, (parallel::clusterApply(cl, dat.i, .RANSAC))), silent = TRUE)
+  # end_time <- Sys.time()
+
+  # start_time <- Sys.time()
   kk <- try(do.call(rbind, (lapply(dat.i, .RANSAC))), silent = TRUE)
+  # end_time <- Sys.time()
+
   # print(.dat$cluster[1])
 
   rm(dat.i)

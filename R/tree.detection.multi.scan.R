@@ -12,6 +12,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   set.seed(123)
 
+  cl <- parallel::makeCluster(parallel::detectCores() - 1)
+
   data <- data.table::setDT(data)
 
   #### Checking some function arguments ####
@@ -332,7 +334,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     # Selection of those cluster belonging to trees
 
-    .filter <- do.call(rbind, lapply(split(.cut, .cut$cluster), .sections.multi.scan,
+    .filter <- do.call(rbind, parallel::clusterApply(cl, split(.cut, .cut$cluster), .sections.multi.scan,
                                      tls.precision = tls.precision,
                                      .dbh.min = .dbh.min, .dbh.max = .dbh.max,
                                      slice = slice * 2, bark.roughness = bark.roughness,
