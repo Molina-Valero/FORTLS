@@ -22,10 +22,19 @@ remotes::install_github("Molina-Valero/FORTLS", dependencies = TRUE)
 
 # Acknowledgements 
 
-**FORTLS** it is being developed at [University of Santiago de Compostela](https://www.usc.gal/en).
+**FORTLS** it is being developed at [Czech University of Life Sciences Prague](https://www.czu.cz/en) and [University of Santiago de Compostela](https://www.usc.gal/en).
 
-Development of the `FORTLS` package is being possible thanks to the following projects:
+Development of the `FORTLS` package is being possible thanks to the following fellowships/projects:
 
-* Modelling the effects of intensity of perturbation on the structure of natural forests and their carbon stocks by using data from the National Forestry Inventory (AGL2016-76769-C2-2-R) supported by the Spanish Ministry of Science and Innovation.
-* Development of the Galician continuous forest inventory (2020-CP031) supported by the Regional Government of Galicia.
-* Design of forest monitoring systems on a regional scale (ED431F 2020/02) supported by the Regional Government of Galicia.
+* Climate Change Adaptation of Forests in the Brdy Highland [LIFE21-CCA-CZ-LIFE-Adapt-Brdy/101074426](https://adaptbrdy.czu.cz/en)
+* Design of forest monitoring systems on a regional scale [ED431F 2020/02] supported by the Regional Government of Galicia
+* Ramón Areces Foundation Grants for Postdoctoral Studies [XXXV Call for Expansion of Studies Abroad in Life and Matter Sciences](https://www.fundacionareces.es/fundacionareces/es/tratarAplicacionInvestigador.do?paginaActual=2&idConvocatoria=2770&tipo=2)
+
+<p align = "center">
+  <img src="https://www.dropbox.com/scl/fi/cy3cfikrgwl54eovz3ncn/CZU_logotype_V_ENG_green.png?rlkey=hbbggghvn93412oqa85m0fpm0&raw=1" height="100"> 
+  <img src="https://www.dropbox.com/scl/fi/g7dyqq5yzzvg2vu2dk6jv/usc.png?rlkey=z3x7mwx1ebsioivrwg9fpgdyq&raw=1" height="50" hspace="10"> 
+  <img src="https://www.dropbox.com/scl/fi/9ohh7hs6sd9imxzsfb768/ccefpu-positivo.png?rlkey=g71a5x4qejmyybpwwc2vavfzg&raw=1" height="50"> 
+  <img src="https://www.dropbox.com/scl/fi/zk0ktudsu0caszlw2z3dm/logotipo-fra-color.jpg?rlkey=1fiee4ra7mm98pdrozirlyo1p&raw=1" height="100">
+</p>
+
+<img src="https://www.dropbox.com/scl/fi/ec1m3266bcoq8qrgjqykv/logolink-RGB_LAB-LIFE-NATURA-MZP_en-okraje-1000x156.jpg?rlkey=bi5018o95zq63rwhhwa6wfs2y&raw=1" align="center">
