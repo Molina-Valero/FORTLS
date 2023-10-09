@@ -46,6 +46,22 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     woody <- woody[!is.na(woody$x) & !is.na(woody$y) & !is.na(woody$z), ]} else {woody <- data}
 
 
+  if(!is.null(data$intensity) & mean(data$intensity, na.rm = T) > 0 & is.null(data$GLA)){
+
+    woody <- data[data$intensity > mean(data$intensity, na.rm = T), ]
+
+  }
+
+
+
+  if(!is.null(data$intensity) & mean(data$intensity, na.rm = T) > 0 & !is.null(data$GLA)){
+
+    woody <- woody[woody$intensity > mean(woody$intensity, na.rm = T), ]
+
+  }
+
+
+
   # Statistical filtering of a point cloud
   # Implements the Statistical Outliers Removal (SOR)
 
@@ -68,13 +84,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   message("Detecting tree stem axes")
 
   stem <- woody[woody$prob.selec == 1, ]
-
-  if(!is.null(data$intensity)){
-
-    stem <- stem[stem$intensity > mean(stem$intensity, na.rm = T), ]
-
-  }
-
 
   # Defining the vertical section in which trees are detected
 

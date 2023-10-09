@@ -74,6 +74,23 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     woody <- woody[!is.na(woody$x) & !is.na(woody$y) & !is.na(woody$z), ]} else {woody <- data}
 
 
+
+  if(!is.null(data$intensity) & mean(data$intensity, na.rm = T) > 0 & is.null(data$GLA)){
+
+    woody <- data[data$intensity > mean(data$intensity, na.rm = T), ]
+
+  }
+
+
+
+  if(!is.null(data$intensity) & mean(data$intensity, na.rm = T) > 0 & !is.null(data$GLA)){
+
+    woody <- woody[woody$intensity > mean(woody$intensity, na.rm = T), ]
+
+  }
+
+
+
   # Statistical filtering of a point cloud
   # Implements the Statistical Outliers Removal (SOR)
 
