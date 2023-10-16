@@ -2,6 +2,7 @@
 tree.detection.multi.scan <- function(data, single.tree = NULL,
                                       dbh.min = 4, dbh.max = 200, h.min = 1.3,
                                       ncr.threshold = 0.1, tls.precision = NULL,
+                                      density.reduction = 2,
                                       stem.section = c(0.7, 3.5), stem.range = NULL, breaks = NULL,
                                       slice = 0.1, understory = NULL, bark.roughness = 1,
                                       den.type = 1, d.top = NULL,
@@ -127,7 +128,15 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   stem.2 <- NULL
 
-  stem <- stem[stem$npts > mean(stem$npts) & stem$ratio > mean(stem$ratio) & stem$nvox > mean(stem$nvox), ]
+  if(density.reduction == 1)
+    stem <- stem[stem$npts > mean(stem$npts), ]
+
+  if(density.reduction == 2)
+    stem <- stem[stem$npts > mean(stem$npts) & stem$nvox > mean(stem$nvox), ]
+
+  if(density.reduction == 3)
+    stem <- stem[stem$npts > mean(stem$npts) & stem$nvox > mean(stem$nvox) & stem$ratio > mean(stem$ratio), ]
+
 
   if(!is.null(understory)){
 

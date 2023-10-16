@@ -2,6 +2,7 @@
 tree.detection.single.scan <- function(data, single.tree = NULL,
                                        dbh.min = 4, dbh.max = 200, h.min = 1.3,
                                        ncr.threshold = 0.1, tls.resolution = list(),
+                                       density.reduction = 2,
                                        stem.section = c(0.7, 3.5), stem.range = NULL, breaks = NULL,
                                        slice = 0.1, understory = NULL, bark.roughness = 1,
                                        den.type = 1, d.top = NULL,
@@ -75,7 +76,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
 
 
-  if(!is.null(data$intensity) & mean(data$intensity, na.rm = T) > 0 & is.null(data$GLA)){
+  if(!is.null(data$intensity) & suppressWarnings(mean(data$intensity, na.rm = T)) > 0 & is.null(data$GLA)){
 
     woody <- data[data$intensity > mean(data$intensity, na.rm = T), ]
 
@@ -83,7 +84,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
 
 
-  if(!is.null(data$intensity) & mean(data$intensity, na.rm = T) > 0 & !is.null(data$GLA)){
+  if(!is.null(data$intensity) & suppressWarnings(mean(data$intensity, na.rm = T)) > 0 & !is.null(data$GLA)){
 
     woody <- woody[woody$intensity > mean(woody$intensity, na.rm = T), ]
 
