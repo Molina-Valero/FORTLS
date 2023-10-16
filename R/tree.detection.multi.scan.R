@@ -128,13 +128,11 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   stem.2 <- NULL
 
-  if(density.reduction == 1)
-    stem <- stem[stem$npts > mean(stem$npts), ]
 
-  if(density.reduction == 2)
+  if(density.reduction == 1)
     stem <- stem[stem$npts > mean(stem$npts) & stem$nvox > mean(stem$nvox), ]
 
-  if(density.reduction == 3)
+  if(density.reduction == 2)
     stem <- stem[stem$npts > mean(stem$npts) & stem$nvox > mean(stem$nvox) & stem$ratio > mean(stem$ratio), ]
 
 

@@ -140,8 +140,13 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   stem.2 <- NULL
 
-  stem <- stem[stem$npts > mean(stem$npts) & stem$ratio > mean(stem$ratio) & stem$nvox > mean(stem$nvox), ]
-  # points(stem$x, stem$y, col = "green")
+
+  if(density.reduction == 1)
+    stem <- stem[stem$npts > mean(stem$npts) & stem$nvox > mean(stem$nvox), ]
+
+  if(density.reduction == 2)
+    stem <- stem[stem$npts > mean(stem$npts) & stem$nvox > mean(stem$nvox) & stem$ratio > mean(stem$ratio), ]
+
 
 
   if(!is.null(understory)){
