@@ -46,7 +46,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     woody <- woody[!is.na(woody$x) & !is.na(woody$y) & !is.na(woody$z), ]} else {woody <- data}
 
 
-  if(!is.null(data$intensity) & mean(data$intensity, na.rm = T) > 0 & is.null(data$GLA)){
+
+  if(!is.null(data$intensity) & suppressWarnings(mean(data$intensity, na.rm = T)) > 0 & is.null(data$GLA)){
 
     woody <- data[data$intensity > mean(data$intensity, na.rm = T), ]
 
@@ -54,7 +55,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
 
 
-  if(!is.null(data$intensity) & mean(data$intensity, na.rm = T) > 0 & !is.null(data$GLA)){
+  if(!is.null(data$intensity) & suppressWarnings(mean(data$intensity, na.rm = T)) > 0 & !is.null(data$GLA)){
 
     woody <- woody[woody$intensity > mean(woody$intensity, na.rm = T), ]
 
@@ -81,9 +82,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   # Detection of stem part without shrub vegetation and crown
 
-  message("Detecting tree stem axes")
-
   stem <- woody[woody$prob.selec == 1, ]
+
 
   # Defining the vertical section in which trees are detected
 
@@ -98,6 +98,20 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     stem <- stem[stem$z > stem.section[1] & stem$z < stem.section[2], ]
 
   }
+
+  stem <- .ver.remove.slice.double(stem)
+  stem$ver <- ifelse(is.na(stem$ver), stats::runif(length(stem$ver[is.na(stem$ver)])), stem$ver)
+  stem$ver <- 1 - stem$ver
+
+  stem$prob.ver <- stats::runif(nrow(stem))
+  stem <- stem[stem$ver > stem$prob.ver, ]
+
+
+  woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
+  woody <- rbind(woody, stem[, 1:ncol(woody)])
+
+
+  message("Detecting tree stem axes")
 
 
   if(is.null(tls.precision)){
@@ -639,7 +653,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
 
 
-  # Cheking if there are negative radious
+  # Cheking if there are negative radius
 
   .tree <- .tree[.tree$radius > 0, ]
 

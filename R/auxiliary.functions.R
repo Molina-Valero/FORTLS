@@ -3281,6 +3281,74 @@ if(nrow(.filter) < 1){
 }
 
 
+.ver.remove.slice.double <- function(data){
+
+  # code <- NULL
+
+  # Select necessary fields from original txt file of point cloud
+
+  .data <- as.data.frame(data[,c("point", "x", "y", "z")])
+
+  # Create x and y coordinates for grid
+
+  .x <- seq(min(.data$x), max(.data$x)+1)
+  .y <- seq(min(.data$y), max(.data$y)+1)
+
+
+  if(length(.x) < 2 | length(.y) < 2){
+
+    data$ncr <- NA
+    .data <- data} else{
+
+      # Empty data frame where coordinates neccesaries for
+      # creating grid will be saved
+
+      .grid <- data.frame(x = rep(.x, each = length(.y)),
+                          y = rep(.y, times = length(.x)))
+
+      .grid <- sf::st_as_sf(.grid, coords = c("x","y"))
+
+
+      .grid <- sf::st_buffer(.grid, dist = 0.55, endCapStyle = "SQUARE")
+      .grid <- sf::st_cast(.grid, "POLYGON")
+
+      .grid.2 <- sf::st_intersects(.grid, sf::st_as_sf(.data, coords = c("x","y")))
+      .grid.2 <- as.data.frame(.grid.2)
+      colnames(.grid.2) <- c("id", "code")
+      .data$code <- as.numeric(row.names(.data))
+      .data <- merge(.data, .grid.2, by = "code", all = TRUE)
+      # .data <- subset(.data, select = -code)
+      .data <- .data[, 2:ncol(.data)]
+
+      rm(.grid, .grid.2)
+
+      .dat <- lapply(split(.data[, 1:4], .data$id), as.matrix)
+
+      .dat <- .dat[(lapply(.dat, nrow)) > 4]
+      # .dat <- .dat[(lapply(.dat, nrow)) < 40000]
+
+      .ncr <- do.call(rbind, lapply(.dat, ver_point_cloud_double))
+
+      .ncr <- .ncr[.ncr$ver > 0 & .ncr$ver < 9999, ]
+
+
+      if(is.null(.ncr)){
+        data$ncr <- NA
+        .data <- data
+        return(.data)}
+
+      .data <- merge(data, .ncr, by = "point", all = TRUE)
+
+      .data <- .data[!duplicated(.data), ]
+
+    }
+
+  return(.data)
+
+}
+
+
+
 
 .no.trees.detected.single <- function(data, d.top, plot.attributes, dir.result, save.result){
 
