@@ -109,7 +109,7 @@
 
 
   # Estimate mean density by cell
-
+  # .threeshold <- mean(.density, na.rm = T)
   .threeshold <- stats::quantile(.density, prob = 0.25, na.rm = T)
 
   if(is.nan(.threeshold) | is.na(.threeshold)){return(.filter)}
@@ -485,7 +485,7 @@
 
   .dat <- cut
 
-  if(nrow(.dat) < 15){return(.filter)}
+  if(nrow(.dat) < 10){return(.filter)}
 
   # Generate mesh
 

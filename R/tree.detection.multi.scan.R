@@ -124,6 +124,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   stem <- VoxR::project_voxels(stem)
 
+  plot(stem$x, stem$y, asp = 1, col = "grey")
+
   # Filtering pixels - double branch peeling
 
   stem.2 <- NULL
@@ -134,6 +136,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   if(density.reduction == 2)
     stem <- stem[stem$npts > mean(stem$npts) & stem$nvox > mean(stem$nvox) & stem$ratio > mean(stem$ratio), ]
+
+  points(stem$x, stem$y, asp = 1, col = "green")
 
 
   if(!is.null(understory)){
@@ -154,6 +158,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   # sf::st_crs(buf) <- "+proj=utm +zone=19 +ellps=GRS80 +datum=NAD83 +unit=m"
   buf <- sf::st_buffer(buf, max(.dbh.min, 0.5))
   buf <- sf::st_cast(sf::st_union(buf), "POLYGON")
+
+  plot(buf)
 
 
   if(!is.null(understory) & is.null(single.tree)){
@@ -360,6 +366,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     # Assigning section to the slice
 
     .cut$sec <- cuts
+
+    plot(.cut$x, .cut$y, asp = 1)
 
 
     # Selection of those cluster belonging to trees
@@ -755,8 +763,12 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     .filt <- .tree[.tree$tree == i, ]
     .filteraux <- .tree[.tree$tree != i, ]
 
-    if(nrow(.filteraux) < 1)
+    if(nrow(.filteraux) < 1){
+
+      .tree.2 <- rbind(.tree.2, .filt)
       next
+
+    }
 
     .filteraux$dist <- sqrt((.filteraux$x - .filt$x) ^ 2 + (.filteraux$y - .filt$y) ^ 2) - .filteraux$radius - .filt$radius
     .filteraux$rho.dist <- abs(.filteraux$rho - .filt$rho) - .filteraux$radius - .filt$radius
@@ -994,7 +1006,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   straightness <- do.call(rbind, lapply(split(.stem, .stem$tree), .straightness, stem.range = stem.range))
 
-  .tree <- merge(.tree, straightness, by = "tree")
+  .tree <- merge(.tree, straightness, by = "tree", all.x = TRUE)
 
   utils::write.csv(.stem,
                    file = file.path(dir.result, "stem.curve.csv"),
@@ -1098,6 +1110,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   suppressMessages(lidR::plot(lidR::LAS(diameter[, c("x","y","z")]), add = plotTree, size = 5))
 
   }
+
+  stopCluster(cl)
 
 
   #####

@@ -712,8 +712,12 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
         .filt <- .tree[.tree$tree == i, ]
         .filteraux <- .tree[.tree$tree != i, ]
 
-        if(nrow(.filteraux) < 1)
+        if(nrow(.filteraux) < 1){
+
+          .tree.2 <- rbind(.tree.2, .filt)
           next
+
+        }
 
         .filteraux$dist <- sqrt((.filteraux$x - .filt$x) ^ 2 + (.filteraux$y - .filt$y) ^ 2) - .filteraux$radius - .filt$radius
         .filteraux$rho.dist <- abs(.filteraux$rho - .filt$rho) - .filteraux$radius - .filt$radius
@@ -936,7 +940,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     straightness <- do.call(rbind, lapply(split(.stem, .stem$tree), .straightness, stem.range = stem.range))
 
-    .tree <- merge(.tree, straightness, by = "tree")
+    .tree <- merge(.tree, straightness, by = "tree", all.x = TRUE)
 
 
     utils::write.csv(.stem,
@@ -1063,6 +1067,8 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     suppressMessages(lidR::plot(lidR::LAS(diameter[, c("x","y","z")]), add = plotTree, size = 5))
 
   }
+
+  stopCluster(cl)
 
 
   #####
