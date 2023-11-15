@@ -1111,7 +1111,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   }
 
-  stopCluster(cl)
+  parallel::stopCluster(cl)
 
 
   #####

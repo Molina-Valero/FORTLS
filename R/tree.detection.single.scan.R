@@ -1068,7 +1068,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   }
 
-  stopCluster(cl)
+  parallel::stopCluster(cl)
 
 
   #####
