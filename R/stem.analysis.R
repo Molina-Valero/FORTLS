@@ -2,7 +2,7 @@
 
 .straightness <- function(data, stem.range = NULL){
 
-  tree <- data$tree[1]
+  n <- data$tree[1]
 
   if(!is.null(stem.range) & nrow(data) > 2){
 
@@ -43,7 +43,7 @@
   SS.max <- NA
   sinuosity <- NA
 
-  out <- data.frame(tree = tree, SS.max = SS.max, sinuosity = sinuosity)
+  out <- data.frame(tree = n, SS.max = SS.max, sinuosity = sinuosity)
 
   return(out)
 

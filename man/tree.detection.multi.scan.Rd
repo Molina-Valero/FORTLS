@@ -16,7 +16,7 @@ tree.detection.multi.scan(data, single.tree = NULL,
                           stem.section = NULL, stem.range = NULL, breaks = NULL,
                           slice = 0.1, understory = NULL, bark.roughness = 1,
                           den.type = 1, d.top = NULL,
-                          plot.attributes = NULL,
+                          plot.attributes = NULL, plot = TRUE,
                           save.result = TRUE, dir.result = NULL)}
 
 \arguments{
@@ -52,6 +52,8 @@ tree.detection.multi.scan(data, single.tree = NULL,
   \item{d.top}{Top stem diameter (cm) considered to estimate commercial timber volume.}
 
   \item{plot.attributes}{Data frame with attributes at plot level. It must contain a column named \code{id} (character string or numeric value) with encoding coinciding with that used in \code{id} argument of \code{\link{normalize}} for identifying plots. If there are strata, another column named \sQuote{stratum} (numeric) will be required for other functionalities of \pkg{FORTLS} (see, for instance, \code{\link{estimation.plot.size}} or \code{\link{metrics.variables}}). If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, the function will not add these possible plot attributes.}
+
+  \item{plot}{Optional logical which indicates whether or not the normalized point cloud will be plot. If this argument is not specified by the user, it will be set to \code{TRUE} by default and, as consequence, the normalized point cloud will be plot.}
 
   \item{save.result}{Optional logical which indicates whether or not the output files described in \sQuote{Output Files} section should be saved in \code{dir.result}. If this argument is not specified by the user, it will be set to \code{TRUE} by default and, as a consequence, the output files will be saved.}
 

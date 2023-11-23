@@ -1030,7 +1030,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     tree <- rep(i, times = 10001)
     x <- .tree$x[i] + cos(phi) * ((.tree$dbh[i] / 100) / 2)
     y <- .tree$y[i] + sin(phi) * ((.tree$dbh[i] / 100) / 2)
-    z <- runif(10001, 1.2, 1.4)
+    z <- stats::runif(10001, 1.2, 1.4)
 
     .diameter <- data.frame(tree = tree,
                             x = x, y = y, z = z)

@@ -246,23 +246,26 @@
 
 # This function assigns detected sections to their stem axis
 
-.stem.assignment.multi.scan <- function(filter, eje, stem.section, x.center, y.center, single.tree){
+.stem.assignment.multi.scan <- function(.filter, eje, stem.section, x.center, y.center, single.tree){
 
-  eje$sec <- as.character(eje$sec)
+
+  # eje$sec <- as.character(eje$sec)
 
   eje$phi <- atan2(eje$y - y.center, eje$x - x.center)
   eje$phi <- ifelse(eje$phi < 0, eje$phi + (2 * pi), eje$phi)
   eje$rho <- sqrt((eje$x - x.center) ^ 2 + (eje$y - y.center) ^ 2)
 
-  filter$cluster <- 1:nrow(filter)
-  filter$sec <- as.character(filter$sec)
-  filter <- merge(eje, filter, by = "sec", all.y = TRUE)
-  filter$dist <- sqrt((filter$center.x - filter$x) ^ 2 + (filter$center.y - filter$y) ^ 2)
-  filter$dist.rho <- abs(filter$center.rho - filter$rho)
-  filter$dist.phi <- abs(filter$center.phi - filter$phi)
-  filter$sec <- as.numeric(filter$sec)
 
-  filter <- filter[!is.na(filter$dist) | !is.na(filter$dist.rho) | !is.na(filter$dist.phi), ]
+  .filter$cluster <- 1:nrow(.filter)
+  # .filter$sec <- as.character(.filter$sec)
+  .filter <- merge(eje, .filter, by = "sec", all.y = TRUE)
+  .filter$dist <- sqrt((.filter$center.x - .filter$x) ^ 2 + (.filter$center.y - .filter$y) ^ 2)
+  .filter$dist.rho <- abs(.filter$center.rho - .filter$rho)
+  .filter$dist.phi <- abs(.filter$center.phi - .filter$phi)
+  # .filter$sec <- as.numeric(.filter$sec)
+
+
+  .filter <- .filter[!is.na(.filter$dist) | !is.na(.filter$dist.rho) | !is.na(.filter$dist.phi), ]
 
   filteraux <- data.frame(tree = as.numeric(), sec = as.numeric(),
                           center.x = as.numeric(), center.y = as.numeric(),
@@ -274,9 +277,9 @@
 
   if(!is.null(single.tree)){
 
-    for (i in unique(filter$tree)) {
+    for (i in unique(.filter$tree)) {
 
-      .filt.tree <- filter[filter$tree == i, ]
+      .filt.tree <- .filter[.filter$tree == i, ]
 
       for (j in unique(.filt.tree$sec)) {
 
@@ -300,7 +303,7 @@
 
         filteraux <- rbind(filteraux, .filt)
 
-        filter <- filter[filter$cluster != .filt$cluster, ]
+        .filter <- .filter[.filter$cluster != .filt$cluster, ]
 
       }
 
@@ -308,9 +311,10 @@
 
   } else {
 
-    for (i in unique(filter$tree)) {
 
-      .filt.tree <- filter[filter$tree == i, ]
+    for (i in unique(.filter$tree)) {
+
+      .filt.tree <- .filter[.filter$tree == i, ]
 
       for (j in unique(.filt.tree$sec)) {
 
@@ -319,6 +323,7 @@
         .filt$dist.total <- .filt$dist / max(.filt$dist) +
           .filt$dist.rho / max(.filt$dist.rho) +
           .filt$dist.phi / max(.filt$dist.phi)
+
 
         .filt$dist.total <- ifelse(is.nan(.filt$dist.total), 0, .filt$dist.total)
 
@@ -343,7 +348,7 @@
 
         filteraux <- rbind(filteraux, .filt)
 
-        filter <- filter[filter$cluster != .filt$cluster, ]
+        .filter <- .filter[.filter$cluster != .filt$cluster, ]
 
       }
 
@@ -359,13 +364,13 @@
   filteraux <- filteraux[order(filteraux$tree, filteraux$sec), , drop = FALSE]
 
 
-  filter <- data.frame(tree = as.numeric(), sec = as.numeric(), dist = as.numeric(),
-                       center.x = as.numeric(), center.y = as.numeric(),
-                       center.phi = as.numeric(), center.rho = as.numeric(),
-                       center.r = as.numeric(), center.theta = as.numeric(),
-                       radius = as.numeric(),
-                       n.pts = as.numeric(), n.pts.red = as.numeric(),
-                       circ = as.numeric(), arc.cir = as.numeric())
+  .filter <- data.frame(tree = as.numeric(), sec = as.numeric(), dist = as.numeric(),
+                        center.x = as.numeric(), center.y = as.numeric(),
+                        center.phi = as.numeric(), center.rho = as.numeric(),
+                        center.r = as.numeric(), center.theta = as.numeric(),
+                        radius = as.numeric(),
+                        n.pts = as.numeric(), n.pts.red = as.numeric(),
+                        circ = as.numeric(), arc.cir = as.numeric())
 
   for (i in unique(filteraux$tree)) {
 
@@ -382,7 +387,7 @@
     if(nrow(.filt) == 1){
 
       .filt$dif <- NA
-      filter <- rbind(filter, .filt)
+      .filter <- rbind(.filter, .filt)
       next
 
       }
@@ -401,15 +406,15 @@
     if(nrow(.filt) == 1){
 
         .filt <- .filt[, -ncol(.filt)]
-        filter <- rbind(filter, .filt)
+        .filter <- rbind(.filter, .filt)
         next
 
       }
 
 
-    while (max(.filt$dif) >= threshold / 2 & min(.filt$dif) <= - threshold) {
+    while (max(.filt$dif) >= threshold / 2 & min(.filt$dif) <= -threshold) {
 
-      .filt <- .filt[.filt$dif < threshold / 2 & .filt$dif > - threshold, ]
+      .filt <- .filt[.filt$dif < threshold / 2 & .filt$dif > -threshold, ]
 
 
       .filt$dif <- c(diff(.filt$radius), diff(.filt$radius)[length(diff(.filt$radius))])
@@ -421,12 +426,12 @@
 
 
     .filt <- .filt[, -ncol(.filt)]
-    filter <- rbind(filter, .filt)
+    .filter <- rbind(.filter, .filt)
 
 
   }
 
-  return(filter)
+  return(.filter)
 
 }
 
@@ -462,7 +467,7 @@
 
   # }
 
-  if(length(dat) < 12){
+    if(length(dat) == 0 | nrow(dat) < 2){
 
     out <- data.frame(x = as.numeric(), y = as.numeric(),
                       radio = as.numeric(), n = as.numeric(), mae = as.numeric(), cv = as.numeric())
@@ -490,7 +495,7 @@
     dat <- cbind(dat, inliers)
     dat <- dat[dat[, "inliers"] < dist, ]
 
-    if(length(dat) < 12){
+    if(length(dat) == 0 | nrow(dat) < 2){
 
       out <- data.frame(x = as.numeric(), y = as.numeric(),
                         radio = as.numeric(), n = as.numeric(), mae = as.numeric(), cv = as.numeric())

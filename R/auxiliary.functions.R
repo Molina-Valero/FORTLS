@@ -110,7 +110,7 @@
 
   # Estimate mean density by cell
   # .threeshold <- mean(.density, na.rm = T)
-  .threeshold <- stats::quantile(.density, prob = 0.25, na.rm = T)
+  .threeshold <- stats::quantile(.density, prob = 0.1, na.rm = T)
 
   if(is.nan(.threeshold) | is.na(.threeshold)){return(.filter)}
 
@@ -535,7 +535,7 @@
   # Estimate mean density by cell
   # .threeshold <- stats::median(.density, na.rm = T)
   # .threeshold <- mean(.density, na.rm = T)
-  .threeshold <- stats::quantile(.density, prob = 0.25, na.rm = T)
+  .threeshold <- stats::quantile(.density, prob = 0.1, na.rm = T)
 
   if(is.nan(.threeshold) | is.na(.threeshold)){return(.filter)}
 
@@ -775,7 +775,7 @@
   # Zhang et al., (2019)
   .n.w.ratio <- stats::sd(.dat$z) / sqrt(stats::sd(.dat$x) ^ 2 + stats::sd(.dat$y) ^ 2)
 
-  if(.n.w.ratio > 1 | .n.w.ratio < 0.1 | is.nan(.n.w.ratio)){return(.filter)}
+  # if(.n.w.ratio > 1 | .n.w.ratio < 0.1 | is.nan(.n.w.ratio)){return(.filter)}
 
   .densidad_radio <- .n.pts.red / .radio
 

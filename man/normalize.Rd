@@ -17,7 +17,7 @@ normalize(las, normalized = NULL,
           csf = list(cloth_resolution = 0.5),
           intensity = NULL, RGB = NULL,
           scan.approach = "single",
-          id = NULL, file = NULL,
+          id = NULL, file = NULL, plot = TRUE,
           dir.data = NULL, save.result = TRUE, dir.result = NULL)}
 
 \arguments{
@@ -59,6 +59,8 @@ normalize(las, normalized = NULL,
   \item{id}{Optional plot identification encoded as character string or numeric. If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, the plot will be encoded as 1.}
 
   \item{file}{Optional file name identification encoded as character string or numeric value. If it is null, file will be encoded as \code{id} by default.}
+
+  \item{plot}{Optional logical which indicates whether or not the normalized point cloud will be plot. If this argument is not specified by the user, it will be set to \code{TRUE} by default and, as consequence, the normalized point cloud will be plot.}
 
   \item{dir.data}{Optional character string naming the absolute path of the directory where LAS files containing TLS point clouds are located. \code{.Platform$file.sep} must be used as the path separator in \code{dir.data}. If this argument is not specified by the user, it will be set to \code{NULL} by default and, as a consequence, the current working directory of the \R process will be assigned to \code{dir.data} during the execution.}
 
