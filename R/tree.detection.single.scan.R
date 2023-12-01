@@ -1,7 +1,7 @@
 
 tree.detection.single.scan <- function(data, single.tree = NULL,
                                        dbh.min = 4, dbh.max = 200, h.min = 1.3,
-                                       ncr.threshold = 0.1, tls.resolution = list(),
+                                       ncr.threshold = 0.1, tls.resolution = list(), tls.precision = NULL,
                                        density.reduction = 2,
                                        stem.section = c(0.7, 3.5), stem.range = NULL, breaks = NULL,
                                        slice = 0.1, understory = NULL, bark.roughness = 1,
@@ -11,8 +11,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
 
   set.seed(123)
-
-  cl <- parallel::makeCluster(parallel::detectCores() - 1)
 
   data <- data.table::setDT(data)
 
@@ -100,19 +98,16 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   woody <- woody[, c("x", "y", "z")]
   woody <- VoxR::filter_noise(data = data.table::setDT(woody), store_noise = TRUE, message = FALSE)
 
-  noise <- woody[woody$Noise == 2, ]
-
+  # noise <- woody[woody$Noise == 2, ]
   woody <- woody[woody$Noise == 1, ]
 
   woody <- merge(data, woody[, c("x", "y", "z")], by = c("x", "y", "z"), all = FALSE)
-  noise <- merge(data, noise, by = c("x", "y", "z"), all = FALSE)
+  # noise <- merge(data, noise, by = c("x", "y", "z"), all = FALSE)
 
 
   # Detection of stem part without shrub vegetation and crown
 
-  message("Detecting tree stem axes")
-
-  stem <- woody[woody$prob.selec == 1, ]
+  stem <- woody
 
   # Defining the vertical section in which trees are detected
 
@@ -128,9 +123,27 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   }
 
+  message("Retaining points with high verticality values")
 
-  stem <- VoxR::vox(stem[, c("x", "y", "z")], res = 0.03)
+  # stem <- .ver.remove.slice.double(stem)
+  # stem$ver <- ifelse(is.na(stem$ver), stats::runif(length(stem$ver[is.na(stem$ver)])), stem$ver)
+  # stem$ver <- 1 - stem$ver
+  # stem$prob.ver <- stats::runif(nrow(stem))
+  # stem <- stem[stem$ver > stem$prob.ver, ]
+  #
+  # woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
+  # woody <- rbind(woody, stem[, 1:ncol(woody)])
+
+
+  message("Detecting tree stem axes")
+
+  stem <- stem[stem$prob.selec == 1, ]
+
+  if(is.null(tls.precision)){
+    stem <- VoxR::vox(stem[, c("x", "y", "z")], res = 0.03)} else {
+      stem <- VoxR::vox(stem[, c("x", "y", "z")], res = tls.precision)}
   stem <- stem[, c("x", "y", "z", "npts")]
+
 
   stem <- VoxR::project_voxels(stem)
   # plot(stem$x, stem$y, asp = 1, col = "grey")
@@ -159,8 +172,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     }
 
 
-  buf <- sf::st_as_sf(stem, coords = c("x","y"))
-  # sf::st_crs(buf) <- "+proj=utm +zone=19 +ellps=GRS80 +datum=NAD83 +unit=m"
+  buf <- sf::st_as_sf(data.frame(stem), coords = c("x","y"))
   buf <- sf::st_buffer(buf, max(.dbh.min, 0.5))
   buf <- sf::st_cast(sf::st_union(buf), "POLYGON")
 
@@ -210,15 +222,14 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
 
 
-  woody.2 <- sf::st_intersects(buf, sf::st_as_sf(woody, coords = c("x","y")))
+  woody.2 <- sf::st_intersects(buf, sf::st_as_sf(data.frame(woody), coords = c("x","y")))
   woody.2 <- data.table::setDT(as.data.frame(woody.2))
   colnames(woody.2) <- c("tree", "code")
   woody$code <- as.numeric(row.names(woody))
   woody <- merge(woody, woody.2, by = "code", all = FALSE)
-  # woody <- subset(woody, select = -code)
-  woody <- woody[, 2:ncol(woody)]
+  woody <- subset(woody, select = -code)
+  # woody <- woody[, 2:ncol(woody)]
 
-  # woody <- woody[woody$tree %in% eje$tree, ]
   woody <- woody[!is.na(woody$tree), ]
 
 
@@ -289,6 +300,8 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
                              circ = as.numeric(), arc.circ = as.numeric(), sec = as.numeric())
 
   slice <- slice / 2
+
+  cl <- parallel::makeCluster(parallel::detectCores() - 1)
 
 
   for(cuts in breaks){
@@ -391,6 +404,8 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   }# End of cuts loop
 
+  parallel::stopCluster(cl)
+
 
   #### Assigning sections to tree axis ####
 
@@ -483,6 +498,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     # section from which radius is estimated, number of used sections (or cuts)
     # will not be important. An estimated radius will always exist
     .filter$dif <- 1.3 - .filter$sec
+    .filter$slope <- ifelse(.filter$dif != 0 & is.na(.filter$slope), mean(.filter$slope, na.rm = TRUE), .filter$slope)
     .filter$radio.est <- ifelse(.filter$dif == 0, .filter$radius, .filter$radius + .filter$slope * .filter$dif)
     .filter <- .filter[!is.na(.filter$radio.est), ]
 
@@ -494,7 +510,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     top.lim <- max(1.3, abs(max(stem.section) - 1.3))
 
-    .radio.est <- data.frame(radio.est = as.numeric())
+    .radio.est <- data.frame(tree = as.numeric(), radio.est = as.numeric())
 
     for (i in unique(.filter$tree)) {
 
@@ -520,7 +536,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
       }
 
-      .out <- data.frame(radio.est = mean(.dat$radio.est, na.rm = TRUE))
+      .out <- data.frame(tree = i, radio.est = mean(.dat$radio.est, na.rm = TRUE))
       .radio.est <- rbind(.radio.est, .out)
 
     }
@@ -588,6 +604,9 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     }
 
+    .filteraux <- subset(.filteraux, select = -radio.est)
+    .filteraux <- merge(.filteraux, .radio.est, by = "tree")
+
     # Dendrometric variables
     .tree <- data.frame(tree = tapply(.filteraux$tree, .filteraux$tree, mean, na.rm = TRUE),
                         filter = tapply(.filteraux$filter, .filteraux$tree, mean, na.rm = TRUE),
@@ -607,7 +626,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
                         theta = tapply(.filteraux$center.theta, .filteraux$tree, mean,na.rm = TRUE),
 
                         horizontal.distance = tapply(.filteraux$center.rho, .filteraux$tree, mean, na.rm = TRUE), # repeated line
-                        radius = .radio.est$radio.est,
+                        radius = tapply(.filteraux$radio.est, .filteraux$tree, mean, na.rm = TRUE),
 
                         partial.occlusion = tapply(.filteraux$arc.circ, .filteraux$tree, min, na.rm = TRUE),
 
@@ -1008,13 +1027,13 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
                      row.names = FALSE)
   }
 
-  if(isTRUE(save.result)){
-
-    .data.red <- noise[which(noise$prob.selec == 1), , drop = FALSE]
-
-    vroom::vroom_write(.data.red, path = file.path(dir.result, paste("noise_", .data.red$file[1], sep = "")), delim = ",", progress = FALSE)
-
-  }
+  # if(isTRUE(save.result)){
+  #
+  #   .data.red <- noise[which(noise$prob.selec == 1), , drop = FALSE]
+  #
+  #   vroom::vroom_write(.data.red, path = file.path(dir.result, paste("noise_", .data.red$file[1], sep = "")), delim = ",", progress = FALSE)
+  #
+  # }
 
 
   diameter <- data.frame(tree = as.numeric(),

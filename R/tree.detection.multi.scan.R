@@ -70,19 +70,17 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   woody <- woody[, c("x", "y", "z")]
   woody <- VoxR::filter_noise(data = data.table::setDT(woody), store_noise = TRUE, message = FALSE)
 
-  noise <- woody[woody$Noise == 2, ]
+  # noise <- woody[woody$Noise == 2, ]
   woody <- woody[woody$Noise == 1, ]
 
   woody <- merge(data, woody[, c("x", "y", "z")], by = c("x", "y", "z"), all = FALSE)
-  noise <- merge(data, noise, by = c("x", "y", "z"), all = FALSE)
+  # noise <- merge(data, noise, by = c("x", "y", "z"), all = FALSE)
 
-  # data <- as.data.frame(data)
 
 
   # Detection of stem part without shrub vegetation and crown
 
   stem <- woody
-
 
   # Defining the vertical section in which trees are detected
 
@@ -98,13 +96,15 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   }
 
+
+  message("Retaining points with high verticality values")
+
+
   stem <- .ver.remove.slice.double(stem)
   stem$ver <- ifelse(is.na(stem$ver), stats::runif(length(stem$ver[is.na(stem$ver)])), stem$ver)
   stem$ver <- 1 - stem$ver
   stem$prob.ver <- stats::runif(nrow(stem))
   stem <- stem[stem$ver > stem$prob.ver, ]
-
-
 
   woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
   woody <- rbind(woody, stem[, 1:ncol(woody)])
@@ -151,7 +151,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
 
   buf <- sf::st_as_sf(data.frame(stem), coords = c("x","y"))
-  # sf::st_crs(buf) <- "+proj=utm +zone=33 +datum=WGS84 +units=m"
   buf <- sf::st_buffer(buf, max(.dbh.min, 0.5))
   buf <- sf::st_cast(sf::st_union(buf), "POLYGON")
 
@@ -209,8 +208,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   stem <- merge(stem, stem.3, by = "code", all = FALSE)
   stem <- subset(stem, select = -code)
 
-  plot(stem$x, stem$y, col = stem$tree)
-
   rm(stem.3)
 
   # Filtering stems axis
@@ -261,8 +258,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   eje.2$cluster <- dbscan$cluster
   n.w.ratio <- tapply(eje.2$n.w.ratio, eje.2$cluster, max)
   eje <- eje[eje$n.w.ratio %in% n.w.ratio, ]
-
-  points(eje$x, eje$y, col = "red", pch = 19)
 
   rm(eje.2)
 
@@ -646,7 +641,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   # Genrating dendrometric variables
 
-  .filteraux <- merge(.filteraux[, -18], .radio.est, by = "tree")
+  .filteraux <- subset(.filteraux, select = -radio.est)
+  .filteraux <- merge(.filteraux, .radio.est, by = "tree")
 
 
   .tree <- data.frame(tree = tapply(.filteraux$tree, .filteraux$tree, mean, na.rm = TRUE),
@@ -1077,13 +1073,13 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   }
 
 
-  if(isTRUE(save.result)){
-
-    .data.red <- noise[which(noise$prob.selec == 1), , drop = FALSE]
-
-    vroom::vroom_write(.data.red, path = file.path(dir.result, paste("noise_", .data.red$file[1], sep = "")), delim = ",", progress = FALSE)
-
-  }
+  # if(isTRUE(save.result)){
+  #
+  #   .data.red <- noise[which(noise$prob.selec == 1), , drop = FALSE]
+  #
+  #   vroom::vroom_write(.data.red, path = file.path(dir.result, paste("noise_", .data.red$file[1], sep = "")), delim = ",", progress = FALSE)
+  #
+  # }
 
 
   if(!is.null(plot)){

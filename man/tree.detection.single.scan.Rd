@@ -13,6 +13,7 @@ tree.detection.single.scan(data, single.tree = NULL,
                            dbh.min = 4, dbh.max = 200, h.min = 1.3,
                            ncr.threshold = 0.1,
                            tls.resolution = list(),
+                           tls.precision = NULL,
                            stem.section = NULL, stem.range = NULL, breaks = NULL,
                            slice = 0.1, understory = NULL, bark.roughness = 1,
                            den.type = 1, d.top = NULL,
@@ -46,6 +47,8 @@ tree.detection.single.scan(data, single.tree = NULL,
   \item {\code{tls.dist}}: distance (m) from TLS at which two consecutive points are separated by \code{point.dist}.
 
   If this argument is not specified by the user, it will be set to NULL by default and, as a consequence the function will stop giving an error message.}
+
+  \item{tls.precision}{Average point cloud precision in cm.}
 
   \item{stem.section}{Section free of noise (shurb, branches, etc.) considered to detect trees. If not specified, an automatic internal algorithm will be applied (see \sQuote{Details}).}
 
