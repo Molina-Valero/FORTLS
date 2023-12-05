@@ -14,7 +14,8 @@ tree.detection.single.scan(data, single.tree = NULL,
                            ncr.threshold = 0.1,
                            tls.resolution = list(),
                            tls.precision = NULL,
-                           stem.section = NULL, stem.range = NULL, breaks = NULL,
+                           density.reduction = 2,
+                           stem.section = c(0.7, 3.5), stem.range = NULL, breaks = NULL,
                            slice = 0.1, understory = NULL, bark.roughness = 1,
                            den.type = 1, d.top = NULL,
                            plot.attributes = NULL, plot = TRUE,
@@ -49,6 +50,8 @@ tree.detection.single.scan(data, single.tree = NULL,
   If this argument is not specified by the user, it will be set to NULL by default and, as a consequence the function will stop giving an error message.}
 
   \item{tls.precision}{Average point cloud precision in cm.}
+
+  \item{density.reduction}{Density reduction intensity.}
 
   \item{stem.section}{Section free of noise (shurb, branches, etc.) considered to detect trees. If not specified, an automatic internal algorithm will be applied (see \sQuote{Details}).}
 
@@ -196,7 +199,7 @@ tree.tls <- tree.detection.single.scan(data = pcd,
 
                                        tls.resolution = list(point.dist = 6.34, tls.dist = 10),
 
-                                       breaks = c(1, 1.3, 1.6), stem.section = c(1, 5),
+                                       breaks = c(1, 1.3, 1.6),
 
                                        dir.result = dir.result)
 

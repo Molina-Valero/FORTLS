@@ -100,14 +100,14 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   message("Retaining points with high verticality values")
 
 
-  stem <- .ver.remove.slice.double(stem)
-  stem$ver <- ifelse(is.na(stem$ver), stats::runif(length(stem$ver[is.na(stem$ver)])), stem$ver)
-  stem$ver <- 1 - stem$ver
-  stem$prob.ver <- stats::runif(nrow(stem))
-  stem <- stem[stem$ver > stem$prob.ver, ]
-
-  woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
-  woody <- rbind(woody, stem[, 1:ncol(woody)])
+  # stem <- .ver.remove.slice.double(stem)
+  # stem$ver <- ifelse(is.na(stem$ver), stats::runif(length(stem$ver[is.na(stem$ver)])), stem$ver)
+  # stem$ver <- 1 - stem$ver
+  # stem$prob.ver <- stats::runif(nrow(stem))
+  # stem <- stem[stem$ver > stem$prob.ver, ]
+  #
+  # woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
+  # woody <- rbind(woody, stem[, 1:ncol(woody)])
 
 
   message("Detecting tree stem axes")
@@ -776,7 +776,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     .filteraux$rho.dist <- abs(.filteraux$rho - .filt$rho) - .filteraux$radius - .filt$radius
     .filteraux$phi.dist <- abs(.filteraux$phi - .filt$phi)
 
-    if(min(.filteraux$dist) < 0 |
+    if(min(.filteraux$dist) < mean(.tree$radius) |
        .filteraux$rho.dist[.filteraux$dist == min(.filteraux$dist)] < mean(.tree$radius) &
        .filteraux$phi.dist[.filteraux$dist == min(.filteraux$dist)] < 0.1){
 
@@ -784,7 +784,10 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
       .filteraux <- rbind(.filt, .filteraux[ , 1:(ncol(.filteraux)-3)])
 
-      .filt <- .filteraux[.filteraux$filter == max(.filteraux$filter) & .filteraux$sec.max ==  min(.filteraux$sec.max), ]
+      .filt <- .filteraux[.filteraux$filter == max(.filteraux$filter), ]
+
+      if(nrow(.filt) > 1)
+        .filt <- .filteraux[.filteraux$sec.max ==  min(.filteraux$sec.max), ]
 
 
       if(nrow(.filt) > 1)

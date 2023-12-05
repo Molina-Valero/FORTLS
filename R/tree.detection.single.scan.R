@@ -750,7 +750,10 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
           .filteraux <- rbind(.filt, .filteraux[ , 1:(ncol(.filteraux)-3)])
 
-          .filt <- .filteraux[.filteraux$filter == max(.filteraux$filter) & .filteraux$sec.max ==  min(.filteraux$sec.max), ]
+          .filt <- .filteraux[.filteraux$filter == max(.filteraux$filter), ]
+
+          if(nrow(.filt) > 1)
+            .filt <- .filteraux[.filteraux$sec.max ==  min(.filteraux$sec.max), ]
 
 
           if(nrow(.filt) > 1)
@@ -1074,7 +1077,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
       tree <- rep(i, times = 10001)
       x <- .tree$x[i] + cos(phi) * ((.tree$dbh[i] / 100) / 2)
       y <- .tree$y[i] + sin(phi) * ((.tree$dbh[i] / 100) / 2)
-      z <- runif(10001, 1.2, 1.4)
+      z <- stats::runif(10001, 1.2, 1.4)
 
       .diameter <- data.frame(tree = tree,
                               x = x, y = y, z = z)
@@ -1086,8 +1089,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     suppressMessages(lidR::plot(lidR::LAS(diameter[, c("x","y","z")]), add = plotTree, size = 5))
 
   }
-
-  parallel::stopCluster(cl)
 
 
   #####

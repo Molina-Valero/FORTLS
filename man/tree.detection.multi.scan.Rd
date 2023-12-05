@@ -13,7 +13,8 @@ tree.detection.multi.scan(data, single.tree = NULL,
                           dbh.min = 4, dbh.max = 200, h.min = 1.3,
                           ncr.threshold = 0.1,
                           tls.precision = NULL,
-                          stem.section = NULL, stem.range = NULL, breaks = NULL,
+                          density.reduction = 2,
+                          stem.section = c(0.7, 3.5), stem.range = NULL, breaks = NULL,
                           slice = 0.1, understory = NULL, bark.roughness = 1,
                           den.type = 1, d.top = NULL,
                           plot.attributes = NULL, plot = TRUE,
@@ -34,6 +35,8 @@ tree.detection.multi.scan(data, single.tree = NULL,
   \item{ncr.threshold}{Local surface variation (also known as normal change rate, NCR). By default it will be set as 0.1. For better understanding of this argument see \sQuote{Details}.}
 
   \item{tls.precision}{Average point cloud precision in cm.}
+
+  \item{density.reduction}{Density reduction intensity.}
 
   \item{stem.section}{Section free of noise (shurb, branches, etc.) considered to detect trees. If not specified, an automatic internal algorithm will be applied (see \sQuote{Details}).}
 
@@ -178,9 +181,11 @@ pcd <- normalize(las = "PiceaAbies.laz",
 
 # Tree detection without considering arguments
 
-tree.tls <- tree.detection.multi.scan(data = pcd[pcd$prob.selec == 1, ],
+tree.tls <- tree.detection.multi.scan(data = pcd,
 
-                                      stem.section = c(1, 5),
+                                      slice = 0.2,
+
+                                      breaks = c(1, 1.3, 1.6),
 
                                       dir.result = dir.result)
 
