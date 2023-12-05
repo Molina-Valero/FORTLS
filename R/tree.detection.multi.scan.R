@@ -100,14 +100,14 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   message("Retaining points with high verticality values")
 
 
-  # stem <- .ver.remove.slice.double(stem)
-  # stem$ver <- ifelse(is.na(stem$ver), stats::runif(length(stem$ver[is.na(stem$ver)])), stem$ver)
-  # stem$ver <- 1 - stem$ver
-  # stem$prob.ver <- stats::runif(nrow(stem))
-  # stem <- stem[stem$ver > stem$prob.ver, ]
-  #
-  # woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
-  # woody <- rbind(woody, stem[, 1:ncol(woody)])
+  stem <- .ver.remove.slice.double(stem)
+  stem$ver <- ifelse(is.na(stem$ver), stats::runif(length(stem$ver[is.na(stem$ver)])), stem$ver)
+  stem$ver <- 1 - stem$ver
+  stem$prob.ver <- stats::runif(nrow(stem))
+  stem <- stem[stem$ver > stem$prob.ver, ]
+
+  woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
+  woody <- rbind(woody, stem[, 1:ncol(woody)])
 
 
   message("Detecting tree stem axes")
@@ -311,8 +311,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   slice <- slice / 2
 
-  cl <- parallel::makeCluster(parallel::detectCores() - 1)
-
 
   for(cuts in breaks){
 
@@ -359,6 +357,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     .cut$sec <- cuts
 
+    cl <- parallel::makeCluster(parallel::detectCores() - 1)
+
 
     # Selection of those cluster belonging to trees
 
@@ -367,6 +367,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                                      .dbh.min = .dbh.min, .dbh.max = .dbh.max,
                                      slice = slice * 2, bark.roughness = bark.roughness,
                                      x.center = x.center, y.center = y.center))
+
+    parallel::stopCluster(cl)
 
     .filteraux <- rbind(.filteraux, .filter)
 
@@ -429,8 +431,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     .filteraux.2 <- rbind(.filteraux.2, .filter)}
 
   }# End of cuts loop
-
-  parallel::stopCluster(cl)
 
 
 

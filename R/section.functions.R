@@ -437,37 +437,39 @@
 
 
 
+# Function to fit a circle through three points
+.fit_circle <- function(points) {
+  x <- points[, 1]
+  y <- points[, 2]
+
+  D <- 2 * (x[1] * (y[2] - y[3]) + x[2] * (y[3] - y[1]) + x[3] * (y[1] - y[2]))
+
+  Ux <- ((x[1]^2 + y[1]^2) * (y[2] - y[3]) + (x[2]^2 + y[2]^2) * (y[3] - y[1]) + (x[3]^2 + y[3]^2) * (y[1] - y[2])) / D
+  Uy <- ((x[1]^2 + y[1]^2) * (x[3] - x[2]) + (x[2]^2 + y[2]^2) * (x[1] - x[3]) + (x[3]^2 + y[3]^2) * (x[2] - x[1])) / D
+
+  center <- c(Ux, Uy)
+  radius <- sqrt((x[1] - Ux)^2 + (y[1] - Uy)^2)
+
+  return(list(center = center, radius = radius))
+}
+
 .RANSAC <- function(data){
 
   dat <- data
 
   dist <- 0.05
 
-  # i <- 1
+  inliers <- dat[sample(nrow(dat), 3), ]
 
-  # while (nrow(dat) < 3 | is.null(length(dat))){
+  fit <- .fit_circle(inliers)
 
-    inliers <- dat[sample(nrow(dat), 3), ]
+  radio <- sqrt((dat[, "x"] - fit$center[1]) ^ 2 + (dat[, "y"] - fit$center[2]) ^ 2)
+  dat <- cbind(dat, radio)
+  inliers <- abs(fit$radius-dat[, "radio"])
+  dat <- cbind(dat, inliers)
+  dat <- dat[dat[, "inliers"] < dist, ]
 
-    fit <- circular::lsfit.circle(inliers)
-    # fit <- fitCircleCpp(inliers[, "x"], inliers[, "y"])
-
-    radio <- sqrt((dat[, "x"] - coef(fit)[2]) ^ 2 + (dat[, "y"] - coef(fit)[3]) ^ 2)
-    # radio <- sqrt((dat[, "x"] - fit$x0) ^ 2 + (dat[, "y"] - fit$y0) ^ 2)
-    dat <- cbind(dat, radio)
-    inliers <- abs(coef(fit)[1]-dat[, "radio"])
-    # inliers <- abs(fit$radius-dat[, "radio"])
-    dat <- cbind(dat, inliers)
-    dat <- dat[dat[, "inliers"] < dist, ]
-
-    # if (i > 5)
-    #   {break}
-    #
-    # i <- i + 1
-
-  # }
-
-    if(length(dat) == 0 | nrow(dat) < 2){
+  if(length(dat) == 0 | nrow(dat) < 2){
 
     out <- data.frame(x = as.numeric(), y = as.numeric(),
                       radio = as.numeric(), n = as.numeric(), mae = as.numeric(), cv = as.numeric())
@@ -475,54 +477,34 @@
     return(out)}
 
 
-    # i <- 1
+  dat <- dat[, c("x", "y")]
+
+  inliers <- dat[sample(nrow(dat), 3), ]
+
+  fit <- .fit_circle(inliers)
 
 
-  # while (nrow(dat) < 3 | is.null(length(dat))){
+  radio <- sqrt((dat[, "x"] - fit$center[1]) ^ 2 + (dat[, "y"] - fit$center[2]) ^ 2)
+  dat <- cbind(dat, radio)
+  inliers <- abs(fit$radius-dat[, "radio"])
+  dat <- cbind(dat, inliers)
+  dat <- dat[dat[, "inliers"] < dist, ]
 
-    dat <- dat[, c("x", "y")]
+  if(length(dat) == 0 | nrow(dat) < 2){
 
-    inliers <- dat[sample(nrow(dat), 3), ]
+    out <- data.frame(x = as.numeric(), y = as.numeric(),
+                      radio = as.numeric(), n = as.numeric(), mae = as.numeric(), cv = as.numeric())
 
-    fit <- circular::lsfit.circle(inliers)
-    # fit <- fitCircleCpp(inliers[, "x"], inliers[, "y"])
+    return(out)}
 
-    radio <- sqrt((dat[, "x"] - coef(fit)[2]) ^ 2 + (dat[, "y"] - coef(fit)[3]) ^ 2)
-    # radio <- sqrt((dat[, "x"] - fit$x0) ^ 2 + (dat[, "y"] - fit$y0) ^ 2)
-    dat <- cbind(dat, radio)
-    inliers <- abs(coef(fit)[1]-dat[, "radio"])
-    # inliers <- abs(fit$radius-dat[, "radio"])
-    dat <- cbind(dat, inliers)
-    dat <- dat[dat[, "inliers"] < dist, ]
+  mae <- abs(sum(coef(fit)[1]-dat[, 3])) / nrow(dat)
+  cv <- stats::sd(raster::pointDistance(dat[, c("x", "y")], c(fit$center[1], fit$center[2]), lonlat = FALSE)) / fit$radius
 
-    if(length(dat) == 0 | nrow(dat) < 2){
+  out <- data.frame(x = fit$center[1], y = fit$center[2], radio = fit$radius, n = nrow(dat), mae = mae, cv = cv)
 
-      out <- data.frame(x = as.numeric(), y = as.numeric(),
-                        radio = as.numeric(), n = as.numeric(), mae = as.numeric(), cv = as.numeric())
-
-      return(out)}
-
-    mae <- abs(sum(coef(fit)[1]-dat[, 3])) / nrow(dat)
-    cv <- stats::sd(raster::pointDistance(dat[, c("x", "y")], c(coef(fit)[2], coef(fit)[3]), lonlat = FALSE)) / coef(fit)[1]
-
-    # mae <- abs(sum(fit$radius-dat[, 3])) / nrow(dat)
-    # cv <- stats::sd(raster::pointDistance(dat[, c("x", "y")], c(fit$x0, fit$y0), lonlat = FALSE)) / fit$radius
-
-    # if (i > 5)
-    #   {break}
-    #
-    # i <- i + 1
-
-  # }
-
-    out <- data.frame(x = coef(fit)[2], y = coef(fit)[3], radio = coef(fit)[1], n = nrow(dat), mae = mae, cv = cv)
-    # out <- data.frame(x = fit$x0, y = fit$y0, radio = fit$radius, n = nrow(dat), mae = mae, cv = cv)
-
-    return(out)
+  return(out)
 
 }
-
-
 
 
 

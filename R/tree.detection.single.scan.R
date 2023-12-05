@@ -301,8 +301,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   slice <- slice / 2
 
-  cl <- parallel::makeCluster(parallel::detectCores() - 1)
-
 
   for(cuts in breaks){
 
@@ -340,11 +338,15 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     .cut$sec <- cuts
 
+    cl <- parallel::makeCluster(parallel::detectCores() - 1)
+
     .filter <- do.call(rbind, parallel::clusterApply(cl, split(.cut, .cut$cluster), .sections.single.scan, .cut = .cut,
                                      .alpha.v = .alpha.v, .alpha.h = .alpha.h,
                                      .dbh.min = .dbh.min, .dbh.max = .dbh.max,
                                      slice = slice * 2, bark.roughness = bark.roughness,
                                      x.center = x.center, y.center = y.center))
+
+    parallel::stopCluster(cl)
 
     .filteraux<-rbind(.filteraux, .filter)
 
@@ -403,8 +405,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
       .filteraux.2 <- rbind(.filteraux.2, .filter)}
 
   }# End of cuts loop
-
-  parallel::stopCluster(cl)
 
 
   #### Assigning sections to tree axis ####
