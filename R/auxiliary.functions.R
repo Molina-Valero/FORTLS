@@ -1297,29 +1297,29 @@ if(nrow(.filter) < 1){
   # Compute basal area (m^2)
   if ("g" %in% colnames(tree)) tree[, "g"] <- (pi / 4) * tree[, "dbh"] ^ 2
 
-  # # Compute volume (m^3)
-  # if ("v" %in% colnames(tree)) tree[, "v"] <- tree[, "v"]
+  # Compute volume (m^3)
+  if ("v" %in% colnames(tree)) tree[, "v"] <- tree[, "v"]
 
   # Compute comercial volume (m^3)
   # if ("v.com" %in% colnames(tree)) tree[, "v.com"] <- tree[, "v.com"]
 
-  if ("v" %in% colnames(tree)) {
-
-    if (v.calc == "coeff") {
-
-      # Coefficient of 0.45
-      tree[, "v"] <- (pi / 4) * tree[, "dbh"] ^ 2 * tree[, "h"] * 0.45
-
-    } else if (v.calc == "parab") {
-
-      # Paraboloid
-      tree[, "v"] <- pi * (tree[, "h"] ^ 2 / 2) *
-        ((tree[, "dbh"] / 2) ^ 2 / (tree[, "h"] - 1.3))
-
-    } else
-      stop("Argument for tree volume calculation must be 'coeff' or 'parab'.")
-
-  }
+  # if ("v" %in% colnames(tree)) {
+  #
+  #   if (v.calc == "coeff") {
+  #
+  #     # Coefficient of 0.45
+  #     tree[, "v"] <- (pi / 4) * tree[, "dbh"] ^ 2 * tree[, "h"] * 0.45
+  #
+  #   } else if (v.calc == "parab") {
+  #
+  #     # Paraboloid
+  #     tree[, "v"] <- pi * (tree[, "h"] ^ 2 / 2) *
+  #       ((tree[, "dbh"] / 2) ^ 2 / (tree[, "h"] - 1.3))
+  #
+  #   } else
+  #     stop("Argument for tree volume calculation must be 'coeff' or 'parab'.")
+  #
+  # }
 
   return(tree)
 
@@ -1415,7 +1415,7 @@ if(nrow(.filter) < 1){
   for (.i in c("N", "G", "V"))
     .col.names[c(sapply(.i, paste, c("tls", names(ds.meth), "sh", "pam"),
                         sep = "."), .i), "var"] <-
-    switch(.i, N = "n", G = "g", V = "v", V.com = "v.com")
+    switch(.i, N = "n", G = "g", V = "v")
   for (.i in names(var.field.user))
     .col.names[.i, "var"] <- var.field.user[[.i]]
   .col.names[c(paste(c("N", "G", "V"), "tls", sep = "."), "N", "G", "V",
@@ -1637,7 +1637,7 @@ if(nrow(.filter) < 1){
                       .error <- try(stats::uniroot(.c_function, media = .metr["mean.z"],
                                                    varianza = .metr["var.z"],
                                                    interval = c(.metr["min.z"],
-                                                                .metr["max.z"]))$root)
+                                                                .metr["max.z"]))$root, silent = TRUE)
 
                       if(class(.error)[1] == "try-error"){
 
@@ -1738,7 +1738,7 @@ if(nrow(.filter) < 1){
                       .error <- try(stats::uniroot(.c_function, media = .metr["mean.rho"],
                                                    varianza = .metr["var.rho"],
                                                    interval = c(.metr["min.rho"],
-                                                                .metr["max.rho"]))$root)
+                                                                .metr["max.rho"]))$root, silent = TRUE)
 
                       if(class(.error)[1] == "try-error"){
 
@@ -1837,7 +1837,7 @@ if(nrow(.filter) < 1){
                       .error <- try(stats::uniroot(.c_function, media = .metr["mean.r"],
                                                    varianza = .metr["var.r"],
                                                    interval = c(.metr["min.r"],
-                                                                .metr["max.r"]))$root)
+                                                                .metr["max.r"]))$root, silent = TRUE)
 
                       if(class(.error)[1] == "try-error"){
 
@@ -2942,6 +2942,7 @@ if(nrow(.filter) < 1){
                   ".", immediate. = TRUE)
 
         }
+
         # Adjust maximum value according to minimum one
         if (.par.min > .par.max) {
 
