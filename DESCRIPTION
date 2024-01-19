@@ -12,7 +12,8 @@ Authors@R: c(
     person("César", "Pérez-Cruzado", role = c("aut", "ths")))
 Author: Juan Alberto Molina-Valero [aut, cph, cre],
   Adela Martínez-Calvo [aut, com],
-  Arunima Singh [aut, com], 
+  Arunima Singh [aut, com],
+  Gokul Kottilapurath Surendran [aut, com],
   Juan Gabriel Álvarez-González [aut, ths],
   Fernando Montes [aut],
   César Pérez-Cruzado [aut, ths]
