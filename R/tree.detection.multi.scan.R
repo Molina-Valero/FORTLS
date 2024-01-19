@@ -357,10 +357,12 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     .cut$sec <- cuts
 
-    cl <- parallel::makeCluster(parallel::detectCores() - 1)
-
-
     # Selection of those cluster belonging to trees
+
+    if (interactive()) {
+    # Create a cluster
+
+    cl <- parallel::makeCluster(parallel::detectCores() - 1)
 
     .filter <- do.call(rbind, parallel::clusterApply(cl, split(.cut, .cut$cluster), .sections.multi.scan,
                                      tls.precision = tls.precision,
@@ -369,6 +371,17 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                                      x.center = x.center, y.center = y.center))
 
     parallel::stopCluster(cl)
+
+  } else {
+
+
+    .filter <- do.call(rbind, lapply(split(.cut, .cut$cluster), .sections.multi.scan,
+                                     tls.precision = tls.precision,
+                                     .dbh.min = .dbh.min, .dbh.max = .dbh.max,
+                                     slice = slice * 2, bark.roughness = bark.roughness,
+                                     x.center = x.center, y.center = y.center))
+
+  }
 
     .filteraux <- rbind(.filteraux, .filter)
 
@@ -414,19 +427,27 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     .cut$sec <- cuts
 
 
-    # Selection of those cluster belonging to trees
+    if (interactive()) {
+    # Create a cluster
 
-    # .filter <- do.call(rbind, lapply(split(.cut, .cut$cluster), .sections.multi.scan,
-    #                                  tls.precision = tls.precision,
-    #                                  .dbh.min = .dbh.min, .dbh.max = .dbh.max,
-    #                                  slice = slice * 2, bark.roughness = bark.roughness,
-    #                                  x.center = x.center, y.center = y.center))
+    cl <- parallel::makeCluster(parallel::detectCores() - 1)
 
     .filter <- do.call(rbind, parallel::clusterApply(cl, split(.cut, .cut$cluster), .sections.multi.scan,
                                                      tls.precision = tls.precision,
                                                      .dbh.min = .dbh.min, .dbh.max = .dbh.max,
                                                      slice = slice * 2, bark.roughness = bark.roughness,
                                                      x.center = x.center, y.center = y.center))
+
+    parallel::stopCluster(cl)
+
+    } else {
+
+      .filter <- do.call(rbind, lapply(split(.cut, .cut$cluster), .sections.multi.scan,
+                                       tls.precision = tls.precision,
+                                       .dbh.min = .dbh.min, .dbh.max = .dbh.max,
+                                       slice = slice * 2, bark.roughness = bark.roughness,
+                                       x.center = x.center, y.center = y.center))
+    }
 
     .filteraux.2 <- rbind(.filteraux.2, .filter)}
 
