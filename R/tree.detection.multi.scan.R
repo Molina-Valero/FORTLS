@@ -206,7 +206,9 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   colnames(stem.3) <- c("tree", "code")
   stem$code <- as.numeric(row.names(stem))
   stem <- merge(stem, stem.3, by = "code", all = FALSE)
-  stem <- subset(stem, select = -code)
+  # stem <- subset(stem, select = -code)
+  stem <- stem[, !(names(stem) %in% c("code"))]
+
 
   rm(stem.3)
 
@@ -269,7 +271,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   colnames(woody.2) <- c("tree", "code")
   woody$code <- as.numeric(row.names(woody))
   woody <- merge(woody, woody.2, by = "code", all = FALSE)
-  woody <- subset(woody, select = -code)
+  # woody <- subset(woody, select = -code)
+  woody <- woody[, !(names(woody) %in% c("code"))]
 
   woody <- woody[woody$tree %in% eje$tree, ]
   woody <- woody[!is.na(woody$tree), ]
@@ -662,7 +665,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   # Genrating dendrometric variables
 
-  .filteraux <- subset(.filteraux, select = -radio.est)
+  # .filteraux <- subset(.filteraux, select = -radio.est)
+  .filteraux <- .filteraux[, !(names(.filteraux) %in% c("radio.est"))]
   .filteraux <- merge(.filteraux, .radio.est, by = "tree")
 
 

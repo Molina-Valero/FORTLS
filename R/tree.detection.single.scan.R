@@ -227,7 +227,9 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   colnames(woody.2) <- c("tree", "code")
   woody$code <- as.numeric(row.names(woody))
   woody <- merge(woody, woody.2, by = "code", all = FALSE)
-  woody <- subset(woody, select = -code)
+  # woody <- subset(woody, select = -code)
+  woody <- woody[, !(names(woody) %in% c("code"))]
+
   # woody <- woody[, 2:ncol(woody)]
 
   woody <- woody[!is.na(woody$tree), ]
@@ -618,7 +620,8 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     }
 
-    .filteraux <- subset(.filteraux, select = -radio.est)
+    # .filteraux <- subset(.filteraux, select = -radio.est)
+    .filteraux <- .filteraux[, !(names(.filteraux) %in% c("radio.est"))]
     .filteraux <- merge(.filteraux, .radio.est, by = "tree")
 
     # Dendrometric variables
