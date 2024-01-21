@@ -94,7 +94,7 @@ correlations(simulations,
       Plot identification and k:
         \itemize{
           \item \code{id}, \code{k}: same description and format as indicated
-          for same named columns of \code{k.tree.plot} in code{\link{simulations}} \sQuote{Value}.
+          for same named columns of \code{k.tree.plot} in \code{\link{simulations}} \sQuote{Value}.
         }
       Variables estimates on the basis of simulated field plots:
         \itemize{

@@ -7,6 +7,7 @@ Authors@R: c(
     email = "jamolinavalero@gmail.com"),
     person("Adela", "Martínez-Calvo", role = c("aut", "com")),
     person("Arunima", "Singh", role = c("aut", "com")),
+    person("Gokul", "Kottilapurath Surendran", role = c("aut", "com")),
     person("Juan Gabriel", "Álvarez-González", role = c("aut", "ths")),
     person("Fernando", "Montes", role = "aut"),
     person("César", "Pérez-Cruzado", role = c("aut", "ths")))
