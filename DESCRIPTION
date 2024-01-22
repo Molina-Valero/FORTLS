@@ -20,7 +20,7 @@ Author: Juan Alberto Molina-Valero [aut, cph, cre],
   César Pérez-Cruzado [aut, ths]
 Maintainer: Juan Alberto Molina-Valero <jamolinavalero@gmail.com>
 Description: Process automation of point cloud data derived from terrestrial-based technologies such as Terrestrial Laser Scanner (TLS) or Mobile Laser Scanner. 'FORTLS' enables (i) detection of trees and estimation of tree-level attributes (e.g. diameters and heights), (ii) estimation of stand-level variables (e.g. density, basal area, mean and dominant height), (iii) computation of metrics related to important forest attributes estimated in Forest Inventories at stand-level, and (iv) optimization of plot design for combining TLS data and field measured data. Documentation about 'FORTLS' is described in Molina-Valero et al. (2022, <doi:10.1016/j.envsoft.2022.105337>). 
-URL: https://github.com/Molina-Valero/FORTLS
+URL: https://molina-valero.github.io/FORTLS/, https://github.com/Molina-Valero/FORTLS
 BugReports: https://github.com/Molina-Valero/FORTLS/issues
 License: GPL-3
 Depends: R (>= 4.3.0)
