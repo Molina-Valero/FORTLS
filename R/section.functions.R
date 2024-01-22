@@ -246,23 +246,26 @@
 
 # This function assigns detected sections to their stem axis
 
-.stem.assignment.multi.scan <- function(filter, eje, stem.section, x.center, y.center, single.tree){
+.stem.assignment.multi.scan <- function(.filter, eje, stem.section, x.center, y.center, single.tree){
 
-  eje$sec <- as.character(eje$sec)
+
+  # eje$sec <- as.character(eje$sec)
 
   eje$phi <- atan2(eje$y - y.center, eje$x - x.center)
   eje$phi <- ifelse(eje$phi < 0, eje$phi + (2 * pi), eje$phi)
   eje$rho <- sqrt((eje$x - x.center) ^ 2 + (eje$y - y.center) ^ 2)
 
-  filter$cluster <- 1:nrow(filter)
-  filter$sec <- as.character(filter$sec)
-  filter <- merge(eje, filter, by = "sec", all.y = TRUE)
-  filter$dist <- sqrt((filter$center.x - filter$x) ^ 2 + (filter$center.y - filter$y) ^ 2)
-  filter$dist.rho <- abs(filter$center.rho - filter$rho)
-  filter$dist.phi <- abs(filter$center.phi - filter$phi)
-  filter$sec <- as.numeric(filter$sec)
 
-  filter <- filter[!is.na(filter$dist) | !is.na(filter$dist.rho) | !is.na(filter$dist.phi), ]
+  .filter$cluster <- 1:nrow(.filter)
+  # .filter$sec <- as.character(.filter$sec)
+  .filter <- merge(eje, .filter, by = "sec", all.y = TRUE)
+  .filter$dist <- sqrt((.filter$center.x - .filter$x) ^ 2 + (.filter$center.y - .filter$y) ^ 2)
+  .filter$dist.rho <- abs(.filter$center.rho - .filter$rho)
+  .filter$dist.phi <- abs(.filter$center.phi - .filter$phi)
+  # .filter$sec <- as.numeric(.filter$sec)
+
+
+  .filter <- .filter[!is.na(.filter$dist) | !is.na(.filter$dist.rho) | !is.na(.filter$dist.phi), ]
 
   filteraux <- data.frame(tree = as.numeric(), sec = as.numeric(),
                           center.x = as.numeric(), center.y = as.numeric(),
@@ -274,9 +277,9 @@
 
   if(!is.null(single.tree)){
 
-    for (i in unique(filter$tree)) {
+    for (i in unique(.filter$tree)) {
 
-      .filt.tree <- filter[filter$tree == i, ]
+      .filt.tree <- .filter[.filter$tree == i, ]
 
       for (j in unique(.filt.tree$sec)) {
 
@@ -300,7 +303,7 @@
 
         filteraux <- rbind(filteraux, .filt)
 
-        filter <- filter[filter$cluster != .filt$cluster, ]
+        .filter <- .filter[.filter$cluster != .filt$cluster, ]
 
       }
 
@@ -308,9 +311,10 @@
 
   } else {
 
-    for (i in unique(filter$tree)) {
 
-      .filt.tree <- filter[filter$tree == i, ]
+    for (i in unique(.filter$tree)) {
+
+      .filt.tree <- .filter[.filter$tree == i, ]
 
       for (j in unique(.filt.tree$sec)) {
 
@@ -319,6 +323,7 @@
         .filt$dist.total <- .filt$dist / max(.filt$dist) +
           .filt$dist.rho / max(.filt$dist.rho) +
           .filt$dist.phi / max(.filt$dist.phi)
+
 
         .filt$dist.total <- ifelse(is.nan(.filt$dist.total), 0, .filt$dist.total)
 
@@ -343,7 +348,7 @@
 
         filteraux <- rbind(filteraux, .filt)
 
-        filter <- filter[filter$cluster != .filt$cluster, ]
+        .filter <- .filter[.filter$cluster != .filt$cluster, ]
 
       }
 
@@ -359,13 +364,13 @@
   filteraux <- filteraux[order(filteraux$tree, filteraux$sec), , drop = FALSE]
 
 
-  filter <- data.frame(tree = as.numeric(), sec = as.numeric(), dist = as.numeric(),
-                       center.x = as.numeric(), center.y = as.numeric(),
-                       center.phi = as.numeric(), center.rho = as.numeric(),
-                       center.r = as.numeric(), center.theta = as.numeric(),
-                       radius = as.numeric(),
-                       n.pts = as.numeric(), n.pts.red = as.numeric(),
-                       circ = as.numeric(), arc.cir = as.numeric())
+  .filter <- data.frame(tree = as.numeric(), sec = as.numeric(), dist = as.numeric(),
+                        center.x = as.numeric(), center.y = as.numeric(),
+                        center.phi = as.numeric(), center.rho = as.numeric(),
+                        center.r = as.numeric(), center.theta = as.numeric(),
+                        radius = as.numeric(),
+                        n.pts = as.numeric(), n.pts.red = as.numeric(),
+                        circ = as.numeric(), arc.cir = as.numeric())
 
   for (i in unique(filteraux$tree)) {
 
@@ -382,7 +387,7 @@
     if(nrow(.filt) == 1){
 
       .filt$dif <- NA
-      filter <- rbind(filter, .filt)
+      .filter <- rbind(.filter, .filt)
       next
 
       }
@@ -401,15 +406,15 @@
     if(nrow(.filt) == 1){
 
         .filt <- .filt[, -ncol(.filt)]
-        filter <- rbind(filter, .filt)
+        .filter <- rbind(.filter, .filt)
         next
 
       }
 
 
-    while (max(.filt$dif) >= threshold / 2 & min(.filt$dif) <= - threshold) {
+    while (max(.filt$dif) >= threshold / 2 & min(.filt$dif) <= -threshold) {
 
-      .filt <- .filt[.filt$dif < threshold / 2 & .filt$dif > - threshold, ]
+      .filt <- .filt[.filt$dif < threshold / 2 & .filt$dif > -threshold, ]
 
 
       .filt$dif <- c(diff(.filt$radius), diff(.filt$radius)[length(diff(.filt$radius))])
@@ -421,16 +426,32 @@
 
 
     .filt <- .filt[, -ncol(.filt)]
-    filter <- rbind(filter, .filt)
+    .filter <- rbind(.filter, .filt)
 
 
   }
 
-  return(filter)
+  return(.filter)
 
 }
 
 
+
+# Function to fit a circle through three points
+.fit_circle <- function(points) {
+  x <- points[, 1]
+  y <- points[, 2]
+
+  D <- 2 * (x[1] * (y[2] - y[3]) + x[2] * (y[3] - y[1]) + x[3] * (y[1] - y[2]))
+
+  Ux <- ((x[1]^2 + y[1]^2) * (y[2] - y[3]) + (x[2]^2 + y[2]^2) * (y[3] - y[1]) + (x[3]^2 + y[3]^2) * (y[1] - y[2])) / D
+  Uy <- ((x[1]^2 + y[1]^2) * (x[3] - x[2]) + (x[2]^2 + y[2]^2) * (x[1] - x[3]) + (x[3]^2 + y[3]^2) * (x[2] - x[1])) / D
+
+  center <- c(Ux, Uy)
+  radius <- sqrt((x[1] - Ux)^2 + (y[1] - Uy)^2)
+
+  return(list(center = center, radius = radius))
+}
 
 .RANSAC <- function(data){
 
@@ -438,69 +459,53 @@
 
   dist <- 0.05
 
-  # i <- 1
+  inliers <- dat[sample(nrow(dat), 3), ]
 
-  # while (nrow(dat) < 3 | is.null(length(dat))){
+  fit <- .fit_circle(inliers)
 
-    inliers <- dat[sample(nrow(dat), 3), ]
-
-    fit <- circular::lsfit.circle(inliers)
-
-    radio <- sqrt((dat[, "x"] - coef(fit)[2]) ^ 2 + (dat[, "y"] - coef(fit)[3]) ^ 2)
-    dat <- cbind(dat, radio)
-    inliers <- abs(coef(fit)[1]-dat[, "radio"])
-    dat <- cbind(dat, inliers)
-    dat <- dat[dat[, "inliers"] < dist, ]
-
-    # if (i > 5)
-    #   {break}
-    #
-    # i <- i + 1
-
-  # }
+  radio <- sqrt((dat[, "x"] - fit$center[1]) ^ 2 + (dat[, "y"] - fit$center[2]) ^ 2)
+  dat <- cbind(dat, radio)
+  inliers <- abs(fit$radius-dat[, "radio"])
+  dat <- cbind(dat, inliers)
+  dat <- dat[dat[, "inliers"] < dist, ]
 
   if(length(dat) == 0 | nrow(dat) < 2){
 
     out <- data.frame(x = as.numeric(), y = as.numeric(),
                       radio = as.numeric(), n = as.numeric(), mae = as.numeric(), cv = as.numeric())
 
-    return(out)
-
-  } else {
-
-    # i <- 1
+    return(out)}
 
 
-  # while (nrow(dat) < 3 | is.null(length(dat))){
+  dat <- dat[, c("x", "y")]
 
-    dat <- dat[, c("x", "y")]
+  inliers <- dat[sample(nrow(dat), 3), ]
 
-    inliers <- dat[sample(nrow(dat), 3), ]
+  fit <- .fit_circle(inliers)
 
-    fit <- circular::lsfit.circle(inliers)
 
-    radio <- sqrt((dat[, "x"] - coef(fit)[2]) ^ 2 + (dat[, "y"] - coef(fit)[3]) ^ 2)
-    dat <- cbind(dat, radio)
-    inliers <- abs(coef(fit)[1]-dat[, "radio"])
-    dat <- cbind(dat, inliers)
-    dat <- dat[dat[, "inliers"] < dist, ]
-    mae <- abs(sum(coef(fit)[1]-dat[, 3])) / nrow(dat)
-    cv <- stats::sd(raster::pointDistance(dat[, c("x", "y")], c(coef(fit)[2], coef(fit)[3]), lonlat = FALSE)) / coef(fit)[1]
+  radio <- sqrt((dat[, "x"] - fit$center[1]) ^ 2 + (dat[, "y"] - fit$center[2]) ^ 2)
+  dat <- cbind(dat, radio)
+  inliers <- abs(fit$radius-dat[, "radio"])
+  dat <- cbind(dat, inliers)
+  dat <- dat[dat[, "inliers"] < dist, ]
 
-    # if (i > 5)
-    #   {break}
-    #
-    # i <- i + 1
+  if(length(dat) == 0 | nrow(dat) < 2){
 
-  # }
+    out <- data.frame(x = as.numeric(), y = as.numeric(),
+                      radio = as.numeric(), n = as.numeric(), mae = as.numeric(), cv = as.numeric())
 
-    out <- data.frame(x = coef(fit)[2], y = coef(fit)[3], radio = coef(fit)[1], n = nrow(dat), mae = mae, cv = cv)
+    return(out)}
 
-    return(out)
+  mae <- abs(sum(coef(fit)[1]-dat[, 3])) / nrow(dat)
+  cv <- stats::sd(raster::pointDistance(dat[, c("x", "y")], c(fit$center[1], fit$center[2]), lonlat = FALSE)) / fit$radius
 
-  }
+  out <- data.frame(x = fit$center[1], y = fit$center[2], radio = fit$radius, n = nrow(dat), mae = mae, cv = cv)
+
+  return(out)
 
 }
+
 
 
 

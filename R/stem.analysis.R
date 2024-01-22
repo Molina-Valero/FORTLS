@@ -2,6 +2,8 @@
 
 .straightness <- function(data, stem.range = NULL){
 
+  n <- data$tree[1]
+
   if(!is.null(stem.range) & nrow(data) > 2){
 
     data <- data[data$hi >= stem.range[1] & data$hi <= stem.range[2], ]
@@ -17,6 +19,37 @@
   } else {
 
 
+    data$dif.sec <- c(abs(diff(data$hi)), 0)
+    data$dif <- c(diff(data$dhi),
+                  data$dhi[nrow(data)] - data$dhi[nrow(data) - 1])
+    data$dif <- ifelse(data$dif.sec > 1, data$dif / data$dif.sec, data$dif)
+
+    while (suppressWarnings(max(abs(data$dif))) > 10) {
+
+      data$filter <- ifelse(data$dif > 10 | data$dif < -10, 0, 1)
+      data <- data[data$filter == 1, ]
+      if(nrow(data) < 2) {next}
+
+      data$dif.sec <- c(abs(diff(data$hi)), 0)
+      data$dif <- c(diff(data$dhi),
+                    data$dhi[nrow(data)] - data$dhi[nrow(data) - 1])
+      data$dif <- ifelse(data$dif.sec > 1, data$dif / data$dif.sec, data$dif)
+
+    }
+
+
+  if(nrow(data) < 3){
+
+  SS.max <- NA
+  sinuosity <- NA
+
+  out <- data.frame(tree = n, SS.max = SS.max, sinuosity = sinuosity)
+
+  return(out)
+
+  }
+
+
   mod.x <- lm(data$x[c(1,nrow(data))]~data$hi[c(1,nrow(data))])
   mod.y <- lm(data$y[c(1,nrow(data))]~data$hi[c(1,nrow(data))])
 
@@ -28,7 +61,8 @@
   S.max <- max(data$sagita)
 
   # h.range <- max(data$hi)-min(data$hi)
-  h.range <- sqrt((data$x[1]-data$x[nrow(data)]) ^ 2 + (data$y[1]-data$y[nrow(data)]) ^ 2 + (data$hi[1]-data$hi[nrow(data)]) ^ 2)
+  # h.range <- sqrt((data$x[1]-data$x[nrow(data)]) ^ 2 + (data$y[1]-data$y[nrow(data)]) ^ 2 + (data$hi[1]-data$hi[nrow(data)]) ^ 2)
+  h.range <- sqrt((data$x[nrow(data)]-data$x[1]) ^ 2 + (data$y[nrow(data)]-data$y[1]) ^ 2 + (data$hi[nrow(data)]-data$hi[1]) ^ 2)
 
   R <- (S.max ^ 2 + (h.range / 2) ^ 2) / (2 * S.max)
 
@@ -41,7 +75,7 @@
   data$y.2 <- c(data$y[2:nrow(data)], data$y[nrow(data)])
   data$hi.2 <- c(data$hi[2:nrow(data)], data$hi[nrow(data)])
 
-  data$l <- sqrt((data$x-data$x.2) ^ 2 + (data$y-data$y.2) ^ 2 + (data$hi-data$hi.2) ^ 2)
+  data$l <- sqrt((data$x.2-data$x) ^ 2 + (data$y.2-data$y) ^ 2 + (data$hi.2-data$hi) ^ 2)
 
   sinuosity <- sum(data$l) / h.range
 

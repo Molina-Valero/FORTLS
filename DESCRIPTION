@@ -1,26 +1,30 @@
 Package: FORTLS
 Title: Automatic Processing of Terrestrial-Based Technologies Point Cloud Data for Forestry Purposes
-Version: 1.3.0
-Date: 2023-09-11
+Version: 1.4.0
+Date: 2024-01-21
 Authors@R: c(
     person("Juan Alberto", "Molina-Valero", role = c("aut", "cph", "cre"),
     email = "jamolinavalero@gmail.com"),
     person("Adela", "Martínez-Calvo", role = c("aut", "com")),
+    person("Arunima", "Singh", role = c("aut", "com")),
+    person("Gokul", "Kottilapurath Surendran", role = c("aut", "com")),
     person("Juan Gabriel", "Álvarez-González", role = c("aut", "ths")),
     person("Fernando", "Montes", role = "aut"),
     person("César", "Pérez-Cruzado", role = c("aut", "ths")))
 Author: Juan Alberto Molina-Valero [aut, cph, cre],
   Adela Martínez-Calvo [aut, com],
+  Arunima Singh [aut, com],
+  Gokul Kottilapurath Surendran [aut, com],
   Juan Gabriel Álvarez-González [aut, ths],
   Fernando Montes [aut],
   César Pérez-Cruzado [aut, ths]
 Maintainer: Juan Alberto Molina-Valero <jamolinavalero@gmail.com>
-Description: Process automation of point cloud data derived from terrestrial-based technologies such as Terrestrial Laser Scanner (TLS) or Simultaneous Localization and Mapping (SLAM). 'FORTLS' enables (i) detection of trees and estimation of tree-level attributes (e.g. diameters and heights), (ii) estimation of stand-level variables (e.g. density, basal area, mean and dominant height), (iii) computation of metrics related to important forest attributes estimated in Forest Inventories at stand-level, and (iv) optimization of plot design for combining TLS data and field measured data. Documentation about 'FORTLS' is described in Molina-Valero et al. (2022, <doi:10.1016/j.envsoft.2022.105337>). 
+Description: Process automation of point cloud data derived from terrestrial-based technologies such as Terrestrial Laser Scanner (TLS) or Mobile Laser Scanner. 'FORTLS' enables (i) detection of trees and estimation of tree-level attributes (e.g. diameters and heights), (ii) estimation of stand-level variables (e.g. density, basal area, mean and dominant height), (iii) computation of metrics related to important forest attributes estimated in Forest Inventories at stand-level, and (iv) optimization of plot design for combining TLS data and field measured data. Documentation about 'FORTLS' is described in Molina-Valero et al. (2022, <doi:10.1016/j.envsoft.2022.105337>). 
 URL: https://github.com/Molina-Valero/FORTLS
 BugReports: https://github.com/Molina-Valero/FORTLS/issues
 License: GPL-3
-Depends: R (>= 3.5.0)
-Imports: circular, data.table, dbscan, Distance, htmlwidgets, lidR, methods, moments, plotly, progress, raster, Rcpp(>= 1.0.10), RCSF, scales, sf, tidyr, VoxR, vroom
+Depends: R (>= 4.3.0)
+Imports: data.table, dbscan, Distance, htmlwidgets, lidR, methods, moments, parallel, plotly, progress, raster, Rcpp(>= 1.0.10), RCSF, reticulate, scales, sf, tidyr, VoxR, vroom
 Suggests: devtools, kableExtra, knitr, rmarkdown, systemfonts, testthat
 LinkingTo: Rcpp, RcppEigen
 Encoding: UTF-8

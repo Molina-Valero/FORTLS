@@ -7,7 +7,7 @@ normalize <- function(las, normalized = NULL,
                       csf = list(cloth_resolution = 0.5),
                       intensity = NULL, RGB = NULL,
                       scan.approach = "single",
-                      id = NULL, file = NULL,
+                      id = NULL, file = NULL, plot = TRUE,
                       dir.data = NULL, save.result = TRUE, dir.result = NULL){
 
 
@@ -47,6 +47,8 @@ normalize <- function(las, normalized = NULL,
             else{
               .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyzIntensityRGB")))}
     }
+
+  .las <- lidR::filter_duplicates(.las)
 
 
   .pb$tick()
@@ -158,6 +160,7 @@ normalize <- function(las, normalized = NULL,
 
   }
 
+
   rm(.las)
 
   .pb$tick()
@@ -186,6 +189,10 @@ normalize <- function(las, normalized = NULL,
   }
 
   .pb$tick()
+
+
+  if(!is.null(plot))
+    lidR::plot(.data)
 
 
   # Assigning slope to point cloud
@@ -249,7 +256,7 @@ normalize <- function(las, normalized = NULL,
   # phi, azimuth is the angle between the reference direction on the chosen plane and the line from the origin to the projection of P on the plane
   # z, axial coordinate or height z is the signed distance from the chosen plane to the point P
   .data$rho <- sqrt((.data$x - x.center) ^ 2 + (.data$y - y.center) ^ 2)
-  .data$phi <- atan2(.data$y - y.center, .data$x - x.center)
+  .data$phi <- atan2(.data$x - x.center, .data$y - y.center)
   .data$phi <- ifelse(.data$phi < 0, .data$phi + (2 * pi), .data$phi)
 
   # Spherical coordinates system (https://en.wikipedia.org/wiki/Spherical_coordinate_system)

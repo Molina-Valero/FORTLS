@@ -24,11 +24,12 @@ tree.detection.several.plots(las.list, id.list = NULL, file = NULL,
                              dbh.min = 4, dbh.max = 200, h.min = 1.3,
                              ncr.threshold = 0.1,
                              tls.resolution = NULL, tls.precision = NULL,
-                             stem.section = NULL, stem.range = NULL, breaks = NULL,
+                             density.reduction = 2,
+                             stem.section = c(0.7, 3.5), stem.range = NULL, breaks = NULL,
                              slice = 0.1, understory = NULL, bark.roughness = 1,
                              den.type = 1, d.top = NULL,
 
-                             plot.attributes = NULL,
+                             plot.attributes = NULL, plot = NULL,
 
                              dir.data = NULL, save.result = TRUE, dir.result = NULL)}
 
@@ -99,6 +100,8 @@ tree.detection.several.plots(las.list, id.list = NULL, file = NULL,
 
   \item{tls.precision}{Optional argument indicating the average point cloud precision in cm.}
 
+  \item{density.reduction}{Density reduction intensity.}
+
   \item{stem.section}{Section free of noise (shurb, branches, etc.) considered to detect trees. If not specified, an automatic internal algorithm will be applied (see \sQuote{Details}).}
 
   \item{breaks}{Height above ground level (m) of slices considered for detecting trees. By default it will be considered all possible sections from 0.1 m to maximum height by 0.3 m intervals (+/- 5 cm).}
@@ -116,6 +119,8 @@ tree.detection.several.plots(las.list, id.list = NULL, file = NULL,
   \item{d.top}{Top stem diameter (cm) considered to estimate commercial timber volume.}
 
   \item{plot.attributes}{Data frame with attributes at plot level. It must contain a column named \code{id} (character string or numeric value) with encoding coinciding with that used in \code{id} argument of \code{\link{normalize}} for identifying plots. If there are strata, another column named \sQuote{stratum} (numeric) will be required for other functionalities of \pkg{FORTLS} (see, for instance, \code{\link{estimation.plot.size}} or \code{\link{metrics.variables}}). If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, the function will not add these possible plot attributes.}
+
+  \item{plot}{Optional logical which indicates whether or not the normalized point cloud will be plot. If this argument is not specified by the user, it will be set to \code{TRUE} by default and, as consequence, the normalized point cloud will be plot.}
 
   \item{dir.data}{Optional character string naming the absolute path of the directory where LAS files containing TLS point clouds are located. \code{.Platform$file.sep} must be used as the path separator in \code{dir.dat}. If this argument is not specified by the user, it will be set to \code{NULL} by default and, as consequence, the current working directory of the \R process will be assigned to \code{dir.dat} during the execution.}
 

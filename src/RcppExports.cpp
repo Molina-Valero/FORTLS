@@ -118,6 +118,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// ver_point_cloud_double
+DataFrame ver_point_cloud_double(const Eigen::MatrixXd& m);
+RcppExport SEXP _FORTLS_ver_point_cloud_double(SEXP mSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type m(mSEXP);
+    rcpp_result_gen = Rcpp::wrap(ver_point_cloud_double(m));
+    return rcpp_result_gen;
+END_RCPP
+}
 // ncr_point_cloud_double
 DataFrame ncr_point_cloud_double(const Eigen::MatrixXd& m);
 RcppExport SEXP _FORTLS_ncr_point_cloud_double(SEXP mSEXP) {
@@ -139,6 +150,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_FORTLS_fixed_area_cpp", (DL_FUNC) &_FORTLS_fixed_area_cpp, 5},
     {"_FORTLS_k_tree_cpp", (DL_FUNC) &_FORTLS_k_tree_cpp, 6},
     {"_FORTLS_angle_count_cpp", (DL_FUNC) &_FORTLS_angle_count_cpp, 5},
+    {"_FORTLS_ver_point_cloud_double", (DL_FUNC) &_FORTLS_ver_point_cloud_double, 1},
     {"_FORTLS_ncr_point_cloud_double", (DL_FUNC) &_FORTLS_ncr_point_cloud_double, 1},
     {NULL, NULL, 0}
 };

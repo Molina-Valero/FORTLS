@@ -109,8 +109,8 @@
 
 
   # Estimate mean density by cell
-
-  .threeshold <- stats::quantile(.density, prob = 0.25, na.rm = T)
+  # .threeshold <- mean(.density, na.rm = T)
+  .threeshold <- stats::quantile(.density, prob = 0.1, na.rm = T)
 
   if(is.nan(.threeshold) | is.na(.threeshold)){return(.filter)}
 
@@ -485,7 +485,7 @@
 
   .dat <- cut
 
-  if(nrow(.dat) < 15){return(.filter)}
+  if(nrow(.dat) < 10){return(.filter)}
 
   # Generate mesh
 
@@ -535,7 +535,7 @@
   # Estimate mean density by cell
   # .threeshold <- stats::median(.density, na.rm = T)
   # .threeshold <- mean(.density, na.rm = T)
-  .threeshold <- stats::quantile(.density, prob = 0.25, na.rm = T)
+  .threeshold <- stats::quantile(.density, prob = 0.1, na.rm = T)
 
   if(is.nan(.threeshold) | is.na(.threeshold)){return(.filter)}
 
@@ -608,7 +608,17 @@
 
   # dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 100)
   dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 600)
+
+  # cl <- parallel::makeCluster(parallel::detectCores()-1)
+
+  # start_time <- Sys.time()
+  # kk <- try(do.call(rbind, (parallel::clusterApply(cl, dat.i, .RANSAC))), silent = TRUE)
+  # end_time <- Sys.time()
+
+  # start_time <- Sys.time()
   kk <- try(do.call(rbind, (lapply(dat.i, .RANSAC))), silent = TRUE)
+  # end_time <- Sys.time()
+
   # print(.dat$cluster[1])
 
   rm(dat.i)
@@ -1287,29 +1297,29 @@ if(nrow(.filter) < 1){
   # Compute basal area (m^2)
   if ("g" %in% colnames(tree)) tree[, "g"] <- (pi / 4) * tree[, "dbh"] ^ 2
 
-  # # Compute volume (m^3)
-  # if ("v" %in% colnames(tree)) tree[, "v"] <- tree[, "v"]
+  # Compute volume (m^3)
+  if ("v" %in% colnames(tree)) tree[, "v"] <- tree[, "v"]
 
   # Compute comercial volume (m^3)
-  # if ("v.com" %in% colnames(tree)) tree[, "v.com"] <- tree[, "v.com"]
+  if ("v.com" %in% colnames(tree)) tree[, "v.com"] <- tree[, "v.com"]
 
-  if ("v" %in% colnames(tree)) {
-
-    if (v.calc == "coeff") {
-
-      # Coefficient of 0.45
-      tree[, "v"] <- (pi / 4) * tree[, "dbh"] ^ 2 * tree[, "h"] * 0.45
-
-    } else if (v.calc == "parab") {
-
-      # Paraboloid
-      tree[, "v"] <- pi * (tree[, "h"] ^ 2 / 2) *
-        ((tree[, "dbh"] / 2) ^ 2 / (tree[, "h"] - 1.3))
-
-    } else
-      stop("Argument for tree volume calculation must be 'coeff' or 'parab'.")
-
-  }
+  # if ("v" %in% colnames(tree)) {
+  #
+  #   if (v.calc == "coeff") {
+  #
+  #     # Coefficient of 0.45
+  #     tree[, "v"] <- (pi / 4) * tree[, "dbh"] ^ 2 * tree[, "h"] * 0.45
+  #
+  #   } else if (v.calc == "parab") {
+  #
+  #     # Paraboloid
+  #     tree[, "v"] <- pi * (tree[, "h"] ^ 2 / 2) *
+  #       ((tree[, "dbh"] / 2) ^ 2 / (tree[, "h"] - 1.3))
+  #
+  #   } else
+  #     stop("Argument for tree volume calculation must be 'coeff' or 'parab'.")
+  #
+  # }
 
   return(tree)
 
@@ -1397,7 +1407,7 @@ if(nrow(.filter) < 1){
 
   # Identify stand variables to be computed, and associated tree variable and
   # expansion factor
-  .col.names <- c(sapply(c("N", "G", "V"), paste,
+  .col.names <- c(sapply(c("N", "G", "V", "V.com", "h.com"), paste,
                          c("tls", names(ds.meth), "sh", "pam"), sep = "."),
                   "N", "G", "V", names(var.field.user))
   .col.names <- matrix("", nrow = length(.col.names), ncol = 2,
@@ -1405,13 +1415,21 @@ if(nrow(.filter) < 1){
   for (.i in c("N", "G", "V"))
     .col.names[c(sapply(.i, paste, c("tls", names(ds.meth), "sh", "pam"),
                         sep = "."), .i), "var"] <-
-    switch(.i, N = "n", G = "g", V = "v", V.com = "v.com")
+    switch(.i, N = "n", G = "g", V = "v")
+
+  .col.names[c("V.com.tls", "V.com.hn", "V.com.hr", "V.com.hn.cov", "V.com.hr.cov", "V.com.sh", "V.com.pam"), "var"] <- "v.com"
+  .col.names[c("h.com.tls", "h.com.hn", "h.com.hr", "h.com.hn.cov", "h.com.hr.cov", "h.com.sh", "h.com.pam"), "var"] <- "h.com"
+
   for (.i in names(var.field.user))
     .col.names[.i, "var"] <- var.field.user[[.i]]
   .col.names[c(paste(c("N", "G", "V"), "tls", sep = "."), "N", "G", "V",
                names(var.field.user)), "ef"] <- "EF"
+
+  .col.names["V.com.tls", "ef"] <- "EF"
+  .col.names["h.com.tls", "ef"] <- "EF"
+
   for (.i in c(names(ds.meth), "sh", "pam"))
-    .col.names[paste(c("N", "G", "V"), .i, sep = "."), "ef"] <- paste("EF", .i,
+    .col.names[paste(c("N", "G", "V", "V.com", "h.com"), .i, sep = "."), "ef"] <- paste("EF", .i,
                                                                       sep =".")
   .col.names <- .col.names[rownames(.col.names) %in% colnames(stand), ,
                            drop = FALSE]
@@ -1627,7 +1645,7 @@ if(nrow(.filter) < 1){
                       .error <- try(stats::uniroot(.c_function, media = .metr["mean.z"],
                                                    varianza = .metr["var.z"],
                                                    interval = c(.metr["min.z"],
-                                                                .metr["max.z"]))$root)
+                                                                .metr["max.z"]))$root, silent = TRUE)
 
                       if(class(.error)[1] == "try-error"){
 
@@ -1728,7 +1746,7 @@ if(nrow(.filter) < 1){
                       .error <- try(stats::uniroot(.c_function, media = .metr["mean.rho"],
                                                    varianza = .metr["var.rho"],
                                                    interval = c(.metr["min.rho"],
-                                                                .metr["max.rho"]))$root)
+                                                                .metr["max.rho"]))$root, silent = TRUE)
 
                       if(class(.error)[1] == "try-error"){
 
@@ -1827,7 +1845,7 @@ if(nrow(.filter) < 1){
                       .error <- try(stats::uniroot(.c_function, media = .metr["mean.r"],
                                                    varianza = .metr["var.r"],
                                                    interval = c(.metr["min.r"],
-                                                                .metr["max.r"]))$root)
+                                                                .metr["max.r"]))$root, silent = TRUE)
 
                       if(class(.error)[1] == "try-error"){
 
@@ -1949,7 +1967,9 @@ if(nrow(.filter) < 1){
   # case 'sim'. (6) Only if corresponding trees variable ('v.user' for 'V.user',
   # 'w.user' for 'W.user') are provided by user in 'tree.field' argument.
   .var.metr <- list(tls = NULL, field = NULL)
-  .var.metr$tls <- c(sapply(c("N", "G", "V"), paste,
+  .var.metr$tls <- c(sapply(if(length(tree.tls$v.com) > 0){
+                   c("N", "G", "V", "V.com", "h.com")} else{
+                   c("N", "G", "V")}, paste,
                             c("tls", names(.ds.meth), "sh", "pam"), sep = "."),
                      t(sapply(names(c(.mean.d, .mean.h)),
                               paste, c(".tls", ".0.tls"), sep = "")),
@@ -1990,7 +2010,7 @@ if(nrow(.filter) < 1){
                      "median.a.d.r", "mode.a.d.r",
                      "weibull_c.r", "weibull_b.r")
 
-  .var.metr$field <- c("N", "G", "V", names(.var.field.user),
+  .var.metr$field <- c("N", "G", names(.var.field.user),
                        t(sapply(names(c(.mean.d, .mean.h)), paste, c("", ".0"),
                                 sep = "")))
 
@@ -2080,25 +2100,55 @@ if(nrow(.filter) < 1){
     if (funct %in% "est")
       .var.metr$tls <- .var.metr$tls[.var.metr$tls %in%
                                        paste(c("N", "G"), "tls", sep = ".")]
+
     if (is.null(tree.ds))
       .var.metr$tls <- .var.metr$tls[!.var.metr$tls %in%
                                        sapply(c("N", "G", "V"), paste,
                                               names(.ds.meth), sep = ".")]
+
+    if (is.null(tree.ds) & length(tree.tls$v.com) > 0)
+      .var.metr$tls <- .var.metr$tls[!.var.metr$tls %in%
+                                       sapply(c("N", "G", "V", "V.com", "h.com"), paste,
+                                              names(.ds.meth), sep = ".")]
+
     if (!scan.approach %in% "single")
       .var.metr$tls <- .var.metr$tls[!.var.metr$tls %in%
                                        sapply(c("N", "G", "V"), paste,
                                               c(names(.ds.meth), "sh", "pam"),
                                               sep = ".")]
+
+    if (!scan.approach %in% "single" & length(tree.tls$v.com) > 0)
+      .var.metr$tls <- .var.metr$tls[!.var.metr$tls %in%
+                                       sapply(c("N", "G", "V", "V.com", "h.com"), paste,
+                                              c(names(.ds.meth), "sh", "pam"),
+                                              sep = ".")]
+
     .var.metr$tls <- matrix(TRUE, nrow = length(plot.design),
                             ncol = length(.var.metr$tls),
                             dimnames = list(plot.design, .var.metr$tls))
+
+    if (length(tree.tls$v.com) > 0)
+    .var.metr$tls[!rownames(.var.metr$tls) %in% c("fixed.area", "k.tree"),
+                  colnames(.var.metr$tls) %in% sapply(c("N", "G", "V", "V.com", "h.com"), paste,
+                                                      c(names(.ds.meth), "sh"),
+                                                      sep = ".")] <- FALSE
+
+    if (length(tree.tls$v.com) < 1)
     .var.metr$tls[!rownames(.var.metr$tls) %in% c("fixed.area", "k.tree"),
                   colnames(.var.metr$tls) %in% sapply(c("N", "G", "V"), paste,
                                                       c(names(.ds.meth), "sh"),
                                                       sep = ".")] <- FALSE
+
+    if (length(tree.tls$v.com) > 0)
+    .var.metr$tls[!rownames(.var.metr$tls) %in% "angle.count",
+                  colnames(.var.metr$tls) %in% paste(c("N", "G", "V", "V.com", "h.com"), "pam",
+                                                     sep = ".")] <- FALSE
+
+    if (length(tree.tls$v.com) < 1)
     .var.metr$tls[!rownames(.var.metr$tls) %in% "angle.count",
                   colnames(.var.metr$tls) %in% paste(c("N", "G", "V"), "pam",
                                                      sep = ".")] <- FALSE
+
     .var.metr$tls <- .var.metr$tls[, apply(.var.metr$tls, 2, any), drop = FALSE]
 
   }
@@ -2193,6 +2243,7 @@ if(nrow(.filter) < 1){
     .col.mand[, .plot.design[plot.design]] <- TRUE
 
   }
+
   if (.by.stratum) .col.mand <- cbind("stratum" = TRUE, .col.mand)
 
   # Define a character vector containing (if necessary) the class of all
@@ -2278,19 +2329,34 @@ if(nrow(.filter) < 1){
                              "stratum" %in% colnames(tree.tls)))
 
     # Define a logical matrix containing all possible mandatory columns in
-    # 'tree.tls' according to 'function case', '.by.stratum.2' and
-    # 'var.metr'
+    # 'tree.tls' according to 'function case', '.by.stratum.2' and 'var.metr'
+    if(length(tree.tls$v.com) < 1)
     .col.mand <- c("id", "file", "tree", unlist(.scan.approach), "h.dist",
                    "dbh", "h", "v",
                    paste("n.pts", c("", ".est", ".red", ".red.est"),
                          sep = ""),
                    "partial.occlusion")
+
+    if(length(tree.tls$v.com) > 0)
+      .col.mand <- c("id", "file", "tree", unlist(.scan.approach), "h.dist",
+                     "dbh", "h", "h.com", "v", "v.com",
+                     paste("n.pts", c("", ".est", ".red", ".red.est"),
+                           sep = ""),
+                     "partial.occlusion")
+
     if (.by.stratum.2) .col.mand <- c("stratum", .col.mand)
     .col.mand <- matrix(FALSE, nrow = length(var.metr$tls),
                         ncol = length(.col.mand),
                         dimnames = list(var.metr$tls, .col.mand))
+
+    if(length(tree.tls$v.com) < 1)
     .col.mand[, colnames(.col.mand) %in%
                 c("stratum", "id", "tree", "h.dist", "dbh", "h", "v")] <- TRUE
+
+    if(length(tree.tls$v.com) > 0)
+    .col.mand[, colnames(.col.mand) %in%
+                c("stratum", "id", "tree", "h.dist", "dbh", "h", "h.com", "v", "v.com")] <- TRUE
+
     .col.mand[rownames(.col.mand) %in%
                 c(sprintf("P%02i", .prob),
                   # Z coordinate
@@ -2327,12 +2393,21 @@ if(nrow(.filter) < 1){
                   "weibull_c.r", "weibull_b.r"),
 
               colnames(.col.mand) %in% "file"] <- TRUE
+
+    if(length(tree.tls$v.com) < 1)
     .col.mand[rownames(.col.mand) %in% paste(c("N", "G", "V"), "sh", sep = "."),
               colnames(.col.mand) %in%
                 c(unlist(.scan.approach), "partial.occlusion")] <- TRUE
+
+    if(length(tree.tls$v.com) > 0)
+    .col.mand[rownames(.col.mand) %in% paste(c("N", "G", "V", "V.com", "h.com"), "sh", sep = "."),
+              colnames(.col.mand) %in%
+                c(unlist(.scan.approach), "partial.occlusion")] <- TRUE
+
     for (.i in paste("n.pts", c("", ".est", ".red", ".red.est"), sep = ""))
       .col.mand[rownames(.col.mand) %in% .i,
                 colnames(.col.mand) %in% .i] <- TRUE
+
     .col.mand <- .col.mand[, apply(.col.mand, 2, any), drop = FALSE]
 
     # Define a character vector containing (if necessary) the class of all
@@ -2519,7 +2594,7 @@ if(nrow(.filter) < 1){
                         ncol = length(.col.mand),
                         dimnames = list(var.metr$tls, .col.mand))
     for (.i in names(.ds.meth))
-      .col.mand[rownames(.col.mand) %in% paste(c("N", "G", "V"), .i, sep = "."),
+      .col.mand[rownames(.col.mand) %in% paste(c("N", "G", "V", "V.com", "h.com"), .i, sep = "."),
                 colnames(.col.mand) %in%
                   c("id", "tree", paste("P", .i, sep = "."))] <- TRUE
     .col.mand <- .col.mand[, apply(.col.mand, 2, any), drop = FALSE]
@@ -2530,6 +2605,7 @@ if(nrow(.filter) < 1){
     names(.col.class) <- colnames(.col.mand)
     .col.class[names(.col.class) %in% c("id", "tree")] <- NA
     .col.class <- .col.class[!is.na(.col.class)]
+
 
     # If there are no mandatory columns, 'tree.ds' is forced to be NULL;
     # otherwise, checking process is continued
@@ -2801,7 +2877,8 @@ if(nrow(.filter) < 1){
       # Compute radius, k and BAF, and tree variables according to plot
       # design(s) and 'tree.var'. Currently available tree variables: basal area
       # (g) and volume (v)
-      .col.mand <- c("g", "v")
+      .col.mand <- c("g", "v", "v.com", "h.com")
+
       .col.mand <- matrix(FALSE, nrow = length(var.metr[[.j]]),
                           ncol = length(.col.mand),
                           dimnames = list(var.metr[[.j]], .col.mand))
@@ -2813,6 +2890,14 @@ if(nrow(.filter) < 1){
                   c(paste("V", c("tls", names(.ds.meth), "sh", "pam"),
                           sep = "."), "V"),
                 colnames(.col.mand) %in% "v"] <- TRUE
+      .col.mand[rownames(.col.mand) %in%
+                  c(paste("V.com", c("tls", names(.ds.meth), "sh", "pam"),
+                          sep = "."), "V.com"),
+                colnames(.col.mand) %in% "v.com"] <- TRUE
+      .col.mand[rownames(.col.mand) %in%
+                  c(paste("h.com", c("tls", names(.ds.meth), "sh", "pam"),
+                          sep = "."), "h.com"),
+                colnames(.col.mand) %in% "v.com"] <- TRUE
       .col.mand <- colnames(.col.mand)[apply(.col.mand, 2, any)]
       .tree <- .tree.calc(tree = .tree, plot.design = .plot.design[plot.design],
                           tree.var = .col.mand, v.calc = v.calc)
@@ -2932,6 +3017,7 @@ if(nrow(.filter) < 1){
                   ".", immediate. = TRUE)
 
         }
+
         # Adjust maximum value according to minimum one
         if (.par.min > .par.max) {
 
@@ -2973,7 +3059,7 @@ if(nrow(.filter) < 1){
         .col.names <- var.metr[[.j]][.var.metr[[.j]][.k, var.metr[[.j]]]]
         .col.names <-
           .col.names[.col.names %in%
-                       c(sapply(c("N", "G", "V"), paste,
+                       c(sapply(c("N", "G", "V", "V.com", "h.com"), paste,
                                 c("tls", names(.ds.meth), "sh", "pam"),
                                 sep = "."),
                          paste(names(c(.mean.d, .mean.h)), "tls", sep = "."),
@@ -3269,6 +3355,74 @@ if(nrow(.filter) < 1){
   return(.data)
 
 }
+
+
+.ver.remove.slice.double <- function(data){
+
+  # code <- NULL
+
+  # Select necessary fields from original txt file of point cloud
+
+  .data <- as.data.frame(data[,c("point", "x", "y", "z")])
+
+  # Create x and y coordinates for grid
+
+  .x <- seq(min(.data$x), max(.data$x)+1)
+  .y <- seq(min(.data$y), max(.data$y)+1)
+
+
+  if(length(.x) < 2 | length(.y) < 2){
+
+    data$ncr <- NA
+    .data <- data} else{
+
+      # Empty data frame where coordinates neccesaries for
+      # creating grid will be saved
+
+      .grid <- data.frame(x = rep(.x, each = length(.y)),
+                          y = rep(.y, times = length(.x)))
+
+      .grid <- sf::st_as_sf(.grid, coords = c("x","y"))
+
+
+      .grid <- sf::st_buffer(.grid, dist = 0.55, endCapStyle = "SQUARE")
+      .grid <- sf::st_cast(.grid, "POLYGON")
+
+      .grid.2 <- sf::st_intersects(.grid, sf::st_as_sf(.data, coords = c("x","y")))
+      .grid.2 <- as.data.frame(.grid.2)
+      colnames(.grid.2) <- c("id", "code")
+      .data$code <- as.numeric(row.names(.data))
+      .data <- merge(.data, .grid.2, by = "code", all = TRUE)
+      # .data <- subset(.data, select = -code)
+      .data <- .data[, 2:ncol(.data)]
+
+      rm(.grid, .grid.2)
+
+      .dat <- lapply(split(.data[, 1:4], .data$id), as.matrix)
+
+      .dat <- .dat[(lapply(.dat, nrow)) > 4]
+      # .dat <- .dat[(lapply(.dat, nrow)) < 40000]
+
+      .ncr <- do.call(rbind, lapply(.dat, ver_point_cloud_double))
+
+      .ncr <- .ncr[.ncr$ver > 0 & .ncr$ver < 9999, ]
+
+
+      if(is.null(.ncr)){
+        data$ncr <- NA
+        .data <- data
+        return(.data)}
+
+      .data <- merge(data, .ncr, by = "point", all = TRUE)
+
+      .data <- .data[!duplicated(.data), ]
+
+    }
+
+  return(.data)
+
+}
+
 
 
 

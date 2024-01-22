@@ -33,6 +33,10 @@ angle_count_cpp <- function(baf_seq, baf, d, h, num) {
     .Call(`_FORTLS_angle_count_cpp`, baf_seq, baf, d, h, num)
 }
 
+ver_point_cloud_double <- function(m) {
+    .Call(`_FORTLS_ver_point_cloud_double`, m)
+}
+
 ncr_point_cloud_double <- function(m) {
     .Call(`_FORTLS_ncr_point_cloud_double`, m)
 }
