@@ -17,7 +17,7 @@ Process automation of point cloud data derived from terrestrial-based technologi
 Get the lat stable version of FORTLS from GitHub (included in the master branch)
 
 ```r
-remotes::install_github("Molina-Valero/FORTLS", ref = "devel", dependencies = TRUE)
+remotes::install_github("Molina-Valero/FORTLS", dependencies = TRUE)
 ```
 
 # Acknowledgements 
