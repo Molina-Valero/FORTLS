@@ -6,6 +6,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                                       stem.section = c(0.7, 3.5), stem.range = NULL, breaks = NULL,
                                       slice = 0.1, understory = NULL, bark.roughness = 1,
                                       den.type = 1, d.top = NULL,
+                                      segmentation = NULL,
                                       plot.attributes = NULL, plot = TRUE,
                                       save.result = TRUE, dir.result = NULL){
 
@@ -1137,30 +1138,23 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   }
 
-    if(!is.null(plot)){
-
-  diameter <- data.frame(tree = as.numeric(),
-                         x = as.numeric(),
-                         y = as.numeric(),
-                         z = as.numeric())
-
-  phi <- seq(from = 0, to = 2*pi, by = 2 * pi / 10000)
 
 
-  for (i in .tree$tree) {
+  if(!is.null(segmentation)){
 
-    tree <- rep(i, times = 10001)
-    x <- .tree$x[i] + cos(phi) * ((.tree$dbh[i] / 100) / 2)
-    y <- .tree$y[i] + sin(phi) * ((.tree$dbh[i] / 100) / 2)
-    z <- stats::runif(10001, 1.2, 1.4)
+    treeLAS <- suppressMessages(lidR::LAS(data[, c("x","y","z")]))
 
-    .diameter <- data.frame(tree = tree, x = x, y = y, z = z)
+    for (i in .tree$tree) {
 
-    diameter <- rbind(diameter, .diameter)
+      id <- .tree[.tree$tree == i, "id"]
+      x <- .tree[.tree$tree == i, "x"]
+      y <- .tree[.tree$tree == i, "y"]
+      dist <- 3 * .tree[.tree$tree == i, "dbh"] / 200
 
-  }
+      suppressMessages(lidR::writeLAS(lidR::clip_circle(treeLAS, x, y, dist),
+                                      paste(dir.result, "/tree", id, i, ".laz", sep = "")))
 
-  suppressMessages(lidR::plot(lidR::LAS(diameter[, c("x","y","z")]), add = plotTree, size = 5))
+    }
 
   }
 
