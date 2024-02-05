@@ -1137,6 +1137,33 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   }
 
+    if(!is.null(plot)){
+
+  diameter <- data.frame(tree = as.numeric(),
+                         x = as.numeric(),
+                         y = as.numeric(),
+                         z = as.numeric())
+
+  phi <- seq(from = 0, to = 2*pi, by = 2 * pi / 10000)
+
+
+  for (i in .tree$tree) {
+
+    tree <- rep(i, times = 10001)
+    x <- .tree$x[i] + cos(phi) * ((.tree$dbh[i] / 100) / 2)
+    y <- .tree$y[i] + sin(phi) * ((.tree$dbh[i] / 100) / 2)
+    z <- stats::runif(10001, 1.2, 1.4)
+
+    .diameter <- data.frame(tree = tree, x = x, y = y, z = z)
+
+    diameter <- rbind(diameter, .diameter)
+
+  }
+
+  suppressMessages(lidR::plot(lidR::LAS(diameter[, c("x","y","z")]), add = plotTree, size = 5))
+
+  }
+
 
   #####
 

@@ -87,7 +87,7 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
 
                        scan.approach = scan.approach,
 
-                       id = .id, file = .file, plot = plot,
+                       id = .id, file = .file, plot = NULL,
 
                        dir.data = dir.data, save.result = save.result, dir.result = dir.result)
 

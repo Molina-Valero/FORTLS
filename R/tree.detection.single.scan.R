@@ -6,6 +6,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
                                        stem.section = c(0.7, 3.5), stem.range = NULL, breaks = NULL,
                                        slice = 0.1, understory = NULL, bark.roughness = 1,
                                        den.type = 1, d.top = NULL,
+                                       segmentation = NULL,
                                        plot.attributes = NULL, plot = TRUE,
                                        save.result = TRUE, dir.result = NULL){
 
@@ -1107,6 +1108,23 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   }
 
+  if(!is.null(segmentation)){
+
+    treeLAS <- suppressMessages(lidR::LAS(data[, c("x","y","z")]))
+
+    for (i in .tree$tree) {
+
+      id <- .tree[.tree$tree == i, "id"]
+      x <- .tree[.tree$tree == i, "x"]
+      y <- .tree[.tree$tree == i, "y"]
+      dist <- 3 * .tree[.tree$tree == i, "dbh"] / 200
+
+      suppressMessages(lidR::writeLAS(lidR::clip_circle(treeLAS, x, y, dist),
+                       paste(dir.result, "/tree", id, i, ".laz", sep = "")))
+
+    }
+
+  }
 
   #####
   return(.tree)
