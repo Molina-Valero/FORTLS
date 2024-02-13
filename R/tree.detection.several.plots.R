@@ -43,7 +43,12 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
 
     # Assign coordinates
 
-    if(!is.null(center.coord)){
+    if(!is.null(center.coord) & !is.null(center.coord$id)){
+
+      x.center <- center.coord[center.coord$id == .id, "x"]
+      y.center <- center.coord[center.coord$id == .id, "y"]
+
+    } else if(!is.null(center.coord)) {
 
       x.center <- center.coord$x[i]
       y.center <- center.coord$y[i]
