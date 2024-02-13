@@ -22,6 +22,11 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
 
                                          dir.data = NULL, save.result = TRUE, dir.result = NULL){
 
+
+  # Obtaining working directory for loading files
+  if(is.null(dir.data))
+    dir.data <- getwd()
+
   # Obtaining working directory for saving files
   if(is.null(dir.result))
     dir.result <- getwd()
@@ -104,7 +109,7 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
     if(scan.approach == "single"){
 
     if(i > 1)
-      .stem.curve <- read.csv("stem.curve.csv")
+      .stem.curve <- read.csv(paste(dir.data, "/stem.curve.csv", sep = ""))
 
     .tree.tls.i <- tree.detection.single.scan(data = .data, single.tree = single.tree,
 
@@ -133,7 +138,7 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
     if(scan.approach == "multi"){
 
     if(i > 1)
-      .stem.curve <- read.csv("stem.curve.csv")
+      .stem.curve <- read.csv(paste(dir.data, "/stem.curve.csv", sep = ""))
 
     .tree.tls.i <- tree.detection.multi.scan(data = .data, single.tree = single.tree,
 
@@ -167,7 +172,7 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
 
       .tree.tls <- rbind(.tree.tls, .tree.tls.i)
 
-      .stem.curve <- rbind(.stem.curve, read.csv("stem.curve.csv"))
+      .stem.curve <- rbind(.stem.curve, read.csv(paste(dir.data, "/stem.curve.csv", sep = "")))
 
       utils::write.csv(.stem.curve,
                        file = file.path(dir.result, "stem.curve.csv"),
