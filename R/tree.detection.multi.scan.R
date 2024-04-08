@@ -993,17 +993,16 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   # Stem curve
 
-  stem.v <- .volume(.stem, id = data$id[1])
+  stem.v <- .volume(.stem, id = data$id[1], den.type = den.type)
   .tree <- merge(.tree, stem.v, all = TRUE)
 
   } else if (length(table(.stem$hi)) > 3 & !is.null(d.top)) {
 
-  stem.v <- .volume(.stem, d.top, id = data$id[1])
+  stem.v <- .volume(.stem, d.top, id = data$id[1], den.type = den.type)
   .tree <- merge(.tree, stem.v, all = TRUE)
 
   } else if (length(table(.stem$hi)) <= 3 & !is.null(d.top)) {
 
-  den.type <- 1
   n <- den.type
 
   # Estimating volume according to dendrometric type
@@ -1016,7 +1015,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   } else {
 
-  den.type <- 1
   n <- den.type
 
   .tree$v <- pi * (.tree[, "h"] ^ (n + 1) / (n + 1)) * ((.tree[, "dbh"] / 200) ^ 2 / (.tree[, "h"] - 1.3) ^ n)

@@ -1,20 +1,20 @@
 Package: FORTLS
 Title: Automatic Processing of Terrestrial-Based Technologies Point Cloud Data for Forestry Purposes
 Version: 1.4.1
-Date: 2024-01-21
+Date: 2024-02-27
 Authors@R: c(
     person("Juan Alberto", "Molina-Valero", role = c("aut", "cph", "cre"),
     email = "jamolinavalero@gmail.com"),
     person("Adela", "Martínez-Calvo", role = c("aut", "com")),
-    person("Arunima", "Singh", role = c("aut", "com")),
-    person("Gokul", "Kottilapurath Surendran", role = c("aut", "com")),
+    person("María José", "Ginzo Villamayor", role = c("aut", "com")),
+    person("Manuel Antonio", "Novo Pérez", role = c("aut", "com")),
     person("Juan Gabriel", "Álvarez-González", role = c("aut", "ths")),
     person("Fernando", "Montes", role = "aut"),
     person("César", "Pérez-Cruzado", role = c("aut", "ths")))
 Author: Juan Alberto Molina-Valero [aut, cph, cre],
   Adela Martínez-Calvo [aut, com],
-  Arunima Singh [aut, com],
-  Gokul Kottilapurath Surendran [aut, com],
+  María José Ginzo Villamayor [aut, com],
+  Manuel Antonio Novo Pérez [aut, com],
   Juan Gabriel Álvarez-González [aut, ths],
   Fernando Montes [aut],
   César Pérez-Cruzado [aut, ths]

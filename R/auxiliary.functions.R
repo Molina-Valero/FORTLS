@@ -852,7 +852,7 @@ if(nrow(.filter) < 1){
 
 
 
-.volume <- function(data, d.top = NULL, id){
+.volume <- function(data, d.top = NULL, id, den.type){
 
   datos <- data.frame(tree = as.numeric(),
                       x = as.numeric(), y = as.numeric(),
@@ -925,7 +925,6 @@ if(nrow(.filter) < 1){
 
     if(is.null(d.top)){
 
-      den.type <- 1
       n <- den.type
 
       v <- pi * (unique(data$h) ^ (n + 1) / (n + 1)) * ((unique(data$dbh) / 200) ^ 2 / (unique(data$h) - 1.3) ^ n)
@@ -934,7 +933,6 @@ if(nrow(.filter) < 1){
 
     else {
 
-      den.type <- 1
       n <- den.type
 
       v <- pi * (unique(data$h) ^ (n + 1) / (n + 1)) * ((unique(data$dbh) / 200) ^ 2 / (unique(data$h) - 1.3) ^ n)
