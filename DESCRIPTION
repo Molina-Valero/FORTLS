@@ -23,7 +23,7 @@ Description: Process automation of point cloud data derived from terrestrial-bas
 URL: https://molina-valero.github.io/FORTLS/, https://github.com/Molina-Valero/FORTLS
 BugReports: https://github.com/Molina-Valero/FORTLS/issues
 License: GPL-3
-Depends: R (>= 4.3.0)
+Depends: R (>= 4.0.0)
 Imports: data.table, dbscan, Distance, htmlwidgets, lidR, methods, moments, parallel, plotly, progress, raster, Rcpp(>= 1.0.10), RCSF, reticulate, scales, sf, tidyr, VoxR, vroom
 Suggests: devtools, kableExtra, knitr, rmarkdown, systemfonts, testthat
 LinkingTo: Rcpp, RcppEigen

@@ -1,14 +1,15 @@
 
 optimize.plot.design <- function(correlations,
-                                 variables = c("N", "G", "V", "d", "dg", "d.0",
+                                 variables = c("N", "G", "d", "dg", "d.0",
                                                "h", "h.0"),
                                  dir.result = NULL) {
 
   opt.cor <- correlations
 
-  if("W" %in% colnames(opt.cor$pearson$fixed.area) |
-     "W" %in% colnames(opt.cor$spearman$fixed.area))
-    variables = c(variables, "W")
+  # if("W.user.cor" %in% colnames(opt.cor$pearson$fixed.area) |
+  #    "W.user.cor" %in% colnames(opt.cor$spearman$fixed.area))
+  #   variables = c(variables, "W.user")
+
 
   # Define a character vector containing index name (radius, k or BAF) for each
   # available plot design
@@ -20,10 +21,15 @@ optimize.plot.design <- function(correlations,
     # Density (trees/ha), basal area (m2/ha) and volume (m3/ha)
     "N", "G", "V",
 
+    # Volume (m3/ha)
+    if("V.user.cor" %in% colnames(opt.cor$pearson$fixed.area) |
+       "V.user.cor" %in% colnames(opt.cor$spearman$fixed.area))
+    "V.user",
+
     # Biomass (Mg/ha)
-    if("W" %in% colnames(opt.cor$pearson$fixed.area) |
-       "W" %in% colnames(opt.cor$spearman$fixed.area))
-      "W",
+    if("W.user.cor" %in% colnames(opt.cor$pearson$fixed.area) |
+       "W.user.cor" %in% colnames(opt.cor$spearman$fixed.area))
+    "W.user",
 
     # Mean diameters (cm), and mean dominant diameters (cm)
     "d", "dg", "dgeom", "dharm",
