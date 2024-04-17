@@ -7,6 +7,7 @@ normalize <- function(las, normalized = NULL,
                       csf = list(cloth_resolution = 0.5),
                       intensity = NULL, RGB = NULL,
                       scan.approach = "single",
+                      voxel_size = 0.005,
                       id = NULL, file = NULL, plot = TRUE,
                       dir.data = NULL, save.result = TRUE, dir.result = NULL){
 
@@ -269,15 +270,16 @@ normalize <- function(las, normalized = NULL,
 
   .data$point <- as.integer((1:nrow(.data)))
 
+
   # Green Leaf Algorithm (GLA) (Louhaichi et al., (2001))
   if(!is.null(RGB))
     .data$GLA <- (2 * .data$G - .data$R - .data$B) / (2 * .data$G + .data$R + .data$B)
 
 
-  # Point crooping process
+  # Point crooping process (TLS single-scan)
   # This is a previous step to obtain a homogeneous density of points in the space
   # This is based on the principle that closer objects (with the same size and shape)
-  # have more probability to recieve points
+  # have more probability to receive points
 
   if(scan.approach == "single"){
 
@@ -285,7 +287,38 @@ normalize <- function(las, normalized = NULL,
     .data$prob.random <- stats::runif(nrow(.data))
     .data$prob.selec <- as.integer(ifelse(.data$prob > .data$prob.random, 1, 0))}
 
-  if(scan.approach == "multi"){
+
+  # For the rest of situations, point cloud is downsampled by voxelization
+
+  if(scan.approach == "multi" & !is.null(voxel_size)){
+
+    if(is.null(RGB) & is.null(intensity)){
+      .data <- as.data.frame(voxel_grid_downsampling(as.matrix(.data[, c("x", "y", "z", "slope")]), voxel_size))
+      colnames(.data) <- c("x", "y", "z", "slope")}
+
+    else if (is.null(RGB) & !is.null(intensity)){
+      .data <- as.data.frame(voxel_grid_downsampling(as.matrix(.data[, c("x", "y", "z", "slope", "intensity")]), voxel_size))
+      colnames(.data) <- c("x", "y", "z", "slope", "intensity")}
+
+    else if (!is.null(RGB) & is.null(intensity)){
+      .data <- as.data.frame(voxel_grid_downsampling(as.matrix(.data[, c("x", "y", "z", "slope", "R", "G", "B", "GLA")]), voxel_size))
+      colnames(.data) <- c("x", "y", "z", "slope", "R", "G", "B")}
+
+    else{
+      .data <- as.data.frame(voxel_grid_downsampling(as.matrix(.data[, c("x", "y", "z", "slope", "intensity", "R", "G", "B", "GLA")]), voxel_size))
+      colnames(.data) <- c("x", "y", "z", "slope", "intensity", "R", "G", "B")}
+
+
+    .data$rho <- sqrt((.data$x - x.center) ^ 2 + (.data$y - y.center) ^ 2)
+    .data$phi <- atan2(.data$x - x.center, .data$y - y.center)
+    .data$phi <- ifelse(.data$phi < 0, .data$phi + (2 * pi), .data$phi)
+    .data$r <- sqrt(.data$z ^ 2 + .data$rho ^ 2)
+    .data$theta <- atan2(.data$z, .data$rho)
+
+    .data$point <- as.integer((1:nrow(.data)))}
+
+
+    if(scan.approach == "multi"){
 
     .data$prob <- stats::runif(nrow(.data))
     .data$prob.selec <- as.integer(ifelse(.data$prob > 0.5, 1, 0))}

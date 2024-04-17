@@ -11,6 +11,40 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// ver_point_cloud_double
+DataFrame ver_point_cloud_double(const Eigen::MatrixXd& m);
+RcppExport SEXP _FORTLS_ver_point_cloud_double(SEXP mSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type m(mSEXP);
+    rcpp_result_gen = Rcpp::wrap(ver_point_cloud_double(m));
+    return rcpp_result_gen;
+END_RCPP
+}
+// ncr_point_cloud_double
+DataFrame ncr_point_cloud_double(const Eigen::MatrixXd& m);
+RcppExport SEXP _FORTLS_ncr_point_cloud_double(SEXP mSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type m(mSEXP);
+    rcpp_result_gen = Rcpp::wrap(ncr_point_cloud_double(m));
+    return rcpp_result_gen;
+END_RCPP
+}
+// geometric_features
+DataFrame geometric_features(const Eigen::MatrixXd& m, double dist);
+RcppExport SEXP _FORTLS_geometric_features(SEXP mSEXP, SEXP distSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type m(mSEXP);
+    Rcpp::traits::input_parameter< double >::type dist(distSEXP);
+    rcpp_result_gen = Rcpp::wrap(geometric_features(m, dist));
+    return rcpp_result_gen;
+END_RCPP
+}
 // weighted_mean_arit
 double weighted_mean_arit(std::vector<double> x, std::vector<double> w);
 RcppExport SEXP _FORTLS_weighted_mean_arit(SEXP xSEXP, SEXP wSEXP) {
@@ -118,30 +152,11 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// ver_point_cloud_double
-DataFrame ver_point_cloud_double(const Eigen::MatrixXd& m);
-RcppExport SEXP _FORTLS_ver_point_cloud_double(SEXP mSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type m(mSEXP);
-    rcpp_result_gen = Rcpp::wrap(ver_point_cloud_double(m));
-    return rcpp_result_gen;
-END_RCPP
-}
-// ncr_point_cloud_double
-DataFrame ncr_point_cloud_double(const Eigen::MatrixXd& m);
-RcppExport SEXP _FORTLS_ncr_point_cloud_double(SEXP mSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type m(mSEXP);
-    rcpp_result_gen = Rcpp::wrap(ncr_point_cloud_double(m));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_FORTLS_ver_point_cloud_double", (DL_FUNC) &_FORTLS_ver_point_cloud_double, 1},
+    {"_FORTLS_ncr_point_cloud_double", (DL_FUNC) &_FORTLS_ncr_point_cloud_double, 1},
+    {"_FORTLS_geometric_features", (DL_FUNC) &_FORTLS_geometric_features, 2},
     {"_FORTLS_weighted_mean_arit", (DL_FUNC) &_FORTLS_weighted_mean_arit, 2},
     {"_FORTLS_weighted_mean_sqrt", (DL_FUNC) &_FORTLS_weighted_mean_sqrt, 2},
     {"_FORTLS_weighted_mean_geom", (DL_FUNC) &_FORTLS_weighted_mean_geom, 2},
@@ -150,8 +165,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_FORTLS_fixed_area_cpp", (DL_FUNC) &_FORTLS_fixed_area_cpp, 5},
     {"_FORTLS_k_tree_cpp", (DL_FUNC) &_FORTLS_k_tree_cpp, 6},
     {"_FORTLS_angle_count_cpp", (DL_FUNC) &_FORTLS_angle_count_cpp, 5},
-    {"_FORTLS_ver_point_cloud_double", (DL_FUNC) &_FORTLS_ver_point_cloud_double, 1},
-    {"_FORTLS_ncr_point_cloud_double", (DL_FUNC) &_FORTLS_ncr_point_cloud_double, 1},
     {NULL, NULL, 0}
 };
 

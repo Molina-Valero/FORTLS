@@ -94,7 +94,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   # Statistical filtering of a point cloud
   # Implements the Statistical Outliers Removal (SOR)
 
-  message("Statistical filtering of the whole point cloud")
+  message("Application of Statistical Outlier Removal (SOR) to the entire point cloud")
 
   woody <- woody[, c("x", "y", "z")]
   woody <- VoxR::filter_noise(data = data.table::setDT(woody), store_noise = TRUE, message = FALSE)
@@ -124,7 +124,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   }
 
-  message("Retaining points with high verticality values")
+  message("Retention of points with high verticality values")
 
   # stem <- .ver.remove.slice.double(stem)
   # stem$ver <- ifelse(is.na(stem$ver), stats::runif(length(stem$ver[is.na(stem$ver)])), stem$ver)
@@ -136,7 +136,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   # woody <- rbind(woody, stem[, 1:ncol(woody)])
 
 
-  message("Detecting tree stem axes")
+  message("Detection of tree stem axes")
 
   stem <- stem[stem$prob.selec == 1, ]
 
