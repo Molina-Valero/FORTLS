@@ -104,15 +104,15 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   VerSph <- geometric.features(stem)
   # stem <- .ver.remove.slice.double(stem)
   stem$ver <- VerSph$verticality
-  stem$sph <- VerSph$sphericity
+  # stem$sph <- VerSph$sphericity
 
   stem$ver <- ifelse(is.na(stem$ver), stats::runif(length(stem$ver[is.na(stem$ver)])), stem$ver)
-  stem$sph <- ifelse(is.na(stem$sph), stats::runif(length(stem$sph[is.na(stem$sph)])), stem$sph)
+  # stem$sph <- ifelse(is.na(stem$sph), stats::runif(length(stem$sph[is.na(stem$sph)])), stem$sph)
 
   # stem$ver <- 1 - stem$ver
   stem$prob.ver <- stats::runif(nrow(stem))
   stem <- stem[stem$ver > stem$prob.ver, ]
-  stem <- stem[stem$sph < stem$prob.ver, ]
+  # stem <- stem[stem$sph < stem$prob.ver, ]
 
   woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
   woody <- rbind(woody, stem[, 1:ncol(woody)])

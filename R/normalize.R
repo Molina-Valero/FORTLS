@@ -7,7 +7,7 @@ normalize <- function(las, normalized = NULL,
                       csf = list(cloth_resolution = 0.5),
                       intensity = NULL, RGB = NULL,
                       scan.approach = "single",
-                      voxel_size = 0.005,
+                      voxel_size = NULL,
                       id = NULL, file = NULL, plot = TRUE,
                       dir.data = NULL, save.result = TRUE, dir.result = NULL){
 
