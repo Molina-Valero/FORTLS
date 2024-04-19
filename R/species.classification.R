@@ -63,6 +63,25 @@ species.classification <- function(data, tree.tls, dist = 0.05){
                                surface_density = tapply(variables$surface_density, variables$tree, mean, na.rm = TRUE),
                                volume_density = tapply(variables$volume_density, variables$tree, mean, na.rm = TRUE))
 
+  tree.variables <- data.frame(tree = tapply(variables$tree, variables$tree, median),
+                               first_eigenvalue = tapply(variables$first_eigenvalue, variables$tree, median, na.rm = TRUE),
+                               second_eigenvalue = tapply(variables$second_eigenvalue, variables$tree, median, na.rm = TRUE),
+                               third_eigenvalue = tapply(variables$third_eigenvalue, variables$tree, median, na.rm = TRUE),
+                               sum_eigenvalues = tapply(variables$sum_eigenvalues, variables$tree, median, na.rm = TRUE),
+                               omnivariance = tapply(variables$omnivariance, variables$tree, median, na.rm = TRUE),
+                               eigenentropy = tapply(variables$eigenentropy, variables$tree, median, na.rm = TRUE),
+                               PCA1 = tapply(variables$PCA1, variables$tree, median, na.rm = TRUE),
+                               PCA2 = tapply(variables$PCA2, variables$tree, median, na.rm = TRUE),
+                               anisotropy = tapply(variables$anisotropy, variables$tree, median, na.rm = TRUE),
+                               planarity = tapply(variables$planarity, variables$tree, median, na.rm = TRUE),
+                               linearity = tapply(variables$linearity, variables$tree, median, na.rm = TRUE),
+                               surface_variation = tapply(variables$surface_variation, variables$tree, median, na.rm = TRUE),
+                               sphericity = tapply(variables$sphericity, variables$tree, median, na.rm = TRUE),
+                               verticality = tapply(variables$verticality, variables$tree, median, na.rm = TRUE),
+                               number_neighbors = tapply(variables$number_neighbors, variables$tree, median, na.rm = TRUE),
+                               surface_density = tapply(variables$surface_density, variables$tree, median, na.rm = TRUE),
+                               volume_density = tapply(variables$volume_density, variables$tree, median, na.rm = TRUE))
+
   return(tree.variables)
 
 }
