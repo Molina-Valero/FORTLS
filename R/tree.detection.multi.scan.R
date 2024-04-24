@@ -101,18 +101,21 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   message("Retention of points with high verticality values")
 
 
-  VerSph <- geometric.features(stem)
+  VerSur <- geometric.features(stem, dist = 0.1)
   # stem <- .ver.remove.slice.double(stem)
-  stem$ver <- VerSph$verticality
-  # stem$sph <- VerSph$sphericity
+  stem$ver <- VerSur$verticality
+  stem$sur <- VerSur$surface_variation
 
-  stem$ver <- ifelse(is.na(stem$ver), stats::runif(length(stem$ver[is.na(stem$ver)])), stem$ver)
-  # stem$sph <- ifelse(is.na(stem$sph), stats::runif(length(stem$sph[is.na(stem$sph)])), stem$sph)
+  rm(VerSur)
 
-  # stem$ver <- 1 - stem$ver
-  stem$prob.ver <- stats::runif(nrow(stem))
+  stem$ver <- stem$ver + (1 - (stem$sur / 0.33))
+
+  stem$ver <- ifelse(is.na(stem$ver),
+                     stats::runif(length(stem$ver[is.na(stem$ver)]), min = 0, max = 2),
+                     stem$ver)
+
+  stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 2)
   stem <- stem[stem$ver > stem$prob.ver, ]
-  # stem <- stem[stem$sph < stem$prob.ver, ]
 
   woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
   woody <- rbind(woody, stem[, 1:ncol(woody)])

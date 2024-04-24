@@ -1,7 +1,7 @@
 
 
 
-species.classification <- function(data, tree.tls, dist = 0.05){
+species.classification <- function(data, tree.tls, dist = 0.05, median = NULL){
 
   data <- data[, c("x", "y", "z")]
 
@@ -16,7 +16,8 @@ species.classification <- function(data, tree.tls, dist = 0.05){
               data$y < tree$y + tree$dbh / 100 &
               data$y > tree$y - tree$dbh / 100, ]
 
-  dat <- dat[dat$z <= 1.65 & dat$z >= 0.95, ]
+  # dat <- dat[dat$z <= 1.65 & dat$z >= 0.95, ]
+  dat <- dat[dat$z >= 0.95, ]
 
   # dat$x <- dat$x - tree$x
   # dat$y <- dat$y - tree$y
@@ -39,7 +40,8 @@ species.classification <- function(data, tree.tls, dist = 0.05){
   sp$point <- 1:nrow(sp)
 
   variables <- geometric.features(sp, dist)
-  variables <- variables[dat$z <= 1.6 & dat$z >= 1, ]
+  # variables <- variables[dat$z <= 1.6 & dat$z >= 1, ]
+  variables <- variables[dat$z > 1, ]
   variables <- merge(variables, sp[, c("point", "tree")])
 
   variables <- variables[variables$number_neighbors > 2, ]
@@ -63,6 +65,7 @@ species.classification <- function(data, tree.tls, dist = 0.05){
                                surface_density = tapply(variables$surface_density, variables$tree, mean, na.rm = TRUE),
                                volume_density = tapply(variables$volume_density, variables$tree, mean, na.rm = TRUE))
 
+  if(!is.null(median)){
   tree.variables <- data.frame(tree = tapply(variables$tree, variables$tree, median),
                                first_eigenvalue = tapply(variables$first_eigenvalue, variables$tree, median, na.rm = TRUE),
                                second_eigenvalue = tapply(variables$second_eigenvalue, variables$tree, median, na.rm = TRUE),
@@ -81,6 +84,7 @@ species.classification <- function(data, tree.tls, dist = 0.05){
                                number_neighbors = tapply(variables$number_neighbors, variables$tree, median, na.rm = TRUE),
                                surface_density = tapply(variables$surface_density, variables$tree, median, na.rm = TRUE),
                                volume_density = tapply(variables$volume_density, variables$tree, median, na.rm = TRUE))
+  }
 
   return(tree.variables)
 
