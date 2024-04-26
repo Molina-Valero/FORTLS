@@ -126,14 +126,24 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   message("Retention of points with high verticality values")
 
+  VerSur <- geometric.features(stem, dist = 0.1)
   # stem <- .ver.remove.slice.double(stem)
-  # stem$ver <- ifelse(is.na(stem$ver), stats::runif(length(stem$ver[is.na(stem$ver)])), stem$ver)
-  # stem$ver <- 1 - stem$ver
-  # stem$prob.ver <- stats::runif(nrow(stem))
-  # stem <- stem[stem$ver > stem$prob.ver, ]
-  #
-  # woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
-  # woody <- rbind(woody, stem[, 1:ncol(woody)])
+  stem$ver <- VerSur$verticality
+  stem$sur <- VerSur$surface_variation
+
+  rm(VerSur)
+
+  stem$ver <- stem$ver + (1 - (stem$sur / 0.33))
+
+  stem$ver <- ifelse(is.na(stem$ver),
+                     stats::runif(length(stem$ver[is.na(stem$ver)]), min = 0, max = 2),
+                     stem$ver)
+
+  stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 2)
+  stem <- stem[stem$ver > stem$prob.ver, ]
+
+  woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
+  woody <- rbind(woody, stem[, 1:ncol(woody)])
 
 
   message("Detection of tree stem axes")
