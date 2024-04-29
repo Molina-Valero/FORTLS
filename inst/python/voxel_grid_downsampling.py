@@ -1,7 +1,4 @@
-
-
 import numpy as np
-import matplotlib.pyplot as plt
 
 
 def voxel_grid_downsampling(points, voxel_size):
