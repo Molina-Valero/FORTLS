@@ -9,6 +9,7 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
                                          max.dist = NULL, min.height = NULL, max.height = 50,
                                          algorithm.dtm = "knnidw", res.dtm = 0.2, csf = list(cloth_resolution = 0.5),
                                          intensity = NULL, RGB = NULL,
+                                         voxel_size = NULL,
 
                                          single.tree = NULL,
                                          dbh.min = 4, dbh.max = 200, h.min = 1.3,
@@ -94,6 +95,8 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
                        algorithm.dtm = algorithm.dtm, res.dtm = res.dtm, csf = csf,
 
                        intensity = intensity, RGB = RGB,
+
+                       voxel_size = voxel_size,
 
                        scan.approach = scan.approach,
 
