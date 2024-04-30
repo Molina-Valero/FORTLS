@@ -1147,19 +1147,29 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   }
 
 
+  # Tree segmentation
 
   if(!is.null(segmentation)){
 
-    treeLAS <- suppressMessages(lidR::LAS(data[, c("x","y","z")]))
+    # treeLAS <- suppressMessages(lidR::LAS(data[, c("x","y","z")]))
+
+    voro <- sf::st_as_sf(data, coords = c("x", "y", "z"))
+    voronoi <- sf::st_as_sf(.tree, coords = c("x", "y"))
+
+    voronoi <- sf::st_collection_extract(
+      sf::st_voronoi(do.call(c, sf::st_geometry(voronoi))))
+
+    voro$tree <- unlist(sf::st_intersects(voro, voronoi))
 
     for (i in .tree$tree) {
 
       id <- .tree[.tree$tree == i, "id"]
-      x <- .tree[.tree$tree == i, "x"]
-      y <- .tree[.tree$tree == i, "y"]
-      dist <- 3 * .tree[.tree$tree == i, "dbh"] / 200
 
-      suppressMessages(lidR::writeLAS(lidR::clip_circle(treeLAS, x, y, dist),
+
+      coords <- as.data.frame(sf::st_coordinates(voro[voro$tree == i, ]))
+      colnames(coords) <- c("x", "y", "z")
+
+      suppressMessages(lidR::writeLAS(lidR::LAS(coords[, c("x","y","z")]),
                                       paste(dir.result, "/tree", id, i, ".laz", sep = "")))
 
     }

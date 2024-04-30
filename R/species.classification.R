@@ -1,7 +1,7 @@
 
 
 
-species.classification <- function(data, tree.tls, dist = 0.05, median = NULL){
+species.classification <- function(data, tree.tls, dist = 0.1, median = NULL, variables = 1){
 
   data <- data[, c("x", "y", "z")]
 
@@ -40,8 +40,14 @@ species.classification <- function(data, tree.tls, dist = 0.05, median = NULL){
   sp$point <- 1:nrow(sp)
 
   variables <- geometric.features(sp, dist)
-  # variables <- variables[dat$z <= 1.6 & dat$z >= 1, ]
-  variables <- variables[dat$z > 1, ]
+
+  if(variables == 1){
+  variables <- variables[dat$z < 1.6 & dat$z > 1, ]}
+
+  if(variables == 2){
+  variables <- variables[dat$z > 1, ]}
+
+
   variables <- merge(variables, sp[, c("point", "tree")])
 
   variables <- variables[variables$number_neighbors > 2, ]

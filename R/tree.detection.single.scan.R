@@ -263,7 +263,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   # Breaks argument
 
   if(is.null(breaks)){
-    breaks <- seq(from = 0.4, to = max(woody$z), by = 0.3)
+    breaks <- c(0.2, seq(from = 0.4, to = max(stem$z), by = 0.3))
     breaks <- breaks[-length(breaks)]}
 
   # rm(stem)
@@ -1094,6 +1094,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   }
 
 
+  # Tree segmentation
 
   if(!is.null(segmentation)){
 
