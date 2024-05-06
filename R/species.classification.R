@@ -1,7 +1,7 @@
 
 
 
-species.classification <- function(data, tree.tls, dist = 0.1, median = NULL, variables = 1){
+species.classification <- function(data, tree.tls, dist = 0.1, median = NULL, type = 1){
 
   data <- data[, c("x", "y", "z")]
 
@@ -41,10 +41,10 @@ species.classification <- function(data, tree.tls, dist = 0.1, median = NULL, va
 
   variables <- geometric.features(sp, dist)
 
-  if(variables == 1){
+  if(type == 1){
   variables <- variables[dat$z < 1.6 & dat$z > 1, ]}
 
-  if(variables == 2){
+  if(type == 2){
   variables <- variables[dat$z > 1, ]}
 
 
