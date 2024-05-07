@@ -16,8 +16,11 @@ species.classification <- function(data, tree.tls, dist = 0.1, median = NULL, ty
               data$y < tree$y + tree$dbh / 100 &
               data$y > tree$y - tree$dbh / 100, ]
 
-  # dat <- dat[dat$z <= 1.65 & dat$z >= 0.95, ]
-  dat <- dat[dat$z >= 0.95, ]
+  if(type == 1){
+  dat <- dat[dat$z <= 1.65 & dat$z >= 0.95, ]}
+
+  if(type == 2){
+  dat <- dat[dat$z >= 0.95, ]}
 
   # dat$x <- dat$x - tree$x
   # dat$y <- dat$y - tree$y
