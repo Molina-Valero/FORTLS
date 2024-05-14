@@ -16,11 +16,14 @@ species.classification <- function(data, tree.tls, dist = 0.1, median = NULL, ty
               data$y < tree$y + tree$dbh / 100 &
               data$y > tree$y - tree$dbh / 100, ]
 
+  if(nrow(dat) < 1){
+    next}
+
   if(type == 1){
-  dat <- dat[dat$z <= 1.65 & dat$z >= 0.95, ]}
+    dat <- dat[dat$z <= 1.65 & dat$z >= 0.95, ]}
 
   if(type == 2){
-  dat <- dat[dat$z >= 0.95, ]}
+    dat <- dat[dat$z >= 0.95, ]}
 
   # dat$x <- dat$x - tree$x
   # dat$y <- dat$y - tree$y
@@ -51,9 +54,11 @@ species.classification <- function(data, tree.tls, dist = 0.1, median = NULL, ty
   variables <- variables[dat$z > 1, ]}
 
 
-  variables <- merge(variables, sp[, c("point", "tree")])
+  variables <- merge(variables, sp[, c("point", "tree")], by = "point", all = FALSE)
 
   variables <- variables[variables$number_neighbors > 2, ]
+
+  variables <- variables[!is.na(variables$point), ]
 
   tree.variables <- data.frame(tree = tapply(variables$tree, variables$tree, mean),
                                first_eigenvalue = tapply(variables$first_eigenvalue, variables$tree, mean, na.rm = TRUE),
