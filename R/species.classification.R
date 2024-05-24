@@ -204,6 +204,15 @@ species.classification <- function(data, tree.tls, dist = 0.1, type = 3){
     tree.variables <- tree.variables_25[tree.variables_25$tree %in% tree.variables_50$tree &
                                         tree.variables_25$tree %in% tree.variables_75$tree, ]
 
+    tree.variables_25 <- tree.variables_25[tree.variables_25$tree %in% tree.variables_50$tree &
+                                          tree.variables_25$tree %in% tree.variables_75$tree, ]
+
+    tree.variables_50 <- tree.variables_50[tree.variables_50$tree %in% tree.variables_25$tree &
+                                             tree.variables_50$tree %in% tree.variables_75$tree, ]
+
+    tree.variables_75 <- tree.variables_75[tree.variables_75$tree %in% tree.variables_25$tree &
+                                             tree.variables_75$tree %in% tree.variables_50$tree, ]
+
     tree.variables$first_eigenvalue <- (tree.variables_25$first_eigenvalue + tree.variables_50$first_eigenvalue + tree.variables_75$first_eigenvalue) / 3
     tree.variables$second_eigenvalue <- (tree.variables_25$second_eigenvalue + tree.variables_50$second_eigenvalue + tree.variables_75$second_eigenvalue) / 3
     tree.variables$third_eigenvalue <- (tree.variables_25$third_eigenvalue + tree.variables_50$third_eigenvalue + tree.variables_75$third_eigenvalue) / 3
