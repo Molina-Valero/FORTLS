@@ -127,23 +127,23 @@ species.classification <- function(data, tree.tls, dist = 0.1, type = 3){
     variables_25 <- variables_25[!is.na(variables_25$point), ]
 
     tree.variables_25 <- data.frame(tree = tapply(variables_25$tree, variables_25$tree, mean),
-                                 first_eigenvalue = tapply(variables_25$first_eigenvalue, variables_25$tree, mean, na.rm = TRUE),
-                                 second_eigenvalue = tapply(variables_25$second_eigenvalue, variables_25$tree, mean, na.rm = TRUE),
-                                 third_eigenvalue = tapply(variables_25$third_eigenvalue, variables_25$tree, mean, na.rm = TRUE),
-                                 sum_eigenvalues = tapply(variables_25$sum_eigenvalues, variables_25$tree, mean, na.rm = TRUE),
-                                 omnivariance = tapply(variables_25$omnivariance, variables_25$tree, mean, na.rm = TRUE),
-                                 eigenentropy = tapply(variables_25$eigenentropy, variables_25$tree, mean, na.rm = TRUE),
-                                 PCA1 = tapply(variables_25$PCA1, variables_25$tree, mean, na.rm = TRUE),
-                                 PCA2 = tapply(variables_25$PCA2, variables_25$tree, mean, na.rm = TRUE),
-                                 anisotropy = tapply(variables_25$anisotropy, variables_25$tree, mean, na.rm = TRUE),
-                                 planarity = tapply(variables_25$planarity, variables_25$tree, mean, na.rm = TRUE),
-                                 linearity = tapply(variables_25$linearity, variables_25$tree, mean, na.rm = TRUE),
-                                 surface_variation = tapply(variables_25$surface_variation, variables_25$tree, mean, na.rm = TRUE),
-                                 sphericity = tapply(variables_25$sphericity, variables_25$tree, mean, na.rm = TRUE),
-                                 verticality = tapply(variables_25$verticality, variables_25$tree, mean, na.rm = TRUE),
-                                 number_neighbors = tapply(variables_25$number_neighbors, variables_25$tree, mean, na.rm = TRUE),
-                                 surface_density = tapply(variables_25$surface_density, variables_25$tree, mean, na.rm = TRUE),
-                                 volume_density = tapply(variables_25$volume_density, variables_25$tree, mean, na.rm = TRUE))
+                                    first_eigenvalue = tapply(variables_25$first_eigenvalue, variables_25$tree, mean, na.rm = TRUE),
+                                    second_eigenvalue = tapply(variables_25$second_eigenvalue, variables_25$tree, mean, na.rm = TRUE),
+                                    third_eigenvalue = tapply(variables_25$third_eigenvalue, variables_25$tree, mean, na.rm = TRUE),
+                                    sum_eigenvalues = tapply(variables_25$sum_eigenvalues, variables_25$tree, mean, na.rm = TRUE),
+                                    omnivariance = tapply(variables_25$omnivariance, variables_25$tree, mean, na.rm = TRUE),
+                                    eigenentropy = tapply(variables_25$eigenentropy, variables_25$tree, mean, na.rm = TRUE),
+                                    PCA1 = tapply(variables_25$PCA1, variables_25$tree, mean, na.rm = TRUE),
+                                    PCA2 = tapply(variables_25$PCA2, variables_25$tree, mean, na.rm = TRUE),
+                                    anisotropy = tapply(variables_25$anisotropy, variables_25$tree, mean, na.rm = TRUE),
+                                    planarity = tapply(variables_25$planarity, variables_25$tree, mean, na.rm = TRUE),
+                                    linearity = tapply(variables_25$linearity, variables_25$tree, mean, na.rm = TRUE),
+                                    surface_variation = tapply(variables_25$surface_variation, variables_25$tree, mean, na.rm = TRUE),
+                                    sphericity = tapply(variables_25$sphericity, variables_25$tree, mean, na.rm = TRUE),
+                                    verticality = tapply(variables_25$verticality, variables_25$tree, mean, na.rm = TRUE),
+                                    number_neighbors = tapply(variables_25$number_neighbors, variables_25$tree, mean, na.rm = TRUE),
+                                    surface_density = tapply(variables_25$surface_density, variables_25$tree, mean, na.rm = TRUE),
+                                    volume_density = tapply(variables_25$volume_density, variables_25$tree, mean, na.rm = TRUE))
 
 
 
@@ -218,7 +218,7 @@ species.classification <- function(data, tree.tls, dist = 0.1, type = 3){
                                  verticality = mean(c(tree.variables_25$verticality, tree.variables_50$verticality, tree.variables_75$verticality), na.rm = TRUE),
                                  number_neighbors = mean(c(tree.variables_25$number_neighbors, tree.variables_50$number_neighbors, tree.variables_75$number_neighbors), na.rm = TRUE),
                                  surface_density = mean(c(tree.variables_25$surface_density, tree.variables_50$surface_density, tree.variables_75$surface_density), na.rm = TRUE),
-                                 volume_density = mean(c(tree.variables_25$volume_density, tree.variables_50$volume_density, tree.variables_75$volume_density), na.rm = TRUE),)
+                                 volume_density = mean(c(tree.variables_25$volume_density, tree.variables_50$volume_density, tree.variables_75$volume_density), na.rm = TRUE))
 
     }
 
