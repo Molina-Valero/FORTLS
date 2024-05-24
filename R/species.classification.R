@@ -201,7 +201,7 @@ species.classification <- function(data, tree.tls, dist = 0.1, type = 3){
 
 
 
-    tree.variables <- data.frame(tree = variables_50$tree,
+    tree.variables <- data.frame(tree = tree.variables_50$tree,
                                  first_eigenvalue = mean(c(tree.variables_25$first_eigenvalue, tree.variables_50$first_eigenvalue, tree.variables_75$first_eigenvalue), na.rm = TRUE),
                                  second_eigenvalue = mean(c(tree.variables_25$second_eigenvalue, tree.variables_50$second_eigenvalue, tree.variables_75$second_eigenvalue), na.rm = TRUE),
                                  third_eigenvalue = mean(c(tree.variables_25$third_eigenvalue, tree.variables_50$third_eigenvalue, tree.variables_75$third_eigenvalue), na.rm = TRUE),
