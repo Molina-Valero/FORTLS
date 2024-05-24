@@ -202,23 +202,23 @@ species.classification <- function(data, tree.tls, dist = 0.1, type = 3){
 
 
     tree.variables <- data.frame(tree = variables_50$tree,
-                                 first_eigenvalue = mean(c(variables_25$first_eigenvalue, variables_50$first_eigenvalue, variables_75$first_eigenvalue), na.rm = TRUE),
-                                 second_eigenvalue = mean(c(variables_25$first_eigenvalue, variables_50$first_eigenvalue, variables_75$first_eigenvalue), na.rm = TRUE),
-                                 third_eigenvalue = mean(c(variables_25$first_eigenvalue, variables_50$first_eigenvalue, variables_75$first_eigenvalue), na.rm = TRUE),
-                                 sum_eigenvalues = mean(c(variables_25$first_eigenvalue, variables_50$first_eigenvalue, variables_75$first_eigenvalue), na.rm = TRUE),
-                                 omnivariance = mean(c(variables_25$first_eigenvalue, variables_50$first_eigenvalue, variables_75$first_eigenvalue), na.rm = TRUE),
-                                 eigenentropy = mean(c(variables_25$first_eigenvalue, variables_50$first_eigenvalue, variables_75$first_eigenvalue), na.rm = TRUE),
-                                 PCA1 = mean(c(variables_25$first_eigenvalue, variables_50$first_eigenvalue, variables_75$first_eigenvalue), na.rm = TRUE),
-                                 PCA2 = mean(c(variables_25$first_eigenvalue, variables_50$first_eigenvalue, variables_75$first_eigenvalue), na.rm = TRUE),
-                                 anisotropy = mean(c(variables_25$first_eigenvalue, variables_50$first_eigenvalue, variables_75$first_eigenvalue), na.rm = TRUE),
-                                 planarity = mean(c(variables_25$first_eigenvalue, variables_50$first_eigenvalue, variables_75$first_eigenvalue), na.rm = TRUE),
-                                 linearity = mean(c(variables_25$first_eigenvalue, variables_50$first_eigenvalue, variables_75$first_eigenvalue), na.rm = TRUE),
-                                 surface_variation = mean(c(variables_25$first_eigenvalue, variables_50$first_eigenvalue, variables_75$first_eigenvalue), na.rm = TRUE),
-                                 sphericity = mean(c(variables_25$first_eigenvalue, variables_50$first_eigenvalue, variables_75$first_eigenvalue), na.rm = TRUE),
-                                 verticality = mean(c(variables_25$first_eigenvalue, variables_50$first_eigenvalue, variables_75$first_eigenvalue), na.rm = TRUE),
-                                 number_neighbors = mean(c(variables_25$first_eigenvalue, variables_50$first_eigenvalue, variables_75$first_eigenvalue), na.rm = TRUE),
-                                 surface_density = mean(c(variables_25$first_eigenvalue, variables_50$first_eigenvalue, variables_75$first_eigenvalue), na.rm = TRUE),
-                                 volume_density = mean(c(variables_25$first_eigenvalue, variables_50$first_eigenvalue, variables_75$first_eigenvalue), na.rm = TRUE),)
+                                 first_eigenvalue = mean(c(tree.variables_25$first_eigenvalue, tree.variables_50$first_eigenvalue, tree.variables_75$first_eigenvalue), na.rm = TRUE),
+                                 second_eigenvalue = mean(c(tree.variables_25$second_eigenvalue, tree.variables_50$second_eigenvalue, tree.variables_75$second_eigenvalue), na.rm = TRUE),
+                                 third_eigenvalue = mean(c(tree.variables_25$third_eigenvalue, tree.variables_50$third_eigenvalue, tree.variables_75$third_eigenvalue), na.rm = TRUE),
+                                 sum_eigenvalues = mean(c(tree.variables_25$sum_eigenvalues, tree.variables_50$sum_eigenvalues, tree.variables_75$sum_eigenvalues), na.rm = TRUE),
+                                 omnivariance = mean(c(tree.variables_25$omnivariance, tree.variables_50$omnivariance, tree.variables_75$omnivariance), na.rm = TRUE),
+                                 eigenentropy = mean(c(tree.variables_25$eigenentropy, tree.variables_50$eigenentropy, tree.variables_75$eigenentropy), na.rm = TRUE),
+                                 PCA1 = mean(c(tree.variables_25$PCA1, tree.variables_50$PCA1, tree.variables_75$PCA1), na.rm = TRUE),
+                                 PCA2 = mean(c(tree.variables_25$PCA2, tree.variables_50$PCA2, tree.variables_75$PCA2), na.rm = TRUE),
+                                 anisotropy = mean(c(tree.variables_25$anisotropy, tree.variables_50$anisotropy, tree.variables_75$anisotropy), na.rm = TRUE),
+                                 planarity = mean(c(tree.variables_25$planarity, tree.variables_50$planarity, tree.variables_75$planarity), na.rm = TRUE),
+                                 linearity = mean(c(tree.variables_25$linearity, tree.variables_50$linearity, tree.variables_75$linearity), na.rm = TRUE),
+                                 surface_variation = mean(c(tree.variables_25$surface_variation, tree.variables_50$surface_variation, tree.variables_75$surface_variation), na.rm = TRUE),
+                                 sphericity = mean(c(tree.variables_25$sphericity, tree.variables_50$sphericity, tree.variables_75$sphericity), na.rm = TRUE),
+                                 verticality = mean(c(tree.variables_25$verticality, tree.variables_50$verticality, tree.variables_75$verticality), na.rm = TRUE),
+                                 number_neighbors = mean(c(tree.variables_25$number_neighbors, tree.variables_50$number_neighbors, tree.variables_75$number_neighbors), na.rm = TRUE),
+                                 surface_density = mean(c(tree.variables_25$surface_density, tree.variables_50$surface_density, tree.variables_75$surface_density), na.rm = TRUE),
+                                 volume_density = mean(c(tree.variables_25$volume_density, tree.variables_50$volume_density, tree.variables_75$volume_density), na.rm = TRUE),)
 
     }
 
