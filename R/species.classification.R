@@ -201,11 +201,26 @@ species.classification <- function(data, tree.tls, dist = 0.1, type = 3){
 
 
 
-    tree.variables <- cbind(tree.variables_25)
+    tree.variables <- tree.variables_25[tree.variables_25$tree %in% tree.variables_50$tree &
+                                        tree.variables_25$tree %in% tree.variables_75$tree, ]
 
     tree.variables$first_eigenvalue <- (tree.variables_25$first_eigenvalue + tree.variables_50$first_eigenvalue + tree.variables_75$first_eigenvalue) / 3
     tree.variables$second_eigenvalue <- (tree.variables_25$second_eigenvalue + tree.variables_50$second_eigenvalue + tree.variables_75$second_eigenvalue) / 3
     tree.variables$third_eigenvalue <- (tree.variables_25$third_eigenvalue + tree.variables_50$third_eigenvalue + tree.variables_75$third_eigenvalue) / 3
+    tree.variables$sum_eigenvalues <- (tree.variables_25$sum_eigenvalues + tree.variables_50$sum_eigenvalues + tree.variables_75$sum_eigenvalues) / 3
+    tree.variables$omnivariance <- (tree.variables_25$omnivariance + tree.variables_50$omnivariance + tree.variables_75$omnivariance) / 3
+    tree.variables$eigenentropy <- (tree.variables_25$eigenentropy + tree.variables_50$eigenentropy + tree.variables_75$eigenentropy) / 3
+    tree.variables$PCA1 <- (tree.variables_25$PCA1 + tree.variables_50$PCA1 + tree.variables_75$PCA1) / 3
+    tree.variables$PCA2 <- (tree.variables_25$PCA2 + tree.variables_50$PCA2 + tree.variables_75$PCA2) / 3
+    tree.variables$anisotropy <- (tree.variables_25$anisotropy + tree.variables_50$anisotropy + tree.variables_75$anisotropy) / 3
+    tree.variables$planarity <- (tree.variables_25$planarity + tree.variables_50$planarity + tree.variables_75$planarity) / 3
+    tree.variables$linearity <- (tree.variables_25$linearity + tree.variables_50$linearity + tree.variables_75$linearity) / 3
+    tree.variables$surface_variation <- (tree.variables_25$surface_variation + tree.variables_50$surface_variation + tree.variables_75$surface_variation) / 3
+    tree.variables$sphericity <- (tree.variables_25$sphericity + tree.variables_50$sphericity + tree.variables_75$sphericity) / 3
+    tree.variables$verticality <- (tree.variables_25$verticality + tree.variables_50$verticality + tree.variables_75$verticality) / 3
+    tree.variables$number_neighbors <- (tree.variables_25$number_neighbors + tree.variables_50$number_neighbors + tree.variables_75$number_neighbors) / 3
+    tree.variables$surface_density <- (tree.variables_25$surface_density + tree.variables_50$surface_density + tree.variables_75$surface_density) / 3
+    tree.variables$volume_density <- (tree.variables_25$volume_density + tree.variables_50$volume_density + tree.variables_75$volume_density) / 3
 
     }
 
