@@ -103,12 +103,13 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   VerSur <- geometric.features(stem, dist = 0.1)
   # stem <- .ver.remove.slice.double(stem)
-  stem$ver <- VerSur$verticality
-  stem$sur <- VerSur$surface_variation
+  stem <- merge(stem, VerSur[, c("point", "verticality", "surface_variation")])
+  # stem$ver <- VerSur$verticality
+  # stem$sur <- VerSur$surface_variation
 
   rm(VerSur)
 
-  stem$ver <- (stem$ver + (1 - (stem$sur / 0.33)) + ((stem$z - min(stem.section)) / diff(stem.section))) / 3
+  stem$ver <- (stem$verticality + (1 - (stem$surface_variation / 0.33)) + ((stem$z - min(stem.section)) / diff(stem.section))) / 3
 
   stem$ver <- ifelse(is.na(stem$ver),
                      stats::runif(length(stem$ver[is.na(stem$ver)]), min = 0, max = 1),
