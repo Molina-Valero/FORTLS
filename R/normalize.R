@@ -365,7 +365,8 @@ normalize <- function(las, normalized = NULL,
 
   if(isTRUE(save.result)){
 
-    .data.red <- .data[which(.data$prob.selec == 1), , drop = FALSE]
+    # .data.red <- .data[which(.data$prob.selec == 1), , drop = FALSE]
+    .data.red <- .data
 
     vroom::vroom_write(.data.red, path = file.path(dir.result, .data.red$file[1]), delim = ",", progress = FALSE)
 

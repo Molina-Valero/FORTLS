@@ -908,7 +908,12 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   # Obtaining reduced point cloud
 
-  data <- data[data$z >= h.min, ]
+  # data <- data[data$z >= h.min, ]
+  data <-
+    suppressMessages(vroom::vroom(file.path(dir.data, data$file[1]),
+                                  col_select = c("id", "file", "x", "y", "z", "rho"),
+                                  progress = FALSE))
+  data <- data.table::setDT(data)
   s <- sample(nrow(data), round(nrow(data)*0.1))
   data <- data[s, ]
   data <- data[, c("id", "file", "x", "y", "z", "rho")]
@@ -1127,7 +1132,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                          y = as.numeric(),
                          z = as.numeric())
 
-  phi <- seq(from = 0, to = 2*pi, by = 2 * pi / 10000)
+  phi <- seq(from = 0, to = 2 * pi, by = 2 * pi / 10000)
 
 
   for (i in .tree$tree) {
