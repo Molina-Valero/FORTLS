@@ -201,8 +201,8 @@ species.classification <- function(data, tree.tls, dist = 0.1, type = 3){
 
 
 
-    tree.variables <- merge(tree.variables_25, tree.variables_50, by = "tree", all = TRUE)
-    tree.variables <- merge(tree.variables, tree.variables_75, by = "tree", all = TRUE)
+    tree.variables <- merge(tree.variables_25, tree.variables_50, by = "tree", all = FALSE)
+    tree.variables <- merge(tree.variables, tree.variables_75, by = "tree", all = FALSE)
 
     tree.variables[is.na(tree.variables)] <- 0
 

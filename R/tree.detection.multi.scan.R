@@ -8,11 +8,15 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                                       den.type = 1, d.top = NULL,
                                       segmentation = NULL,
                                       plot.attributes = NULL, plot = TRUE,
-                                      save.result = TRUE, dir.result = NULL){
+                                      dir.data = NULL, save.result = TRUE, dir.result = NULL){
 
 
 
   set.seed(123)
+
+  # Obtaining working directory for loading files
+  if(is.null(dir.data))
+    dir.data <- getwd()
 
   data <- data.table::setDT(data)
 
@@ -618,24 +622,24 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
                            filter = as.numeric(),
 
-                        center.x = as.numeric(),
-                        center.y = as.numeric(),
-                        center.phi = as.numeric(),
-                        center.rho = as.numeric(),
-                        center.r = as.numeric(),
-                        center.theta = as.numeric(),
+                           center.x = as.numeric(),
+                           center.y = as.numeric(),
+                           center.phi = as.numeric(),
+                           center.rho = as.numeric(),
+                           center.r = as.numeric(),
+                           center.theta = as.numeric(),
 
-                        sec.x = as.numeric(),
-                        sec.y = as.numeric(),
-                        sec.max = as.numeric(),
+                           sec.x = as.numeric(),
+                           sec.y = as.numeric(),
+                           sec.max = as.numeric(),
 
-                        horizontal.distance = as.numeric(),
-                        radius = as.numeric(),
+                           horizontal.distance = as.numeric(),
+                           radius = as.numeric(),
 
-                        partial.occlusion = as.numeric(),
+                           partial.occlusion = as.numeric(),
 
-                        n.pts = as.numeric(),
-                        n.pts.red = as.numeric())
+                           n.pts = as.numeric(),
+                           n.pts.red = as.numeric())
 
 
 
@@ -806,7 +810,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     if(nrow(.filteraux) < 1){
       .tree.2 <- rbind(.tree.2, .filt)
       next}
-
 
 
     .filteraux$dist <- sqrt((.filteraux$x - .filt$x) ^ 2 + (.filteraux$y - .filt$y) ^ 2) - .filteraux$radius - .filt$radius
@@ -1062,13 +1065,13 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   if(is.null(data$id) & is.null(.tree$v.com)){
 
-    .tree <- .tree[, c("tree", "x", "y", "phi", "horizontal.distance", "dbh", "h", "v", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion"), drop = FALSE]
-    colnames(.tree) <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+    .tree <- .tree[, c("tree", "x", "y", "phi", "horizontal.distance", "dbh", "h", "v", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion"), drop = FALSE]
+    colnames(.tree) <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
   } else if (is.null(data$id) & !is.null(.tree$v.com)) {
 
-    .tree <- .tree[, c("tree", "x", "y", "phi", "horizontal.distance", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion"), drop = FALSE]
-    colnames(.tree) <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+    .tree <- .tree[, c("tree", "x", "y", "phi", "horizontal.distance", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion"), drop = FALSE]
+    colnames(.tree) <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
 
   } else if (!is.null(data$id) & is.null(.tree$v.com)) {
@@ -1078,8 +1081,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     .tree$id <- data$id[1]
     .tree$file <- data$file[1]
 
-    .tree <- .tree[, c("id", "file", "tree", "x", "y", "phi", "horizontal.distance", "dbh", "h", "v", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion"), drop = FALSE]
-    colnames(.tree) <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+    .tree <- .tree[, c("id", "file", "tree", "x", "y", "phi", "horizontal.distance", "dbh", "h", "v", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion"), drop = FALSE]
+    colnames(.tree) <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
   } else {
 
@@ -1088,8 +1091,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     .tree$id <- data$id[1]
     .tree$file <- data$file[1]
 
-    .tree <- .tree[, c("id", "file", "tree", "x", "y", "phi", "horizontal.distance", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion"), drop = FALSE]
-    colnames(.tree) <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+    .tree <- .tree[, c("id", "file", "tree", "x", "y", "phi", "horizontal.distance", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion"), drop = FALSE]
+    colnames(.tree) <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
   }
 
@@ -1174,6 +1177,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
       coords <- as.data.frame(sf::st_coordinates(voro[voro$tree == i, ]))
       colnames(coords) <- c("x", "y", "z")
+
+      # suppressMessages(lidR::plot(lidR::LAS(coords[, c("x","y","z")]), add = plotTree, col = "grey"))
 
       suppressMessages(lidR::writeLAS(lidR::LAS(coords[, c("x","y","z")]),
                                       paste(dir.result, "/tree", id, i, ".laz", sep = "")))
