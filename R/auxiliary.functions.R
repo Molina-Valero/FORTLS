@@ -604,20 +604,12 @@
   # Distances between points and center
   .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)
 
-  # .datRANSAC <- .dat[, c("x", "y")]
-
-  # dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 100)
   dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 600)
 
-  # cl <- parallel::makeCluster(parallel::detectCores()-1)
-
-  # start_time <- Sys.time()
-  # kk <- try(do.call(rbind, (parallel::clusterApply(cl, dat.i, .RANSAC))), silent = TRUE)
-  # end_time <- Sys.time()
-
-  # start_time <- Sys.time()
+  start_time <- Sys.time()
   kk <- try(do.call(rbind, (lapply(dat.i, .RANSAC))), silent = TRUE)
-  # end_time <- Sys.time()
+  end_time <- Sys.time()
+  end_time - start_time
 
   # print(.dat$cluster[1])
 

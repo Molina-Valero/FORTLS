@@ -11,6 +11,17 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// fit_circle_cpp
+List fit_circle_cpp(NumericMatrix points);
+RcppExport SEXP _FORTLS_fit_circle_cpp(SEXP pointsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type points(pointsSEXP);
+    rcpp_result_gen = Rcpp::wrap(fit_circle_cpp(points));
+    return rcpp_result_gen;
+END_RCPP
+}
 // ver_point_cloud_double
 DataFrame ver_point_cloud_double(const Eigen::MatrixXd& m);
 RcppExport SEXP _FORTLS_ver_point_cloud_double(SEXP mSEXP) {
@@ -154,6 +165,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_FORTLS_fit_circle_cpp", (DL_FUNC) &_FORTLS_fit_circle_cpp, 1},
     {"_FORTLS_ver_point_cloud_double", (DL_FUNC) &_FORTLS_ver_point_cloud_double, 1},
     {"_FORTLS_ncr_point_cloud_double", (DL_FUNC) &_FORTLS_ncr_point_cloud_double, 1},
     {"_FORTLS_geometric_features", (DL_FUNC) &_FORTLS_geometric_features, 2},

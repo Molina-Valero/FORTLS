@@ -107,7 +107,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   VerSur <- geometric.features(stem, dist = 0.1)
   # stem <- .ver.remove.slice.double(stem)
-  stem <- merge(stem, VerSur[, c("point", "verticality", "surface_variation")])
+  stem <- merge(stem, VerSur[, c("point", "verticality", "surface_variation")], by = "point")
   # stem$ver <- VerSur$verticality
   # stem$sur <- VerSur$surface_variation
 
@@ -380,6 +380,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     if (interactive()) {
     # Create a cluster
+    # start_time <- Sys.time()
 
     cl <- parallel::makeCluster(parallel::detectCores() - 1)
 
@@ -390,6 +391,9 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                                      x.center = x.center, y.center = y.center))
 
     parallel::stopCluster(cl)
+
+    # end_time <- Sys.time()
+    # end_time - start_time
 
   } else {
 
@@ -903,7 +907,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   .tree$n.pts.est <- .tree$points.m * .tree$radius
   .tree$n.pts.red.est <- .tree$points.m.hom * .tree$radius
 
-  if(!is.null(plot))
+  if(!is.null(plot) & is.null(segmentation))
     plotTree <- suppressMessages(lidR::plot(lidR::LAS(data[data$prob.selec == 1, c("x","y","z")]), size = 0.5))
 
 
@@ -1128,34 +1132,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   # }
 
 
-  if(!is.null(plot)){
-
-  diameter <- data.frame(tree = as.numeric(),
-                         x = as.numeric(),
-                         y = as.numeric(),
-                         z = as.numeric())
-
-  phi <- seq(from = 0, to = 2 * pi, by = 2 * pi / 10000)
-
-
-  for (i in .tree$tree) {
-
-    tree <- rep(i, times = 10001)
-    x <- .tree$x[i] + cos(phi) * ((.tree$dbh[i] / 100) / 2)
-    y <- .tree$y[i] + sin(phi) * ((.tree$dbh[i] / 100) / 2)
-    z <- stats::runif(10001, 1.2, 1.4)
-
-    .diameter <- data.frame(tree = tree, x = x, y = y, z = z)
-
-    diameter <- rbind(diameter, .diameter)
-
-  }
-
-  suppressMessages(lidR::plot(lidR::LAS(diameter[, c("x","y","z")]), add = plotTree, size = 5))
-
-  }
-
-
   # Tree segmentation
 
   if(!is.null(segmentation)){
@@ -1170,15 +1146,20 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     voro$tree <- unlist(sf::st_intersects(voro, voronoi))
 
+    coords <- as.data.frame(sf::st_coordinates(voro))
+    coords$tree <- voro$tree
+
+
+    if(!is.null(plot))
+      plotTree <- suppressMessages(lidR::plot(lidR::LAS(coords[, c("X", "Y", "Z", "tree")]), size = 0.5, color = "tree"))
+
+
     for (i in .tree$tree) {
 
       id <- .tree[.tree$tree == i, "id"]
 
-
       coords <- as.data.frame(sf::st_coordinates(voro[voro$tree == i, ]))
       colnames(coords) <- c("x", "y", "z")
-
-      # suppressMessages(lidR::plot(lidR::LAS(coords[, c("x","y","z")]), add = plotTree, col = "grey"))
 
       suppressMessages(lidR::writeLAS(lidR::LAS(coords[, c("x","y","z")]),
                                       paste(dir.result, "/tree", id, i, ".laz", sep = "")))
@@ -1186,6 +1167,37 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     }
 
   }
+
+
+  # Diameters
+
+  if(!is.null(plot)){
+
+    diameter <- data.frame(tree = as.numeric(),
+                           x = as.numeric(),
+                           y = as.numeric(),
+                           z = as.numeric())
+
+    phi <- seq(from = 0, to = 2 * pi, by = 2 * pi / 10000)
+
+
+    for (i in .tree$tree) {
+
+      tree <- rep(i, times = 10001)
+      x <- .tree$x[i] + cos(phi) * ((.tree$dbh[i] / 100) / 2)
+      y <- .tree$y[i] + sin(phi) * ((.tree$dbh[i] / 100) / 2)
+      z <- stats::runif(10001, 1.2, 1.4)
+
+      .diameter <- data.frame(tree = tree, x = x, y = y, z = z)
+
+      diameter <- rbind(diameter, .diameter)
+
+    }
+
+    suppressMessages(lidR::plot(lidR::LAS(diameter[, c("x","y","z")]), add = plotTree, size = 5))
+
+  }
+
 
 
   #####

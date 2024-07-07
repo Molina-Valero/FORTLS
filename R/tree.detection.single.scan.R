@@ -854,13 +854,24 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     .tree$n.pts.est <- .tree$points.m * .tree$radius
     .tree$n.pts.red.est <- .tree$points.m.hom * .tree$radius
 
-    # Obtaining reduced point cloud
-    data <- data[data$prob.selec == 1, ]
-    data <- data[, c("id", "file", "x", "y", "z", "rho")]
 
-
-    if(!is.null(plot))
+    if(!is.null(plot) & is.null(segmentation))
       plotTree <- suppressMessages(lidR::plot(lidR::LAS(data[, c("x","y","z")])))
+
+
+    #### Estimating tree heights ####
+
+    # Obtaining reduced point cloud
+
+    # data <- data[data$z >= h.min, ]
+    data <-
+      suppressMessages(vroom::vroom(file.path(dir.data, data$file[1]),
+                                    col_select = c("id", "file", "x", "y", "z", "rho"),
+                                    progress = FALSE))
+    data <- data.table::setDT(data)
+    s <- sample(nrow(data), round(nrow(data)*0.1))
+    data <- data[s, ]
+    data <- data[, c("id", "file", "x", "y", "z", "rho")]
 
 
     # If only one tree is detected, Voronoi tessellation is not working
@@ -1069,6 +1080,45 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   # }
 
 
+  # Tree segmentation
+
+  if(!is.null(segmentation)){
+
+    # treeLAS <- suppressMessages(lidR::LAS(data[, c("x","y","z")]))
+
+    voro <- sf::st_as_sf(data, coords = c("x", "y", "z"))
+    voronoi <- sf::st_as_sf(.tree, coords = c("x", "y"))
+
+    voronoi <- sf::st_collection_extract(
+      sf::st_voronoi(do.call(c, sf::st_geometry(voronoi))))
+
+    voro$tree <- unlist(sf::st_intersects(voro, voronoi))
+
+    coords <- as.data.frame(sf::st_coordinates(voro))
+    coords$tree <- voro$tree
+
+
+    if(!is.null(plot))
+      plotTree <- suppressMessages(lidR::plot(lidR::LAS(coords[, c("X", "Y", "Z", "tree")]), size = 0.5, color = "tree"))
+
+
+    for (i in .tree$tree) {
+
+      id <- .tree[.tree$tree == i, "id"]
+
+      coords <- as.data.frame(sf::st_coordinates(voro[voro$tree == i, ]))
+      colnames(coords) <- c("x", "y", "z")
+
+      suppressMessages(lidR::writeLAS(lidR::LAS(coords[, c("x","y","z")]),
+                                      paste(dir.result, "/tree", id, i, ".laz", sep = "")))
+
+    }
+
+  }
+
+
+  # Diameters
+
   if(!is.null(plot)){
 
     diameter <- data.frame(tree = as.numeric(),
@@ -1097,26 +1147,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   }
 
-
-  # Tree segmentation
-
-  if(!is.null(segmentation)){
-
-    treeLAS <- suppressMessages(lidR::LAS(data[, c("x","y","z")]))
-
-    for (i in .tree$tree) {
-
-      id <- .tree[.tree$tree == i, "id"]
-      x <- .tree[.tree$tree == i, "x"]
-      y <- .tree[.tree$tree == i, "y"]
-      dist <- 3 * .tree[.tree$tree == i, "dbh"] / 200
-
-      suppressMessages(lidR::writeLAS(lidR::clip_circle(treeLAS, x, y, dist),
-                       paste(dir.result, "/tree", id, i, ".laz", sep = "")))
-
-    }
-
-  }
 
   #####
   return(.tree)
