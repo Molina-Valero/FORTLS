@@ -68,6 +68,8 @@
   .dist.2 <- sd(.dist.2[.dist.2 > 0]) / .alpha.v
   .dist <- mean(c(.dist, .dist.2))
 
+  rm(.dat.3, .dist.2)
+
   if(.dist > 1){return(.filter)}
   # print(3)
 
