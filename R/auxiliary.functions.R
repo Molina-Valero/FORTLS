@@ -56,10 +56,17 @@
 
   }
 
+  .dat.3 <- .dat[order(.dat$theta, decreasing = F), ]
+
+
   # .dist <- sqrt((.dat.2$x[2:nrow(.dat.2)]-.dat.2$x[1:nrow(.dat.2)-1])^2+(.dat.2$y[2:nrow(.dat.2)]-.dat.2$y[1:nrow(.dat.2)-1])^2)
   # .dist <- sd(.dist) / .h
   .dist <- diff(.dat.2$phi)
-  .dist <- sd(.dist) / .alpha.h
+  .dist.2 <- diff(.dat.3$theta)
+
+  .dist <- sd(.dist[.dist > 0]) / .alpha.h
+  .dist.2 <- sd(.dist.2[.dist.2 > 0]) / .alpha.v
+  .dist <- mean(c(.dist, .dist.2))
 
   if(.dist > 1){return(.filter)}
   # print(3)
