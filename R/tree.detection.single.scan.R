@@ -131,20 +131,21 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   message("Retention of points with high verticality values")
 
 
-  VerSur <- geometric.features(stem, dist = 0.1)
-  stem <- merge(stem, VerSur[, c("point", "verticality", "surface_variation")], by = "point")
-  rm(VerSur)
 
-  stem$ver <- (stem$verticality + (1 - (stem$surface_variation / 0.33)) + ((stem$z - min(stem.section)) / diff(stem.section))) / 3
-  stem$ver <- ifelse(is.na(stem$ver),
-                     stats::runif(length(stem$ver[is.na(stem$ver)]), min = 0, max = 1),
-                     stem$ver)
-
-  stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
-  stem <- stem[stem$ver > stem$prob.ver, ]
-
-  woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
-  woody <- rbind(woody, stem[, 1:ncol(woody)])
+  # VerSur <- geometric.features(stem, dist = 0.1)
+  # stem <- merge(stem, VerSur[, c("point", "verticality", "surface_variation")], by = "point")
+  # rm(VerSur)
+  #
+  # stem$ver <- (stem$verticality + (1 - (stem$surface_variation / 0.33)) + ((stem$z - min(stem.section)) / diff(stem.section))) / 3
+  # stem$ver <- ifelse(is.na(stem$ver),
+  #                    stats::runif(length(stem$ver[is.na(stem$ver)]), min = 0, max = 1),
+  #                    stem$ver)
+  #
+  # stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
+  # stem <- stem[stem$ver > stem$prob.ver, ]
+  #
+  # woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
+  # woody <- rbind(woody, stem[, 1:ncol(woody)])
 
 
   message("Detection of tree stem axes")
@@ -187,10 +188,8 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   buf <- sf::st_as_sf(data.frame(stem), coords = c("x","y"))
   buf <- sf::st_buffer(buf, max(.dbh.min, 0.5))
   buf <- sf::st_cast(sf::st_union(buf), "POLYGON")
-  # plot(buf)
 
   rm(stem)
-
 
   if(!is.null(understory) & is.null(single.tree)){
 
@@ -242,8 +241,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   woody <- merge(woody, woody.2, by = "code", all = FALSE)
   # woody <- subset(woody, select = -code)
   woody <- woody[, !(names(woody) %in% c("code"))]
-
-  # woody <- woody[, 2:ncol(woody)]
 
   woody <- woody[!is.na(woody$tree), ]
 
@@ -352,6 +349,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     if(nrow(.cut) < 15){next}
 
     .cut$sec <- cuts
+
 
     if (interactive()) {
     # Create a cluster
@@ -866,6 +864,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
       suppressMessages(vroom::vroom(file.path(dir.data, data$file[1]),
                                     col_select = c("id", "file", "x", "y", "z", "rho"),
                                     progress = FALSE))
+
     data <- data.table::setDT(data)
     s <- sample(nrow(data), round(nrow(data)*0.1))
     data <- data[s, ]

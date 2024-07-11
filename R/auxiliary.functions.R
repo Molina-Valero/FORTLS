@@ -29,13 +29,14 @@
   .dat <- cut
 
   if(nrow(.dat) < 10){return(.filter)}
-
+  # print(1)
 
   # First filter
 
   .n <- (slice / (tan(.alpha.v / 2) * (mean(.dat$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2))
 
   if(nrow(.dat) < .n){return(.filter)}
+  # print(2)
 
   # Second filter
 
@@ -55,10 +56,13 @@
 
   }
 
-  .dist <- sqrt((.dat.2$x[2:nrow(.dat.2)]-.dat.2$x[1:nrow(.dat.2)-1])^2+(.dat.2$y[2:nrow(.dat.2)]-.dat.2$y[1:nrow(.dat.2)-1])^2)
-  .dist <- sd(.dist) / .h
+  # .dist <- sqrt((.dat.2$x[2:nrow(.dat.2)]-.dat.2$x[1:nrow(.dat.2)-1])^2+(.dat.2$y[2:nrow(.dat.2)]-.dat.2$y[1:nrow(.dat.2)-1])^2)
+  # .dist <- sd(.dist) / .h
+  .dist <- diff(.dat.2$phi)
+  .dist <- sd(.dist) / .alpha.h
 
   if(.dist > 1){return(.filter)}
+  # print(3)
 
   # Generate mesh
 
@@ -147,6 +151,7 @@
 
 
   if(nrow(.dat) < 5){return(.filter)}
+  # print(4)
 
   if(is.nan(mean(.dat$slope, na.rm = TRUE))){
 
@@ -161,6 +166,7 @@
   # Ratio points
 
   if(mean(.cut$slope, na.rm = TRUE) > 0.5){.n <- 0.7 * .n}
+  # print(5)
 
 
   # Obtain phi and rho coordinates corresponding to mesh intersections
@@ -195,8 +201,10 @@
   .density <- ifelse(is.nan(.density), NA, .density)
 
   if(is.nan(mean(.density, na.rm = TRUE))){return(.filter)}
+  # print(6)
 
   if(max(.density[which(!is.na(.density))], na.rm = T) < floor(.n)){return(.filter)}
+  # print(7)
 
   # Remove cells containing only 1 point
   .dat <- merge(.dat, .remove, by = "point", all.y = TRUE)
@@ -350,12 +358,15 @@
   .center.theta <- atan2(.dat$sec[1], .center.rho)
 
   if(.cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2) {return(.filter)}
+  # print(8)
 
   # Center behind tree surface
   if(stats::quantile(.dat$rho, prob = 0.05, na.rm = T) > .center.r) {return(.filter)}
+  # print(9)
 
   # At least 95 % of distances should be greater than .radio / 2
   if(stats::quantile(.dat$dist, prob = 0.05, na.rm = T) < (.radio / 2)) {return(.filter)}
+  # print(10)
 
 
   # Select 1st percentil, if necessary for strange points
@@ -375,6 +386,7 @@
   .rho.cent <- mean(.dat.2$rho[which(round(.dat.2$phi, 3) >= round(.phi.cent - .alpha.h, 3) & round(.dat.2$phi, 3) <= round(.phi.cent + .alpha.h, 3))])
 
   if(is.nan(.rho.cent)){return(.filter)}
+  # print(11)
 
   # Check rho coordinates for ends are greater than center ones
   .arc.circ <- ifelse(.rho.left > .rho.cent & .rho.right > .rho.cent, 1, 0)
@@ -404,8 +416,10 @@
   .n.w.ratio <- stats::sd(.dat$z) / sqrt(stats::sd(.dat$x) ^ 2 + stats::sd(.dat$y) ^ 2)
 
   if(.n.w.ratio > 1 | is.nan(.n.w.ratio)){return(.filter)}
+  # print(12)
 
   if(nrow(.dat) < 5){return(.filter)}
+  # print(13)
 
 
   # Results
