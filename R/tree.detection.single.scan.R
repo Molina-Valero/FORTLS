@@ -132,20 +132,20 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
 
 
-  # VerSur <- geometric.features(stem, dist = 0.1)
-  # stem <- merge(stem, VerSur[, c("point", "verticality", "surface_variation")], by = "point")
-  # rm(VerSur)
-  #
-  # stem$ver <- (stem$verticality + (1 - (stem$surface_variation / 0.33)) + ((stem$z - min(stem.section)) / diff(stem.section))) / 3
-  # stem$ver <- ifelse(is.na(stem$ver),
-  #                    stats::runif(length(stem$ver[is.na(stem$ver)]), min = 0, max = 1),
-  #                    stem$ver)
-  #
-  # stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
-  # stem <- stem[stem$ver > stem$prob.ver, ]
-  #
-  # woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
-  # woody <- rbind(woody, stem[, 1:ncol(woody)])
+  VerSur <- geometric.features(stem, dist = 0.1)
+  stem <- merge(stem, VerSur[, c("point", "verticality", "surface_variation")], by = "point")
+  rm(VerSur)
+
+  stem$ver <- (stem$verticality + (1 - (stem$surface_variation / 0.33)) + ((stem$z - min(stem.section)) / diff(stem.section))) / 3
+  stem$ver <- ifelse(is.na(stem$ver),
+                     stats::runif(length(stem$ver[is.na(stem$ver)]), min = 0, max = 1),
+                     stem$ver)
+
+  stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
+  stem <- stem[stem$ver > stem$prob.ver, ]
+
+  woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
+  woody <- rbind(woody, stem[, 1:ncol(woody)])
 
 
   message("Detection of tree stem axes")
