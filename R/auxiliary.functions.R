@@ -29,6 +29,7 @@
   .dat <- cut
 
   if(nrow(.dat) < 10){return(.filter)}
+  # print(.dat$cluster[1])
   # print(1)
 
   # First filter
@@ -64,9 +65,9 @@
   .dist <- diff(.dat.2$phi)
   .dist.2 <- diff(.dat.3$theta)
 
-  .dist <- sd(.dist[.dist > 0]) / .alpha.h
-  .dist.2 <- sd(.dist.2[.dist.2 > 0]) / .alpha.v
-  .dist <- mean(c(.dist, .dist.2))
+  .dist <- sd(.dist) / .alpha.h
+  .dist.2 <- sd(.dist.2) / .alpha.v
+  .dist <- mean(c(.dist, .dist.2), na.rm = TRUE)
 
   rm(.dat.3, .dist.2)
 
@@ -294,6 +295,7 @@
 
     if(.radio <= 0 | is.na(.radio)){return(.filter)}
 
+
   } else {
 
     kk <- kk[kk$n >= max(kk$n), ]
@@ -366,7 +368,7 @@
   .center.r <- sqrt(.dat$sec[1] ^ 2 + .center.rho ^ 2)
   .center.theta <- atan2(.dat$sec[1], .center.rho)
 
-  if(.cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2) {return(.filter)}
+  if(is.na(.cv) | .cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2) {return(.filter)}
   # print(8)
 
   # Center behind tree surface
@@ -743,7 +745,7 @@
   .center.theta <- atan2(.dat$sec[1], .center.rho)
 
 
-  if(.cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2){return(.filter)}
+  if(is.na(.cv) | .cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2){return(.filter)}
 
   # At least 95 % of distances should be greater than .radio / 2
   if(stats::quantile(.dat$dist, prob = 0.05, na.rm = T) < (.radio / 2)){return(.filter)}
