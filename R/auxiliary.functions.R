@@ -33,7 +33,8 @@
   .n <- (slice / (tan(.alpha.v / 2) * (mean(.dat$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2))
 
   if(nrow(.dat) < .n){return(.filter)}
-  # print(2)
+  # print(.dat$cluster[1])
+  # print(1)
 
   # Second filter
 
@@ -60,10 +61,11 @@
   .dist.2 <- sd(.dist.2) / .alpha.v
   .dist <- mean(c(.dist, .dist.2), na.rm = TRUE)
 
-  rm(.dat.3, .dist.2)
 
   if(.dist > 1){return(.filter)}
-  # print(3)
+  # print(2)
+
+  rm(.dat.3, .dist, .dist.2)
 
   # Generate mesh
 
@@ -114,7 +116,6 @@
 
 
   # Estimate mean density by cell
-  # .threeshold <- mean(.density, na.rm = T)
   .threeshold <- stats::quantile(.density, prob = 0.1, na.rm = T)
 
   if(is.nan(.threeshold) | is.na(.threeshold)){return(.filter)}
@@ -152,17 +153,8 @@
 
 
   if(nrow(.dat) < .n){return(.filter)}
-  # print(4)
+  # print(3)
 
-  if(is.nan(mean(.dat$slope, na.rm = TRUE))){
-
-    .n <- (slice / (tan(.alpha.v / 2) * (mean(.dat$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2))
-
-  } else {
-
-    .n <- (slice / (tan(.alpha.v / 2) * (mean(.dat$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2))
-
-  }
 
   # Ratio points
 
@@ -202,10 +194,10 @@
   .density <- ifelse(is.nan(.density), NA, .density)
 
   if(is.nan(mean(.density, na.rm = TRUE))){return(.filter)}
-  # print(6)
+  # print(5)
 
   if(max(.density[which(!is.na(.density))], na.rm = T) < floor(.n)){return(.filter)}
-  # print(7)
+  # print(6)
 
   # Remove cells containing only 1 point
   .dat <- merge(.dat, .remove, by = "point", all.y = TRUE)
@@ -349,15 +341,15 @@
   .center.theta <- atan2(.dat$sec[1], .center.rho)
 
   if(is.na(.cv) | .cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2) {return(.filter)}
-  # print(8)
+  # print(7)
 
   # Center behind tree surface
   if(stats::quantile(.dat$rho, prob = 0.05, na.rm = T) > .center.r) {return(.filter)}
-  # print(9)
+  # print(8)
 
   # At least 95 % of distances should be greater than .radio / 2
   if(stats::quantile(.dat$dist, prob = 0.05, na.rm = T) < (.radio / 2)) {return(.filter)}
-  # print(10)
+  # print(9)
 
 
   # Select 1st percentil, if necessary for strange points
@@ -377,7 +369,7 @@
   .rho.cent <- mean(.dat.2$rho[which(round(.dat.2$phi, 3) >= round(.phi.cent - .alpha.h, 3) & round(.dat.2$phi, 3) <= round(.phi.cent + .alpha.h, 3))])
 
   if(is.nan(.rho.cent)){return(.filter)}
-  # print(11)
+  # print(10)
 
   # Check rho coordinates for ends are greater than center ones
   .arc.circ <- ifelse(.rho.left > .rho.cent & .rho.right > .rho.cent, 1, 0)
@@ -407,10 +399,10 @@
   .n.w.ratio <- stats::sd(.dat$z) / sqrt(stats::sd(.dat$x) ^ 2 + stats::sd(.dat$y) ^ 2)
 
   if(.n.w.ratio > 1 | is.nan(.n.w.ratio)){return(.filter)}
-  # print(12)
+  # print(11)
 
   if(nrow(.dat) < .n){return(.filter)}
-  # print(13)
+  # print(12)
 
 
   # Results
@@ -490,7 +482,7 @@
 
   .dat <- cut
 
-  if(nrow(.dat) < .n){return(.filter)}
+  if(nrow(.dat) < 10){return(.filter)}
 
   # Generate mesh
 
@@ -528,8 +520,7 @@
                            .dat$y <= ((.y.values[j]) + .h) &
                            .dat$y > ((.y.values[j]) - .h)), , drop = FALSE]
 
-      # Discard cells with less than 2 points for computing mean points
-      # density by cell
+      # Discard cells with less than 2 points for computing mean points density by cell
       .density[j, i] <- ifelse(nrow(.den) < 1, NA, nrow(.den))
 
     }
@@ -573,7 +564,7 @@
   .dat <- merge(.dat, .remove, by = "point", all.y = TRUE)
   .dat <- .dat[!duplicated(.dat$point), ]
 
-  if(nrow(.dat) < .n){return(.filter)}
+  if(nrow(.dat) < 10){return(.filter)}
 
 
   # Estimate points number for both the original cloud (.n.pts) and the
@@ -610,16 +601,11 @@
   .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)
 
   dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 600)
-
-  start_time <- Sys.time()
   kk <- try(do.call(rbind, (lapply(dat.i, .RANSAC))), silent = TRUE)
-  end_time <- Sys.time()
-  end_time - start_time
 
   rm(dat.i)
 
   if(class(kk)[1] == "try-error"){
-  # if(max(kk$n) < 3){
 
     if(is.null(bark.roughness)){
 
@@ -764,7 +750,7 @@
   .densidad_radio <- .n.pts.red / .radio
 
 
-  if(nrow(.dat) < .n){return(.filter)}
+  if(nrow(.dat) < 10){return(.filter)}
 
 
   # Results
