@@ -12,7 +12,7 @@
                         # Radius
                         radius = as.numeric(),
 
-                        # Number of points belonging to cluster (craw and after point cropping)
+                        # Number of points belonging to cluster (raw and after point cropping)
                         n.pts = as.numeric(), n.pts.red = as.numeric(),
 
                         # Phi coordinates of left and right
@@ -28,10 +28,6 @@
   # Select cluster i
   .dat <- cut
 
-  if(nrow(.dat) < 10){return(.filter)}
-  # print(.dat$cluster[1])
-  # print(1)
-
   # First filter
 
   .n <- (slice / (tan(.alpha.v / 2) * (mean(.dat$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2))
@@ -40,8 +36,6 @@
   # print(2)
 
   # Second filter
-
-  .h <- 3 * (tan(.alpha.h / 2) * (mean(.dat$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2)
 
   # Compute rho coordinates for section ends
 
@@ -59,9 +53,6 @@
 
   .dat.3 <- .dat[order(.dat$theta, decreasing = F), ]
 
-
-  # .dist <- sqrt((.dat.2$x[2:nrow(.dat.2)]-.dat.2$x[1:nrow(.dat.2)-1])^2+(.dat.2$y[2:nrow(.dat.2)]-.dat.2$y[1:nrow(.dat.2)-1])^2)
-  # .dist <- sd(.dist) / .h
   .dist <- diff(.dat.2$phi)
   .dist.2 <- diff(.dat.3$theta)
 
@@ -160,7 +151,7 @@
   .dat <- .dat[!duplicated(.dat$point), ]
 
 
-  if(nrow(.dat) < 5){return(.filter)}
+  if(nrow(.dat) < .n){return(.filter)}
   # print(4)
 
   if(is.nan(mean(.dat$slope, na.rm = TRUE))){
@@ -193,7 +184,7 @@
                          .dat$phi >  ((.x2.values[i]) - (.alpha.h/2))), ]
 
     # Aquellas celdas con menos de 2 puntos no las tengo en cuenta
-    # para luego m?s tarde calcular la densidad media por celda
+    # para luego mas tarde calcular la densidad media por celda
     .density[i] <- ifelse(nrow(.den) < 1, NA, nrow(.den))
 
 
@@ -220,7 +211,7 @@
   .dat <- merge(.dat, .remove, by = "point", all.y = TRUE)
 
   # If no points remain in .dat after removing, go to next iteration
-  if(nrow(.dat) < 5){return(.filter)}
+  if(nrow(.dat) < .n){return(.filter)}
 
   # Estimate points number for both the original cloud (.n.pts) and the
   # point cloud reduced by the point cropping process (.n.pts.red)
@@ -256,20 +247,14 @@
   .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)
 
 
-  # dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 100)
   dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 600)
   kk <- try(do.call(rbind, (lapply(dat.i, .RANSAC))), silent = TRUE)
-  # print(.dat$cluster[1])
 
   rm(dat.i)
 
-  # colnames(.datRANSAC) <- c("X", "Y")
 
-  # .centerRANSAC <- suppressWarnings(try(rTLS::circleRANSAC(data.table::setDT(.datRANSAC),
-  #                                                          fpoints = 0.2, pconf = 0.95, poutlier = c(0.75, 0.75), max_iterations = 100, plot = FALSE), silent = TRUE))
 
   if(class(kk)[1] == "try-error"){
-    # if(max(kk$n) < 3){
 
     if(is.null(bark.roughness)){
 
@@ -293,12 +278,13 @@
 
     }
 
-    if(.radio <= 0 | is.na(.radio)){return(.filter)}
+    if(is.na(.cv) | .radio <= 0 | is.na(.radio)){return(.filter)}
 
 
   } else {
 
     kk <- kk[kk$n >= max(kk$n), ]
+
     if(nrow(kk) > 1)
       kk <- kk[kk$mae <= min(kk$mae), ]
 
@@ -311,27 +297,21 @@
     if(is.null(bark.roughness)){
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
-      # .radioRANSAC <- .centerRANSAC$radius
       .radioRANSAC <- kk$radio
-      # .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.05, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
       .cvRANSAC <- kk$cv
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
 
     } else if(bark.roughness == 1){
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
-      # .radioRANSAC <- .centerRANSAC$radius
       .radioRANSAC <- kk$radio
-      # .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
       .cvRANSAC <- kk$cv
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
 
     } else if(bark.roughness == 2){
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
-      # .radioRANSAC <- .centerRANSAC$radius
       .radioRANSAC <- kk$radio
-      # .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
       .cvRANSAC <- kk$cv
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
 
@@ -429,7 +409,7 @@
   if(.n.w.ratio > 1 | is.nan(.n.w.ratio)){return(.filter)}
   # print(12)
 
-  if(nrow(.dat) < 5){return(.filter)}
+  if(nrow(.dat) < .n){return(.filter)}
   # print(13)
 
 
@@ -510,7 +490,7 @@
 
   .dat <- cut
 
-  if(nrow(.dat) < 10){return(.filter)}
+  if(nrow(.dat) < .n){return(.filter)}
 
   # Generate mesh
 
@@ -593,7 +573,7 @@
   .dat <- merge(.dat, .remove, by = "point", all.y = TRUE)
   .dat <- .dat[!duplicated(.dat$point), ]
 
-  if(nrow(.dat) < 10){return(.filter)}
+  if(nrow(.dat) < .n){return(.filter)}
 
 
   # Estimate points number for both the original cloud (.n.pts) and the
@@ -636,14 +616,7 @@
   end_time <- Sys.time()
   end_time - start_time
 
-  # print(.dat$cluster[1])
-
   rm(dat.i)
-
-  # colnames(.datRANSAC) <- c("X", "Y")
-
-  # .centerRANSAC <- suppressWarnings(try(rTLS::circleRANSAC(data.table::setDT(.datRANSAC),
-  #                                                          fpoints = 0.2, pconf = 0.95, poutlier = c(0.75, 0.75), max_iterations = 100, plot = FALSE), silent = TRUE))
 
   if(class(kk)[1] == "try-error"){
   # if(max(kk$n) < 3){
@@ -670,44 +643,38 @@
 
     }
 
-    if(.radio <= 0 | is.na(.radio)){return(.filter)}
+    if(is.na(.cv) | .radio <= 0 | is.na(.radio)){return(.filter)}
 
   } else {
 
     kk <- kk[kk$n >= max(kk$n), ]
+
     if(nrow(kk) > 1)
       kk <- kk[kk$mae <= min(kk$mae), ]
 
     kk <- kk[1, ]
 
-    # .dat$distRANSAC <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.centerRANSAC$X, .centerRANSAC$Y), lonlat = FALSE)
     .dat$distRANSAC <- raster::pointDistance(cbind(.dat$x,.dat$y), c(kk$x, kk$y), lonlat = FALSE)
 
     # Radius value as the mean distance
     if(is.null(bark.roughness)){
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
-      # .radioRANSAC <- .centerRANSAC$radius
       .radioRANSAC <- kk$radio
-      # .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.05, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
       .cvRANSAC <- kk$cv
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
 
     } else if(bark.roughness == 1){
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
-      # .radioRANSAC <- .centerRANSAC$radius
       .radioRANSAC <- kk$radio
-      # .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
       .cvRANSAC <- kk$cv
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
 
     } else if(bark.roughness == 2){
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
-      # .radioRANSAC <- .centerRANSAC$radius
       .radioRANSAC <- kk$radio
-      # .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
       .cvRANSAC <- kk$cv
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
 
@@ -797,7 +764,7 @@
   .densidad_radio <- .n.pts.red / .radio
 
 
-  if(nrow(.dat) < 10){return(.filter)}
+  if(nrow(.dat) < .n){return(.filter)}
 
 
   # Results
@@ -822,10 +789,6 @@
 .Q1 <- stats::quantile(.filter$density.radio, prob = 0.25, na.rm = T)
 .Q3 <- stats::quantile(.filter$density.radio, prob = 0.75, na.rm = T)
 .outliers <- .Q1 - 1.5 * (.Q3 - .Q1)
-
-# Minimum number of points
-# .filter$tree <- ifelse(.filter$n.pts.red > .outliers, 1, 0)
-# .filter <- .filter[which(.filter$tree == 1), , drop = FALSE]
 
 .filter$tree <- ifelse(.filter$circ == 1 & .filter$density.radio >= .outliers, 1,
                        ifelse(.filter$arc.circ == 1 & .filter$occlusion >= 0.95 & .filter$density.radio >= .outliers, 1,

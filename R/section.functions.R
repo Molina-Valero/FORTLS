@@ -456,100 +456,100 @@
 
 
 
-# .RANSAC <- function(data){
-#
-#   dat <- data
-#
-#   dist <- 0.05
-#
-#   inliers <- dat[sample(nrow(dat), 3), ]
-#
-#   # fit <- .fit_circle(inliers)
-#   fit <- fit_circle_cpp(inliers)
-#
-#   radio <- sqrt((dat[, "x"] - fit$center[1]) ^ 2 + (dat[, "y"] - fit$center[2]) ^ 2)
-#   dat <- cbind(dat, radio)
-#   inliers <- abs(fit$radius-dat[, "radio"])
-#   dat <- cbind(dat, inliers)
-#   dat <- dat[dat[, "inliers"] < dist, ]
-#
-#   if(length(dat) == 0 | nrow(dat) < 2){
-#
-#     out <- data.frame(x = as.numeric(), y = as.numeric(),
-#                       radio = as.numeric(), n = as.numeric(), mae = as.numeric(), cv = as.numeric())
-#
-#     return(out)}
-#
-#
-#   dat <- dat[, c("x", "y")]
-#
-#   inliers <- dat[sample(nrow(dat), 3), ]
-#
-#   # fit <- .fit_circle(inliers)
-#   fit <- fit_circle_cpp(inliers)
-#
-#   radio <- sqrt((dat[, "x"] - fit$center[1]) ^ 2 + (dat[, "y"] - fit$center[2]) ^ 2)
-#   dat <- cbind(dat, radio)
-#   inliers <- abs(fit$radius-dat[, "radio"])
-#   dat <- cbind(dat, inliers)
-#   dat <- dat[dat[, "inliers"] < dist, ]
-#
-#   if(length(dat) == 0 | nrow(dat) < 2){
-#
-#     out <- data.frame(x = as.numeric(), y = as.numeric(),
-#                       radio = as.numeric(), n = as.numeric(), mae = as.numeric(), cv = as.numeric())
-#
-#     return(out)}
-#
-#   mae <- abs(sum(coef(fit)[1]-dat[, 3])) / nrow(dat)
-#   cv <- stats::sd(raster::pointDistance(dat[, c("x", "y")], c(fit$center[1], fit$center[2]), lonlat = FALSE)) / fit$radius
-#
-#   out <- data.frame(x = fit$center[1], y = fit$center[2], radio = fit$radius, n = nrow(dat), mae = mae, cv = cv)
-#
-#   return(out)
-#
-# }
+.RANSAC <- function(data){
 
-
-
-.RANSAC <- function(data) {
   dat <- data
+
   dist <- 0.05
 
-  # RANSAC loop (process twice for robustness)
-  for (iter in 1:2) {
-    # Sample 3 points for circle fitting
-    inliers <- dat[sample(nrow(dat), 3), ]
+  inliers <- dat[sample(nrow(dat), 3), ]
 
-    # Fit circle using C++ function
-    fit <- fit_circle_cpp(inliers)
+  # fit <- .fit_circle(inliers)
+  fit <- fit_circle_cpp(inliers)
 
-    # Calculate distance from each point to circle
-    radio <- sqrt((dat[, "x"] - fit$center[1])^2 + (dat[, "y"] - fit$center[2])^2)
+  radio <- sqrt((dat[, "x"] - fit$center[1]) ^ 2 + (dat[, "y"] - fit$center[2]) ^ 2)
+  dat <- cbind(dat, radio)
+  inliers <- abs(fit$radius-dat[, "radio"])
+  dat <- cbind(dat, inliers)
+  dat <- dat[dat[, "inliers"] < dist, ]
 
-    # Calculate residuals
-    dat <- cbind(dat, radio)
-    dat$inliers <- abs(fit$radius - dat$radio)
+  if(length(dat) == 0 | nrow(dat) < 2){
 
-    # Keep points within threshold distance
-    dat <- dat[dat$inliers < dist, ]
+    out <- data.frame(x = as.numeric(), y = as.numeric(),
+                      radio = as.numeric(), n = as.numeric(), mae = as.numeric(), cv = as.numeric())
 
-    # Check if remaining points are sufficient
-    if (nrow(dat) < 2) {
-      return(data.frame(x = numeric(), y = numeric(), radio = numeric(), n = numeric(), mae = numeric(), cv = numeric()))
-    }
+    return(out)}
 
-    # Prepare data for next iteration
-    dat <- dat[, c("x", "y")]
-  }
 
-  # Final fit after iterations
-  mae <- abs(sum(coef(fit)[1] - dat$radio)) / nrow(dat)
-  cv <- stats::sd(raster::pointDistance(dat[, c("x", "y")], fit$center, lonlat = FALSE)) / fit$radius
+  dat <- dat[, c("x", "y")]
+
+  inliers <- dat[sample(nrow(dat), 3), ]
+
+  # fit <- .fit_circle(inliers)
+  fit <- fit_circle_cpp(inliers)
+
+  radio <- sqrt((dat[, "x"] - fit$center[1]) ^ 2 + (dat[, "y"] - fit$center[2]) ^ 2)
+  dat <- cbind(dat, radio)
+  inliers <- abs(fit$radius-dat[, "radio"])
+  dat <- cbind(dat, inliers)
+  dat <- dat[dat[, "inliers"] < dist, ]
+
+  if(length(dat) == 0 | nrow(dat) < 2){
+
+    out <- data.frame(x = as.numeric(), y = as.numeric(),
+                      radio = as.numeric(), n = as.numeric(), mae = as.numeric(), cv = as.numeric())
+
+    return(out)}
+
+  mae <- abs(sum(coef(fit)[1]-dat[, 3])) / nrow(dat)
+  cv <- stats::sd(raster::pointDistance(dat[, c("x", "y")], c(fit$center[1], fit$center[2]), lonlat = FALSE)) / fit$radius
 
   out <- data.frame(x = fit$center[1], y = fit$center[2], radio = fit$radius, n = nrow(dat), mae = mae, cv = cv)
 
   return(out)
+
 }
 
 
+
+# .RANSAC <- function(data) {
+#   dat <- data
+#   dist <- 0.05
+#
+#   # RANSAC loop (process twice for robustness)
+#   for (iter in 1:2) {
+#     # Sample 3 points for circle fitting
+#     inliers <- dat[sample(nrow(dat), 3), ]
+#
+#     # Fit circle using C++ function
+#     fit <- fit_circle_cpp(inliers)
+#
+#     # Calculate distance from each point to circle
+#     radio <- sqrt((dat[, "x"] - fit$center[1])^2 + (dat[, "y"] - fit$center[2])^2)
+#
+#     # Calculate residuals
+#     dat <- cbind(dat, radio)
+#     dat$inliers <- abs(fit$radius - dat$radio)
+#
+#     # Keep points within threshold distance
+#     dat <- dat[dat$inliers < dist, ]
+#
+#     # Check if remaining points are sufficient
+#     if (nrow(dat) < 2) {
+#       return(data.frame(x = numeric(), y = numeric(), radio = numeric(), n = numeric(), mae = numeric(), cv = numeric()))
+#     }
+#
+#     # Prepare data for next iteration
+#     dat <- dat[, c("x", "y")]
+#   }
+#
+#   # Final fit after iterations
+#   mae <- abs(sum(coef(fit)[1] - dat$radio)) / nrow(dat)
+#   cv <- stats::sd(raster::pointDistance(dat[, c("x", "y")], fit$center, lonlat = FALSE)) / fit$radius
+#
+#   out <- data.frame(x = fit$center[1], y = fit$center[2], radio = fit$radius, n = nrow(dat), mae = mae, cv = cv)
+#
+#   return(out)
+# }
+#
+#
