@@ -33,7 +33,7 @@
   .n <- (slice / (tan(.alpha.v / 2) * (mean(.dat$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2))
 
   if(nrow(.dat) < .n){return(.filter)}
-  # print(.dat$cluster[1])
+  print(.dat$cluster[1])
   # print(1)
 
   # Second filter
@@ -101,10 +101,10 @@
   for(i in 1:length(.x.values)){
     for(j in 1:length(.y.values)){
 
-      .den <- .dat[which(.dat$x <= ((.x.values[i]) + .h) &
-                         .dat$x > ((.x.values[i]) - .h) &
-                         .dat$y <= ((.y.values[j]) + .h) &
-                         .dat$y > ((.y.values[j]) - .h)), , drop = FALSE]
+      .den <- .dat[.dat$x <= .x.values[i] + .h &
+                   .dat$x >  .x.values[i] - .h &
+                   .dat$y <= .y.values[j] + .h &
+                   .dat$y >  .y.values[j] - .h, , drop = FALSE]
 
       # Discard cells with less than 2 points for computing mean points density by cell
 
@@ -127,10 +127,10 @@
   for(i in 1:length(.x.values)){
     for(j in 1:length(.y.values)){
 
-      .den <- .dat[which(.dat$x <= ((.x.values[i]) + .h) &
-                           .dat$x > ((.x.values[i]) - .h) &
-                           .dat$y <= ((.y.values[j]) + .h) &
-                           .dat$y > ((.y.values[j]) - .h)), , drop = FALSE]
+      .den <- .dat[.dat$x <= .x.values[i] + .h &
+                   .dat$x >  .x.values[i] - .h &
+                   .dat$y <= .y.values[j] + .h &
+                   .dat$y >  .y.values[j] - .h, , drop = FALSE]
 
       # Discard cells with less than 2 points for computing mean density by cell
 
@@ -172,8 +172,8 @@
 
   for(i in 1:length(.x2.values)){
 
-    .den <- .dat[which(.dat$phi <= ((.x2.values[i]) + (.alpha.h/2)) &
-                         .dat$phi >  ((.x2.values[i]) - (.alpha.h/2))), ]
+    .den <- .dat[.dat$phi <= .x2.values[i] + (.alpha.h/2) &
+                 .dat$phi >  .x2.values[i] - (.alpha.h/2), ]
 
     # Aquellas celdas con menos de 2 puntos no las tengo en cuenta
     # para luego mas tarde calcular la densidad media por celda
@@ -196,7 +196,7 @@
   if(is.nan(mean(.density, na.rm = TRUE))){return(.filter)}
   # print(5)
 
-  if(max(.density[which(!is.na(.density))], na.rm = T) < floor(.n)){return(.filter)}
+  if(max(.density[!is.na(.density)], na.rm = T) < floor(.n)){return(.filter)}
   # print(6)
 
   # Remove cells containing only 1 point
@@ -208,7 +208,7 @@
   # Estimate points number for both the original cloud (.n.pts) and the
   # point cloud reduced by the point cropping process (.n.pts.red)
   .n.pts <- nrow(.dat)
-  .n.pts.red <- nrow(.dat[which(.dat$prob.selec == 1), , drop = FALSE])
+  .n.pts.red <- nrow(.dat[.dat$prob.selec == 1, , drop = FALSE])
 
   # After this previous filtering, compute cluster centroid
 
@@ -515,10 +515,10 @@
   for(i in 1:length(.x.values)){
     for(j in 1:length(.y.values)){
 
-      .den <- .dat[which(.dat$x <= ((.x.values[i]) + .h) &
-                           .dat$x > ((.x.values[i]) - .h) &
-                           .dat$y <= ((.y.values[j]) + .h) &
-                           .dat$y > ((.y.values[j]) - .h)), , drop = FALSE]
+      .den <- .dat[.dat$x <= .x.values[i] + .h &
+                   .dat$x >  .x.values[i] - .h &
+                   .dat$y <= .y.values[j] + .h &
+                   .dat$y >  .y.values[j] - .h, , drop = FALSE]
 
       # Discard cells with less than 2 points for computing mean points density by cell
       .density[j, i] <- ifelse(nrow(.den) < 1, NA, nrow(.den))
@@ -541,10 +541,10 @@
   for(i in 1:length(.x.values)){
     for(j in 1:length(.y.values)){
 
-      .den <- .dat[which(.dat$x <= ((.x.values[i]) + .h) &
-                         .dat$x > ((.x.values[i]) - .h) &
-                         .dat$y <= ((.y.values[j]) + .h) &
-                         .dat$y > ((.y.values[j]) - .h)), , drop = FALSE]
+      .den <- .dat[.dat$x <= .x.values[i] + .h &
+                   .dat$x >  .x.values[i] - .h &
+                   .dat$y <= .y.values[j] + .h &
+                   .dat$y >  .y.values[j] - .h, , drop = FALSE]
 
       # Discard cells with less than 2 points for computing mean density by
       # cell
@@ -570,7 +570,7 @@
   # Estimate points number for both the original cloud (.n.pts) and the
   # point cloud reduced by the point cropping process (.n.pts.red)
   .n.pts <- nrow(.dat)
-  .n.pts.red <- nrow(.dat[which(.dat$prob.selec == 1), , drop = FALSE])
+  .n.pts.red <- nrow(.dat[.dat$prob.selec == 1, , drop = FALSE])
 
   # After this previous filtering, compute cluster centroid
 
@@ -779,7 +779,7 @@
 .filter$tree <- ifelse(.filter$circ == 1 & .filter$density.radio >= .outliers, 1,
                        ifelse(.filter$arc.circ == 1 & .filter$occlusion >= 0.95 & .filter$density.radio >= .outliers, 1,
                               ifelse(.filter$circ == 0 & .filter$arc.circ == 0 & .filter$occlusion >= 0.975 & .filter$density.radio >= .outliers, 1, 0)))
-.filter <- .filter[which(.filter$tree == 1), , drop = FALSE]
+.filter <- .filter[.filter$tree == 1, , drop = FALSE]
 
 
 if(nrow(.filter) < 1){
