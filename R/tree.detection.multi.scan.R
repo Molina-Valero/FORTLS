@@ -246,7 +246,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     filter <- data.frame(table(stem$tree))
     filter <- filter[order(filter$Freq, decreasing = TRUE), ]
     stem <- stem[stem$tree == filter$Var1[1], ]
-    # stem$tree <- 1
 
   }
 

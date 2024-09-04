@@ -102,9 +102,9 @@
     for(j in 1:length(.y.values)){
 
       .den <- .dat[.dat$x <= .x.values[i] + .h &
-                   .dat$x >  .x.values[i] - .h &
-                   .dat$y <= .y.values[j] + .h &
-                   .dat$y >  .y.values[j] - .h, , drop = FALSE]
+                     .dat$x >  .x.values[i] - .h &
+                     .dat$y <= .y.values[j] + .h &
+                     .dat$y >  .y.values[j] - .h, , drop = FALSE]
 
       # Discard cells with less than 2 points for computing mean points density by cell
 
@@ -128,9 +128,9 @@
     for(j in 1:length(.y.values)){
 
       .den <- .dat[.dat$x <= .x.values[i] + .h &
-                   .dat$x >  .x.values[i] - .h &
-                   .dat$y <= .y.values[j] + .h &
-                   .dat$y >  .y.values[j] - .h, , drop = FALSE]
+                     .dat$x >  .x.values[i] - .h &
+                     .dat$y <= .y.values[j] + .h &
+                     .dat$y >  .y.values[j] - .h, , drop = FALSE]
 
       # Discard cells with less than 2 points for computing mean density by cell
 
@@ -173,7 +173,7 @@
   for(i in 1:length(.x2.values)){
 
     .den <- .dat[.dat$phi <= .x2.values[i] + (.alpha.h/2) &
-                 .dat$phi >  .x2.values[i] - (.alpha.h/2), ]
+                   .dat$phi >  .x2.values[i] - (.alpha.h/2), ]
 
     # Aquellas celdas con menos de 2 puntos no las tengo en cuenta
     # para luego mas tarde calcular la densidad media por celda
@@ -450,7 +450,6 @@
   return(.filter1.0)
 
 }
-
 
 
 

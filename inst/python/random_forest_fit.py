@@ -14,7 +14,8 @@ def random_forest_fit(data_path, file_name):
     data = pd.read_csv(os.path.join(data_path, file_name))
     
     # Separate features and labels
-    X = data.drop(columns=['species', 'first_eigenvalue', 'sum_eigenvalues'])
+    # X = data.drop(columns=['species', 'first_eigenvalue', 'sum_eigenvalues'])
+    X = data.drop(columns=['species'])
     y = data['species']
     
     # Normalize input features

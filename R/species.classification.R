@@ -1,7 +1,12 @@
 
 
 
-species.classification <- function(data, tree.tls, dist = 0.1, type = 3){
+species.classification <- function(data, tree.tls, dist = 0.1, type = 3,
+                                   save.result = TRUE, dir.result = NULL){
+
+  # Obtaining working directory for saving files
+  if(is.null(dir.result))
+    dir.result <- getwd()
 
   slice <- 0.5
 
@@ -228,6 +233,26 @@ species.classification <- function(data, tree.tls, dist = 0.1, type = 3){
 
     }
 
-  return(tree.variables)
+  # return(tree.variables)
+
+  sp <- data.frame(sp.id = c(0, 1, 2, 3),
+                   sp = c("Eucaliptus nitens", "Fagus sylvatica", "Pinus nigra", "Pinus pinea"))
+
+  tree.variables$sp.id <- random.forest.sp(tree.variables)
+  tree.tls <- merge(tree.tls, tree.variables[, c("tree", "sp.id")], by = "tree")
+  tree.tls <- merge(tree.tls, sp, by = "sp.id")
+  tree.tls <- tree.tls[, !(names(tree.tls) %in% c("sp.id"))]
+
+
+  if(isTRUE(save.result)){
+
+    utils::write.csv(tree.tls,
+                     file = file.path(dir.result, "tree.tls.csv"),
+                     row.names = FALSE)
+  }
+
+
+  return(tree.tls)
+
 
 }

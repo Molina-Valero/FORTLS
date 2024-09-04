@@ -184,9 +184,15 @@ download.file("https://www.dropbox.com/s/17yl25pbrapat52/PinusRadiata.laz?dl=1",
 
 # Normalizing the whole point cloud data without considering arguments
 
+# Note that in the case of TLS single-scans, the coordinates of the plot center
+# must be specified by the x.center and y.center arguments, which are
+# x.center = 0 and y.center = 0 in this case
+
 pcd <- normalize(las = "PinusRadiata.laz",
 
                  id = "PinusRadiata",
+
+                 x.center = 0, y.center = 0,
 
                  dir.data = dir.data, dir.result = dir.result)
 

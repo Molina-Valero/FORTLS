@@ -107,10 +107,6 @@ normalize <- function(las, normalized = NULL,
 
   # Normalize
 
-  # .ws  <- seq(3, 12, 4)
-  # .th  <- seq(0.1, 1.5, length.out = length(.ws))
-  # .data <- lidR::classify_ground(.las, algorithm = lidR::pmf(.ws, .th), last_returns = FALSE)
-
   .data <- suppressWarnings(suppressMessages(lidR::classify_ground(.las, algorithm = lidR::csf(cloth_resolution = csf$cloth_resolution), last_returns = FALSE)))
 
   .pb$tick()
@@ -365,8 +361,7 @@ normalize <- function(las, normalized = NULL,
 
   if(isTRUE(save.result)){
 
-    # .data.red <- .data[which(.data$prob.selec == 1), , drop = FALSE]
-    .data.red <- .data
+    .data.red <- .data[which(.data$prob.selec == 1), , drop = FALSE]
 
     vroom::vroom_write(.data.red, path = file.path(dir.result, .data.red$file[1]), delim = ",", progress = FALSE)
 

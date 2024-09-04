@@ -1,5 +1,5 @@
 
-tree.detection.single.scan <- function(data, single.tree = NULL,
+tree.detection.single.scan.2 <- function(data, single.tree = NULL,
                                        dbh.min = 4, dbh.max = 200, h.min = 1.3,
                                        ncr.threshold = 0.1, tls.resolution = list(), tls.precision = NULL,
                                        density.reduction = 2,
@@ -70,7 +70,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   y.center <- mean(kk$y - cos(kk$phi) * kk$rho)
 
   rm(kk)
-  gc()
 
   #### Detecting possible areas with trees in the point cloud ####
 
@@ -95,6 +94,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   }
 
 
+
   # Statistical filtering of a point cloud
   # Implements the Statistical Outliers Removal (SOR)
 
@@ -110,20 +110,21 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   noise <- merge(data, noise, by = c("x", "y", "z"), all = FALSE)
   noise <- noise[, c("id", "file", "x", "y", "z", "rho")]
 
-
   # Detection of stem part without shrub vegetation and crown
+
+  stem <- woody
 
   # Defining the vertical section in which trees are detected
 
   if(is.null(stem.section)){
 
-    stem.section <- .getStem(woody)
+    stem.section <- .getStem(stem)
     stem.section <- c(stem.section$x, stem.section$x + stem.section$diff)
-    stem <- woody[stem$z > stem.section[1] & woody$z < stem.section[2], ]
+    stem <- stem[stem$z > stem.section[1] & stem$z < stem.section[2], ]
 
   } else {
 
-    stem <- woody[woody$z > stem.section[1] & woody$z < stem.section[2], ]
+    stem <- stem[stem$z > stem.section[1] & stem$z < stem.section[2], ]
 
   }
 
@@ -189,9 +190,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   buf <- sf::st_cast(sf::st_union(buf), "POLYGON")
 
   rm(stem)
-  gc()
-
-
 
   if(!is.null(understory) & is.null(single.tree)){
 
@@ -248,7 +246,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
 
   rm(buf, woody.2)
-  gc()
 
   # If there is only one tree in the point cloud
 
@@ -267,6 +264,8 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     breaks <- c(0.2, seq(from = 0.4, to = max(woody$z), by = 0.3))
     breaks <- breaks[-length(breaks)]}
 
+  # rm(stem)
+
 
   # Estimating NCR threshold when RGB are available
 
@@ -279,195 +278,25 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   #### Starting with clustering process ####
 
-
-  # .filteraux <- data.frame(cluster = as.numeric(),
-  #                          center.x = as.numeric(), center.y = as.numeric(),
-  #                          center.phi = as.numeric(), center.rho = as.numeric(),
-  #                          center.r = as.numeric(), center.theta = as.numeric(),
-  #                          radius = as.numeric(),
-  #                          n.pts = as.numeric(), n.pts.red = as.numeric(),
-  #                          phi.left = as.numeric(), phi.right = as.numeric(),
-  #                          arc.circ = as.numeric(), sec = as.numeric())
-  #
-  # .filteraux.2 <- data.frame(cluster = as.numeric(),
-  #                            center.x = as.numeric(), center.y = as.numeric(),
-  #                            center.phi = as.numeric(), center.rho = as.numeric(),
-  #                            center.r = as.numeric(), center.theta = as.numeric(),
-  #                            radius = as.numeric(),
-  #                            n.pts = as.numeric(), n.pts.red = as.numeric(),
-  #                            phi.left = as.numeric(), phi.right = as.numeric(),
-  #                            circ = as.numeric(), arc.circ = as.numeric(), sec = as.numeric())
-
-
-  data <- data[1, ]
-
-  gc()
-
-
-
-  message("Computing sections")
-
-  pb <- progress::progress_bar$new(total = length(breaks))
-
-
-  .filteraux <- list()
-  .filteraux.2 <- list()
-
-
   slice <- slice / 2
 
+  start_time <- Sys.time()
 
-  cl <- parallel::makeCluster(parallel::detectCores() - 1)
+  # Apply process_slice function to all cuts using lapply
+  results <- lapply(breaks, function(cuts) process_slice(cuts, woody, stem.2, slice, .alpha.h, .alpha.v, .dbh.min, .dbh.max, bark.roughness, x.center, y.center))
 
+  # Extract results into separate data frames
+  .filteraux <- do.call(rbind, lapply(results, `[[`, "filteraux"))
+  .filteraux.2 <- do.call(rbind, lapply(results, `[[`, "filteraux_2"))
 
-  for(cuts in breaks){
-
-
-    # start_time <- Sys.time()
-
-    .cut <- woody[which(woody$z > (cuts - slice - 0.05) & woody$z < (cuts + slice + 0.05)), , drop = FALSE]
-
-
-    if(nrow(.cut) < 50){next}
-
-    # .cut <- as.data.frame(.cut)
-
-    .cut <- .ncr.remove.slice.double(.cut)
-
-
-    # .cut <- .cut[which(.cut$ncr < ncr.threshold | is.na(.cut$ncr)), , drop = FALSE]
-    .cut <- woody[woody$z > (cuts - 2 * slice - 0.05) & woody$z < cuts, , drop = FALSE]
-
-
-    # Restrict to slice corresponding to cuts m +/- 5 cm
-
-    .cut <- .cut[.cut$z > (cuts-2*slice) & .cut$z < cuts, , drop = FALSE]
-
-
-    # DBSCAN parameters
-
-    .eps <- 2 * (tan(.alpha.h / 2) * (max(.cut$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2)
-
-
-    # Clustering
-
-    .error <- try(suppressMessages(dbscan::dbscan(.cut[, c("x", "y"), drop = FALSE], eps = .eps)))
-    if(class(.error)[1] == "try-error"){
-      message("No computed section: ", cuts, " m")
-      next} else {
-    .dbscan <- dbscan::dbscan(.cut[, c("x", "y"), drop = FALSE], eps = .eps, minPts = 15)
-    .cut$cluster <- .dbscan$cluster
-    .cut <- .cut[which(.cut$cluster > 0), , drop = FALSE]}
-
-
-    # Checking if there are clusters
-
-    if(nrow(.cut) < 25){next}
-
-    .cut$sec <- cuts
-
-
-    if (interactive()) {
-
-
-    .filter <- do.call(rbind, parallel::clusterApply(cl, split(.cut, .cut$cluster),
-                                                     .sections.single.scan.2, .cut = .cut,
-                                                     .alpha.v = .alpha.v, .alpha.h = .alpha.h,
-                                                     .dbh.min = .dbh.min, .dbh.max = .dbh.max,
-                                                     slice = slice * 2, bark.roughness = bark.roughness,
-                                                     x.center = x.center, y.center = y.center))
-
-
-    } else {
-
-
-      .filter <- do.call(rbind, lapply(split(.cut, .cut$cluster), .sections.single.scan.2, .cut = .cut,
-                                       .alpha.v = .alpha.v, .alpha.h = .alpha.h,
-                                       .dbh.min = .dbh.min, .dbh.max = .dbh.max,
-                                       slice = slice * 2, bark.roughness = bark.roughness,
-                                       x.center = x.center, y.center = y.center))
-
-
-    }
-
-
-    .filteraux[[length(.filteraux) + 1]] <- .filter
-
-
-
-    # Second...
-
-
-    if(!is.null(stem.2)){
-      .cut <- stem.2[which(stem.2$z > (cuts-slice-0.05) & stem.2$z < (cuts+slice+0.05)), , drop = FALSE]
-
-      if(nrow(.cut) < 50){next}
-
-      .cut <- .ncr.remove.slice.double(.cut)
-
-      # .cut <- .cut[which(.cut$ncr < ncr.threshold | is.na(.cut$ncr)), , drop = FALSE]
-      .cut <- woody[woody$z > (cuts-2*slice-0.05) & woody$z < cuts, , drop = FALSE]
-
-
-      # Restrict to slice corresponding to cuts m +/- 5 cm
-
-      .cut <- .cut[.cut$z > (cuts-2*slice) & .cut$z < cuts, , drop = FALSE]
-
-      # DBSCAN parameters
-
-      .eps <- 2 * (tan(.alpha.h / 2) * (max(.cut$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2)
-
-      # Clustering
-
-      .error <- try(suppressMessages(dbscan::dbscan(.cut[, c("x", "y"), drop = FALSE], eps = .eps, minPts = 15)))
-      if(class(.error)[1] == "try-error"){
-        message("No computed section: ", cuts, " m")
-        next} else {
-          .dbscan <- dbscan::dbscan(.cut[, c("x", "y"), drop = FALSE], eps = .eps)
-          .cut$cluster <- .dbscan$cluster
-          .cut <- .cut[which(.cut$cluster > 0), , drop = FALSE]}
-
-      # Checking if there are clusters
-
-      if(nrow(.cut) < 25){next}
-
-      # Assigning section to the slice
-
-      .cut$sec <- cuts
-
-
-      # Selection of those cluster belonging to trees
-
-      .filter <- do.call(rbind, lapply(split(.cut, .cut$cluster), .sections.single.scan.2, .cut = .cut,
-                                       .alpha.v = .alpha.v, .alpha.h = .alpha.h,
-                                       .dbh.min = .dbh.min, .dbh.max = .dbh.max,
-                                       slice = slice * 2, bark.roughness = bark.roughness,
-                                       x.center = x.center, y.center = y.center))
-
-      .filteraux.2 <- rbind(.filteraux.2, .filter)}
-
-    pb$tick()
-
-    gc()
-
-    # end_time <- Sys.time()
-    # execution_time <- end_time - start_time
-    # print(execution_time)
-
-
-
-  }# End of cuts loop
-
-  .filteraux <- do.call(rbind, .filteraux)
-  .filteraux.2 <- do.call(rbind, .filteraux.2)
-
-  parallel::stopCluster(cl)
-
+  end_time <- Sys.time()
+  execution_time <- end_time - start_time
+  print(execution_time)
 
 
   #### Assigning sections to tree axis ####
 
-  if(is.null(.filteraux) & is.null(.filteraux.2)) {
+  if(nrow(.filteraux) < 1 & nrow(.filteraux.2) < 1) {
 
     warning("No tree was detected")
 
@@ -480,7 +309,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     eje <- .stem.assignment.single.scan(.filteraux, stem.section, breaks)
 
-    if(!is.null(.filteraux.2) & sum(c(.filteraux.2$circ, .filteraux.2$arc.circ)) > 0){
+    if(nrow(.filteraux.2) > 0 & sum(c(.filteraux.2$circ, .filteraux.2$arc.circ)) > 0){
 
       # Assigning sections to tree axis
 
@@ -755,6 +584,9 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     }
 
 
+    .tree <- .tree[order(.tree$rho), ]
+    .tree$tree <- 1:nrow(.tree)
+
     # Detecting possible trees overlaped
 
     # if(nrow(.tree) < 2 & !is.null(single.tree)){.tree.2 <- .tree}
@@ -844,6 +676,8 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     .tree <- .tree.2
     rm(.tree.2)
 
+    .tree <- .tree[order(.tree$rho), ]
+    .tree$tree <- 1:nrow(.tree)
 
     # Indicate trees with partial occlusions, those for which none of the sections
     # was identified as circumference arch (ArcCirc)
@@ -877,13 +711,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     .tree$n.pts.red.est <- .tree$points.m.hom * .tree$radius
 
 
-    data <- rbind(woody[, c("id", "file", "x", "y", "z", "rho")],
-                  noise[, c("id", "file", "x", "y", "z", "rho")])
-
-    rm(woody, noise)
-    gc()
-
-
     if(!is.null(plot) & is.null(segmentation))
       plotTree <- suppressMessages(lidR::plot(lidR::LAS(data[, c("x","y","z")])))
 
@@ -892,12 +719,16 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     # Obtaining reduced point cloud
 
+    # data <- data[data$z >= h.min, ]
     # data <-
     #   suppressMessages(vroom::vroom(file.path(dir.data, data$file[1]),
     #                                 col_select = c("id", "file", "x", "y", "z", "rho"),
     #                                 progress = FALSE))
 
+    data <- rbind(data[, c("id", "file", "x", "y", "z", "rho")],
+                  noise[, c("id", "file", "x", "y", "z", "rho")])
 
+    data <- data.table::setDT(data)
     s <- sample(nrow(data), round(nrow(data) * 0.1))
     data <- data[s, ]
     data <- data[, c("id", "file", "x", "y", "z", "rho")]
@@ -970,18 +801,18 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     # Assigning dbh to stem dataset
 
-    .stem <- merge(.stem, .tree[, c("tree", "h", "rho")], by = "tree")
+    .stem <- merge(.stem, .tree[, c("tree", "h")], by = "tree")
     .stem <- .stem[.stem$sec != 1.3, ]
     .tree$sec <- 1.3
-    .stem <- rbind(.stem, .tree[, c("tree", "sec", "x", "y", "dbh", "h", "rho")])
+    .stem <- rbind(.stem, .tree[, c("tree", "sec", "x", "y", "dbh", "h")])
     .tree <- .tree[, -ncol(.tree)]
     .stem <- .stem[order(.stem$tree, .stem$sec), , drop = FALSE]
-    colnames(.stem) <- c("tree", "sec", "x", "y", "dhi", "h", "rho")
-    .stem <- merge(.stem, .tree[, c("tree", "dbh")], by = "tree")
-    colnames(.stem) <- c("tree", "hi", "x", "y", "dhi", "h", "rho", "dbh")
+    colnames(.stem) <- c("tree", "sec", "x", "y", "dhi", "h")
+    .stem <- merge(.stem, .tree[, c("tree", "dbh")], by = "tree", all.x = TRUE)
+    colnames(.stem) <- c("tree", "hi", "x", "y", "dhi", "h", "dbh")
 
     # Cheking the trees h
-    .stem <- merge(.stem[, c("tree", "hi", "x", "y", "dhi", "rho", "dbh")],
+    .stem <- merge(.stem[, c("tree", "hi", "x", "y", "dhi", "dbh")],
                    data.frame(tree = unique(.stem$tree),
                               h = do.call(rbind, lapply(split(.stem[, c("hi", "h")], .stem$tree), max))),
                    all.x = TRUE, by = "tree")
@@ -1020,12 +851,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     }
 
-
-    .tree <- .tree[order(.tree$rho), ]
-    .tree$tree <- 1:nrow(.tree)
-
-    .stem <- .stem[order(.stem$rho), ]
-    .stem$tree <- rep(1:length(unique(.stem$tree)), times = table(.stem$rho))
     .stem <- .stem[, c("tree", "x", "y", "dhi", "dbh", "hi", "h")]
     .stem <- .stem[order(.stem$tree, .stem$hi), , drop = FALSE]
 
@@ -1084,7 +909,8 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   }
 
-
+  .tree <- .tree[order(.tree$h.dist), ]
+  .tree$tree <- 1:nrow(.tree)
 
   # Removing values of 0 in n.pts
   .tree$n.pts <- ifelse(.tree$n.pts < 1, 0.01, .tree$n.pts)
