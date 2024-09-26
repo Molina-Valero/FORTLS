@@ -9,7 +9,8 @@ normalize <- function(las, normalized = NULL,
                       scan.approach = "single",
                       voxel_size = NULL,
                       id = NULL, file = NULL, plot = TRUE,
-                      dir.data = NULL, save.result = TRUE, dir.result = NULL){
+                      dir.data = NULL, save.result = TRUE, dir.result = NULL,
+                      yago = NULL){
 
 
   set.seed(123)
@@ -172,6 +173,7 @@ normalize <- function(las, normalized = NULL,
   .pb$tick()
 
 
+
   # Data filtering at horizontal distances larger than max_dist m in the horizontal plane
 
   if(!is.null(max.dist)){
@@ -186,6 +188,16 @@ normalize <- function(las, normalized = NULL,
   }
 
   .pb$tick()
+
+
+  # Yago's shortcut
+
+  if(!is.null(yago)){
+
+    lidR::writeLAS(.data, paste(dir.result, id, "/", ".laz", sep = ""))
+
+  }
+
 
 
   if(!is.null(plot))
