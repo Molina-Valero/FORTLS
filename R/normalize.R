@@ -194,7 +194,7 @@ normalize <- function(las, normalized = NULL,
 
   if(!is.null(yago)){
 
-    lidR::writeLAS(.data, paste(dir.result, id, "/", ".laz", sep = ""))
+    lidR::writeLAS(.data, paste(dir.result, "/", id, ".laz", sep = ""))
 
   }
 
