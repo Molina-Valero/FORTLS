@@ -5,16 +5,12 @@ fit_circle_cpp <- function(points) {
     .Call(`_FORTLS_fit_circle_cpp`, points)
 }
 
-ver_point_cloud_double <- function(m) {
-    .Call(`_FORTLS_ver_point_cloud_double`, m)
+geometric_features_point <- function(x, y, z, pto, dist, First_eigenvalue = TRUE, Second_eigenvalue = TRUE, Third_eigenvalue = TRUE, Sum_of_eigenvalues = TRUE, PCA_1 = TRUE, PCA_2 = TRUE, Anisotropy = TRUE, Planarity = TRUE, Linearity = TRUE, Surface_variation = TRUE, Normal_change_rate = TRUE, Verticality = TRUE, Number_of_points = TRUE, omnivariance = TRUE, eigenentropy = TRUE, surface_density = TRUE, volume_density = TRUE, solver_thresh = 50000L) {
+    .Call(`_FORTLS_geometric_features_point`, x, y, z, pto, dist, First_eigenvalue, Second_eigenvalue, Third_eigenvalue, Sum_of_eigenvalues, PCA_1, PCA_2, Anisotropy, Planarity, Linearity, Surface_variation, Normal_change_rate, Verticality, Number_of_points, omnivariance, eigenentropy, surface_density, volume_density, solver_thresh)
 }
 
-ncr_point_cloud_double <- function(m) {
-    .Call(`_FORTLS_ncr_point_cloud_double`, m)
-}
-
-geometric_features <- function(m, dist) {
-    .Call(`_FORTLS_geometric_features`, m, dist)
+geometric_features <- function(m, dist, First_eigenvalue = TRUE, Second_eigenvalue = TRUE, Third_eigenvalue = TRUE, Sum_of_eigenvalues = TRUE, PCA_1 = TRUE, PCA_2 = TRUE, Anisotropy = TRUE, Planarity = TRUE, Linearity = TRUE, Surface_variation = TRUE, Normal_change_rate = TRUE, Verticality = TRUE, Number_of_points = TRUE, omnivariance = TRUE, eigenentropy = TRUE, surface_density = TRUE, volume_density = TRUE, threads = 1L, solver_thresh = 50000L) {
+    .Call(`_FORTLS_geometric_features`, m, dist, First_eigenvalue, Second_eigenvalue, Third_eigenvalue, Sum_of_eigenvalues, PCA_1, PCA_2, Anisotropy, Planarity, Linearity, Surface_variation, Normal_change_rate, Verticality, Number_of_points, omnivariance, eigenentropy, surface_density, volume_density, threads, solver_thresh)
 }
 
 weighted_mean_arit <- function(x, w) {

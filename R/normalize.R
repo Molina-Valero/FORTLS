@@ -196,6 +196,8 @@ normalize <- function(las, normalized = NULL,
 
     lidR::writeLAS(.data, paste(dir.result, "/", id, ".laz", sep = ""))
 
+    return()
+
   }
 
 
@@ -297,6 +299,10 @@ normalize <- function(las, normalized = NULL,
 
 
   # For the rest of situations, point cloud is downsampled by voxelization
+
+  if(scan.approach == "multi" & is.null(voxel_size))
+    voxel_size <- 0.01
+
 
   if(scan.approach == "multi" & !is.null(voxel_size)){
 

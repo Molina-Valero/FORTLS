@@ -104,23 +104,29 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   message("Retention of points with high verticality values")
 
+  threads <- parallel::detectCores() -1
 
-  VerSur <- geometric.features(stem, dist = 0.1)
-  # stem <- .ver.remove.slice.double(stem)
+  VerSur <- geometric.features(data = stem,
+                               grid_method = 'sf_grid',
+                               features = c("verticality", "surface_variation"),
+                               dist = 0.1,
+                               threads = threads,
+                               keep_NaN = FALSE,            # this means, when we run the Rcpp code we don't exclude computed rows if 1 of the features is NA. If we have to compute 13 features and 1 is NA, then we keep this row
+                               verbose = TRUE,
+                               solver_threshold = 50000)
+
   stem <- merge(stem, VerSur[, c("point", "verticality", "surface_variation")], by = "point")
-  # stem$ver <- VerSur$verticality
-  # stem$sur <- VerSur$surface_variation
 
   rm(VerSur)
 
-  stem$ver <- (stem$verticality + (1 - (stem$surface_variation / 0.33)) + ((stem$z - min(stem.section)) / diff(stem.section))) / 3
+  stem$ver <- (stem$verticality + (1 - (stem$surface_variation))) / 2
 
-  stem$ver <- ifelse(is.na(stem$ver),
-                     stats::runif(length(stem$ver[is.na(stem$ver)]), min = 0, max = 1),
-                     stem$ver)
+  stem$ver <- ifelse(is.na(stem$ver), 1, stem$ver)
 
   stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
   stem <- stem[stem$ver > stem$prob.ver, ]
+
+
 
   woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
   woody <- rbind(woody, stem[, 1:ncol(woody)])
@@ -170,46 +176,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   buf <- sf::st_buffer(buf, max(.dbh.min, 0.5))
   buf <- sf::st_cast(sf::st_union(buf), "POLYGON")
 
-
-  # if(!is.null(understory) & is.null(single.tree)){
-  #
-  # buf.2 <- sf::st_as_sf(data.frame(stem.2), coords = c("x","y"))
-  # # sf::st_crs(buf) <- "+proj=utm +zone=19 +ellps=GRS80 +datum=NAD83 +unit=m"
-  # buf.2 <- sf::st_buffer(buf.2, max(.dbh.min, 0.5))
-  # buf.2 <- sf::st_difference(sf::st_union(buf.2), buf, 0.1)
-  #
-  # # Detection of stem part without shrub vegetation and crown
-  #
-  # buf.2 <- buf.2[sf::st_area(buf.2) > (pi / 4)*(.dbh.min + 0.1) ^ 2]
-  #
-  # if(length(buf.2) < 1){
-  #
-  #   stem.2 <- NULL
-  #
-  # } else {
-  #
-  # stem.2 <- data.frame(woody[woody$prob.selec == 1, ])
-  #
-  # stem.3 <- sf::st_intersects(buf, sf::st_as_sf(stem.2, coords = c("x","y")))
-  # stem.3 <- data.table::setDT(as.data.frame(stem.3))
-  # stem.2 <- data.table::setDT(as.data.frame(stem.2))
-  # colnames(stem.3) <- c("tree", "code")
-  # stem.2$code <- as.numeric(row.names(stem.2))
-  # stem.2 <- merge(stem.2, stem.3, by = "code", all = FALSE)
-  # stem.2 <- subset(stem.2, select = -code)
-  # # stem.2 <- stem.2[, 2:ncol(stem.2)]
-  #
-  # rm(stem.3)
-  #
-  #
-  # if(nrow(stem.2) < 1)
-  #   stem.2 <- NULL
-  #
-  # }
-  #
-  # rm(buf.2)
-  #
-  # }
 
 
   # Assigning points to trees previously detected
@@ -286,8 +252,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   colnames(woody.2) <- c("tree", "code")
   woody$code <- as.numeric(row.names(woody))
   woody <- merge(woody, woody.2, by = "code", all = FALSE)
-  # woody <- subset(woody, select = -code)
-  woody <- woody[, !(names(woody) %in% c("code"))]
+  woody <- subset(woody, select = -code)
+  # woody <- woody[, !(names(woody) %in% c("code"))]
 
   woody <- woody[woody$tree %in% eje$tree, ]
   woody <- woody[!is.na(woody$tree), ]
@@ -335,20 +301,42 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     message("Computing section: ", cuts, " m")
 
-    # .cut <- woody[woody$z > (cuts-slice-0.05) & woody$z < (cuts+slice+0.05), , drop = FALSE]
     .cut <- woody[woody$z > (cuts-2*slice-0.05) & woody$z < cuts, , drop = FALSE]
 
 
     if(nrow(.cut) < 50){next}
 
-    .cut <- .ncr.remove.slice.double(.cut)
 
 
-    .cut <- .cut[.cut$ncr < ncr.threshold | is.na(.cut$ncr), , drop = FALSE]
+    if(cuts <= stem.section[1] | cuts >= stem.section[2]){
+
+      VerSur <- geometric.features(data = .cut,
+                                   grid_method = 'sf_grid',
+                                   features = c("verticality", "surface_variation"),
+                                   dist = 0.05,
+                                   threads = threads,
+                                   keep_NaN = FALSE,            # this means, when we run the Rcpp code we don't exclude computed rows if 1 of the features is NA. If we have to compute 13 features and 1 is NA, then we keep this row
+                                   verbose = FALSE,
+                                   solver_threshold = 50000)
+
+      .cut <- merge(.cut, VerSur[, c("point", "verticality", "surface_variation")], by = "point")
+
+      rm(VerSur)
+
+      .cut$ver <- (.cut$verticality + (1 - (.cut$surface_variation))) / 2
+
+      .cut$ver <- ifelse(is.na(.cut$ver), 1, .cut$ver)
+
+      .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
+
+      .cut <- .cut[.cut$ver > .cut$prob.ver, ]
+
+    }
+
+
 
     # Restrict to slice corresponding to cuts m +/- 5 cm
 
-    # .cut <- .cut[.cut$z > (cuts-slice) & .cut$z < (cuts+slice), , drop = FALSE]
     .cut <- .cut[.cut$z > (cuts-2*slice) & .cut$z < cuts, , drop = FALSE]
 
 
@@ -417,9 +405,31 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     if(nrow(.cut) < 50){next}
 
-    .cut <- .ncr.remove.slice.double(.cut)
 
-    .cut <- .cut[which(.cut$ncr < ncr.threshold | is.na(.cut$ncr)), , drop = FALSE]
+    if(cuts <= stem.section[1] | cuts >= stem.section[2]){
+
+      VerSur <- geometric.features(data = .cut,
+                                   grid_method = 'sf_grid',
+                                   features = c("verticality", "surface_variation"),
+                                   dist = 0.05,
+                                   threads = threads,
+                                   keep_NaN = FALSE,            # this means, when we run the Rcpp code we don't exclude computed rows if 1 of the features is NA. If we have to compute 13 features and 1 is NA, then we keep this row
+                                   verbose = FALSE,
+                                   solver_threshold = 50000)
+
+      .cut <- merge(.cut, VerSur[, c("point", "verticality", "surface_variation")], by = "point")
+
+      rm(VerSur)
+
+      .cut$ver <- (.cut$verticality + (1 - (.cut$surface_variation))) / 2
+
+      .cut$ver <- ifelse(is.na(.cut$ver), 1, .cut$ver)
+
+      .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
+
+      .cut <- .cut[.cut$ver > .cut$prob.ver, ]
+
+    }
 
 
     # Restrict to slice corresponding to cuts m +/- 5 cm
