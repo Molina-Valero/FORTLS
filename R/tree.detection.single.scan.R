@@ -335,7 +335,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     # start_time <- Sys.time()
 
-    .cut <- woody[which(woody$z > (cuts - slice - 0.05) & woody$z < (cuts + slice + 0.05)), , drop = FALSE]
+    .cut <- woody[woody$z > (cuts - 2 * slice - 0.05) & woody$z < cuts + 0.05, , drop = FALSE]
 
 
     if(nrow(.cut) < 50){next}
@@ -346,7 +346,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
       VerSur <- geometric.features(data = .cut,
                                    grid_method = 'sf_grid',
                                    features = c("verticality", "surface_variation"),
-                                   dist = 0.1,
+                                   dist = 0.05,
                                    threads = threads,
                                    keep_NaN = FALSE,            # this means, when we run the Rcpp code we don't exclude computed rows if 1 of the features is NA. If we have to compute 13 features and 1 is NA, then we keep this row
                                    verbose = FALSE,
@@ -369,7 +369,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     # Restrict to slice corresponding to cuts m +/- 5 cm
 
-    .cut <- .cut[.cut$z > (cuts-2*slice) & .cut$z < cuts, , drop = FALSE]
+    .cut <- .cut[.cut$z > (cuts - 2 * slice) & .cut$z < cuts, , drop = FALSE]
 
 
     # DBSCAN parameters
@@ -427,7 +427,9 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
 
     if(!is.null(stem.2)){
-      .cut <- stem.2[which(stem.2$z > (cuts-slice-0.05) & stem.2$z < (cuts+slice+0.05)), , drop = FALSE]
+
+      .cut <- stem.2[stem.2$z > (cuts - 2 * slice - 0.05) & stem.2$z < cuts + 0.05, , drop = FALSE]
+
 
       if(nrow(.cut) < 50){next}
 
@@ -436,7 +438,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
         VerSur <- geometric.features(data = .cut,
                                      grid_method = 'sf_grid',
                                      features = c("verticality", "surface_variation"),
-                                     dist = 0.1,
+                                     dist = 0.05,
                                      threads = threads,
                                      keep_NaN = FALSE,            # this means, when we run the Rcpp code we don't exclude computed rows if 1 of the features is NA. If we have to compute 13 features and 1 is NA, then we keep this row
                                      verbose = FALSE,
@@ -459,7 +461,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
       # Restrict to slice corresponding to cuts m +/- 5 cm
 
-      .cut <- .cut[.cut$z > (cuts-2*slice) & .cut$z < cuts, , drop = FALSE]
+      .cut <- .cut[.cut$z > (cuts - 2 * slice) & .cut$z < cuts, , drop = FALSE]
 
       # DBSCAN parameters
 
