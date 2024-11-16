@@ -501,7 +501,7 @@
 
     return(out)}
 
-  mae <- abs(sum(coef(fit)[1]-dat[, 3])) / nrow(dat)
+  mae <- abs(sum(fit$radius-dat[, 3])) / nrow(dat)
   cv <- stats::sd(raster::pointDistance(dat[, c("x", "y")], c(fit$center[1], fit$center[2]), lonlat = FALSE)) / fit$radius
 
   out <- data.frame(x = fit$center[1], y = fit$center[2], radio = fit$radius, n = nrow(dat), mae = mae, cv = cv)
