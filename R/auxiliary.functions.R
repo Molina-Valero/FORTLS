@@ -806,7 +806,14 @@
 #
 # }
 
-.sections.multi.scan <- function(cut, tls.precision, .dbh.min, .dbh.max, slice, bark.roughness, x.center, y.center){
+.sections.multi.scan <- function(cut,
+                                 tls.precision,
+                                 .dbh.min,
+                                 .dbh.max,
+                                 slice,
+                                 bark.roughness,
+                                 x.center,
+                                 y.center) {
 
   .filter <- data.frame(cluster = as.numeric(),
 
@@ -867,6 +874,9 @@
   .x.values <- seq(from = .xmin, to = .xmax, by = .h)
   .y.values <- seq(from = .ymin, to = .ymax, by = .h)
 
+  # print(.x.values)
+  # print(.y.values)
+
   .h <- .h / 2
 
   # Optional, just to see what you are doing here:
@@ -874,19 +884,24 @@
 
   .density <- matrix(0, ncol = length(.x.values), nrow = length(.y.values))
 
+  # print(class(.dat))
+
   for(i in 1:length(.x.values)){
     for(j in 1:length(.y.values)){
 
-      .den <- .dat[.dat$x <= .x.values[i] + .h &
-                     .dat$x >  .x.values[i] - .h &
-                     .dat$y <= .y.values[j] + .h &
-                     .dat$y >  .y.values[j] - .h, , drop = FALSE]
+      # .den <- .dat[.dat$x <= .x.values[i] + .h &
+      #                .dat$x >  .x.values[i] - .h &
+      #                .dat$y <= .y.values[j] + .h &
+      #                .dat$y >  .y.values[j] - .h, , drop = FALSE]
+
+      .den <- .dat[x <= .x.values[i] + .h &
+                     x >  .x.values[i] - .h &
+                     y <= .y.values[j] + .h &
+                     y >  .y.values[j] - .h, ]
 
       # Discard cells with less than 2 points for computing mean points density by cell
       .density[j, i] <- ifelse(nrow(.den) < 1, NA, nrow(.den))
-
     }
-
   }
 
 
@@ -903,10 +918,15 @@
   for(i in 1:length(.x.values)){
     for(j in 1:length(.y.values)){
 
-      .den <- .dat[.dat$x <= .x.values[i] + .h &
-                     .dat$x >  .x.values[i] - .h &
-                     .dat$y <= .y.values[j] + .h &
-                     .dat$y >  .y.values[j] - .h, , drop = FALSE]
+      # .den <- .dat[.dat$x <= .x.values[i] + .h &
+      #                .dat$x >  .x.values[i] - .h &
+      #                .dat$y <= .y.values[j] + .h &
+      #                .dat$y >  .y.values[j] - .h, , drop = FALSE]
+
+      .den <- .dat[x <= .x.values[i] + .h &
+                     x >  .x.values[i] - .h &
+                     y <= .y.values[j] + .h &
+                     y >  .y.values[j] - .h, ]
 
       # Discard cells with less than 2 points for computing mean density by
       # cell
@@ -916,11 +936,8 @@
 
         .rem <- data.frame(point = .den$point)
         .remove <- rbind(.remove, .rem)
-
       }
-
     }
-
   }
 
   .dat <- merge(.dat, .remove, by = "point", all.y = TRUE)
@@ -930,7 +947,6 @@
   # points(.dat$x, .dat$y, col = "green")
 
   if(nrow(.dat) < 10){return(.filter)}
-
 
   # Estimate points number for both the original cloud (.n.pts) and the
   # point cloud reduced by the point cropping process (.n.pts.red)
@@ -942,11 +958,9 @@
   .x.values <- seq(from = .xmin, to = .xmax, by = 0.01)
   .y.values <- seq(from = .ymin, to = .ymax, by = 0.01)
 
-
   # Optional, just to see what you are doing here:
   # plot(.dat$x, .dat$y, asp = 1)
   # abline(v = .x.values, h = .y.values)
-
 
   # Create an empty matrix where, for each mesh intersection, variance of
   # distances between points and corresponding intersection will be stored
@@ -955,7 +969,13 @@
   for(i in 1:length(.x.values)){
     for(j in 1:length(.y.values)){
 
-      .variance <- stats::var(raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[i], .y.values[j]), lonlat=FALSE))
+      # rst_pnts = raster::pointDistance(p1 = cbind(.dat$x,.dat$y),
+      #                                  p2 = c(.x.values[i], .y.values[j]),
+      #                                  lonlat=FALSE)
+
+      rst_pnts = sqrt((.dat[["x"]] - .x.values[i])^2 + (.dat[["y"]] - .y.values[j])^2)
+
+      .variance <- stats::var(rst_pnts)
       .matriz[j, i] <- .variance
 
     }
@@ -972,17 +992,18 @@
   # Optional, just to see what you are doing here:
   # points(.center.x, .center.y, pch = 19, col = "red")
 
-
   # Distances between points and the condidate center
-  .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)
+  # .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)
+  .dat$dist = sqrt((.dat[["x"]] - .x.values[.a[2]])^2 + (.dat[["y"]] - .y.values[.a[1]])^2)
 
+  # data.table::fwrite(x = .dat, file = '/home/lampros/Desktop/Upwork/FREELANCER_Platform/2024_09_27_R_Package_Speed_Optimization_Expert/2024_11_16_UPDATED_TASK/benchmark/tmp.csv', row.names = F)
 
 
   # Application of the ransac algorithm to select another possible candidate for section circumference
   # We apply the function RANSAC() 600 times to generate 600 candidates
 
   dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 600)
-  kk <- try(do.call(rbind, (lapply(dat.i, .RANSAC))), silent = TRUE)
+  kk <- try(do.call(rbind, (lapply(dat.i, .RANSAC_MODIFIED))), silent = TRUE)
 
   rm(dat.i)
 
@@ -1032,7 +1053,8 @@
 
     kk <- kk[1, ]
 
-    .dat$distRANSAC <- raster::pointDistance(cbind(.dat$x,.dat$y), c(kk$x, kk$y), lonlat = FALSE)
+    # .dat$distRANSAC <- raster::pointDistance(cbind(.dat$x,.dat$y), c(kk$x, kk$y), lonlat = FALSE)
+    .dat$distRANSAC = sqrt((.dat[["x"]] - kk$x)^2 + (.dat[["y"]] - kk$y)^2)
 
     if(is.null(bark.roughness)){
 
@@ -1159,9 +1181,7 @@
   if(methods::is(.cor) == "try-error"){return(.filter)} else{
 
     .occlusion <- .cor[[4]]
-
   }
-
 
   # Zhang et al., (2019) - other selection criteria:
 
@@ -1173,7 +1193,6 @@
   .densidad_radio <- .n.pts.red / .radio
 
   if(nrow(.dat) < 10){return(.filter)}
-
 
   # Results
   .filter <- data.frame(cluster = .dat$cluster[1],
@@ -1201,7 +1220,6 @@
                                 ifelse(.filter$circ == 0 & .filter$arc.circ == 0 & .filter$occlusion >= 0.975 & .filter$density.radio >= .outliers, 1, 0)))
   .filter <- .filter[.filter$tree == 1, , drop = FALSE]
 
-
   if(nrow(.filter) < 1){
 
     .filter1.0 <- data.frame(cluster = as.numeric(),
@@ -1219,14 +1237,11 @@
                               "radius", "n.pts", "n.pts.red", "circ", "arc.circ"), drop = FALSE]
 
     .filter1.0$sec <- cut$sec[1]
-
   }
-
 
   return(.filter1.0)
 
 }
-
 ############################################################################################################################################ MODIFIED
 
 #............................................................................... RANSAC
