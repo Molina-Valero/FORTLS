@@ -455,23 +455,34 @@
 }
 
 
-
 .RANSAC <- function(data){
 
   dat <- data
 
+
+  # Select a threshold distance - threshold distance
+
   dist <- 0.05
 
-  inliers <- dat[sample(nrow(dat), 3), ]
 
-  # fit <- .fit_circle(inliers)
-  fit <- fit_circle_cpp(inliers)
+  # 1. Select 3 random points to fit a first candidate circumference
 
+  #....................................................................................... 1st.
+  inliers_samp <- dat[sample(nrow(dat), 3), ]
+
+  fit <- fit_circle_cpp(inliers_samp)
   radio <- sqrt((dat[, "x"] - fit$center[1]) ^ 2 + (dat[, "y"] - fit$center[2]) ^ 2)
+
+  # 2. Use threshold distance (dist) to find all points which lie in the doughnut region
+  #    define by the fitted circumference. These are the inlier points
+
   dat <- cbind(dat, radio)
   inliers <- abs(fit$radius-dat[, "radio"])
   dat <- cbind(dat, inliers)
   dat <- dat[dat[, "inliers"] < dist, ]
+
+  # If the count of inlier points is less than threshold inlier count (3 points),
+  # skip this candidate circle.
 
   if(length(dat) == 0 | nrow(dat) < 2){
 
@@ -481,33 +492,99 @@
     return(out)}
 
 
+  # If not, go back to the first step with the inliers points
+
+  #....................................................................................... 2nd.
   dat <- dat[, c("x", "y")]
 
-  inliers <- dat[sample(nrow(dat), 3), ]
-
-  # fit <- .fit_circle(inliers)
-  fit <- fit_circle_cpp(inliers)
-
+  inliers_samp <- dat[sample(nrow(dat), 3), ]
+  fit <- fit_circle_cpp(inliers_samp)
   radio <- sqrt((dat[, "x"] - fit$center[1]) ^ 2 + (dat[, "y"] - fit$center[2]) ^ 2)
   dat <- cbind(dat, radio)
   inliers <- abs(fit$radius-dat[, "radio"])
   dat <- cbind(dat, inliers)
   dat <- dat[dat[, "inliers"] < dist, ]
 
-  if(length(dat) == 0 | nrow(dat) < 2){
+  # If the count of inlier points is less than threshold inlier count (3 points),
+  # skip this candidate circle.
+
+  if(length(dat) == 0 | nrow(dat) < 2) {
 
     out <- data.frame(x = as.numeric(), y = as.numeric(),
                       radio = as.numeric(), n = as.numeric(), mae = as.numeric(), cv = as.numeric())
 
     return(out)}
 
+  #....................................................................................... 3rd.
+  # If not, add this candidate circle to the shortlist along with count of inlier points (n),
+  # the mean absolute error (mae) and the coefficient of variation (cv)
+
+  # print(head(dat))
+
   mae <- abs(sum(fit$radius-dat[, 3])) / nrow(dat)
+
   cv <- stats::sd(raster::pointDistance(dat[, c("x", "y")], c(fit$center[1], fit$center[2]), lonlat = FALSE)) / fit$radius
 
   out <- data.frame(x = fit$center[1], y = fit$center[2], radio = fit$radius, n = nrow(dat), mae = mae, cv = cv)
 
   return(out)
+  # return(list(out = out,
+  #             inliers = inliers_samp))
 
 }
+
+# .RANSAC <- function(data){
+#
+#   dat <- data
+#
+#   dist <- 0.05
+#
+#   inliers <- dat[sample(nrow(dat), 3), ]
+#
+#   # fit <- .fit_circle(inliers)
+#   fit <- fit_circle_cpp(inliers)
+#
+#   radio <- sqrt((dat[, "x"] - fit$center[1]) ^ 2 + (dat[, "y"] - fit$center[2]) ^ 2)
+#   dat <- cbind(dat, radio)
+#   inliers <- abs(fit$radius-dat[, "radio"])
+#   dat <- cbind(dat, inliers)
+#   dat <- dat[dat[, "inliers"] < dist, ]
+#
+#   if(length(dat) == 0 | nrow(dat) < 2){
+#
+#     out <- data.frame(x = as.numeric(), y = as.numeric(),
+#                       radio = as.numeric(), n = as.numeric(), mae = as.numeric(), cv = as.numeric())
+#
+#     return(out)}
+#
+#
+#   dat <- dat[, c("x", "y")]
+#
+#   inliers <- dat[sample(nrow(dat), 3), ]
+#
+#   # fit <- .fit_circle(inliers)
+#   fit <- fit_circle_cpp(inliers)
+#
+#   radio <- sqrt((dat[, "x"] - fit$center[1]) ^ 2 + (dat[, "y"] - fit$center[2]) ^ 2)
+#   dat <- cbind(dat, radio)
+#   inliers <- abs(fit$radius-dat[, "radio"])
+#   dat <- cbind(dat, inliers)
+#   dat <- dat[dat[, "inliers"] < dist, ]
+#
+#   if(length(dat) == 0 | nrow(dat) < 2){
+#
+#     out <- data.frame(x = as.numeric(), y = as.numeric(),
+#                       radio = as.numeric(), n = as.numeric(), mae = as.numeric(), cv = as.numeric())
+#
+#     return(out)}
+#
+#   mae <- abs(sum(fit$radius-dat[, 3])) / nrow(dat)
+#   cv <- stats::sd(raster::pointDistance(dat[, c("x", "y")], c(fit$center[1], fit$center[2]), lonlat = FALSE)) / fit$radius
+#
+#   out <- data.frame(x = fit$center[1], y = fit$center[2], radio = fit$radius, n = nrow(dat), mae = mae, cv = cv)
+#
+#   return(out)
+#
+# }
 
 
