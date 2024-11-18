@@ -319,6 +319,14 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                                    verbose = FALSE,
                                    solver_threshold = 50000)
 
+      if(is.null(VerSur$verticality) | is.null(VerSur$surface_variation)){
+
+        VerSur$verticality <- NA
+        VerSur$surface_variation <- NA
+
+      }
+
+
       .cut <- merge(.cut, VerSur[, c("point", "verticality", "surface_variation")], by = "point")
 
       rm(VerSur)
