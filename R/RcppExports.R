@@ -13,6 +13,30 @@ geometric_features <- function(m, dist, First_eigenvalue = TRUE, Second_eigenval
     .Call(`_FORTLS_geometric_features`, m, dist, First_eigenvalue, Second_eigenvalue, Third_eigenvalue, Sum_of_eigenvalues, PCA_1, PCA_2, Anisotropy, Planarity, Linearity, Surface_variation, Normal_change_rate, Verticality, Number_of_points, omnivariance, eigenentropy, surface_density, volume_density, threads, solver_thresh)
 }
 
+fit_circle_cpp_modified <- function(points) {
+    .Call(`_FORTLS_fit_circle_cpp_modified`, points)
+}
+
+is_one_row_all_na <- function(df) {
+    .Call(`_FORTLS_is_one_row_all_na`, df)
+}
+
+sample_indices <- function(total_number_obs, return_obs) {
+    .Call(`_FORTLS_sample_indices`, total_number_obs, return_obs)
+}
+
+internal_ransac <- function(dat, dist = 0.05) {
+    .Call(`_FORTLS_internal_ransac`, dat, dist)
+}
+
+RANSAC_cpp <- function(data, dist = 0.05) {
+    .Call(`_FORTLS_RANSAC_cpp`, data, dist)
+}
+
+iterations_RANSAC <- function(data, n_iterations = 600L) {
+    .Call(`_FORTLS_iterations_RANSAC`, data, n_iterations)
+}
+
 weighted_mean_arit <- function(x, w) {
     .Call(`_FORTLS_weighted_mean_arit`, x, w)
 }

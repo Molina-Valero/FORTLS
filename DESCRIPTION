@@ -26,7 +26,7 @@ License: GPL-3
 Depends: R (>= 4.0.0)
 Imports: data.table, dbscan, Distance, glue, htmlwidgets, lidR, methods, moments, parallel, plotly, progress, raster, Rcpp(>= 1.0.10), RCSF, reticulate, Rfast, scales, sf, tidyr, VoxR, vroom
 Suggests: devtools, kableExtra, knitr, rmarkdown, systemfonts, testthat
-LinkingTo: Rcpp, RcppEigen
+LinkingTo: Rcpp, RcppArmadillo, RcppEigen
 Encoding: UTF-8
 RoxygenNote: 7.3.1
 VignetteBuilder: knitr

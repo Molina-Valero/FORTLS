@@ -241,8 +241,13 @@
 
   dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 600)
   kk <- try(do.call(rbind, (lapply(dat.i, .RANSAC))), silent = TRUE)
-
   rm(dat.i)
+
+  # df_out = iterations_RANSAC(data = as.matrix(ransac_dat), n_iterations = ITERS) |>
+  #   data.table::as.data.table()
+  #
+  # colnames(df_out) = c('x', 'y', 'radio', 'n', 'mae', 'cv')
+
 
 
 
@@ -1002,10 +1007,16 @@
   # Application of the ransac algorithm to select another possible candidate for section circumference
   # We apply the function RANSAC() 600 times to generate 600 candidates
 
-  dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 600)
-  kk <- try(do.call(rbind, (lapply(dat.i, .RANSAC_MODIFIED))), silent = TRUE)
+  # dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 600)
+  # kk <- try(do.call(rbind, (lapply(dat.i, .RANSAC_MODIFIED))), silent = TRUE)
+  #
+  # rm(dat.i)
 
-  rm(dat.i)
+
+
+  kk <- iterations_RANSAC(data = as.matrix(.dat[, c("x", "y")]), n_iterations = 600) |>
+    data.table::as.data.table()
+  colnames(kk) = c('x', 'y', 'radio', 'n', 'mae', 'cv')
 
   # If the RANSAC algorithm does not work, we retain the first candidate as circumference,
   # calculating the radio and coeficient of variation (cv).
