@@ -402,8 +402,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                                      slice = slice * 2, bark.roughness = bark.roughness,
                                      x.center = x.center, y.center = y.center))
 
-    parallel::stopCluster(cl)
-
     # end_time <- Sys.time()
     # end_time - start_time
 
