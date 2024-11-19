@@ -660,7 +660,7 @@
 
   kk = try(iterations_RANSAC(data = as.matrix(.dat[, c("x", "y")]), n_iterations = 600) |>
     data.table::as.data.table(), silent = TRUE)
-  colnames(kk) = c('x', 'y', 'radio', 'n', 'mae', 'cv')
+  # colnames(kk) = c('x', 'y', 'radio', 'n', 'mae', 'cv')
 
   # If the RANSAC algorithm does not work, we retain the first candidate as circumference,
   # calculating the radio and coeficient of variation (cv).
@@ -700,6 +700,8 @@
 
     # For RANSAC, we keep the circunference with lowest error (mae)
     # and maximum number of inliers (n)
+    
+    colnames(kk) = c('x', 'y', 'radio', 'n', 'mae', 'cv')
 
     kk <- kk[kk$n >= max(kk$n), ]
 
