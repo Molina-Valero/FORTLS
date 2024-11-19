@@ -291,6 +291,11 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                              phi.left = as.numeric(), phi.right = as.numeric(),
                              circ = as.numeric(), arc.circ = as.numeric(), sec = as.numeric())
 
+  message("Computing sections")
+
+  pb <- progress::progress_bar$new(total = length(breaks))
+
+
   # Defining slice
 
   slice <- slice / 2
@@ -299,7 +304,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   for(cuts in breaks){
 
 
-    message("Computing section: ", cuts, " m")
+    # message("Computing section: ", cuts, " m")
 
     .cut <- woody[woody$z > (cuts - 2 * slice - 0.05) & woody$z < cuts + 0.05, , drop = FALSE]
 
@@ -490,6 +495,10 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     }
 
     .filteraux.2 <- rbind(.filteraux.2, .filter)}
+
+    pb$tick()
+
+    gc()
 
   }# End of cuts loop
 
