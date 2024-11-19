@@ -273,32 +273,45 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   #### Starting with clustering process ####
 
-  .filteraux <- data.frame(cluster = as.numeric(),
-                           center.x = as.numeric(), center.y = as.numeric(),
-                           center.phi = as.numeric(), center.rho = as.numeric(),
-                           center.r = as.numeric(), center.theta = as.numeric(),
-                           radius = as.numeric(),
-                           n.pts = as.numeric(), n.pts.red = as.numeric(),
-                           phi.left = as.numeric(), phi.right = as.numeric(),
-                           circ = as.numeric(), arc.circ = as.numeric(), sec = as.numeric())
+  # .filteraux <- data.frame(cluster = as.numeric(),
+  #                          center.x = as.numeric(), center.y = as.numeric(),
+  #                          center.phi = as.numeric(), center.rho = as.numeric(),
+  #                          center.r = as.numeric(), center.theta = as.numeric(),
+  #                          radius = as.numeric(),
+  #                          n.pts = as.numeric(), n.pts.red = as.numeric(),
+  #                          phi.left = as.numeric(), phi.right = as.numeric(),
+  #                          circ = as.numeric(), arc.circ = as.numeric(), sec = as.numeric())
+  #
+  # .filteraux.2 <- data.frame(cluster = as.numeric(),
+  #                            center.x = as.numeric(), center.y = as.numeric(),
+  #                            center.phi = as.numeric(), center.rho = as.numeric(),
+  #                            center.r = as.numeric(), center.theta = as.numeric(),
+  #                            radius = as.numeric(),
+  #                            n.pts = as.numeric(), n.pts.red = as.numeric(),
+  #                            phi.left = as.numeric(), phi.right = as.numeric(),
+  #                            circ = as.numeric(), arc.circ = as.numeric(), sec = as.numeric())
 
-  .filteraux.2 <- data.frame(cluster = as.numeric(),
-                             center.x = as.numeric(), center.y = as.numeric(),
-                             center.phi = as.numeric(), center.rho = as.numeric(),
-                             center.r = as.numeric(), center.theta = as.numeric(),
-                             radius = as.numeric(),
-                             n.pts = as.numeric(), n.pts.red = as.numeric(),
-                             phi.left = as.numeric(), phi.right = as.numeric(),
-                             circ = as.numeric(), arc.circ = as.numeric(), sec = as.numeric())
+  data <- data[1, ]
+
+  gc()
+
+  .filteraux <- list()
+  .filteraux.2 <- list()
+
 
   message("Computing sections")
 
   pb <- progress::progress_bar$new(total = length(breaks))
 
 
-  # Defining slice
+  .filteraux <- list()
+  .filteraux.2 <- list()
+
 
   slice <- slice / 2
+
+
+  cl <- parallel::makeCluster(parallel::detectCores() - 1)
 
 
   for(cuts in breaks){
@@ -382,7 +395,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     # Create a cluster
     # start_time <- Sys.time()
 
-    cl <- parallel::makeCluster(parallel::detectCores() - 1)
 
     .filter <- do.call(rbind, parallel::clusterApply(cl, split(.cut, .cut$cluster), .sections.multi.scan,
                                      tls.precision = tls.precision,
@@ -406,7 +418,10 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   }
 
-    .filteraux <- rbind(.filteraux, .filter)
+    # .filteraux <- rbind(.filteraux, .filter)
+
+    .filteraux[[length(.filteraux) + 1]] <- .filter
+
 
 
     # Second...
@@ -475,7 +490,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     if (interactive()) {
     # Create a cluster
 
-    cl <- parallel::makeCluster(parallel::detectCores() - 1)
 
     .filter <- do.call(rbind, parallel::clusterApply(cl, split(.cut, .cut$cluster), .sections.multi.scan,
                                                      tls.precision = tls.precision,
@@ -483,7 +497,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                                                      slice = slice * 2, bark.roughness = bark.roughness,
                                                      x.center = x.center, y.center = y.center))
 
-    parallel::stopCluster(cl)
 
     } else {
 
@@ -501,6 +514,12 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     gc()
 
   }# End of cuts loop
+
+
+  .filteraux <- do.call(rbind, .filteraux)
+  .filteraux.2 <- do.call(rbind, .filteraux.2)
+
+  parallel::stopCluster(cl)
 
 
 
