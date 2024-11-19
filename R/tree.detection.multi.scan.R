@@ -291,7 +291,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   #                            phi.left = as.numeric(), phi.right = as.numeric(),
   #                            circ = as.numeric(), arc.circ = as.numeric(), sec = as.numeric())
 
-  data <- data[1, ]
+  # data <- data[1, ]
 
   gc()
 
@@ -514,7 +514,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
 
   .filteraux <- do.call(rbind, .filteraux)
-  # .filteraux.2 <- do.call(rbind, .filteraux.2)
+  .filteraux.2 <- do.call(rbind, .filteraux.2)
 
   parallel::stopCluster(cl)
 
@@ -522,7 +522,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   #### Assigning sections to tree axis ####
 
-  if(nrow(.filteraux) < 1 & nrow(.filteraux.2) < 1) {
+  if(length(.filteraux) < 1 & length(.filteraux.2) < 1) {
 
     # Generate a warning and create empty data.frame to be returned, if no row
     # was included in .filter
@@ -534,7 +534,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   }
 
-  if(nrow(.filteraux.2) > 0 & sum(c(.filteraux.2$circ, .filteraux.2$arc.circ)) > 0){
+  if(!is.null(.filteraux.2) & sum(c(.filteraux.2$circ, .filteraux.2$arc.circ)) > 0){
 
     # Assigning sections to tree axis
 
@@ -949,6 +949,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   .tree$n.pts.est <- .tree$points.m * .tree$radius
   .tree$n.pts.red.est <- .tree$points.m.hom * .tree$radius
 
+
   if(!is.null(plot) & is.null(segmentation))
     plotTree <- suppressMessages(lidR::plot(lidR::LAS(data[data$prob.selec == 1, c("x","y","z")]), size = 0.5))
 
@@ -962,10 +963,13 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     suppressMessages(vroom::vroom(file.path(dir.data, data$file[1]),
                                   col_select = c("id", "file", "x", "y", "z", "rho"),
                                   progress = FALSE))
+
   data <- data.table::setDT(data)
   s <- sample(nrow(data), round(nrow(data)*0.1))
   data <- data[s, ]
   data <- data[, c("id", "file", "x", "y", "z", "rho")]
+
+
 
   # If only one tree is detected, Voronoi tessellation is not working
 

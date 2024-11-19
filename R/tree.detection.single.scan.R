@@ -524,7 +524,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   #### Assigning sections to tree axis ####
 
-  if(is.null(.filteraux) & is.null(.filteraux.2)) {
+  if(length(.filteraux) < 1 & length(.filteraux.2) < 1) {
 
     warning("No tree was detected")
 
