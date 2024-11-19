@@ -295,8 +295,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   gc()
 
-  .filteraux <- list()
-  .filteraux.2 <- list()
+
 
 
   message("Computing sections")
@@ -515,7 +514,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
 
   .filteraux <- do.call(rbind, .filteraux)
-  .filteraux.2 <- do.call(rbind, .filteraux.2)
+  # .filteraux.2 <- do.call(rbind, .filteraux.2)
 
   parallel::stopCluster(cl)
 
