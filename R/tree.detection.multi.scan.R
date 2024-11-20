@@ -115,6 +115,13 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                                verbose = FALSE,
                                solver_threshold = 50000)
 
+  if(is.null(VerSur$verticality) | is.null(VerSur$surface_variation)){
+
+    VerSur$verticality <- NA
+    VerSur$surface_variation <- NA
+
+  }
+
   stem <- merge(stem, VerSur[, c("point", "verticality", "surface_variation")], by = "point")
 
   rm(VerSur)
@@ -441,6 +448,13 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                                    keep_NaN = FALSE,            # this means, when we run the Rcpp code we don't exclude computed rows if 1 of the features is NA. If we have to compute 13 features and 1 is NA, then we keep this row
                                    verbose = FALSE,
                                    solver_threshold = 50000)
+
+      if(is.null(VerSur$verticality) | is.null(VerSur$surface_variation)){
+
+        VerSur$verticality <- NA
+        VerSur$surface_variation <- NA
+
+      }
 
       .cut <- merge(.cut, VerSur[, c("point", "verticality", "surface_variation")], by = "point")
 

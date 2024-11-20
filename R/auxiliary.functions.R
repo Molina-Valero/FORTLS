@@ -300,7 +300,7 @@
 
   } else {
 
-    colnames(df_out) = c('x', 'y', 'radio', 'n', 'mae', 'cv')
+    colnames(kk) = c('x', 'y', 'radio', 'n', 'mae', 'cv')
 
     kk <- kk[kk$n >= max(kk$n), ]
 
