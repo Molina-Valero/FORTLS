@@ -399,7 +399,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
 
     .filter <- do.call(rbind, parallel::clusterApply(cl, split(.cut, .cut$cluster),
-                                                     .sections.single.scan.2, .cut = .cut,
+                                                     .sections.single.scan, .cut = .cut,
                                                      .alpha.v = .alpha.v, .alpha.h = .alpha.h,
                                                      .dbh.min = .dbh.min, .dbh.max = .dbh.max,
                                                      slice = slice * 2, bark.roughness = bark.roughness,
@@ -409,7 +409,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     } else {
 
 
-      .filter <- do.call(rbind, lapply(split(.cut, .cut$cluster), .sections.single.scan.2, .cut = .cut,
+      .filter <- do.call(rbind, lapply(split(.cut, .cut$cluster), .sections.single.scan, .cut = .cut,
                                        .alpha.v = .alpha.v, .alpha.h = .alpha.h,
                                        .dbh.min = .dbh.min, .dbh.max = .dbh.max,
                                        slice = slice * 2, bark.roughness = bark.roughness,
@@ -495,7 +495,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
       # Selection of those cluster belonging to trees
 
-      .filter <- do.call(rbind, lapply(split(.cut, .cut$cluster), .sections.single.scan.2, .cut = .cut,
+      .filter <- do.call(rbind, lapply(split(.cut, .cut$cluster), .sections.single.scan, .cut = .cut,
                                        .alpha.v = .alpha.v, .alpha.h = .alpha.h,
                                        .dbh.min = .dbh.min, .dbh.max = .dbh.max,
                                        slice = slice * 2, bark.roughness = bark.roughness,
