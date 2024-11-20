@@ -132,7 +132,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   threads <- parallel::detectCores() -1
 
   VerSur <- geometric.features(data = stem,
-                               grid_method = 'sf_grid',
+                               grid_method = 'voxel_grid',
                                features = c("verticality", "surface_variation"),
                                dist = 0.1,
                                threads = threads,
