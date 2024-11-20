@@ -98,21 +98,26 @@
 
   .density <- matrix(0, ncol = length(.x.values), nrow = length(.y.values))
 
+
+
   for(i in 1:length(.x.values)){
     for(j in 1:length(.y.values)){
 
-      .den <- .dat[.dat$x <= .x.values[i] + .h &
-                     .dat$x >  .x.values[i] - .h &
-                     .dat$y <= .y.values[j] + .h &
-                     .dat$y >  .y.values[j] - .h, , drop = FALSE]
+      # .den <- .dat[.dat$x <= .x.values[i] + .h &
+      #                .dat$x >  .x.values[i] - .h &
+      #                .dat$y <= .y.values[j] + .h &
+      #                .dat$y >  .y.values[j] - .h, , drop = FALSE]
+
+      .den <- .dat[x <= .x.values[i] + .h &
+                     x >  .x.values[i] - .h &
+                     y <= .y.values[j] + .h &
+                     y >  .y.values[j] - .h, ]
 
       # Discard cells with less than 2 points for computing mean points density by cell
-
       .density[j, i] <- ifelse(nrow(.den) < 1, NA, nrow(.den))
-
     }
-
   }
+
 
 
   # Estimate mean density by cell
@@ -124,27 +129,30 @@
 
   .remove <- data.frame(point = as.numeric())
 
+
   for(i in 1:length(.x.values)){
     for(j in 1:length(.y.values)){
 
-      .den <- .dat[.dat$x <= .x.values[i] + .h &
-                     .dat$x >  .x.values[i] - .h &
-                     .dat$y <= .y.values[j] + .h &
-                     .dat$y >  .y.values[j] - .h, , drop = FALSE]
+      # .den <- .dat[.dat$x <= .x.values[i] + .h &
+      #                .dat$x >  .x.values[i] - .h &
+      #                .dat$y <= .y.values[j] + .h &
+      #                .dat$y >  .y.values[j] - .h, , drop = FALSE]
 
-      # Discard cells with less than 2 points for computing mean density by cell
+      .den <- .dat[x <= .x.values[i] + .h &
+                     x >  .x.values[i] - .h &
+                     y <= .y.values[j] + .h &
+                     y >  .y.values[j] - .h, ]
 
+      # Discard cells with less than 2 points for computing mean density by
+      # cell
       .density[j, i] <- ifelse(nrow(.den) < 1, NA, nrow(.den))
 
       if(nrow(.den) > .threeshold){
 
         .rem <- data.frame(point = .den$point)
         .remove <- rbind(.remove, .rem)
-
       }
-
     }
-
   }
 
   .dat <- merge(.dat, .remove, by = "point", all.y = TRUE)
@@ -219,10 +227,25 @@
   # distances between points and corresponding intersection will be stored
   .matriz <- matrix(0, ncol = length(.x.values), nrow = length(.y.values))
 
+  # for(i in 1:length(.x.values)){
+  #   for(j in 1:length(.y.values)){
+  #
+  #     .variance <- stats::var(raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[i], .y.values[j]), lonlat=FALSE))
+  #     .matriz[j, i] <- .variance
+  #
+  #   }
+  # }
+
   for(i in 1:length(.x.values)){
     for(j in 1:length(.y.values)){
 
-      .variance <- stats::var(raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[i], .y.values[j]), lonlat=FALSE))
+      # rst_pnts = raster::pointDistance(p1 = cbind(.dat$x,.dat$y),
+      #                                  p2 = c(.x.values[i], .y.values[j]),
+      #                                  lonlat=FALSE)
+
+      rst_pnts = sqrt((.dat[["x"]] - .x.values[i])^2 + (.dat[["y"]] - .y.values[j])^2)
+
+      .variance <- stats::var(rst_pnts)
       .matriz[j, i] <- .variance
 
     }
@@ -236,19 +259,16 @@
 
 
   # Distances between points and center
-  .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)
+  # .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)
+  .dat$dist = sqrt((.dat[["x"]] - .x.values[.a[2]])^2 + (.dat[["y"]] - .y.values[.a[1]])^2)
 
 
-  dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 600)
-  kk <- try(do.call(rbind, (lapply(dat.i, .RANSAC))), silent = TRUE)
-  rm(dat.i)
+  # dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 600)
+  # kk <- try(do.call(rbind, (lapply(dat.i, .RANSAC))), silent = TRUE)
+  # rm(dat.i)
 
-  # df_out = iterations_RANSAC(data = as.matrix(ransac_dat), n_iterations = ITERS) |>
-  #   data.table::as.data.table()
-  #
-  # colnames(df_out) = c('x', 'y', 'radio', 'n', 'mae', 'cv')
-
-
+  kk = try(iterations_RANSAC(data = as.matrix(.dat[, c("x", "y")]), n_iterations = 600) |>
+             data.table::as.data.table(), silent = TRUE)
 
 
   if(class(kk)[1] == "try-error"){
@@ -280,6 +300,8 @@
 
   } else {
 
+    colnames(df_out) = c('x', 'y', 'radio', 'n', 'mae', 'cv')
+
     kk <- kk[kk$n >= max(kk$n), ]
 
     if(nrow(kk) > 1)
@@ -287,8 +309,8 @@
 
     kk <- kk[1, ]
 
-    # .dat$distRANSAC <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.centerRANSAC$X, .centerRANSAC$Y), lonlat = FALSE)
-    .dat$distRANSAC <- raster::pointDistance(cbind(.dat$x,.dat$y), c(kk$x, kk$y), lonlat = FALSE)
+    # .dat$distRANSAC <- raster::pointDistance(cbind(.dat$x,.dat$y), c(kk$x, kk$y), lonlat = FALSE)
+    .dat$distRANSAC = sqrt((.dat[["x"]] - kk$x)^2 + (.dat[["y"]] - kk$y)^2)
 
     # Radius value as the mean distance
     if(is.null(bark.roughness)){
@@ -700,7 +722,7 @@
 
     # For RANSAC, we keep the circunference with lowest error (mae)
     # and maximum number of inliers (n)
-    
+
     colnames(kk) = c('x', 'y', 'radio', 'n', 'mae', 'cv')
 
     kk <- kk[kk$n >= max(kk$n), ]
