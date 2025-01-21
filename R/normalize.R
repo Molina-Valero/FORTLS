@@ -2,6 +2,7 @@
 normalize <- function(las, normalized = NULL,
                       x.center = NULL, y.center = NULL,
                       x.side = NULL, y.side = NULL,
+                      xpoly = NULL, ypoly = NULL,
                       max.dist = NULL, min.height = NULL, max.height = 50,
                       algorithm.dtm = "knnidw", res.dtm = 0.2,
                       csf = list(cloth_resolution = 0.5),
@@ -87,11 +88,19 @@ normalize <- function(las, normalized = NULL,
       .data <- lidR::clip_circle(.las, x.center, y.center, max.dist)
       .data <- data.frame(.data@data)}
 
+
       else if (!is.null(x.side) | !is.null(y.side)){
 
       .data <- lidR::clip_rectangle(.las, x.center - (x.side / 2), y.center - (y.side / 2),
                                     x.center + (x.side / 2), y.center + (y.side / 2))
-      .data <- data.frame(.data@data)
+      .data <- data.frame(.data@data)}
+
+
+      else if (!is.null(xpoly) | !is.null(ypoly)){
+
+       .data <- lidR::clip_polygon(.las, xpoly, ypoly)
+       .data <- data.frame(.data@data)
+
 
       } else {
 
