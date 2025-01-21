@@ -81,30 +81,27 @@ normalize <- function(las, normalized = NULL,
 
   # Data filtering at horizontal distances larger than max_dist m in the horizontal plane
 
-  # if(!is.null(normalized)) {
+  if(!is.null(normalized)) {
 
-      if(!is.null(max.dist)){
+    if(!is.null(max.dist)){
 
       .data <- lidR::clip_circle(.las, x.center, y.center, max.dist)
       .data <- data.frame(.data@data)}
 
-
-      if(!is.null(x.side) | !is.null(y.side)){
+    else if (!is.null(x.side) | !is.null(y.side)){
 
       .data <- lidR::clip_rectangle(.las, x.center - (x.side / 2), y.center - (y.side / 2),
                                     x.center + (x.side / 2), y.center + (y.side / 2))
       .data <- data.frame(.data@data)}
 
+    else if (!is.null(xpoly) | !is.null(ypoly)){
 
-      if(!is.null(xpoly) | !is.null(ypoly)){
+      .data <- lidR::clip_polygon(.las, xpoly, ypoly)
+      .data <- data.frame(.data@data)
 
-       .data <- lidR::clip_polygon(.las, xpoly, ypoly)
-       .data <- data.frame(.data@data)}
+    } else {
 
-
-    if(!is.null(normalized)) {
-
-      .data <- data.frame(.las@data)
+      .data <- data.frame(.las@data)}
 
 
     # .data <- subset(.data, .data$Classification == 1)
@@ -112,6 +109,7 @@ normalize <- function(las, normalized = NULL,
     .data$slope = 0
 
     .pb$tick()
+
 
   } else {
 
@@ -194,25 +192,29 @@ normalize <- function(las, normalized = NULL,
     .data <- lidR::clip_rectangle(.data, x.center - (x.side / 2), y.center - (y.side / 2),
                                   x.center + (x.side / 2), y.center + (y.side / 2))
 
+    } else if (!is.null(xpoly) | !is.null(ypoly)){
+
+      .data <- lidR::clip_polygon(.las, xpoly, ypoly)
+
   }
 
   .pb$tick()
 
 
-  # Yago's shortcut
-
-  if(!is.null(yago)){
-
-    lidR::writeLAS(.data, paste(dir.result, "/", id, ".laz", sep = ""))
-
-    return()
-
-  }
-
-
-
-  if(!is.null(plot))
-    lidR::plot(.data)
+  # # Yago's shortcut
+  #
+  # if(!is.null(yago)){
+  #
+  #   lidR::writeLAS(.data, paste(dir.result, "/", id, ".laz", sep = ""))
+  #
+  #   return()
+  #
+  # }
+  #
+  #
+  #
+  # if(!is.null(plot))
+  #   lidR::plot(.data)
 
 
   # Assigning slope to point cloud
@@ -235,6 +237,20 @@ normalize <- function(las, normalized = NULL,
 
   }
 
+
+  # Yago's shortcut
+
+  if(!is.null(yago)){
+
+    lidR::writeLAS(.data, paste(dir.result, "/", id, ".laz", sep = ""))
+
+    return()
+
+  }
+
+
+  if(!is.null(plot))
+    lidR::plot(.data)
 
   # Extracting coordinates values
 
