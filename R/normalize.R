@@ -111,21 +111,21 @@ normalize <- function(las, normalized = NULL,
     .pb$tick()
 
 
-    # Yago's shortcut
-
-    if(!is.null(yago)){
-
-      lidR::writeLAS(.data, paste(dir.result, "/", id, ".laz", sep = ""))
-
-      return()
-
-    }
-
-
-    # Plot
-
-    if(!is.null(plot))
-      lidR::plot(.data)
+    # # Yago's shortcut
+    #
+    # if(!is.null(yago)){
+    #
+    #   lidR::writeLAS(.data, paste(dir.result, "/", id, ".laz", sep = ""))
+    #
+    #   return()
+    #
+    # }
+    #
+    #
+    # # Plot
+    #
+    # if(!is.null(plot))
+    #   lidR::plot(.data)
 
 
   } else {
