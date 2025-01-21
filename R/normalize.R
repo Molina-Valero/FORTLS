@@ -81,7 +81,7 @@ normalize <- function(las, normalized = NULL,
 
   # Data filtering at horizontal distances larger than max_dist m in the horizontal plane
 
-  if(!is.null(normalized)) {
+  # if(!is.null(normalized)) {
 
       if(!is.null(max.dist)){
 
@@ -89,22 +89,22 @@ normalize <- function(las, normalized = NULL,
       .data <- data.frame(.data@data)}
 
 
-      else if (!is.null(x.side) | !is.null(y.side)){
+      if(!is.null(x.side) | !is.null(y.side)){
 
       .data <- lidR::clip_rectangle(.las, x.center - (x.side / 2), y.center - (y.side / 2),
                                     x.center + (x.side / 2), y.center + (y.side / 2))
       .data <- data.frame(.data@data)}
 
 
-      else if (!is.null(xpoly) | !is.null(ypoly)){
+      if(!is.null(xpoly) | !is.null(ypoly)){
 
        .data <- lidR::clip_polygon(.las, xpoly, ypoly)
-       .data <- data.frame(.data@data)
+       .data <- data.frame(.data@data)}
 
 
-      } else {
+    if(!is.null(normalized)) {
 
-      .data <- data.frame(.las@data)}
+      .data <- data.frame(.las@data)
 
 
     # .data <- subset(.data, .data$Classification == 1)
