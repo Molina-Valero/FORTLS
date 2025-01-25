@@ -12,17 +12,19 @@
 normalize(las, normalized = NULL,
           x.center = NULL, y.center = NULL,
           x.side = NULL, y.side = NULL,
+          xpoly = NULL, ypoly = NULL,
           max.dist = NULL, min.height = NULL, max.height = 50,
           algorithm.dtm = "knnidw", res.dtm = 0.2,
           csf = list(cloth_resolution = 0.5),
           intensity = NULL, RGB = NULL,
           scan.approach = "single",
           id = NULL, file = NULL, plot = TRUE,
-          dir.data = NULL, save.result = TRUE, dir.result = NULL)}
+          dir.data = NULL, save.result = TRUE, dir.result = NULL,
+          save.las = NULL)}
 
 \arguments{
 
-  \item{las}{Character string containing the name of LAS file belonging to TLS point cloud, including .las extension (see \sQuote{Examples}). Planimetric coordinates of point cloud data must be in local, representing TLS scan point the origin with Cartesian coordinates x and y as (0, 0).}
+  \item{las}{Character string containing the name of LAS/LAZ file belonging to point cloud, including .las/.laz extensions (see \sQuote{Examples}). Planimetric coordinates of point cloud data must be in local, representing TLS scan point the origin with Cartesian coordinates x and y as (0, 0).}
 
   \item{normalized}{Optional argument to establish as \code{TRUE} when point cloud is already normalized.}
 
@@ -33,6 +35,10 @@ normalize(las, normalized = NULL,
   \item{x.side}{x-side (m) of the plot when the plot is square or rectangular.}
 
   \item{y.side}{y-side (m) of the plot when the plot is square or rectangular.}
+
+  \item{xpoly}{Vector containing the x-coordinates of the vertices of the clipping polygon.}
+
+  \item{ypoly}{Vector containing the y-coordinates of the vertices of the clipping polygon.}
 
   \item{max.dist}{Optional maximum horizontal distance (m) considered from the plot centre. All points farther than \code{max.dist} will be discarded after the normalization process. If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, all points will be used in processing, with \code{max.dist} representing the farthest point.}
 
@@ -66,7 +72,9 @@ normalize(las, normalized = NULL,
 
   \item{save.result}{Optional logical which indicates whether or not the output files described in \sQuote{Output Files} section must be saved in \code{dir.result}. If this argument is not specified by the user, it will be set to \code{TRUE} by default and, as consequence, the output files will be saved.}
 
-  \item{dir.result}{Optional character string naming the absolute path of an existing directory where files described in \sQuote{Output Files} section will be saved. \code{.Platform$file.sep} must be used as the path separator in \code{dir.result}. If this argument is not specified by the user, and \code{save.result} is \code{TRUE}, it will be set to \code{NULL} by default and, as a consequence, the current working directory of the \R process will be assigned to \code{dir.result} during the execution.}}
+  \item{dir.result}{Optional character string naming the absolute path of an existing directory where files described in \sQuote{Output Files} section will be saved. \code{.Platform$file.sep} must be used as the path separator in \code{dir.result}. If this argument is not specified by the user, and \code{save.result} is \code{TRUE}, it will be set to \code{NULL} by default and, as a consequence, the current working directory of the \R process will be assigned to \code{dir.result} during the execution.}
+
+  \item{save.las}{Optional logical which indicates whether or not the imput point cloud must be saved in \code{dir.result} as LAZ file.}}
 
 \details{
 

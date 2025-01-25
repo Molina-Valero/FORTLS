@@ -11,7 +11,7 @@ normalize <- function(las, normalized = NULL,
                       voxel_size = NULL,
                       id = NULL, file = NULL, plot = TRUE,
                       dir.data = NULL, save.result = TRUE, dir.result = NULL,
-                      yago = NULL){
+                      save.las = NULL){
 
 
   set.seed(123)
@@ -86,20 +86,72 @@ normalize <- function(las, normalized = NULL,
     if(!is.null(max.dist)){
 
       .data <- lidR::clip_circle(.las, x.center, y.center, max.dist)
+
+
+      # Plot
+
+      if(!is.null(plot))
+        lidR::plot(.data)
+
+
+      # Saving laz file
+
+      if(!is.null(save.las))
+        lidR::writeLAS(.data, paste(dir.result, "/", id, ".laz", sep = ""))
+
+
       .data <- data.frame(.data@data)}
 
     else if (!is.null(x.side) | !is.null(y.side)){
 
       .data <- lidR::clip_rectangle(.las, x.center - (x.side / 2), y.center - (y.side / 2),
                                     x.center + (x.side / 2), y.center + (y.side / 2))
+
+      # Plot
+
+      if(!is.null(plot))
+        lidR::plot(.data)
+
+
+      # Saving laz file
+
+      if(!is.null(save.las))
+        lidR::writeLAS(.data, paste(dir.result, "/", id, ".laz", sep = ""))
+
+
       .data <- data.frame(.data@data)}
 
     else if (!is.null(xpoly) | !is.null(ypoly)){
 
       .data <- lidR::clip_polygon(.las, xpoly, ypoly)
+
+      # Plot
+
+      if(!is.null(plot))
+        lidR::plot(.data)
+
+
+      # Saving laz file
+
+      if(!is.null(save.las))
+        lidR::writeLAS(.data, paste(dir.result, "/", id, ".laz", sep = ""))
+
+
       .data <- data.frame(.data@data)
 
     } else {
+
+      # Plot
+
+      if(!is.null(plot))
+        lidR::plot(.data)
+
+
+      # Saving laz file
+
+      if(!is.null(save.las))
+        lidR::writeLAS(.data, paste(dir.result, "/", id, ".laz", sep = ""))
+
 
       .data <- data.frame(.las@data)}
 
@@ -109,23 +161,6 @@ normalize <- function(las, normalized = NULL,
     .data$slope = 0
 
     .pb$tick()
-
-
-    # # Yago's shortcut
-    #
-    # if(!is.null(yago)){
-    #
-    #   lidR::writeLAS(.data, paste(dir.result, "/", id, ".laz", sep = ""))
-    #
-    #   return()
-    #
-    # }
-    #
-    #
-    # # Plot
-    #
-    # if(!is.null(plot))
-    #   lidR::plot(.data)
 
 
   } else {
@@ -218,21 +253,18 @@ normalize <- function(las, normalized = NULL,
   .pb$tick()
 
 
-  # Yago's shortcut
-
-  if(!is.null(yago)){
-
-    lidR::writeLAS(.data, paste(dir.result, "/", id, ".laz", sep = ""))
-
-    return()
-
-  }
-
-
   # Plot
 
   if(!is.null(plot))
     lidR::plot(.data)
+
+
+
+  # Saving laz file
+
+  if(!is.null(save.las))
+    lidR::writeLAS(.data, paste(dir.result, "/", id, ".laz", sep = ""))
+
 
 
   # Assigning slope to point cloud
