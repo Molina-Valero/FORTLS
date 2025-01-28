@@ -111,7 +111,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                                features = c("verticality", "surface_variation"),
                                dist = 0.1,
                                threads = threads,
-                               keep_NaN = FALSE,            # this means, when we run the Rcpp code we don't exclude computed rows if 1 of the features is NA. If we have to compute 13 features and 1 is NA, then we keep this row
+                               keep_NaN = FALSE,            # this means, when we run the Rcpp code we don't ex <- ude computed rows if 1 of the features is NA. If we have to compute 13 features and 1 is NA, then we keep this row
                                verbose = FALSE,
                                solver_threshold = 50000)
 
@@ -317,9 +317,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   slice <- slice / 2
 
 
-  cl <- parallel::makeCluster(parallel::detectCores() - 1)
-
-
   for(cuts in breaks){
 
 
@@ -398,8 +395,10 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     # Selection of those cluster belonging to trees
 
     if (interactive()) {
+
     # Create a cluster
-    # start_time <- Sys.time()
+
+    cl <- parallel::makeCluster(parallel::detectCores() - 1)
 
 
     .filter <- do.call(rbind, parallel::clusterApply(cl, split(.cut, .cut$cluster), .sections.multi.scan,
@@ -408,8 +407,10 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                                      slice = slice * 2, bark.roughness = bark.roughness,
                                      x.center = x.center, y.center = y.center))
 
-    # end_time <- Sys.time()
-    # end_time - start_time
+    # Stop cluster
+
+    parallel::stopCluster(cl)
+
 
   } else {
 
@@ -499,7 +500,10 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
 
     if (interactive()) {
+
     # Create a cluster
+
+    cl <- parallel::makeCluster(parallel::detectCores() - 1)
 
 
     .filter <- do.call(rbind, parallel::clusterApply(cl, split(.cut, .cut$cluster), .sections.multi.scan,
@@ -507,6 +511,10 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                                                      .dbh.min = .dbh.min, .dbh.max = .dbh.max,
                                                      slice = slice * 2, bark.roughness = bark.roughness,
                                                      x.center = x.center, y.center = y.center))
+
+    # Stop cluster
+
+    parallel::stopCluster(cl)
 
 
     } else {
@@ -529,8 +537,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   .filteraux <- do.call(rbind, .filteraux)
   .filteraux.2 <- do.call(rbind, .filteraux.2)
-
-  parallel::stopCluster(cl)
 
 
 

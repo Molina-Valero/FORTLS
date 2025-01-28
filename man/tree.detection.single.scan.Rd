@@ -205,8 +205,6 @@ tree.tls <- tree.detection.single.scan(data = pcd,
 
                                        tls.resolution = list(point.dist = 6.34, tls.dist = 10),
 
-                                       breaks = c(1, 1.3, 1.6),
-
                                        dir.result = dir.result)
 
   }

@@ -327,8 +327,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   slice <- slice / 2
 
 
-  cl <- parallel::makeCluster(parallel::detectCores() - 1)
-
 
   for(cuts in breaks){
 
@@ -405,12 +403,21 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     if (interactive()) {
 
 
+    # Create a cluster
+
+    cl <- parallel::makeCluster(parallel::detectCores() - 1)
+
+
     .filter <- do.call(rbind, parallel::clusterApply(cl, split(.cut, .cut$cluster),
                                                      .sections.single.scan, .cut = .cut,
                                                      .alpha.v = .alpha.v, .alpha.h = .alpha.h,
                                                      .dbh.min = .dbh.min, .dbh.max = .dbh.max,
                                                      slice = slice * 2, bark.roughness = bark.roughness,
                                                      x.center = x.center, y.center = y.center))
+
+    # Stop cluster
+
+    parallel::stopCluster(cl)
 
 
     } else {
@@ -524,8 +531,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   .filteraux <- do.call(rbind, .filteraux)
   .filteraux.2 <- do.call(rbind, .filteraux.2)
-
-  parallel::stopCluster(cl)
 
 
 

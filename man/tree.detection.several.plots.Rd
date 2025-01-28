@@ -190,9 +190,7 @@ tree.tls <- tree.detection.several.plots(las.list =
                                          id = c("PinusSylvestris1",
                                                 "PinusSylvestris2"),
 
-                                         tls.resolution = list(point.dist = 7.67, tls.dist = 10),
-
-                                         breaks = c(1, 1.3, 1.6), stem.section = c(0.5, 4.5))
+                                         tls.resolution = list(point.dist = 7.67, tls.dist = 10))
 
   }
 }
