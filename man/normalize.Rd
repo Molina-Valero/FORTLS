@@ -17,6 +17,7 @@ normalize(las, normalized = NULL,
           algorithm.dtm = "knnidw", res.dtm = 0.2,
           csf = list(cloth_resolution = 0.5),
           intensity = NULL, RGB = NULL,
+          voxel_size = NULL,
           scan.approach = "single",
           id = NULL, file = NULL, plot = TRUE,
           dir.data = NULL, save.result = TRUE, dir.result = NULL,
@@ -56,11 +57,13 @@ normalize(las, normalized = NULL,
 
   \item {\code{cloth_resolution}}: by default 0.5.}
 
-  \item{scan.approach}{Character parameter indicating TLS single-scan (\sQuote{single}) or TLS multi-scan approach or SLAM point clouds (\sQuote{multi}) approaches. If this argument is not specified by the user, it will be set to \sQuote{multi} approach.}
-
   \item{intensity}{Logical parameter useful when point clouds have LiDAR intesinty values.}
 
   \item{RGB}{Logical parameter useful when point clouds are colorized, thus including values of RGB colors. It is based on the Green Leaf Algorithm (GLA) (see \sQuote{Details}).}
+
+  \item{scan.approach}{Character parameter indicating TLS single-scan (\sQuote{single}) or TLS multi-scan approach or SLAM point clouds (\sQuote{multi}) approaches. If this argument is not specified by the user, it will be set to \sQuote{multi} approach.}
+
+  \item{voxel_size}{Defines the size of the 3D grid cells used for downsampling.}
 
   \item{id}{Optional plot identification encoded as character string or numeric. If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, the plot will be encoded as 1.}
 

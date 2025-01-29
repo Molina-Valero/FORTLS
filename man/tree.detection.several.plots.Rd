@@ -18,7 +18,7 @@ tree.detection.several.plots(las.list, id.list = NULL, file = NULL,
                              max.dist = NULL, min.height = NULL, max.height = 50,
                              algorithm.dtm = "knnidw", res.dtm = 0.2,
                              csf = list(cloth_resolution = 0.5),
-                             intensity = NULL, RGB = NULL,
+                             intensity = NULL, RGB = NULL, voxel_size = NULL,
 
                              single.tree = NULL,
                              dbh.min = 4, dbh.max = 200, h.min = 1.3,
@@ -73,6 +73,7 @@ tree.detection.several.plots(las.list, id.list = NULL, file = NULL,
 
   \item{RGB}{Logical parameter useful when point clouds are colorized, thus including values of RGB colors. It is based on the Green Leaf Algorithm (GLA) (see \sQuote{Details}).}
 
+  \item{voxel_size}{Defines the size of the 3D grid cells used for downsampling.}
 
   \item{single.tree}{Optional argument to indicate if there is only one tree.}
 

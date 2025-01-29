@@ -17,6 +17,7 @@ tree.detection.multi.scan(data, single.tree = NULL,
                           stem.section = c(0.7, 3.5), stem.range = NULL, breaks = NULL,
                           slice = 0.1, understory = NULL, bark.roughness = 1,
                           den.type = 1, d.top = NULL,
+                          segmentation = NULL,
                           plot.attributes = NULL, plot = TRUE,
                           save.result = TRUE, dir.result = NULL)}
 
@@ -53,6 +54,8 @@ tree.detection.multi.scan(data, single.tree = NULL,
   \item{den.type}{Numeric argument indicating the dendrometic type used to estimate volumen when there are not sections enough to fit a taper equation. Dendrometrics types available are the following: cylinder = 0, paraboloid = 1 (by default), cone = 2 and neiloid = 3.}
 
   \item{d.top}{Top stem diameter (cm) considered to estimate commercial timber volume.}
+
+  \item{segmentation}{Tree segmentation.}
 
   \item{plot.attributes}{Data frame with attributes at plot level. It must contain a column named \code{id} (character string or numeric value) with encoding coinciding with that used in \code{id} argument of \code{\link{normalize}} for identifying plots. If there are strata, another column named \sQuote{stratum} (numeric) will be required for other functionalities of \pkg{FORTLS} (see, for instance, \code{\link{estimation.plot.size}} or \code{\link{metrics.variables}}). If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, the function will not add these possible plot attributes.}
 
@@ -175,6 +178,8 @@ pcd <- normalize(las = "PiceaAbies.laz",
                  id = "PiceaAbies",
 
                  scan.approach = "multi",
+
+                 voxel_size = 0.01,
 
                  dir.data = dir.data, dir.result = dir.result)
 
