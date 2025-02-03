@@ -29,7 +29,7 @@ representing correlations are generated.
 
 \usage{
 correlations(simulations,
-             variables = c("N", "G", "V", "d", "dg", "d.0", "h", "h.0"),
+             variables = c("N", "G", "d", "dg", "d.0", "h", "h.0"),
              method = c("pearson", "spearman"), save.result = TRUE,
              dir.result = NULL)
 }

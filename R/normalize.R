@@ -41,15 +41,50 @@ normalize <- function(las, normalized = NULL,
 
   # Loading input (LAS file)
 
-  if(is.null(RGB) & is.null(intensity)){
-  .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyz")))}
-    else if (is.null(RGB) & !is.null(intensity)){
-      .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyzIntensity")))}
-        else if (!is.null(RGB) & is.null(intensity)){
-          .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyzRGB")))}
-            else{
-              .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyzIntensityRGB")))}
+  # if(is.null(RGB) & is.null(intensity)){
+  # .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyz")))}
+  #   else if (is.null(RGB) & !is.null(intensity)){
+  #     .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyzIntensity")))}
+  #       else if (!is.null(RGB) & is.null(intensity)){
+  #         .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyzRGB")))}
+  #           else{
+  #             .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyzIntensityRGB")))}
+  #   }
+
+    # Initialize the select option with a default value
+    select_option <- "xyz"
+
+    # Modify select_option based on RGB and intensity presence
+    if (is.null(RGB) & is.null(intensity)) {
+
+      select_option <- "xyz"
+
+    } else if (is.null(RGB) & !is.null(intensity)) {
+
+      select_option <- "xyzIntensity"
+
+    } else if (!is.null(RGB) & is.null(intensity)) {
+
+      select_option <- "xyzRGB"
+
+    } else {
+
+      select_option <- "xyzIntensityRGB"
+
     }
+
+    # If normalized = TRUE, append "Classification"
+    if (!is.null(normalized)) {
+      select_option <- paste(select_option, "Classification")
+    }
+
+    # Read LAS file with the selected attributes
+    .las <- suppressWarnings(suppressMessages(
+      lidR::readLAS(file.path(dir.data, las), select = select_option)
+    ))
+
+  }
+
 
   .las <- lidR::filter_duplicates(.las)
 
@@ -83,85 +118,39 @@ normalize <- function(las, normalized = NULL,
 
   if(!is.null(normalized)) {
 
-    if(!is.null(max.dist)){
+    if (!is.null(max.dist)) {
 
       .data <- lidR::clip_circle(.las, x.center, y.center, max.dist)
 
+    } else if (!is.null(x.side) && !is.null(y.side)) {
 
-      # Plot
+      .data <- lidR::clip_rectangle(
+        .las,
+        x.center - (x.side / 2), y.center - (y.side / 2),
+        x.center + (x.side / 2), y.center + (y.side / 2)
+      )
 
-      if(!is.null(plot))
-        lidR::plot(.data)
-
-
-      # Saving laz file
-
-      if(!is.null(save.las))
-        lidR::writeLAS(.data, paste(dir.result, "/", id, ".laz", sep = ""))
-
-
-      .data <- data.frame(.data@data)}
-
-    else if (!is.null(x.side) | !is.null(y.side)){
-
-      .data <- lidR::clip_rectangle(.las, x.center - (x.side / 2), y.center - (y.side / 2),
-                                    x.center + (x.side / 2), y.center + (y.side / 2))
-
-      # Plot
-
-      if(!is.null(plot))
-        lidR::plot(.data)
-
-
-      # Saving laz file
-
-      if(!is.null(save.las))
-        lidR::writeLAS(.data, paste(dir.result, "/", id, ".laz", sep = ""))
-
-
-      .data <- data.frame(.data@data)}
-
-    else if (!is.null(xpoly) | !is.null(ypoly)){
+    } else if (!is.null(xpoly) && !is.null(ypoly)) {
 
       .data <- lidR::clip_polygon(.las, xpoly, ypoly)
 
-      # Plot
-
-      if(!is.null(plot))
-        lidR::plot(.data)
-
-
-      # Saving laz file
-
-      if(!is.null(save.las))
-        lidR::writeLAS(.data, paste(dir.result, "/", id, ".laz", sep = ""))
-
-
-      .data <- data.frame(.data@data)
-
     } else {
 
-      # Plot
+      .data <- .las
 
-      if(!is.null(plot))
-        lidR::plot(.data)
+    }
 
+    # Plot if requested
+    if (!is.null(plot)) lidR::plot(.data)
 
-      # Saving laz file
+    # Save LAZ file if required
+    if (!is.null(save.las)) {
+      lidR::writeLAS(.data, paste(dir.result, "/", id, ".laz", sep = ""))
+    }
 
-      if(!is.null(save.las))
-        lidR::writeLAS(.data, paste(dir.result, "/", id, ".laz", sep = ""))
-
-
-      .data <- data.frame(.las@data)}
-
-
-    # .data <- subset(.data, .data$Classification == 1)
-
-    .data$slope = 0
-
+    .data <- data.frame(.data@data)
+    .data$slope <- 0
     .pb$tick()
-
 
   } else {
 
@@ -281,12 +270,12 @@ normalize <- function(las, normalized = NULL,
   .data <- data.table::setDT(.data)
 
 
-  # Removing points classified as ground
-
-  .data <- subset(.data, .data$Classification == 1)
 
   }
 
+  # Removing points classified as ground
+
+  .data <- subset(.data, .data$Classification == 1)
 
 
 
