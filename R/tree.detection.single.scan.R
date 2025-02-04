@@ -191,7 +191,17 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     stem <- stem[stem$npts > mean(stem$npts) & stem$ratio > mean(stem$ratio) & stem$nvox > mean(stem$nvox), ]
 
-    }
+  }
+
+
+  if(nrow(stem) < 1){
+
+    warning("No tree was detected")
+
+    .tree <- .no.trees.detected.multi(data, d.top, plot.attributes, dir.result, save.result)
+    return(.tree)
+
+  }
 
 
   buf <- sf::st_as_sf(data.frame(stem), coords = c("x","y"))

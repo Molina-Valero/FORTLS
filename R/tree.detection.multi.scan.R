@@ -172,7 +172,17 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     stem <- stem[stem$npts > mean(stem$npts) & stem$ratio > mean(stem$ratio) & stem$nvox > mean(stem$nvox), ]
 
-    }
+  }
+
+
+  if(nrow(stem) < 1){
+
+    warning("No tree was detected")
+
+    .tree <- .no.trees.detected.multi(data, d.top, plot.attributes, dir.result, save.result)
+    return(.tree)
+
+  }
 
 
   # Creation polygon to extract those projected areas in the original point cloud
