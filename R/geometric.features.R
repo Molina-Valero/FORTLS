@@ -203,7 +203,7 @@ geometric.features <- function(data,
       x = x[, c('point', features)]
 
       if (!keep_NaN) {
-        x = x[complete.cases(x), , drop = F]
+        x = x[stats::complete.cases(x), , drop = F]
       }
 
       x = x |>
@@ -424,7 +424,7 @@ datatable_grid = function(data_inp,
   y_step <- (y_range[2] - y_range[1]) / n_grid
 
   # Create a grid with 15x15 cells
-  grid <- CJ(
+  grid <- data.table::CJ(
     x_bin = seq(1, n_grid, by = 1),
     y_bin = seq(1, n_grid, by = 1)
   )

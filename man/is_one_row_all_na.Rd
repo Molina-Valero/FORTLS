@@ -1,8 +1,8 @@
 \encoding{UTF-8}
 
-\name{VoxR_vox_update}
+\name{is_one_row_all_na}
 
-\alias{VoxR_vox_update}
+\alias{is_one_row_all_na}
 
 \title{This function was updated to return also the input data with the computed voxels}
 
@@ -10,17 +10,11 @@
 
 
 \usage{
-VoxR_vox_update(data, res, full.grid, message)}
+is_one_row_all_na(df)}
 
 \arguments{
 
-  \item{data}{data}
-
-  \item{res}{res}
-
-  \item{full.grid}{full.grid}
-
-  \item{message}{message}}
+  \item{df}{df}}
 
 \value{Data frame}
 

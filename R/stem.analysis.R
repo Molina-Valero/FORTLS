@@ -85,7 +85,7 @@
 
   # Lean
 
-  pca <- princomp(data[, c("x", "y", "hi")])
+  pca <- stats::princomp(data[, c("x", "y", "hi")])
   XY <- sqrt(pca$loadings[, 1][1] ^ 2 + pca$loadings[, 1][2] ^ 2)
 
   if(XY == 0){XY <- 2e-16}

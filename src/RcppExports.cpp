@@ -12,17 +12,6 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// fit_circle_cpp
-List fit_circle_cpp(NumericMatrix points);
-RcppExport SEXP _FORTLS_fit_circle_cpp(SEXP pointsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type points(pointsSEXP);
-    rcpp_result_gen = Rcpp::wrap(fit_circle_cpp(points));
-    return rcpp_result_gen;
-END_RCPP
-}
 // geometric_features_point
 std::map<std::string, double> geometric_features_point(const Eigen::Map<Eigen::VectorXd>& x, const Eigen::Map<Eigen::VectorXd>& y, const Eigen::Map<Eigen::VectorXd>& z, int pto, double dist, bool First_eigenvalue, bool Second_eigenvalue, bool Third_eigenvalue, bool Sum_of_eigenvalues, bool PCA_1, bool PCA_2, bool Anisotropy, bool Planarity, bool Linearity, bool Surface_variation, bool Normal_change_rate, bool Verticality, bool Number_of_points, bool omnivariance, bool eigenentropy, bool surface_density, bool volume_density, int solver_thresh);
 RcppExport SEXP _FORTLS_geometric_features_point(SEXP xSEXP, SEXP ySEXP, SEXP zSEXP, SEXP ptoSEXP, SEXP distSEXP, SEXP First_eigenvalueSEXP, SEXP Second_eigenvalueSEXP, SEXP Third_eigenvalueSEXP, SEXP Sum_of_eigenvaluesSEXP, SEXP PCA_1SEXP, SEXP PCA_2SEXP, SEXP AnisotropySEXP, SEXP PlanaritySEXP, SEXP LinearitySEXP, SEXP Surface_variationSEXP, SEXP Normal_change_rateSEXP, SEXP VerticalitySEXP, SEXP Number_of_pointsSEXP, SEXP omnivarianceSEXP, SEXP eigenentropySEXP, SEXP surface_densitySEXP, SEXP volume_densitySEXP, SEXP solver_threshSEXP) {
@@ -266,7 +255,6 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_FORTLS_fit_circle_cpp", (DL_FUNC) &_FORTLS_fit_circle_cpp, 1},
     {"_FORTLS_geometric_features_point", (DL_FUNC) &_FORTLS_geometric_features_point, 23},
     {"_FORTLS_geometric_features", (DL_FUNC) &_FORTLS_geometric_features, 21},
     {"_FORTLS_fit_circle_cpp_modified", (DL_FUNC) &_FORTLS_fit_circle_cpp_modified, 1},

@@ -51,7 +51,7 @@ species.classification <- function(data, tree.tls, dist = 0.1, type = 3,
     colnames(dat) <- c("x", "y", "z")
 
 
-    kk <- quantile(dat$z, probs = c(0.25,0.5,0.75))
+    kk <- stats::quantile(dat$z, probs = c(0.25,0.5,0.75))
 
     dat <- dat[dat$z >= kk[1] - slice - dist &
                dat$z <= kk[1] + slice + dist |
