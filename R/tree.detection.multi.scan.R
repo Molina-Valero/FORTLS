@@ -127,10 +127,12 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   rm(VerSur)
 
 
-  stem$ver <- ifelse(is.na(stem$verticality), stats::runif(1), stem$verticality)
-  stem$surface_variation <- ifelse(is.na(stem$surface_variation), stats::runif(1), stem$surface_variation)
+  .cut$ver <- (.cut$verticality + (.cut$surface_variation / max(.cut$surface_variation, na.rm = TRUE))) / 2
 
-  stem <- stem[stem$verticality > 0.7 & stem$surface_variation > 0.2, ]
+  stem$ver <- ifelse(is.na(stem$ver), 1, stem$ver)
+
+  stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
+  stem <- stem[stem$ver > stem$prob.ver, ]
 
 
 
