@@ -127,7 +127,9 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   rm(VerSur)
 
 
-  stem$ver <- (stem$verticality + (stem$surface_variation / 0.3333)) / 2
+  # stem$ver <- (stem$verticality + (stem$surface_variation / 0.3333)) / 2
+  stem$ver <- stem$verticality
+
 
   stem$ver <- ifelse(is.na(stem$ver), 1, stem$ver)
 
@@ -436,8 +438,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     if(cuts <= stem.section[1] | cuts >= stem.section[2]){
 
-      threads <- parallel::detectCores() -1
-
       VerSur <- geometric.features(data = .cut,
                                    grid_method = 'sf_grid',
                                    features = c("verticality", "surface_variation"),
@@ -458,7 +458,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
       rm(VerSur)
 
-      .cut$ver <- (.cut$verticality + (1 - (.cut$surface_variation))) / 2
+      .cut$ver <- (.cut$verticality + (.cut$surface_variation / 0.3333)) / 2
 
       .cut$ver <- ifelse(is.na(.cut$ver), 1, .cut$ver)
 
