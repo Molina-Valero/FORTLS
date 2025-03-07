@@ -373,7 +373,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
       .cut$ver <- (.cut$verticality + (.cut$surface_variation / 0.3333)) / 2
 
-      .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
+      .cut$ver <- ifelse(is.na(.cut$ver), 1, .cut$ver)
 
       .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
 
@@ -483,7 +483,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
         .cut$ver <- (.cut$verticality + (.cut$surface_variation / 0.3333)) / 2
 
-        .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
+        .cut$ver <- ifelse(is.na(.cut$ver), 1, .cut$ver)
 
         .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
 
