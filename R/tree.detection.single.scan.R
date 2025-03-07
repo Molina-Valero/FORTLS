@@ -144,13 +144,12 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   rm(VerSur)
 
-  stem$ver <- (stem$verticality + (1 - (stem$surface_variation))) / 2
+  stem$ver <- (stem$verticality + (stem$surface_variation / 0.3333)) / 2
 
-  stem$ver <- ifelse(is.na(stem$ver), 1, stem$ver)
+  stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
 
   stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
   stem <- stem[stem$ver > stem$prob.ver, ]
-
 
 
   woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
@@ -371,9 +370,9 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
       rm(VerSur)
 
-      .cut$ver <- (.cut$verticality + (1 - (.cut$surface_variation))) / 2
+      .cut$ver <- (.cut$verticality + (.cut$surface_variation / 0.3333)) / 2
 
-      .cut$ver <- ifelse(is.na(.cut$ver), 1, .cut$ver)
+      .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
 
       .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
 
@@ -479,9 +478,9 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
         rm(VerSur)
 
-        .cut$ver <- (.cut$verticality + (1 - (.cut$surface_variation))) / 2
+        .cut$ver <- (.cut$verticality + (.cut$surface_variation / 0.3333)) / 2
 
-        .cut$ver <- ifelse(is.na(.cut$ver), 1, .cut$ver)
+        .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
 
         .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
 

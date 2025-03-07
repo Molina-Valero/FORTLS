@@ -9,7 +9,7 @@ bibentry(bibtype="Article",
          year = "2022",
          issn = "",
          doi = "10.1016/j.envsoft.2022.105337",
-         url = "https://www.sciencedirect.com/science/article/pii/S1364815222000433",
+         url = "https://doi.org/10.1016/j.envsoft.2022.105337",
          textVersion =
            paste("Molina-Valero, J. A., Martínez-Calvo, A., Ginzo Villamayor, M. J., Novo Pérez, M. A., Álvarez-González, J. G., Montes, F., Pérez-Cruzado, C. (2022).",
            "Operationalizing the use of TLS in forest inventories: The R package FORTLS.",

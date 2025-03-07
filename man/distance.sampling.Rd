@@ -27,7 +27,7 @@ Detection functions are left-truncated at 1 m, according to Astrup et al., (2014
 
 Same warning messages as \code{\link[Distance]{ds}} function are provided when fits do not converge or another warnings occur.
 
-For further details on these point transects methods  and similar sampling methodologies, as well as their application with R, see Buckland et al., (2001); Marques & Buckland, (2003); Miller & Thomas, (2015) and Clark (2016). Examples of distance sampling analyses, as well as lectures, are available at \url{http://examples.distancesampling.org/} and \url{http://workshops.distancesampling.org/}.}
+For further details on these point transects methods  and similar sampling methodologies, as well as their application with R, see Buckland et al., (2001); Marques & Buckland, (2003); Miller & Thomas, (2015) and Clark (2016). Examples of distance sampling analyses, as well as lectures, are available at \url{https://distancesampling.org/resources/vignettes.html}.}
 
 \value{List containing the following elements:
 
