@@ -427,7 +427,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     # Stop cluster
 
-    parallel::stopCluster(cl)
+    # parallel::stopCluster(cl)
 
 
     } else {
@@ -540,6 +540,11 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
 
   }# End of cuts loop
+
+
+  # Stop cluster
+
+  parallel::stopCluster(cl)
 
   .filteraux <- do.call(rbind, .filteraux)
   .filteraux.2 <- do.call(rbind, .filteraux.2)
