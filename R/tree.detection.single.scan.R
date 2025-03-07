@@ -334,7 +334,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     if(nrow(.cut) < 50){next}
 
-    threads <- parallel::detectCores() -1
 
     if(cuts <= stem.section[1] | cuts >= stem.section[2]){
 
@@ -441,8 +440,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
 
       if(cuts <= stem.section[1] | cuts >= stem.section[2]){
-
-        threads <- parallel::detectCores() -1
 
         VerSur <- geometric.features(data = .cut,
                                      grid_method = 'sf_grid',
