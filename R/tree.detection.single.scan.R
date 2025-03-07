@@ -146,7 +146,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   stem$ver <- (stem$verticality + (stem$surface_variation / 0.3333)) / 2
 
-  stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
+  stem$ver <- ifelse(is.na(stem$ver), 1, stem$ver)
 
   stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
   stem <- stem[stem$ver > stem$prob.ver, ]
@@ -295,32 +295,14 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   #   ncr.threshold <- ncr_point_cloud_double(ncr[1:10000, ])
   #   ncr.threshold <- mean(ncr.threshold$ncr, na.rm = TRUE)}
 
+  gc()
 
   #### Starting with clustering process ####
 
 
-  # .filteraux <- data.frame(cluster = as.numeric(),
-  #                          center.x = as.numeric(), center.y = as.numeric(),
-  #                          center.phi = as.numeric(), center.rho = as.numeric(),
-  #                          center.r = as.numeric(), center.theta = as.numeric(),
-  #                          radius = as.numeric(),
-  #                          n.pts = as.numeric(), n.pts.red = as.numeric(),
-  #                          phi.left = as.numeric(), phi.right = as.numeric(),
-  #                          arc.circ = as.numeric(), sec = as.numeric())
-  #
-  # .filteraux.2 <- data.frame(cluster = as.numeric(),
-  #                            center.x = as.numeric(), center.y = as.numeric(),
-  #                            center.phi = as.numeric(), center.rho = as.numeric(),
-  #                            center.r = as.numeric(), center.theta = as.numeric(),
-  #                            radius = as.numeric(),
-  #                            n.pts = as.numeric(), n.pts.red = as.numeric(),
-  #                            phi.left = as.numeric(), phi.right = as.numeric(),
-  #                            circ = as.numeric(), arc.circ = as.numeric(), sec = as.numeric())
+  # data <- data[1, ]
 
 
-  data <- data[1, ]
-
-  gc()
 
 
 
@@ -334,6 +316,10 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
 
   slice <- slice / 2
+
+  # Create a cluster
+
+  cl <- parallel::makeCluster(parallel::detectCores() - 1)
 
 
 
@@ -413,11 +399,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     if (interactive()) {
 
 
-    # Create a cluster
-
-    cl <- parallel::makeCluster(parallel::detectCores() - 1)
-
-
     .filter <- do.call(rbind, parallel::clusterApply(cl, split(.cut, .cut$cluster),
                                                      .sections.single.scan, .cut = .cut,
                                                      .alpha.v = .alpha.v, .alpha.h = .alpha.h,
@@ -457,9 +438,10 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
       if(nrow(.cut) < 50){next}
 
-      threads <- parallel::detectCores() -1
 
       if(cuts <= stem.section[1] | cuts >= stem.section[2]){
+
+        threads <- parallel::detectCores() -1
 
         VerSur <- geometric.features(data = .cut,
                                      grid_method = 'sf_grid',
