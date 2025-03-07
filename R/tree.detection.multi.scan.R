@@ -400,10 +400,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                                      slice = slice * 2, bark.roughness = bark.roughness,
                                      x.center = x.center, y.center = y.center))
 
-    # Stop cluster
-
-    # parallel::stopCluster(cl)
-
 
   } else {
 
@@ -501,10 +497,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                                                      slice = slice * 2, bark.roughness = bark.roughness,
                                                      x.center = x.center, y.center = y.center))
 
-    # Stop cluster
-
-    parallel::stopCluster(cl)
-
 
     } else {
 
@@ -522,6 +514,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     gc()
 
   }# End of cuts loop
+
+
 
   # Stop cluster
 
