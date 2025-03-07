@@ -393,10 +393,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     if (interactive()) {
 
-    # Create a cluster
-
-    cl <- parallel::makeCluster(parallel::detectCores() - 1)
-
 
     .filter <- do.call(rbind, parallel::clusterApply(cl, split(.cut, .cut$cluster), .sections.multi.scan,
                                      tls.precision = tls.precision,

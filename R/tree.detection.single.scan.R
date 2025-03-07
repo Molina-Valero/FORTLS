@@ -144,7 +144,8 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   rm(VerSur)
 
-  stem$ver <- (stem$verticality + (stem$surface_variation / 0.3333)) / 2
+  # stem$ver <- (stem$verticality + (stem$surface_variation / 0.3333)) / 2
+  stem$ver <- stem$verticality
 
   stem$ver <- ifelse(is.na(stem$ver), 1, stem$ver)
 
