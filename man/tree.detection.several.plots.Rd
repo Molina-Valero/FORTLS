@@ -139,7 +139,7 @@ See \code{\link{normalize}}, \code{\link{tree.detection.single.scan}} and \code{
 
 \section{Output Files}{
 
-At the end of the tree detection process, if the \code{save.result} argument is \code{TRUE}, the function will save both, the reduced point clouds as TXT files encoded according to \code{file} column of \sQuote{Value}; and the data frame with the tree list described in \sQuote{Value} as CSV file (see \code{\link{normalize}} and \code{\link{tree.detection.single.scan}} or \code{\link{tree.detection.multi.scan}} \sQuote{Output files}). All outputs are written without row names in the \code{dir.result} directory using \code{\link{vroom_write}} function from \CRANpkg{vroom} package.}
+At the end of the tree detection process, if the \code{save.result} argument is \code{TRUE}, the function will save both, the reduced point clouds as TXT files encoded according to \code{file} column of \sQuote{Value}; and the data frame with the tree list described in \sQuote{Value} as CSV file (see \code{\link{normalize}} and \code{\link{tree.detection.single.scan}} or \code{\link{tree.detection.multi.scan}} \sQuote{Output files}). All outputs are written without row names in the \code{dir.result} directory using \link[vroom]{vroom_write} function from \CRANpkg{vroom} package.}
 
 
 \note{
