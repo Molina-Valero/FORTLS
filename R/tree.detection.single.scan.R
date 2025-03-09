@@ -153,15 +153,15 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
 
 
-  stem$ver <- stem$surface_variation / 0.33
-  stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
-
-  stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
-  stem <- stem[stem$ver < stem$prob.ver, ]
-
-
-  woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
-  woody <- rbind(woody, stem[, 1:ncol(woody)])
+  # stem$ver <- stem$surface_variation / 0.33
+  # stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
+  #
+  # stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
+  # stem <- stem[stem$ver < stem$prob.ver, ]
+  #
+  #
+  # woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
+  # woody <- rbind(woody, stem[, 1:ncol(woody)])
 
 
   message("Detection of tree stem axes")
