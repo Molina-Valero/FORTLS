@@ -1,10 +1,9 @@
-# Define the path to the folder containing the Python scripts relative to the package directory
-python_folder <- system.file("python", package = "FORTLS")
 
+# Downsampling
 
 voxel_grid_downsampling <- function(points, voxel_size) {
 
-  reticulate::source_python(file.path(python_folder, "voxel_grid_downsampling.py"))
+  reticulate::source_python(system.file("python", "voxel_grid_downsampling.py", package = "FORTLS"))
 
   points <- reticulate::np_array(points)
 
@@ -12,11 +11,12 @@ voxel_grid_downsampling <- function(points, voxel_size) {
 
 }
 
+
 # Species classification
 
 random.forest.fit <- function(dir.data, file_name = NULL) {
 
-  reticulate::source_python(file.path(python_folder, "random_forest_fit.py"))
+  reticulate::source_python(system.file("python", "random_forest_fit.py", package = "FORTLS"))
 
   data_path <- paste(dir.data, "/", sep = "")
 
@@ -29,7 +29,7 @@ random.forest.fit <- function(dir.data, file_name = NULL) {
 
 random.forest.sp <- function(file_name) {
 
-  reticulate::source_python(file.path(python_folder, "random_forest_sp.py"))
+  reticulate::source_python(system.file("python", "random_forest_sp.py", package = "FORTLS"))
 
   # data_path <- paste(dir.data, "/", sep = "")
 

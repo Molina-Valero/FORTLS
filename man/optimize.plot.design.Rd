@@ -159,7 +159,7 @@ Invisible \code{NULL}.
 \section{Output Files}{
 During the execution, interactive heatmaps graphically representing optimal
 correlations values between field estimations and TLS metrics are created and
-saved in \code{dir.result} directory by means of the \code{\link{saveWidget}}
+saved in \code{dir.result} directory by means of the \link[htmlwidgets]{saveWidget}
 function in the \CRANpkg{htmlwidgets} package. The widgets generated allow users
 to consult optimal correlations values and TLS metrics to which they correspond
 directly on the plots, to zoom and scroll, and so on. The pattern used for
