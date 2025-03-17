@@ -304,20 +304,13 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   message("Computing sections")
 
 
-  # Detect available cores and leave 1 core free for system processes
-  num_cores <- max(1, detectCores() - 1)
-
-  # Set up parallel cluster
-  cl <- parallel::makeCluster(num_cores)
-
-
-  message("Computing sections")
-  pb <- progress::progress_bar$new(total = length(breaks))
-
   .filteraux <- list()
   .filteraux.2 <- list()
 
   slice <- slice / 2  # Adjust slice size
+
+
+  pb <- progress::progress_bar$new(total = length(breaks))
 
 
   for(cuts in breaks){
@@ -333,7 +326,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     if(cuts <= stem.section[1] | cuts >= stem.section[2]){
 
-      threads <- parallel::detectCores() -1
+      threads <- max(1, parallel::detectCores() - 1)
 
       VerSur <- geometric.features(data = .cut,
                                    grid_method = 'sf_grid',
@@ -405,6 +398,9 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     if (interactive()) {
 
+      # Set up parallel cluster
+      cl <- max(1, parallel::detectCores() - 1)
+
 
     .filter <- do.call(rbind, parallel::clusterApply(cl, split(.cut, .cut$cluster), .sections.multi.scan,
                                      tls.precision = tls.precision,
@@ -441,6 +437,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
 
     if(cuts <= stem.section[1] | cuts >= stem.section[2]){
+
+      threads <- max(1, parallel::detectCores() - 1)
 
       VerSur <- geometric.features(data = .cut,
                                    grid_method = 'sf_grid',
@@ -509,6 +507,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     if (interactive()) {
 
+      # Set up parallel cluster
+      cl <- max(1, parallel::detectCores() - 1)
 
     .filter <- do.call(rbind, parallel::clusterApply(cl, split(.cut, .cut$cluster), .sections.multi.scan,
                                                      tls.precision = tls.precision,
