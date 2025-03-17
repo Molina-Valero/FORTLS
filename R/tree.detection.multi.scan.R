@@ -304,18 +304,28 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   message("Computing sections")
 
 
-  pb <- progress::progress_bar$new(total = length(breaks))
+  # Stop any existing cluster to avoid conflicts
+  if (exists("cl")) {
+    try(parallel::stopCluster(cl), silent = TRUE)
+  }
 
+  # Detect and limit the number of cores to avoid overloading the system
+  num_cores <- parallel::detectCores(logical = FALSE)
+  cl <- parallel::makeCluster(max(1, min(num_cores - 1, 2)))  # Use up to 2 cores
+
+  # Ensure the cluster is stopped when the script ends, even if errors occur
+  on.exit(parallel::stopCluster(cl), add = TRUE)
+
+  # Reduce the number of threads used in geometric.features
+  threads <- min(2, parallel::detectCores() - 1)
+
+  message("Computing sections")
+  pb <- progress::progress_bar$new(total = length(breaks))
 
   .filteraux <- list()
   .filteraux.2 <- list()
 
-
-  slice <- slice / 2
-
-  # Create a cluster
-
-  cl <- parallel::makeCluster(parallel::detectCores() - 1)
+  slice <- slice / 2  # Adjust slice size
 
 
   for(cuts in breaks){
