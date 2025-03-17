@@ -184,14 +184,21 @@ files <- list.files(pattern = "laz$", path = dir.data)
 
 # Tree detection (TLS single-scan aproach)
 
+id <- c("PinusSylvestris1", "PinusSylvestris2")
+
+center.coord <- data.frame(id = id,
+                           x = rep(0, length(id)),
+                           y = rep(0, length(id)))
+
 tree.tls <- tree.detection.several.plots(las.list =
                                            c("PinusSylvestris1.laz",
                                              "PinusSylvestris2.laz"),
 
-                                         id = c("PinusSylvestris1",
-                                                "PinusSylvestris2"),
+                                         id = id,
 
-                                         tls.resolution = list(point.dist = 7.67, tls.dist = 10))
+                                         tls.resolution = list(point.dist = 7.67, tls.dist = 10),
+
+                                         plot = TRUE)
 
   }
 }
