@@ -300,14 +300,18 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   #### Starting with clustering process ####
 
-
   message("Computing sections")
 
 
-  .filteraux <- list()
-  .filteraux.2 <- list()
+  # Preallocate lists for efficiency
+  .filteraux <- vector("list", length(breaks))
+  .filteraux.2 <- vector("list", length(breaks))
 
   slice <- slice / 2  # Adjust slice size
+
+
+  # Set up parallel cluster
+  cl <- parallel::makeCluster(max(1, parallel::detectCores() - 1))
 
 
   pb <- progress::progress_bar$new(total = length(breaks))
@@ -397,9 +401,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     # Selection of those cluster belonging to trees
 
     if (interactive()) {
-
-      # Set up parallel cluster
-      cl <- max(1, parallel::detectCores() - 1)
 
 
     .filter <- do.call(rbind, parallel::clusterApply(cl, split(.cut, .cut$cluster), .sections.multi.scan,
@@ -507,8 +508,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     if (interactive()) {
 
-      # Set up parallel cluster
-      cl <- max(1, parallel::detectCores() - 1)
 
     .filter <- do.call(rbind, parallel::clusterApply(cl, split(.cut, .cut$cluster), .sections.multi.scan,
                                                      tls.precision = tls.precision,
