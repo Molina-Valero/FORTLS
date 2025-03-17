@@ -151,17 +151,14 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
   stem <- stem[stem$ver > stem$prob.ver, ]
 
+  stem$ver <- stem$surface_variation / 0.33
+  stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
 
+  stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
+  stem <- stem[stem$ver < stem$prob.ver, ]
 
-  # stem$ver <- stem$surface_variation / 0.33
-  # stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
-  #
-  # stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
-  # stem <- stem[stem$ver < stem$prob.ver, ]
-  #
-  #
-  # woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
-  # woody <- rbind(woody, stem[, 1:ncol(woody)])
+  woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
+  woody <- rbind(woody, stem[, 1:ncol(woody)])
 
 
   message("Detection of tree stem axes")
@@ -344,6 +341,8 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     if(cuts <= stem.section[1] | cuts >= stem.section[2]){
 
+      threads <- max(1, parallel::detectCores() - 1)
+
       VerSur <- geometric.features(data = .cut,
                                    grid_method = 'sf_grid',
                                    features = c("verticality", "surface_variation"),
@@ -452,6 +451,8 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
 
       if(cuts <= stem.section[1] | cuts >= stem.section[2]){
+
+        threads <- max(1, parallel::detectCores() - 1)
 
         VerSur <- geometric.features(data = .cut,
                                      grid_method = 'sf_grid',
