@@ -17,8 +17,9 @@ tree.detection.multi.scan(data, single.tree = NULL,
                           stem.section = c(0.7, 3.5), stem.range = NULL, breaks = NULL,
                           slice = 0.1, understory = NULL, bark.roughness = 1,
                           den.type = 1, d.top = NULL,
+                          segmentation = NULL,
                           plot.attributes = NULL, plot = TRUE,
-                          save.result = TRUE, dir.result = NULL)}
+                          dir.data = NULL, save.result = TRUE, dir.result = NULL)}
 
 \arguments{
 
@@ -54,9 +55,13 @@ tree.detection.multi.scan(data, single.tree = NULL,
 
   \item{d.top}{Top stem diameter (cm) considered to estimate commercial timber volume.}
 
+  \item{segmentation}{Tree segmentation.}
+
   \item{plot.attributes}{Data frame with attributes at plot level. It must contain a column named \code{id} (character string or numeric value) with encoding coinciding with that used in \code{id} argument of \code{\link{normalize}} for identifying plots. If there are strata, another column named \sQuote{stratum} (numeric) will be required for other functionalities of \pkg{FORTLS} (see, for instance, \code{\link{estimation.plot.size}} or \code{\link{metrics.variables}}). If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, the function will not add these possible plot attributes.}
 
   \item{plot}{Optional logical which indicates whether or not the normalized point cloud will be plot. If this argument is not specified by the user, it will be set to \code{TRUE} by default and, as consequence, the normalized point cloud will be plot.}
+
+  \item{dir.data}{Optional character string naming the absolute path of the directory where LAS files containing TLS point clouds are located. \code{.Platform$file.sep} must be used as the path separator in \code{dir.data}. If this argument is not specified by the user, it will be set to \code{NULL} by default and, as a consequence, the current working directory of the \R process will be assigned to \code{dir.data} during the execution.}
 
   \item{save.result}{Optional logical which indicates whether or not the output files described in \sQuote{Output Files} section should be saved in \code{dir.result}. If this argument is not specified by the user, it will be set to \code{TRUE} by default and, as a consequence, the output files will be saved.}
 
@@ -176,6 +181,8 @@ pcd <- normalize(las = "PiceaAbies.laz",
 
                  scan.approach = "multi",
 
+                 voxel_size = 0.01,
+
                  dir.data = dir.data, dir.result = dir.result)
 
 
@@ -184,8 +191,6 @@ pcd <- normalize(las = "PiceaAbies.laz",
 tree.tls <- tree.detection.multi.scan(data = pcd,
 
                                       slice = 0.2,
-
-                                      breaks = c(1, 1.3, 1.6),
 
                                       dir.result = dir.result)
 

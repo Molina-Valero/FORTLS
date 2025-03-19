@@ -28,7 +28,7 @@ TLS metrics are also generated.
 
 \usage{
 relative.bias(simulations,
-              variables = c("N", "G", "V", "d", "dg", "d.0", "h", "h.0"),
+              variables = c("N", "G", "d", "dg", "d.0", "h", "h.0"),
               save.result = TRUE, dir.result = NULL)
 }
 
@@ -209,7 +209,7 @@ plot design.
 
 Furthermore, if the \code{save.result} argument is \code{TRUE}, interactive line
 charts graphically representing relative bias values will also be created and saved
-in the \code{dir.result} directory by means of the \code{\link{saveWidget}} function
+in the \code{dir.result} directory by means of the \link[htmlwidgets]{saveWidget} function
 in the \CRANpkg{htmlwidgets} package. Generated widgets allow users to
 consult relative bias data directly on the plots, select/deselect different
 sets of traces, to zoom and scroll, and so on. The pattern used for naming

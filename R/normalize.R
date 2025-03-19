@@ -2,13 +2,16 @@
 normalize <- function(las, normalized = NULL,
                       x.center = NULL, y.center = NULL,
                       x.side = NULL, y.side = NULL,
+                      xpoly = NULL, ypoly = NULL,
                       max.dist = NULL, min.height = NULL, max.height = 50,
                       algorithm.dtm = "knnidw", res.dtm = 0.2,
                       csf = list(cloth_resolution = 0.5),
                       intensity = NULL, RGB = NULL,
                       scan.approach = "single",
+                      voxel_size = NULL,
                       id = NULL, file = NULL, plot = TRUE,
-                      dir.data = NULL, save.result = TRUE, dir.result = NULL){
+                      dir.data = NULL, save.result = TRUE, dir.result = NULL,
+                      save.las = NULL){
 
 
   set.seed(123)
@@ -38,15 +41,50 @@ normalize <- function(las, normalized = NULL,
 
   # Loading input (LAS file)
 
-  if(is.null(RGB) & is.null(intensity)){
-  .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyz")))}
-    else if (is.null(RGB) & !is.null(intensity)){
-      .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyzIntensity")))}
-        else if (!is.null(RGB) & is.null(intensity)){
-          .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyzRGB")))}
-            else{
-              .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyzIntensityRGB")))}
+  # if(is.null(RGB) & is.null(intensity)){
+  # .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyz")))}
+  #   else if (is.null(RGB) & !is.null(intensity)){
+  #     .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyzIntensity")))}
+  #       else if (!is.null(RGB) & is.null(intensity)){
+  #         .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyzRGB")))}
+  #           else{
+  #             .las <- suppressWarnings(suppressMessages(lidR::readLAS(file.path(dir.data, las), select = "xyzIntensityRGB")))}
+  #   }
+
+    # Initialize the select option with a default value
+    select_option <- "xyz"
+
+    # Modify select_option based on RGB and intensity presence
+    if (is.null(RGB) & is.null(intensity)) {
+
+      select_option <- "xyz"
+
+    } else if (is.null(RGB) & !is.null(intensity)) {
+
+      select_option <- "xyzIntensity"
+
+    } else if (!is.null(RGB) & is.null(intensity)) {
+
+      select_option <- "xyzRGB"
+
+    } else {
+
+      select_option <- "xyzIntensityRGB"
+
     }
+
+    # If normalized = TRUE, append "Classification"
+    if (!is.null(normalized)) {
+      select_option <- paste(select_option, "Classification")
+    }
+
+    # Read LAS file with the selected attributes
+    .las <- suppressWarnings(suppressMessages(
+      lidR::readLAS(file.path(dir.data, las), select = select_option)
+    ))
+
+  }
+
 
   .las <- lidR::filter_duplicates(.las)
 
@@ -80,35 +118,43 @@ normalize <- function(las, normalized = NULL,
 
   if(!is.null(normalized)) {
 
-      if(!is.null(max.dist)){
+    if (!is.null(max.dist)) {
 
       .data <- lidR::clip_circle(.las, x.center, y.center, max.dist)
-      .data <- data.frame(.data@data)}
 
-      else if (!is.null(x.side) | !is.null(y.side)){
+    } else if (!is.null(x.side) && !is.null(y.side)) {
 
-      .data <- lidR::clip_rectangle(.las, x.center - (x.side / 2), y.center - (y.side / 2),
-                                    x.center + (x.side / 2), y.center + (y.side / 2))
-      .data <- data.frame(.data@data)
+      .data <- lidR::clip_rectangle(
+        .las,
+        x.center - (x.side / 2), y.center - (y.side / 2),
+        x.center + (x.side / 2), y.center + (y.side / 2)
+      )
 
-      } else {
+    } else if (!is.null(xpoly) && !is.null(ypoly)) {
 
-      .data <- data.frame(.las@data)}
+      .data <- lidR::clip_polygon(.las, xpoly, ypoly)
 
+    } else {
 
-    # .data <- subset(.data, .data$Classification == 1)
+      .data <- .las
 
-    .data$slope = 0
+    }
 
+    # Plot if requested
+    if (!is.null(plot)) lidR::plot(.data)
+
+    # Save LAZ file if required
+    if (!is.null(save.las)) {
+      lidR::writeLAS(.data, paste(dir.result, "/", id, ".laz", sep = ""))
+    }
+
+    .data <- data.frame(.data@data)
+    .data$slope <- 0
     .pb$tick()
 
   } else {
 
   # Normalize
-
-  # .ws  <- seq(3, 12, 4)
-  # .th  <- seq(0.1, 1.5, length.out = length(.ws))
-  # .data <- lidR::classify_ground(.las, algorithm = lidR::pmf(.ws, .th), last_returns = FALSE)
 
   .data <- suppressWarnings(suppressMessages(lidR::classify_ground(.las, algorithm = lidR::csf(cloth_resolution = csf$cloth_resolution), last_returns = FALSE)))
 
@@ -175,6 +221,7 @@ normalize <- function(las, normalized = NULL,
   .pb$tick()
 
 
+
   # Data filtering at horizontal distances larger than max_dist m in the horizontal plane
 
   if(!is.null(max.dist)){
@@ -186,13 +233,27 @@ normalize <- function(las, normalized = NULL,
     .data <- lidR::clip_rectangle(.data, x.center - (x.side / 2), y.center - (y.side / 2),
                                   x.center + (x.side / 2), y.center + (y.side / 2))
 
+    } else if (!is.null(xpoly) | !is.null(ypoly)){
+
+      .data <- lidR::clip_polygon(.las, xpoly, ypoly)
+
   }
 
   .pb$tick()
 
 
+  # Plot
+
   if(!is.null(plot))
     lidR::plot(.data)
+
+
+
+  # Saving laz file
+
+  if(!is.null(save.las))
+    lidR::writeLAS(.data, paste(dir.result, "/", id, ".laz", sep = ""))
+
 
 
   # Assigning slope to point cloud
@@ -209,11 +270,13 @@ normalize <- function(las, normalized = NULL,
   .data <- data.table::setDT(.data)
 
 
+
+  }
+
   # Removing points classified as ground
 
   .data <- subset(.data, .data$Classification == 1)
 
-  }
 
 
   # Extracting coordinates values
@@ -269,15 +332,16 @@ normalize <- function(las, normalized = NULL,
 
   .data$point <- as.integer((1:nrow(.data)))
 
+
   # Green Leaf Algorithm (GLA) (Louhaichi et al., (2001))
   if(!is.null(RGB))
     .data$GLA <- (2 * .data$G - .data$R - .data$B) / (2 * .data$G + .data$R + .data$B)
 
 
-  # Point crooping process
+  # Point crooping process (TLS single-scan)
   # This is a previous step to obtain a homogeneous density of points in the space
   # This is based on the principle that closer objects (with the same size and shape)
-  # have more probability to recieve points
+  # have more probability to receive points
 
   if(scan.approach == "single"){
 
@@ -285,7 +349,42 @@ normalize <- function(las, normalized = NULL,
     .data$prob.random <- stats::runif(nrow(.data))
     .data$prob.selec <- as.integer(ifelse(.data$prob > .data$prob.random, 1, 0))}
 
-  if(scan.approach == "multi"){
+
+  # For the rest of situations, point cloud is downsampled by voxelization
+
+  # if(scan.approach == "multi" & is.null(voxel_size))
+  #   voxel_size <- 0.01
+
+
+  if(scan.approach == "multi" & !is.null(voxel_size)){
+
+    if(is.null(RGB) & is.null(intensity)){
+      .data <- as.data.frame(voxel_grid_downsampling(as.matrix(.data[, c("x", "y", "z", "slope")]), voxel_size))
+      colnames(.data) <- c("x", "y", "z", "slope")}
+
+    else if (is.null(RGB) & !is.null(intensity)){
+      .data <- as.data.frame(voxel_grid_downsampling(as.matrix(.data[, c("x", "y", "z", "slope", "intensity")]), voxel_size))
+      colnames(.data) <- c("x", "y", "z", "slope", "intensity")}
+
+    else if (!is.null(RGB) & is.null(intensity)){
+      .data <- as.data.frame(voxel_grid_downsampling(as.matrix(.data[, c("x", "y", "z", "slope", "R", "G", "B", "GLA")]), voxel_size))
+      colnames(.data) <- c("x", "y", "z", "slope", "R", "G", "B")}
+
+    else{
+      .data <- as.data.frame(voxel_grid_downsampling(as.matrix(.data[, c("x", "y", "z", "slope", "intensity", "R", "G", "B", "GLA")]), voxel_size))
+      colnames(.data) <- c("x", "y", "z", "slope", "intensity", "R", "G", "B")}
+
+
+    .data$rho <- sqrt((.data$x - x.center) ^ 2 + (.data$y - y.center) ^ 2)
+    .data$phi <- atan2(.data$x - x.center, .data$y - y.center)
+    .data$phi <- ifelse(.data$phi < 0, .data$phi + (2 * pi), .data$phi)
+    .data$r <- sqrt(.data$z ^ 2 + .data$rho ^ 2)
+    .data$theta <- atan2(.data$z, .data$rho)
+
+    .data$point <- as.integer((1:nrow(.data)))}
+
+
+    if(scan.approach == "multi"){
 
     .data$prob <- stats::runif(nrow(.data))
     .data$prob.selec <- as.integer(ifelse(.data$prob > 0.5, 1, 0))}

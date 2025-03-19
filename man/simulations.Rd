@@ -452,7 +452,7 @@ Sensing}, \bold{34(sup2)}, S426-S440. \doi{10.5589/m08-046}
 
 \note{
 The simulation process implemented in this function is computationally intensive.
-Although the function currently uses the \code{\link{vroom}} function from the \CRANpkg{vroom} package for reading large files and contains fast implementations of
+Although the function currently uses the \link[vroom]{vroom} function from the \CRANpkg{vroom} package for reading large files and contains fast implementations of
 several critical calculations (C++ via \CRANpkg{Rcpp} package), long
 computation times may be required when a large number of plots are considered,
 number of points in TLS point clouds are very high, or the radius, k

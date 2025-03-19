@@ -18,7 +18,7 @@ tree.detection.several.plots(las.list, id.list = NULL, file = NULL,
                              max.dist = NULL, min.height = NULL, max.height = 50,
                              algorithm.dtm = "knnidw", res.dtm = 0.2,
                              csf = list(cloth_resolution = 0.5),
-                             intensity = NULL, RGB = NULL,
+                             intensity = NULL, RGB = NULL, voxel_size = NULL,
 
                              single.tree = NULL,
                              dbh.min = 4, dbh.max = 200, h.min = 1.3,
@@ -73,6 +73,7 @@ tree.detection.several.plots(las.list, id.list = NULL, file = NULL,
 
   \item{RGB}{Logical parameter useful when point clouds are colorized, thus including values of RGB colors. It is based on the Green Leaf Algorithm (GLA) (see \sQuote{Details}).}
 
+  \item{voxel_size}{Defines the size of the 3D grid cells used for downsampling.}
 
   \item{single.tree}{Optional argument to indicate if there is only one tree.}
 
@@ -138,7 +139,7 @@ See \code{\link{normalize}}, \code{\link{tree.detection.single.scan}} and \code{
 
 \section{Output Files}{
 
-At the end of the tree detection process, if the \code{save.result} argument is \code{TRUE}, the function will save both, the reduced point clouds as TXT files encoded according to \code{file} column of \sQuote{Value}; and the data frame with the tree list described in \sQuote{Value} as CSV file (see \code{\link{normalize}} and \code{\link{tree.detection.single.scan}} or \code{\link{tree.detection.multi.scan}} \sQuote{Output files}). All outputs are written without row names in the \code{dir.result} directory using \code{\link{vroom_write}} function from \CRANpkg{vroom} package.}
+At the end of the tree detection process, if the \code{save.result} argument is \code{TRUE}, the function will save both, the reduced point clouds as TXT files encoded according to \code{file} column of \sQuote{Value}; and the data frame with the tree list described in \sQuote{Value} as CSV file (see \code{\link{normalize}} and \code{\link{tree.detection.single.scan}} or \code{\link{tree.detection.multi.scan}} \sQuote{Output files}). All outputs are written without row names in the \code{dir.result} directory using \link[vroom]{vroom_write} function from \CRANpkg{vroom} package.}
 
 
 \note{
@@ -183,16 +184,21 @@ files <- list.files(pattern = "laz$", path = dir.data)
 
 # Tree detection (TLS single-scan aproach)
 
+id <- c("PinusSylvestris1", "PinusSylvestris2")
+
+center.coord <- data.frame(id = id,
+                           x = rep(0, length(id)),
+                           y = rep(0, length(id)))
+
 tree.tls <- tree.detection.several.plots(las.list =
                                            c("PinusSylvestris1.laz",
                                              "PinusSylvestris2.laz"),
 
-                                         id = c("PinusSylvestris1",
-                                                "PinusSylvestris2"),
+                                         id = id,
 
                                          tls.resolution = list(point.dist = 7.67, tls.dist = 10),
 
-                                         breaks = c(1, 1.3, 1.6), stem.section = c(0.5, 4.5))
+                                         plot = TRUE)
 
   }
 }

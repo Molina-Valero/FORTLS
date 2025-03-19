@@ -9,6 +9,7 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
                                          max.dist = NULL, min.height = NULL, max.height = 50,
                                          algorithm.dtm = "knnidw", res.dtm = 0.2, csf = list(cloth_resolution = 0.5),
                                          intensity = NULL, RGB = NULL,
+                                         voxel_size = NULL,
 
                                          single.tree = NULL,
                                          dbh.min = 4, dbh.max = 200, h.min = 1.3,
@@ -21,6 +22,11 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
                                          plot.attributes = NULL, plot = NULL,
 
                                          dir.data = NULL, save.result = TRUE, dir.result = NULL){
+
+
+  # Obtaining working directory for loading files
+  if(is.null(dir.data))
+    dir.data <- getwd()
 
   # Obtaining working directory for saving files
   if(is.null(dir.result))
@@ -43,7 +49,12 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
 
     # Assign coordinates
 
-    if(!is.null(center.coord)){
+    if(!is.null(center.coord) & !is.null(center.coord$id)){
+
+      x.center <- center.coord[center.coord$id == .id, "x"]
+      y.center <- center.coord[center.coord$id == .id, "y"]
+
+    } else if(!is.null(center.coord)) {
 
       x.center <- center.coord$x[i]
       y.center <- center.coord$y[i]
@@ -85,9 +96,11 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
 
                        intensity = intensity, RGB = RGB,
 
+                       voxel_size = voxel_size,
+
                        scan.approach = scan.approach,
 
-                       id = .id, file = .file, plot = plot,
+                       id = .id, file = .file, plot = NULL,
 
                        dir.data = dir.data, save.result = save.result, dir.result = dir.result)
 
@@ -99,7 +112,7 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
     if(scan.approach == "single"){
 
     if(i > 1)
-      .stem.curve <- read.csv("stem.curve.csv")
+      .stem.curve <- read.csv(paste(dir.data, "/stem.curve.csv", sep = ""))
 
     .tree.tls.i <- tree.detection.single.scan(data = .data, single.tree = single.tree,
 
@@ -128,7 +141,7 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
     if(scan.approach == "multi"){
 
     if(i > 1)
-      .stem.curve <- read.csv("stem.curve.csv")
+      .stem.curve <- read.csv(paste(dir.data, "/stem.curve.csv", sep = ""))
 
     .tree.tls.i <- tree.detection.multi.scan(data = .data, single.tree = single.tree,
 
@@ -162,7 +175,7 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
 
       .tree.tls <- rbind(.tree.tls, .tree.tls.i)
 
-      .stem.curve <- rbind(.stem.curve, read.csv("stem.curve.csv"))
+      .stem.curve <- rbind(.stem.curve, read.csv(paste(dir.data, "/stem.curve.csv", sep = "")))
 
       utils::write.csv(.stem.curve,
                        file = file.path(dir.result, "stem.curve.csv"),

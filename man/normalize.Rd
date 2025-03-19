@@ -12,17 +12,20 @@
 normalize(las, normalized = NULL,
           x.center = NULL, y.center = NULL,
           x.side = NULL, y.side = NULL,
+          xpoly = NULL, ypoly = NULL,
           max.dist = NULL, min.height = NULL, max.height = 50,
           algorithm.dtm = "knnidw", res.dtm = 0.2,
           csf = list(cloth_resolution = 0.5),
           intensity = NULL, RGB = NULL,
           scan.approach = "single",
+          voxel_size = NULL,
           id = NULL, file = NULL, plot = TRUE,
-          dir.data = NULL, save.result = TRUE, dir.result = NULL)}
+          dir.data = NULL, save.result = TRUE, dir.result = NULL,
+          save.las = NULL)}
 
 \arguments{
 
-  \item{las}{Character string containing the name of LAS file belonging to TLS point cloud, including .las extension (see \sQuote{Examples}). Planimetric coordinates of point cloud data must be in local, representing TLS scan point the origin with Cartesian coordinates x and y as (0, 0).}
+  \item{las}{Character string containing the name of LAS/LAZ file belonging to point cloud, including .las/.laz extensions (see \sQuote{Examples}). Planimetric coordinates of point cloud data must be in local, representing TLS scan point the origin with Cartesian coordinates x and y as (0, 0).}
 
   \item{normalized}{Optional argument to establish as \code{TRUE} when point cloud is already normalized.}
 
@@ -33,6 +36,10 @@ normalize(las, normalized = NULL,
   \item{x.side}{x-side (m) of the plot when the plot is square or rectangular.}
 
   \item{y.side}{y-side (m) of the plot when the plot is square or rectangular.}
+
+  \item{xpoly}{Vector containing the x-coordinates of the vertices of the clipping polygon.}
+
+  \item{ypoly}{Vector containing the y-coordinates of the vertices of the clipping polygon.}
 
   \item{max.dist}{Optional maximum horizontal distance (m) considered from the plot centre. All points farther than \code{max.dist} will be discarded after the normalization process. If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, all points will be used in processing, with \code{max.dist} representing the farthest point.}
 
@@ -50,11 +57,13 @@ normalize(las, normalized = NULL,
 
   \item {\code{cloth_resolution}}: by default 0.5.}
 
-  \item{scan.approach}{Character parameter indicating TLS single-scan (\sQuote{single}) or TLS multi-scan approach or SLAM point clouds (\sQuote{multi}) approaches. If this argument is not specified by the user, it will be set to \sQuote{multi} approach.}
-
   \item{intensity}{Logical parameter useful when point clouds have LiDAR intesinty values.}
 
   \item{RGB}{Logical parameter useful when point clouds are colorized, thus including values of RGB colors. It is based on the Green Leaf Algorithm (GLA) (see \sQuote{Details}).}
+
+  \item{scan.approach}{Character parameter indicating TLS single-scan (\sQuote{single}) or TLS multi-scan approach or SLAM point clouds (\sQuote{multi}) approaches. If this argument is not specified by the user, it will be set to \sQuote{multi} approach.}
+
+  \item{voxel_size}{Defines the size of the 3D grid cells used for downsampling.}
 
   \item{id}{Optional plot identification encoded as character string or numeric. If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, the plot will be encoded as 1.}
 
@@ -66,11 +75,13 @@ normalize(las, normalized = NULL,
 
   \item{save.result}{Optional logical which indicates whether or not the output files described in \sQuote{Output Files} section must be saved in \code{dir.result}. If this argument is not specified by the user, it will be set to \code{TRUE} by default and, as consequence, the output files will be saved.}
 
-  \item{dir.result}{Optional character string naming the absolute path of an existing directory where files described in \sQuote{Output Files} section will be saved. \code{.Platform$file.sep} must be used as the path separator in \code{dir.result}. If this argument is not specified by the user, and \code{save.result} is \code{TRUE}, it will be set to \code{NULL} by default and, as a consequence, the current working directory of the \R process will be assigned to \code{dir.result} during the execution.}}
+  \item{dir.result}{Optional character string naming the absolute path of an existing directory where files described in \sQuote{Output Files} section will be saved. \code{.Platform$file.sep} must be used as the path separator in \code{dir.result}. If this argument is not specified by the user, and \code{save.result} is \code{TRUE}, it will be set to \code{NULL} by default and, as a consequence, the current working directory of the \R process will be assigned to \code{dir.result} during the execution.}
+
+  \item{save.las}{Optional logical which indicates whether or not the imput point cloud must be saved in \code{dir.result} as LAZ file.}}
 
 \details{
 
-Relative coordinates are obtained by means of a normalization process, generating a digital terrain model (DTM) from the TLS point cloud, with the ground height set at 0 m. The DTM is generated by spatial interpolation of ground points classified with the CSF algorithm (Zhang et al., (2016)). Two algorithms are available for that purpose: (i) spatial interpolation based on a Delaunay triangulation, which performs a linear interpolation within each triangle (\sQuote{tin}); (ii) spatial interpolation using a k-nearest neighbour (KNN) approach with inverse-distance weighting (IDW) (\sQuote{knnidw}). Note that normalization process is based on \CRANpkg{lidR} package functions: \code{\link{classify_ground}}, \code{\link{grid_terrain}} and \code{\link{normalize_height}}.
+Relative coordinates are obtained by means of a normalization process, generating a digital terrain model (DTM) from the TLS point cloud, with the ground height set at 0 m. The DTM is generated by spatial interpolation of ground points classified with the CSF algorithm (Zhang et al., (2016)). Two algorithms are available for that purpose: (i) spatial interpolation based on a Delaunay triangulation, which performs a linear interpolation within each triangle (\sQuote{tin}); (ii) spatial interpolation using a k-nearest neighbour (KNN) approach with inverse-distance weighting (IDW) (\sQuote{knnidw}). Note that normalization process is based on \CRANpkg{lidR} package functions: \link[lidR]{classify_ground}, \link[lidR]{grid_terrain} and \link[lidR]{normalize_height}.
 
 The point cropping process reduces the point cloud density proportionally to the likelihood that objects will receive points according to their distance from TLS and their size, which is determined by angle aperture (the farther they are, the lower the density is). The result is an approximately homogeneous point cloud in three-dimensional space (for more details see Molina-Valero et al., (2019)).
 
@@ -171,9 +182,15 @@ download.file("https://www.dropbox.com/s/17yl25pbrapat52/PinusRadiata.laz?dl=1",
 
 # Normalizing the whole point cloud data without considering arguments
 
+# Note that in the case of TLS single-scans, the coordinates of the plot center
+# must be specified by the x.center and y.center arguments, which are
+# x.center = 0 and y.center = 0 in this case
+
 pcd <- normalize(las = "PinusRadiata.laz",
 
                  id = "PinusRadiata",
+
+                 x.center = 0, y.center = 0,
 
                  dir.data = dir.data, dir.result = dir.result)
 

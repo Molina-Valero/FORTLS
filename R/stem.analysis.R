@@ -15,6 +15,7 @@
 
     SS.max <- NA
     sinuosity <- NA
+    lean <- NA
 
   } else {
 
@@ -42,8 +43,9 @@
 
   SS.max <- NA
   sinuosity <- NA
+  lean <- NA
 
-  out <- data.frame(tree = n, SS.max = SS.max, sinuosity = sinuosity)
+  out <- data.frame(tree = n, SS.max = SS.max, sinuosity = sinuosity, lean = lean)
 
   return(out)
 
@@ -71,6 +73,8 @@
     } else {SS.max <- S.max}
 
 
+  # Sinuosity
+
   data$x.2 <- c(data$x[2:nrow(data)], data$x[nrow(data)])
   data$y.2 <- c(data$y[2:nrow(data)], data$y[nrow(data)])
   data$hi.2 <- c(data$hi[2:nrow(data)], data$hi[nrow(data)])
@@ -79,9 +83,17 @@
 
   sinuosity <- sum(data$l) / h.range
 
+  # Lean
+
+  pca <- stats::princomp(data[, c("x", "y", "hi")])
+  XY <- sqrt(pca$loadings[, 1][1] ^ 2 + pca$loadings[, 1][2] ^ 2)
+
+  if(XY == 0){XY <- 2e-16}
+  lean <- atan(abs(pca$loadings[, 1][3]) / XY) * (360 / (2 * pi))
+
   }
 
-  out <- data.frame(tree = data$tree[1], SS.max = SS.max, sinuosity = sinuosity)
+  out <- data.frame(tree = data$tree[1], SS.max = SS.max, sinuosity = sinuosity, lean = lean)
 
   return(out)
 

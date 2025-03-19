@@ -1,6 +1,15 @@
 
 
-.sections.single.scan <- function(cut, .cut, .alpha.v, .alpha.h, .dbh.min, .dbh.max, slice, bark.roughness, x.center, y.center){
+.sections.single.scan <- function(cut,
+                                  .cut,
+                                  .alpha.v,
+                                  .alpha.h,
+                                  .dbh.min,
+                                  .dbh.max,
+                                  slice,
+                                  bark.roughness,
+                                  x.center,
+                                  y.center){
 
   .filter <- data.frame(cluster = as.numeric(),
 
@@ -12,7 +21,7 @@
                         # Radius
                         radius = as.numeric(),
 
-                        # Number of points belonging to cluster (craw and after point cropping)
+                        # Number of points belonging to cluster (raw and after point cropping)
                         n.pts = as.numeric(), n.pts.red = as.numeric(),
 
                         # Phi coordinates of left and right
@@ -28,18 +37,15 @@
   # Select cluster i
   .dat <- cut
 
-  if(nrow(.dat) < 10){return(.filter)}
-
-
   # First filter
 
   .n <- (slice / (tan(.alpha.v / 2) * (mean(.dat$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2))
 
   if(nrow(.dat) < .n){return(.filter)}
+  print(.dat$cluster[1])
+  # print(1)
 
   # Second filter
-
-  .h <- 3 * (tan(.alpha.h / 2) * (mean(.dat$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2)
 
   # Compute rho coordinates for section ends
 
@@ -55,10 +61,20 @@
 
   }
 
-  .dist <- sqrt((.dat.2$x[2:nrow(.dat.2)]-.dat.2$x[1:nrow(.dat.2)-1])^2+(.dat.2$y[2:nrow(.dat.2)]-.dat.2$y[1:nrow(.dat.2)-1])^2)
-  .dist <- sd(.dist) / .h
+  .dat.3 <- .dat[order(.dat$theta, decreasing = F), ]
+
+  .dist <- diff(.dat.2$phi)
+  .dist.2 <- diff(.dat.3$theta)
+
+  .dist <- sd(.dist) / .alpha.h
+  .dist.2 <- sd(.dist.2) / .alpha.v
+  .dist <- mean(c(.dist, .dist.2), na.rm = TRUE)
+
 
   if(.dist > 1){return(.filter)}
+  # print(2)
+
+  rm(.dat.3, .dist, .dist.2)
 
   # Generate mesh
 
@@ -91,25 +107,29 @@
 
   .density <- matrix(0, ncol = length(.x.values), nrow = length(.y.values))
 
+
+
   for(i in 1:length(.x.values)){
     for(j in 1:length(.y.values)){
 
-      .den <- .dat[which(.dat$x <= ((.x.values[i]) + .h) &
-                         .dat$x > ((.x.values[i]) - .h) &
-                         .dat$y <= ((.y.values[j]) + .h) &
-                         .dat$y > ((.y.values[j]) - .h)), , drop = FALSE]
+      # .den <- .dat[.dat$x <= .x.values[i] + .h &
+      #                .dat$x >  .x.values[i] - .h &
+      #                .dat$y <= .y.values[j] + .h &
+      #                .dat$y >  .y.values[j] - .h, , drop = FALSE]
+
+      .den <- .dat[x <= .x.values[i] + .h &
+                     x >  .x.values[i] - .h &
+                     y <= .y.values[j] + .h &
+                     y >  .y.values[j] - .h, ]
 
       # Discard cells with less than 2 points for computing mean points density by cell
-
       .density[j, i] <- ifelse(nrow(.den) < 1, NA, nrow(.den))
-
     }
-
   }
 
 
+
   # Estimate mean density by cell
-  # .threeshold <- mean(.density, na.rm = T)
   .threeshold <- stats::quantile(.density, prob = 0.1, na.rm = T)
 
   if(is.nan(.threeshold) | is.na(.threeshold)){return(.filter)}
@@ -118,27 +138,30 @@
 
   .remove <- data.frame(point = as.numeric())
 
+
   for(i in 1:length(.x.values)){
     for(j in 1:length(.y.values)){
 
-      .den <- .dat[which(.dat$x <= ((.x.values[i]) + .h) &
-                           .dat$x > ((.x.values[i]) - .h) &
-                           .dat$y <= ((.y.values[j]) + .h) &
-                           .dat$y > ((.y.values[j]) - .h)), , drop = FALSE]
+      # .den <- .dat[.dat$x <= .x.values[i] + .h &
+      #                .dat$x >  .x.values[i] - .h &
+      #                .dat$y <= .y.values[j] + .h &
+      #                .dat$y >  .y.values[j] - .h, , drop = FALSE]
 
-      # Discard cells with less than 2 points for computing mean density by cell
+      .den <- .dat[x <= .x.values[i] + .h &
+                     x >  .x.values[i] - .h &
+                     y <= .y.values[j] + .h &
+                     y >  .y.values[j] - .h, ]
 
+      # Discard cells with less than 2 points for computing mean density by
+      # cell
       .density[j, i] <- ifelse(nrow(.den) < 1, NA, nrow(.den))
 
       if(nrow(.den) > .threeshold){
 
         .rem <- data.frame(point = .den$point)
         .remove <- rbind(.remove, .rem)
-
       }
-
     }
-
   }
 
   .dat <- merge(.dat, .remove, by = "point", all.y = TRUE)
@@ -146,21 +169,14 @@
   .dat <- .dat[!duplicated(.dat$point), ]
 
 
-  if(nrow(.dat) < 5){return(.filter)}
+  if(nrow(.dat) < .n){return(.filter)}
+  # print(3)
 
-  if(is.nan(mean(.dat$slope, na.rm = TRUE))){
-
-    .n <- (slice / (tan(.alpha.v / 2) * (mean(.dat$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2))
-
-  } else {
-
-    .n <- (slice / (tan(.alpha.v / 2) * (mean(.dat$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2))
-
-  }
 
   # Ratio points
 
   if(mean(.cut$slope, na.rm = TRUE) > 0.5){.n <- 0.7 * .n}
+  # print(5)
 
 
   # Obtain phi and rho coordinates corresponding to mesh intersections
@@ -173,11 +189,11 @@
 
   for(i in 1:length(.x2.values)){
 
-    .den <- .dat[which(.dat$phi <= ((.x2.values[i]) + (.alpha.h/2)) &
-                         .dat$phi >  ((.x2.values[i]) - (.alpha.h/2))), ]
+    .den <- .dat[.dat$phi <= .x2.values[i] + (.alpha.h/2) &
+                   .dat$phi >  .x2.values[i] - (.alpha.h/2), ]
 
     # Aquellas celdas con menos de 2 puntos no las tengo en cuenta
-    # para luego m?s tarde calcular la densidad media por celda
+    # para luego mas tarde calcular la densidad media por celda
     .density[i] <- ifelse(nrow(.den) < 1, NA, nrow(.den))
 
 
@@ -195,19 +211,21 @@
   .density <- ifelse(is.nan(.density), NA, .density)
 
   if(is.nan(mean(.density, na.rm = TRUE))){return(.filter)}
+  # print(5)
 
-  if(max(.density[which(!is.na(.density))], na.rm = T) < floor(.n)){return(.filter)}
+  if(max(.density[!is.na(.density)], na.rm = T) < floor(.n)){return(.filter)}
+  # print(6)
 
   # Remove cells containing only 1 point
   .dat <- merge(.dat, .remove, by = "point", all.y = TRUE)
 
   # If no points remain in .dat after removing, go to next iteration
-  if(nrow(.dat) < 5){return(.filter)}
+  if(nrow(.dat) < .n){return(.filter)}
 
   # Estimate points number for both the original cloud (.n.pts) and the
   # point cloud reduced by the point cropping process (.n.pts.red)
   .n.pts <- nrow(.dat)
-  .n.pts.red <- nrow(.dat[which(.dat$prob.selec == 1), , drop = FALSE])
+  .n.pts.red <- nrow(.dat[.dat$prob.selec == 1, , drop = FALSE])
 
   # After this previous filtering, compute cluster centroid
 
@@ -218,10 +236,25 @@
   # distances between points and corresponding intersection will be stored
   .matriz <- matrix(0, ncol = length(.x.values), nrow = length(.y.values))
 
+  # for(i in 1:length(.x.values)){
+  #   for(j in 1:length(.y.values)){
+  #
+  #     .variance <- stats::var(raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[i], .y.values[j]), lonlat=FALSE))
+  #     .matriz[j, i] <- .variance
+  #
+  #   }
+  # }
+
   for(i in 1:length(.x.values)){
     for(j in 1:length(.y.values)){
 
-      .variance <- stats::var(raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[i], .y.values[j]), lonlat=FALSE))
+      # rst_pnts = raster::pointDistance(p1 = cbind(.dat$x,.dat$y),
+      #                                  p2 = c(.x.values[i], .y.values[j]),
+      #                                  lonlat=FALSE)
+
+      rst_pnts = sqrt((.dat[["x"]] - .x.values[i])^2 + (.dat[["y"]] - .y.values[j])^2)
+
+      .variance <- stats::var(rst_pnts)
       .matriz[j, i] <- .variance
 
     }
@@ -235,23 +268,19 @@
 
 
   # Distances between points and center
-  .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)
+  # .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)
+  .dat$dist = sqrt((.dat[["x"]] - .x.values[.a[2]])^2 + (.dat[["y"]] - .y.values[.a[1]])^2)
 
 
-  # dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 100)
-  dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 600)
-  kk <- try(do.call(rbind, (lapply(dat.i, .RANSAC))), silent = TRUE)
-  # print(.dat$cluster[1])
+  # dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 600)
+  # kk <- try(do.call(rbind, (lapply(dat.i, .RANSAC))), silent = TRUE)
+  # rm(dat.i)
 
-  rm(dat.i)
+  kk = try(iterations_RANSAC(data = as.matrix(.dat[, c("x", "y")]), n_iterations = 600) |>
+             data.table::as.data.table(), silent = TRUE)
 
-  # colnames(.datRANSAC) <- c("X", "Y")
-
-  # .centerRANSAC <- suppressWarnings(try(rTLS::circleRANSAC(data.table::setDT(.datRANSAC),
-  #                                                          fpoints = 0.2, pconf = 0.95, poutlier = c(0.75, 0.75), max_iterations = 100, plot = FALSE), silent = TRUE))
 
   if(class(kk)[1] == "try-error"){
-    # if(max(kk$n) < 3){
 
     if(is.null(bark.roughness)){
 
@@ -275,44 +304,42 @@
 
     }
 
-    if(.radio <= 0 | is.na(.radio)){return(.filter)}
+    if(is.na(.cv) | .radio <= 0 | is.na(.radio)){return(.filter)}
+
 
   } else {
 
+    colnames(kk) = c('x', 'y', 'radio', 'n', 'mae', 'cv')
+
     kk <- kk[kk$n >= max(kk$n), ]
+
     if(nrow(kk) > 1)
       kk <- kk[kk$mae <= min(kk$mae), ]
 
     kk <- kk[1, ]
 
-    # .dat$distRANSAC <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.centerRANSAC$X, .centerRANSAC$Y), lonlat = FALSE)
-    .dat$distRANSAC <- raster::pointDistance(cbind(.dat$x,.dat$y), c(kk$x, kk$y), lonlat = FALSE)
+    # .dat$distRANSAC <- raster::pointDistance(cbind(.dat$x,.dat$y), c(kk$x, kk$y), lonlat = FALSE)
+    .dat$distRANSAC = sqrt((.dat[["x"]] - kk$x)^2 + (.dat[["y"]] - kk$y)^2)
 
     # Radius value as the mean distance
     if(is.null(bark.roughness)){
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
-      # .radioRANSAC <- .centerRANSAC$radius
       .radioRANSAC <- kk$radio
-      # .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.05, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
       .cvRANSAC <- kk$cv
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
 
     } else if(bark.roughness == 1){
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
-      # .radioRANSAC <- .centerRANSAC$radius
       .radioRANSAC <- kk$radio
-      # .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
       .cvRANSAC <- kk$cv
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
 
     } else if(bark.roughness == 2){
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
-      # .radioRANSAC <- .centerRANSAC$radius
       .radioRANSAC <- kk$radio
-      # .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
       .cvRANSAC <- kk$cv
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
 
@@ -349,13 +376,16 @@
   .center.r <- sqrt(.dat$sec[1] ^ 2 + .center.rho ^ 2)
   .center.theta <- atan2(.dat$sec[1], .center.rho)
 
-  if(.cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2) {return(.filter)}
+  if(is.na(.cv) | .cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2) {return(.filter)}
+  # print(7)
 
   # Center behind tree surface
   if(stats::quantile(.dat$rho, prob = 0.05, na.rm = T) > .center.r) {return(.filter)}
+  # print(8)
 
   # At least 95 % of distances should be greater than .radio / 2
   if(stats::quantile(.dat$dist, prob = 0.05, na.rm = T) < (.radio / 2)) {return(.filter)}
+  # print(9)
 
 
   # Select 1st percentil, if necessary for strange points
@@ -375,6 +405,7 @@
   .rho.cent <- mean(.dat.2$rho[which(round(.dat.2$phi, 3) >= round(.phi.cent - .alpha.h, 3) & round(.dat.2$phi, 3) <= round(.phi.cent + .alpha.h, 3))])
 
   if(is.nan(.rho.cent)){return(.filter)}
+  # print(10)
 
   # Check rho coordinates for ends are greater than center ones
   .arc.circ <- ifelse(.rho.left > .rho.cent & .rho.right > .rho.cent, 1, 0)
@@ -404,8 +435,10 @@
   .n.w.ratio <- stats::sd(.dat$z) / sqrt(stats::sd(.dat$x) ^ 2 + stats::sd(.dat$y) ^ 2)
 
   if(.n.w.ratio > 1 | is.nan(.n.w.ratio)){return(.filter)}
+  # print(11)
 
-  if(nrow(.dat) < 5){return(.filter)}
+  if(nrow(.dat) < .n){return(.filter)}
+  # print(12)
 
 
   # Results
@@ -455,10 +488,14 @@
 }
 
 
-
-
-
-.sections.multi.scan <- function(cut, tls.precision, .dbh.min, .dbh.max, slice, bark.roughness, x.center, y.center){
+.sections.multi.scan <- function(cut,
+                                 tls.precision,
+                                 .dbh.min,
+                                 .dbh.max,
+                                 slice,
+                                 bark.roughness,
+                                 x.center,
+                                 y.center) {
 
   .filter <- data.frame(cluster = as.numeric(),
 
@@ -470,7 +507,7 @@
                         # Radius
                         radius = as.numeric(),
 
-                        # Number of points belonging to cluster (craw and after point cropping)
+                        # Number of points belonging to clusters (raw and after point cropping)
                         n.pts = as.numeric(), n.pts.red = as.numeric(),
 
                         # Circumference
@@ -482,53 +519,71 @@
                         # Partial occlusion
                         occlusion = as.numeric())
 
-
   .dat <- cut
 
   if(nrow(.dat) < 10){return(.filter)}
 
-  # Generate mesh
+  # Optional, just to see what you are doing here:
+  # plot(cut$x, cut$y, asp = 1)
+
+  # Generate a mesh over the points
 
   .x.rang <- max(.dat$x) - min(.dat$x)
   .y.rang <- max(.dat$y) - min(.dat$y)
 
+
   # Compute centroids coordinates with respect to TLS
+
   .x.cent <- (.x.rang / 2) + min(.dat$x)
   .y.cent <- (.y.rang / 2) + min(.dat$y)
 
+
   # Obtain width for mesh to be applied in the cluster
+
   .ancho.malla <- (max(.x.rang, .y.rang) / 2) * 1.5
 
   # Maximal and minimal mesh coordinates
+
   .xmin <- .x.cent - .ancho.malla
   .ymin <- .y.cent - .ancho.malla
   .xmax <- .x.cent + .ancho.malla
   .ymax <- .y.cent + .ancho.malla
 
   # Filter
+
   if(is.null(tls.precision)){.h <- 0.03} else {.h <- tls.precision * 2 }
 
   .x.values <- seq(from = .xmin, to = .xmax, by = .h)
   .y.values <- seq(from = .ymin, to = .ymax, by = .h)
 
+  # print(.x.values)
+  # print(.y.values)
+
   .h <- .h / 2
 
+  # Optional, just to see what you are doing here:
+  # abline(v = .x.values + .h, h = .y.values + .h)
+
   .density <- matrix(0, ncol = length(.x.values), nrow = length(.y.values))
+
+  # print(class(.dat))
 
   for(i in 1:length(.x.values)){
     for(j in 1:length(.y.values)){
 
-      .den <- .dat[which(.dat$x <= ((.x.values[i]) + .h) &
-                           .dat$x > ((.x.values[i]) - .h) &
-                           .dat$y <= ((.y.values[j]) + .h) &
-                           .dat$y > ((.y.values[j]) - .h)), , drop = FALSE]
+      # .den <- .dat[.dat$x <= .x.values[i] + .h &
+      #                .dat$x >  .x.values[i] - .h &
+      #                .dat$y <= .y.values[j] + .h &
+      #                .dat$y >  .y.values[j] - .h, , drop = FALSE]
 
-      # Discard cells with less than 2 points for computing mean points
-      # density by cell
+      .den <- .dat[x <= .x.values[i] + .h &
+                     x >  .x.values[i] - .h &
+                     y <= .y.values[j] + .h &
+                     y >  .y.values[j] - .h, ]
+
+      # Discard cells with less than 2 points for computing mean points density by cell
       .density[j, i] <- ifelse(nrow(.den) < 1, NA, nrow(.den))
-
     }
-
   }
 
 
@@ -545,10 +600,15 @@
   for(i in 1:length(.x.values)){
     for(j in 1:length(.y.values)){
 
-      .den <- .dat[which(.dat$x <= ((.x.values[i]) + .h) &
-                         .dat$x > ((.x.values[i]) - .h) &
-                         .dat$y <= ((.y.values[j]) + .h) &
-                         .dat$y > ((.y.values[j]) - .h)), , drop = FALSE]
+      # .den <- .dat[.dat$x <= .x.values[i] + .h &
+      #                .dat$x >  .x.values[i] - .h &
+      #                .dat$y <= .y.values[j] + .h &
+      #                .dat$y >  .y.values[j] - .h, , drop = FALSE]
+
+      .den <- .dat[x <= .x.values[i] + .h &
+                     x >  .x.values[i] - .h &
+                     y <= .y.values[j] + .h &
+                     y >  .y.values[j] - .h, ]
 
       # Discard cells with less than 2 points for computing mean density by
       # cell
@@ -558,28 +618,31 @@
 
         .rem <- data.frame(point = .den$point)
         .remove <- rbind(.remove, .rem)
-
       }
-
     }
-
   }
 
   .dat <- merge(.dat, .remove, by = "point", all.y = TRUE)
   .dat <- .dat[!duplicated(.dat$point), ]
 
-  if(nrow(.dat) < 10){return(.filter)}
+  # Optional, just to see what you are doing here:
+  # points(.dat$x, .dat$y, col = "green")
 
+  if(nrow(.dat) < 10){return(.filter)}
 
   # Estimate points number for both the original cloud (.n.pts) and the
   # point cloud reduced by the point cropping process (.n.pts.red)
   .n.pts <- nrow(.dat)
-  .n.pts.red <- nrow(.dat[which(.dat$prob.selec == 1), , drop = FALSE])
+  .n.pts.red <- nrow(.dat[.dat$prob.selec == 1, , drop = FALSE])
 
   # After this previous filtering, compute cluster centroid
 
   .x.values <- seq(from = .xmin, to = .xmax, by = 0.01)
   .y.values <- seq(from = .ymin, to = .ymax, by = 0.01)
+
+  # Optional, just to see what you are doing here:
+  # plot(.dat$x, .dat$y, asp = 1)
+  # abline(v = .x.values, h = .y.values)
 
   # Create an empty matrix where, for each mesh intersection, variance of
   # distances between points and corresponding intersection will be stored
@@ -588,50 +651,56 @@
   for(i in 1:length(.x.values)){
     for(j in 1:length(.y.values)){
 
-      .variance <- stats::var(raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[i], .y.values[j]), lonlat=FALSE))
+      # rst_pnts = raster::pointDistance(p1 = cbind(.dat$x,.dat$y),
+      #                                  p2 = c(.x.values[i], .y.values[j]),
+      #                                  lonlat=FALSE)
+
+      rst_pnts = sqrt((.dat[["x"]] - .x.values[i])^2 + (.dat[["y"]] - .y.values[j])^2)
+
+      .variance <- stats::var(rst_pnts)
       .matriz[j, i] <- .variance
 
     }
   }
 
-  # Consider as section center the intesection where variance is minimal
+  # Consider as section center the intesection where variance is minimal,
+  # which will be a center candidate
+
   .a <- which(.matriz == min(.matriz), arr.ind = TRUE)
 
   .center.x <- .x.values[.a[2]]
   .center.y <- .y.values[.a[1]]
 
+  # Optional, just to see what you are doing here:
+  # points(.center.x, .center.y, pch = 19, col = "red")
 
-  # Distances between points and center
-  .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)
+  # Distances between points and the condidate center
+  # .dat$dist <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.x.values[.a[2]], .y.values[.a[1]]), lonlat = FALSE)
+  .dat$dist = sqrt((.dat[["x"]] - .x.values[.a[2]])^2 + (.dat[["y"]] - .y.values[.a[1]])^2)
 
-  # .datRANSAC <- .dat[, c("x", "y")]
+  # data.table::fwrite(x = .dat, file = '/home/lampros/Desktop/Upwork/FREELANCER_Platform/2024_09_27_R_Package_Speed_Optimization_Expert/2024_11_16_UPDATED_TASK/benchmark/tmp.csv', row.names = F)
 
-  # dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 100)
-  dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 600)
 
-  # cl <- parallel::makeCluster(parallel::detectCores()-1)
+  # Application of the ransac algorithm to select another possible candidate for section circumference
+  # We apply the function RANSAC() 600 times to generate 600 candidates
 
-  # start_time <- Sys.time()
-  # kk <- try(do.call(rbind, (parallel::clusterApply(cl, dat.i, .RANSAC))), silent = TRUE)
-  # end_time <- Sys.time()
+  # dat.i <- rep(list(as.matrix(.dat[, c("x", "y")])), 600)
+  # kk <- try(do.call(rbind, (lapply(dat.i, .RANSAC))), silent = TRUE)
+  #
+  # rm(dat.i)
 
-  # start_time <- Sys.time()
-  kk <- try(do.call(rbind, (lapply(dat.i, .RANSAC))), silent = TRUE)
-  # end_time <- Sys.time()
+  kk = try(iterations_RANSAC(data = as.matrix(.dat[, c("x", "y")]), n_iterations = 600) |>
+    data.table::as.data.table(), silent = TRUE)
+  # colnames(kk) = c('x', 'y', 'radio', 'n', 'mae', 'cv')
 
-  # print(.dat$cluster[1])
-
-  rm(dat.i)
-
-  # colnames(.datRANSAC) <- c("X", "Y")
-
-  # .centerRANSAC <- suppressWarnings(try(rTLS::circleRANSAC(data.table::setDT(.datRANSAC),
-  #                                                          fpoints = 0.2, pconf = 0.95, poutlier = c(0.75, 0.75), max_iterations = 100, plot = FALSE), silent = TRUE))
+  # If the RANSAC algorithm does not work, we retain the first candidate as circumference,
+  # calculating the radio and coeficient of variation (cv).
 
   if(class(kk)[1] == "try-error"){
-  # if(max(kk$n) < 3){
 
     if(is.null(bark.roughness)){
+
+      # The radius of the circumference will be the average of all the distances from the center to the points of the section:
 
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
@@ -653,60 +722,80 @@
 
     }
 
-    if(.radio <= 0 | is.na(.radio)){return(.filter)}
+    if(is.na(.cv) | .radio <= 0 | is.na(.radio)){return(.filter)}
+
+    # If the RANSAC algorithm works, we retain both candidate as circumference,
+    # calculating the radio and coeficient of variation (cv) for both.
 
   } else {
 
+    # For RANSAC, we keep the circunference with lowest error (mae)
+    # and maximum number of inliers (n)
+
+    colnames(kk) = c('x', 'y', 'radio', 'n', 'mae', 'cv')
+
     kk <- kk[kk$n >= max(kk$n), ]
+
     if(nrow(kk) > 1)
       kk <- kk[kk$mae <= min(kk$mae), ]
 
     kk <- kk[1, ]
 
-    # .dat$distRANSAC <- raster::pointDistance(cbind(.dat$x,.dat$y), c(.centerRANSAC$X, .centerRANSAC$Y), lonlat = FALSE)
-    .dat$distRANSAC <- raster::pointDistance(cbind(.dat$x,.dat$y), c(kk$x, kk$y), lonlat = FALSE)
+    # .dat$distRANSAC <- raster::pointDistance(cbind(.dat$x,.dat$y), c(kk$x, kk$y), lonlat = FALSE)
+    .dat$distRANSAC = sqrt((.dat[["x"]] - kk$x)^2 + (.dat[["y"]] - kk$y)^2)
 
-    # Radius value as the mean distance
     if(is.null(bark.roughness)){
+
+      # The radius of the circumference will be the average of all the distances from the center to the points of the section:
+
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.05, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
-      # .radioRANSAC <- .centerRANSAC$radius
+
+      # In the case of RANSAC, we already have an estimated radius:
+
       .radioRANSAC <- kk$radio
-      # .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.05, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
       .cvRANSAC <- kk$cv
-      if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
+
+      if(is.na(.cvRANSAC)){.cvRANSAC <- 9999} # To avoid NA values
 
     } else if(bark.roughness == 1){
+
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
-      # .radioRANSAC <- .centerRANSAC$radius
+
       .radioRANSAC <- kk$radio
-      # .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.25, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
       .cvRANSAC <- kk$cv
+
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
 
     } else if(bark.roughness == 2){
+
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.5, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
-      # .radioRANSAC <- .centerRANSAC$radius
+
       .radioRANSAC <- kk$radio
-      # .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.5, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
       .cvRANSAC <- kk$cv
+
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
 
     } else {
+
       .radio <- mean(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)])
       .cv <- stats::sd(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.75, na.rm = T) & .dat$dist<stats::quantile(.dat$dist, prob = 0.99, na.rm = T)]) / .radio
-      # .radioRANSAC <- .centerRANSAC$radius
+
       .radioRANSAC <- kk$radio
-      # .cvRANSAC <- stats::sd(.dat$distRANSAC[.dat$distRANSAC>stats::quantile(.dat$distRANSAC, prob = 0.75, na.rm = T) & .dat$distRANSAC<stats::quantile(.dat$distRANSAC, prob = 0.95, na.rm = T)]) / .radioRANSAC
       .cvRANSAC <- kk$cv
+
       if(is.na(.cvRANSAC)){.cvRANSAC <- 9999}
+
     }
 
-    if(is.na(.cv)){return(.filter)}
+    if(is.na(.cv)){return(.filter)} # To avoid NA values
 
-    if(1 * .cv >= .cvRANSAC){
+    # I keep the candidate with lowest coefficient of variation,
+    # favoring RANSAC in case of equality
+
+    if(.cv >= .cvRANSAC){
 
       .radio <- .radioRANSAC
       .cv <- .cvRANSAC
@@ -721,6 +810,9 @@
 
   }
 
+  # Calculation of other coordinates of the center of the section
+  # with respect to the plot center
+
   .center.phi <- atan2(.center.y-y.center, .center.x-x.center)
   .center.phi <- ifelse(.center.phi < 0, .center.phi + (2 * pi), .center.phi)
   .center.rho <- sqrt((.center.x-x.center) ^ 2 + (.center.y-y.center) ^ 2)
@@ -728,7 +820,9 @@
   .center.theta <- atan2(.dat$sec[1], .center.rho)
 
 
-  if(.cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2){return(.filter)}
+  # Application of some quality criteria to make sure that the point cloud belongs to a tree section
+
+  if(is.na(.cv) | .cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2){return(.filter)}
 
   # At least 95 % of distances should be greater than .radio / 2
   if(stats::quantile(.dat$dist, prob = 0.05, na.rm = T) < (.radio / 2)){return(.filter)}
@@ -743,13 +837,20 @@
   .dat.2$alpha <- suppressWarnings(acos(-(.dat.2$a^2-.dat.2$b^2-.dat.2$c^2)/(2*.dat.2$b*.dat.2$c)))
 
   # Checking if tree section belong to a full circumference
+  # I check that there are points in the four quadrants of the circumference.
 
   k1 <- ifelse(nrow(.dat[.dat$x > .center.x & .dat$y > .center.y, ]) > 0, 1, 0)
   k2 <- ifelse(nrow(.dat[.dat$x > .center.x & .dat$y < .center.y, ]) > 0, 1, 0)
   k3 <- ifelse(nrow(.dat[.dat$x < .center.x & .dat$y > .center.y, ]) > 0, 1, 0)
   k4 <- ifelse(nrow(.dat[.dat$x < .center.x & .dat$y < .center.y, ]) > 0, 1, 0)
 
+  # If there are points in all four quadrants, it is considered a complete circle:
+
   .circ <- ifelse(sum(k1, k2, k3, k4) == 4, 1, 0)
+
+
+  # If there are only points in 3 or 2 quadrants, I consider it to be an arc of a circle:
+
   .arc.circ <- ifelse(sum(k1, k2, k3, k4) == 3 | sum(k1, k2, k3, k4) == 2, 1, 0)
 
   # If the complete circumference arc is not detected (so previous criterion
@@ -768,20 +869,18 @@
   if(methods::is(.cor) == "try-error"){return(.filter)} else{
 
     .occlusion <- .cor[[4]]
-
   }
 
+  # Zhang et al., (2019) - other selection criteria:
 
-  # Zhang et al., (2019)
   .n.w.ratio <- stats::sd(.dat$z) / sqrt(stats::sd(.dat$x) ^ 2 + stats::sd(.dat$y) ^ 2)
 
   if(.n.w.ratio > 1 | .n.w.ratio < 0.1 | is.nan(.n.w.ratio)){return(.filter)}
 
+
   .densidad_radio <- .n.pts.red / .radio
 
-
   if(nrow(.dat) < 10){return(.filter)}
-
 
   # Results
   .filter <- data.frame(cluster = .dat$cluster[1],
@@ -798,49 +897,39 @@
 
                         density.radio = .densidad_radio)
 
-  # if(!exists(".salida")){next} else {.filter <- rbind(.filter, .salida)}
 
+  # Arch of circumference or partial arch of circumference?
+  .Q1 <- stats::quantile(.filter$density.radio, prob = 0.25, na.rm = T)
+  .Q3 <- stats::quantile(.filter$density.radio, prob = 0.75, na.rm = T)
+  .outliers <- .Q1 - 1.5 * (.Q3 - .Q1)
 
-# Arch of circumference or partial arch of circumference?
-.Q1 <- stats::quantile(.filter$density.radio, prob = 0.25, na.rm = T)
-.Q3 <- stats::quantile(.filter$density.radio, prob = 0.75, na.rm = T)
-.outliers <- .Q1 - 1.5 * (.Q3 - .Q1)
+  .filter$tree <- ifelse(.filter$circ == 1 & .filter$density.radio >= .outliers, 1,
+                         ifelse(.filter$arc.circ == 1 & .filter$occlusion >= 0.95 & .filter$density.radio >= .outliers, 1,
+                                ifelse(.filter$circ == 0 & .filter$arc.circ == 0 & .filter$occlusion >= 0.975 & .filter$density.radio >= .outliers, 1, 0)))
+  .filter <- .filter[.filter$tree == 1, , drop = FALSE]
 
-# Minimum number of points
-# .filter$tree <- ifelse(.filter$n.pts.red > .outliers, 1, 0)
-# .filter <- .filter[which(.filter$tree == 1), , drop = FALSE]
+  if(nrow(.filter) < 1){
 
-.filter$tree <- ifelse(.filter$circ == 1 & .filter$density.radio >= .outliers, 1,
-                       ifelse(.filter$arc.circ == 1 & .filter$occlusion >= 0.95 & .filter$density.radio >= .outliers, 1,
-                              ifelse(.filter$circ == 0 & .filter$arc.circ == 0 & .filter$occlusion >= 0.975 & .filter$density.radio >= .outliers, 1, 0)))
-.filter <- .filter[which(.filter$tree == 1), , drop = FALSE]
-
-
-if(nrow(.filter) < 1){
-
-  .filter1.0 <- data.frame(cluster = as.numeric(),
-                           center.x = as.numeric(), center.y = as.numeric(),
-                           center.phi = as.numeric(), center.rho = as.numeric(),
-                           center.r = as.numeric(), center.theta = as.numeric(),
-                           radius = as.numeric(),
-                           n.pts = as.numeric(), n.pts.red = as.numeric(),
-                           circ = as.numeric(), arc.circ = as.numeric(), sec = as.numeric())
+    .filter1.0 <- data.frame(cluster = as.numeric(),
+                             center.x = as.numeric(), center.y = as.numeric(),
+                             center.phi = as.numeric(), center.rho = as.numeric(),
+                             center.r = as.numeric(), center.theta = as.numeric(),
+                             radius = as.numeric(),
+                             n.pts = as.numeric(), n.pts.red = as.numeric(),
+                             circ = as.numeric(), arc.circ = as.numeric(), sec = as.numeric())
 
   } else{
 
-  .filter1.0 <- .filter[, c("cluster",
-                            "center.x", "center.y", "center.phi", "center.rho", "center.r", "center.theta",
-                            "radius", "n.pts", "n.pts.red", "circ", "arc.circ"), drop = FALSE]
+    .filter1.0 <- .filter[, c("cluster",
+                              "center.x", "center.y", "center.phi", "center.rho", "center.r", "center.theta",
+                              "radius", "n.pts", "n.pts.red", "circ", "arc.circ"), drop = FALSE]
 
-  .filter1.0$sec <- cut$sec[1]
-
+    .filter1.0$sec <- cut$sec[1]
   }
-
 
   return(.filter1.0)
 
 }
-
 
 .n.w.ratio <- function(stem){
 
@@ -852,7 +941,7 @@ if(nrow(.filter) < 1){
 
 
 
-.volume <- function(data, d.top = NULL, id){
+.volume <- function(data, d.top = NULL, id, den.type){
 
   datos <- data.frame(tree = as.numeric(),
                       x = as.numeric(), y = as.numeric(),
@@ -925,7 +1014,6 @@ if(nrow(.filter) < 1){
 
     if(is.null(d.top)){
 
-      den.type <- 1
       n <- den.type
 
       v <- pi * (unique(data$h) ^ (n + 1) / (n + 1)) * ((unique(data$dbh) / 200) ^ 2 / (unique(data$h) - 1.3) ^ n)
@@ -934,7 +1022,6 @@ if(nrow(.filter) < 1){
 
     else {
 
-      den.type <- 1
       n <- den.type
 
       v <- pi * (unique(data$h) ^ (n + 1) / (n + 1)) * ((unique(data$dbh) / 200) ^ 2 / (unique(data$h) - 1.3) ^ n)
@@ -1619,20 +1706,24 @@ if(nrow(.filter) < 1){
                       .metr["CRR.z"] <- .metr["mean.z"] / .metr["max.z"]
 
                     if ("L2.z" %in% names(.metr))
-                      .metr["L2.z"] <- mean(sum(.sub ^ 2))
+                      sumatorio <- (choose(.sub - 1, 1) - choose(length(.sub) - .sub, 1)) * .sub
+                      .metr["L2.z"] <- (1 / (2 * choose(length(.sub), 2))) * sum(sumatorio)
                     if ("L3.z" %in% names(.metr))
-                      .metr["L3.z"] <- mean(sum(.sub ^ 3))
+                      sumatorio <- (choose(.sub - 1, 2) - 2 * choose(.sub - 1, 1) * choose(length(.sub) - .sub, 1) + choose(length(.sub) - .sub, 2)) * .sub
+                      .metr["L3.z"] <- (1 / (3 * choose(length(.sub), 3))) * sum(sumatorio)
                     if ("L4.z" %in% names(.metr))
-                      .metr["L4.z"] <- mean(sum(.sub ^ 4))
+                      sumatorio <- (choose(.sub - 1, 3) - 3 * choose(.sub - 1, 2) * choose(length(.sub) - .sub, 1) +
+                                      3 * choose(.sub - 1, 1) * choose(length(.sub) - .sub, 2) - choose(length(.sub) - .sub, 3)) * .sub
+                      .metr["L4.z"] <- (1 / (4 * choose(length(.sub), 4))) * sum(sumatorio)
 
-
-                    if ("L3.mu.z" %in% names(.metr))
-                      .metr["L3.mu.z"] <- .metr["L3.z"] - 3 * .metr["mean.z"] * .metr["L2.z"] + 2 * .metr["mean.z"] ^ 3
-                    if ("L4.mu.z" %in% names(.metr))
-                      .metr["L4.mu.z"] <- .metr["L4.z"] - 4 * .metr["mean.z"] * .metr["L3.z"] + 6 * .metr["mean.z"] ^ 2 * .metr["L2.z"] - 3 * .metr["mean.z"] ^ 4
 
                     if ("L.CV.z" %in% names(.metr))
-                      .metr["L.CV.z"] <- .metr["mean.z"] / .metr["L2.z"]
+                      .metr["L.CV.z"] <- .metr["L2.z"] / .metr["mean.z"]
+                    if ("L.skewness.z" %in% names(.metr))
+                      .metr["L.skewness.z"] <- .metr["L3.z"] / .metr["L2.z"]
+                    if ("L.kurtosis.z" %in% names(.metr))
+                      .metr["L.kurtosis.z"] <- .metr["L4.z"] / .metr["L2.z"]
+
 
                     if ("median.a.d.z" %in% names(.metr))
                       .metr["median.a.d.z"] <- stats::median(abs(.sub - .metr["mean.z"]))
@@ -1720,19 +1811,23 @@ if(nrow(.filter) < 1){
                       .metr["CRR.rho"] <- .metr["mean.rho"] / .metr["max.rho"]
 
                     if ("L2.rho" %in% names(.metr))
-                      .metr["L2.rho"] <- mean(sum(.sub ^ 2))
+                      sumatorio <- (choose(.sub - 1, 1) - choose(length(.sub) - .sub, 1)) * .sub
+                    .metr["L2.rho"] <- (1 / (2 * choose(length(.sub), 2))) * sum(sumatorio)
                     if ("L3.rho" %in% names(.metr))
-                      .metr["L3.rho"] <- mean(sum(.sub ^ 3))
+                      sumatorio <- (choose(.sub - 1, 2) - 2 * choose(.sub - 1, 1) * choose(length(.sub) - .sub, 1) + choose(length(.sub) - .sub, 2)) * .sub
+                    .metr["L3.rho"] <- (1 / (3 * choose(length(.sub), 3))) * sum(sumatorio)
                     if ("L4.rho" %in% names(.metr))
-                      .metr["L4.rho"] <- mean(sum(.sub ^ 4))
+                      sumatorio <- (choose(.sub - 1, 3) - 3 * choose(.sub - 1, 2) * choose(length(.sub) - .sub, 1) +
+                                      3 * choose(.sub - 1, 1) * choose(length(.sub) - .sub, 2) - choose(length(.sub) - .sub, 3)) * .sub
+                    .metr["L4.rho"] <- (1 / (4 * choose(length(.sub), 4))) * sum(sumatorio)
 
-                    if ("L3.mu.rho" %in% names(.metr))
-                      .metr["L3.mu.rho"] <- .metr["L3.rho"] - 3 * .metr["mean.rho"] * .metr["L2.rho"] + 2 * .metr["mean.rho"] ^ 3
-                    if ("L4.mu.rho" %in% names(.metr))
-                      .metr["L4.mu.rho"] <- .metr["L4.rho"] - 4 * .metr["mean.rho"] * .metr["L3.rho"] + 6 * .metr["mean.rho"] ^ 2 * .metr["L2.rho"] - 3 * .metr["mean.rho"] ^ 4
 
                     if ("L.CV.rho" %in% names(.metr))
-                      .metr["L.CV.rho"] <- .metr["mean.rho"] / .metr["L2.rho"]
+                      .metr["L.CV.rho"] <- .metr["L2.rho"] / .metr["mean.rho"]
+                    if ("L.skewness.rho" %in% names(.metr))
+                      .metr["L.skewness.rho"] <- .metr["L3.rho"] / .metr["L2.rho"]
+                    if ("L.kurtosis.rho" %in% names(.metr))
+                      .metr["L.kurtosis.rho"] <- .metr["L4.rho"] / .metr["L2.rho"]
 
                     if ("median.a.d.rho" %in% names(.metr))
                       .metr["median.a.d.rho"] <- stats::median(abs(.sub - .metr["mean.rho"]))
@@ -1820,19 +1915,23 @@ if(nrow(.filter) < 1){
                       .metr["CRR.r"] <- .metr["mean.r"] / .metr["max.r"]
 
                     if ("L2.r" %in% names(.metr))
-                      .metr["L2.r"] <- mean(sum(.sub ^ 2))
+                      sumatorio <- (choose(.sub - 1, 1) - choose(length(.sub) - .sub, 1)) * .sub
+                    .metr["L2.r"] <- (1 / (2 * choose(length(.sub), 2))) * sum(sumatorio)
                     if ("L3.r" %in% names(.metr))
-                      .metr["L3.r"] <- mean(sum(.sub ^ 3))
+                      sumatorio <- (choose(.sub - 1, 2) - 2 * choose(.sub - 1, 1) * choose(length(.sub) - .sub, 1) + choose(length(.sub) - .sub, 2)) * .sub
+                    .metr["L3.r"] <- (1 / (3 * choose(length(.sub), 3))) * sum(sumatorio)
                     if ("L4.r" %in% names(.metr))
-                      .metr["L4.r"] <- mean(sum(.sub ^ 4))
+                      sumatorio <- (choose(.sub - 1, 3) - 3 * choose(.sub - 1, 2) * choose(length(.sub) - .sub, 1) +
+                                      3 * choose(.sub - 1, 1) * choose(length(.sub) - .sub, 2) - choose(length(.sub) - .sub, 3)) * .sub
+                    .metr["L4.r"] <- (1 / (4 * choose(length(.sub), 4))) * sum(sumatorio)
 
-                    if ("L3.mu.r" %in% names(.metr))
-                      .metr["L3.mu.r"] <- .metr["L3.r"] - 3 * .metr["mean.r"] * .metr["L2.r"] + 2 * .metr["mean.r"] ^ 3
-                    if ("L4.mu.r" %in% names(.metr))
-                      .metr["L4.mu.r"] <- .metr["L4.r"] - 4 * .metr["mean.r"] * .metr["L3.r"] + 6 * .metr["mean.r"] ^ 2 * .metr["L2.r"] - 3 * .metr["mean.r"] ^ 4
 
                     if ("L.CV.r" %in% names(.metr))
-                      .metr["L.CV.r"] <- .metr["mean.r"] / .metr["L2.r"]
+                      .metr["L.CV.r"] <- .metr["L2.r"] / .metr["mean.r"]
+                    if ("L.skewness.r" %in% names(.metr))
+                      .metr["L.skewness.r"] <- .metr["L3.r"] / .metr["L2.r"]
+                    if ("L.kurtosis.r" %in% names(.metr))
+                      .metr["L.kurtosis.r"] <- .metr["L4.r"] / .metr["L2.r"]
 
                     if ("median.a.d.r" %in% names(.metr))
                       .metr["median.a.d.r"] <- stats::median(abs(.sub - .metr["mean.r"]))
@@ -1983,8 +2082,7 @@ if(nrow(.filter) < 1){
                      "kurtosis.z", "skewness.z",
                      "p.a.mean.z", "p.a.mode.z", "p.a.2m.z",
                      "p.b.mean.z", "p.b.mode.z", "p.b.2m.z", "CRR.z",
-                     "L2.z", "L3.z", "L4.z", "L3.mu.z", "L4.mu.z",
-                     "L.CV.z",
+                     "L2.z", "L3.z", "L4.z", "L.CV.z", "L.skewness.z", "L.kurtosis.z",
                      "median.a.d.z", "mode.a.d.z",
                      "weibull_c.z", "weibull_b.z",
 
@@ -1994,7 +2092,7 @@ if(nrow(.filter) < 1){
                      "kurtosis.rho", "skewness.rho",
                      "p.a.mean.rho", "p.a.mode.rho",
                      "p.b.mean.rho", "p.b.mode.rho", "CRR.rho",
-                     "L2.rho", "L3.rho", "L4.rho", "L3.mu.rho", "L4.mu.rho",
+                     "L2.rho", "L3.rho", "L4.rho", "L.skewness.rho", "L.kurtosis.rho",
                      "L.CV.rho",
                      "median.a.d.rho", "mode.a.d.rho",
                      "weibull_c.rho", "weibull_b.rho",
@@ -2005,8 +2103,7 @@ if(nrow(.filter) < 1){
                      "kurtosis.r", "skewness.r",
                      "p.a.mean.r", "p.a.mode.r",
                      "p.b.mean.r", "p.b.mode.r", "CRR.r",
-                     "L2.r", "L3.r", "L4.r", "L3.mu.r", "L4.mu.r",
-                     "L.CV.r",
+                     "L2.r", "L3.r", "L4.r", "L.CV.r", "L.skewness.r", "L.kurtosis.r",
                      "median.a.d.r", "mode.a.d.r",
                      "weibull_c.r", "weibull_b.r")
 
@@ -2365,8 +2462,7 @@ if(nrow(.filter) < 1){
                   "kurtosis.z", "skewness.z",
                   "p.a.mean.z", "p.a.mode.z", "p.a.2m",
                   "p.b.mean.z", "p.b.mode.z", "p.b.2m.z", "CRR.z",
-                  "L2.z", "L3.z", "L4.z", "L3.mu.z", "L4.mu.z",
-                  "L.CV.z",
+                  "L2.z", "L3.z", "L4.z", "L.CV.z", "L.skewness.z", "L.kurtosis.z",
                   "median.a.d.z", "mode.a.d.z",
                   "weibull_c.z", "weibull_b.z",
 
@@ -2376,7 +2472,7 @@ if(nrow(.filter) < 1){
                   "kurtosis.rho", "skewness.rho",
                   "p.a.mean.rho", "p.a.mode.rho",
                   "p.b.mean.rho", "p.b.mode.rho", "CRR.rho",
-                  "L2.rho", "L3.rho", "L4.rho", "L3.mu.rho", "L4.mu.rho",
+                  "L2.rho", "L3.rho", "L4.rho", "L.skewness.rho", "L.kurtosis.rho",
                   "L.CV.rho",
                   "median.a.d.rho", "mode.a.d.rho",
                   "weibull_c.rho", "weibull_b.rho",
@@ -2387,8 +2483,7 @@ if(nrow(.filter) < 1){
                   "kurtosis.r", "skewness.r",
                   "p.a.mean.r", "p.a.mode.r",
                   "p.b.mean.r", "p.b.mode.r", "CRR.r",
-                  "L2.r", "L3.r", "L4.r", "L3.mu.r", "L4.mu.r",
-                  "L.CV.r",
+                  "L2.r", "L3.r", "L4.r", "L.CV.r", "L.skewness.r", "L.kurtosis.r",
                   "median.a.d.z", "mode.a.d.z",
                   "weibull_c.r", "weibull_b.r"),
 
@@ -3146,8 +3241,7 @@ if(nrow(.filter) < 1){
                         "kurtosis.z", "skewness.z",
                         "p.a.mean.z", "p.a.mode.z", "p.a.2m.z",
                         "p.b.mean.z", "p.b.mode.z", "p.b.2m.z", "CRR.z",
-                        "L2.z", "L3.z", "L4.z", "L3.mu.z", "L4.mu.z",
-                        "L.CV.z",
+                        "L2.z", "L3.z", "L4.z", "L.CV.z", "L.skewness.z", "L.kurtosis.z",
                         "median.a.d.z", "mode.a.d.z",
                         "weibull_c.z", "weibull_b.z",
 
@@ -3157,8 +3251,7 @@ if(nrow(.filter) < 1){
                         "kurtosis.rho", "skewness.rho",
                         "p.a.mean.rho", "p.a.mode.rho",
                         "p.b.mean.rho", "p.b.mode.rho", "CRR.rho",
-                        "L2.rho", "L3.rho", "L4.rho", "L3.mu.rho", "L4.mu.rho",
-                        "L.CV.rho",
+                        "L2.rho", "L3.rho", "L4.rho", "L.CV.rho", "L.skewness.rho", "L.kurtosis.rho",
                         "median.a.d.rho", "mode.a.d.rho",
                         "weibull_c.rho", "weibull_b.rho",
 
@@ -3168,8 +3261,7 @@ if(nrow(.filter) < 1){
                         "kurtosis.r", "skewness.r",
                         "p.a.mean.r", "p.a.mode.r",
                         "p.b.mean.r", "p.b.mode.r", "CRR.r",
-                        "L2.r", "L3.r", "L4.r", "L3.mu.r", "L4.mu.r",
-                        "L.CV.r",
+                        "L2.r", "L3.r", "L4.r", "L.CV.r", "L.skewness.r", "L.kurtosis.r",
                         "median.a.d.r", "mode.a.d.r",
                         "weibull_c.r", "weibull_b.r")
 
@@ -3281,148 +3373,10 @@ if(nrow(.filter) < 1){
 }
 
 
-##############################################################################
-# Cálculo del índice de curvatura
-##############################################################################
-
-# This functions apply calculated ncr index for all points.
-# For that purpose, voxelize point cloud by means of regular
-# grid in x any z coordinates
 
 
-.ncr.remove.slice.double <- function(data){
 
-  # code <- NULL
-
-  # Select necessary fields from original txt file of point cloud
-
-  .data <- as.data.frame(data[,c("point", "x", "y", "z")])
-
-  # Create x and y coordinates for grid
-
-  .x <- seq(min(.data$x), max(.data$x)+1)
-  .y <- seq(min(.data$y), max(.data$y)+1)
-
-
-  if(length(.x) < 2 | length(.y) < 2){
-
-    data$ncr <- NA
-    .data <- data} else{
-
-  # Empty data frame where coordinates neccesaries for
-  # creating grid will be saved
-
-  .grid <- data.frame(x = rep(.x, each = length(.y)),
-                      y = rep(.y, times = length(.x)))
-
-  .grid <- sf::st_as_sf(.grid, coords = c("x","y"))
-
-
-  .grid <- sf::st_buffer(.grid, dist = 0.55, endCapStyle = "SQUARE")
-  .grid <- sf::st_cast(.grid, "POLYGON")
-
-  .grid.2 <- sf::st_intersects(.grid, sf::st_as_sf(.data, coords = c("x","y")))
-  .grid.2 <- as.data.frame(.grid.2)
-  colnames(.grid.2) <- c("id", "code")
-  .data$code <- as.numeric(row.names(.data))
-  .data <- merge(.data, .grid.2, by = "code", all = TRUE)
-  # .data <- subset(.data, select = -code)
-  .data <- .data[, 2:ncol(.data)]
-
-  rm(.grid, .grid.2)
-
-  .dat <- lapply(split(.data[, 1:4], .data$id), as.matrix)
-
-  .dat <- .dat[(lapply(.dat, nrow)) > 4]
-  # .dat <- .dat[(lapply(.dat, nrow)) < 40000]
-
-  .ncr <- do.call(rbind, lapply(.dat, ncr_point_cloud_double))
-
-  .ncr <- .ncr[.ncr$ncr > 0 & .ncr$ncr < 9999, ]
-
-
-  if(is.null(.ncr)){
-    data$ncr <- NA
-    .data <- data
-    return(.data)}
-
-  .data <- merge(data, .ncr, by = "point", all = TRUE)
-
-  .data <- .data[!duplicated(.data), ]
-
-  }
-
-  return(.data)
-
-}
-
-
-.ver.remove.slice.double <- function(data){
-
-  # code <- NULL
-
-  # Select necessary fields from original txt file of point cloud
-
-  .data <- as.data.frame(data[,c("point", "x", "y", "z")])
-
-  # Create x and y coordinates for grid
-
-  .x <- seq(min(.data$x), max(.data$x)+1)
-  .y <- seq(min(.data$y), max(.data$y)+1)
-
-
-  if(length(.x) < 2 | length(.y) < 2){
-
-    data$ncr <- NA
-    .data <- data} else{
-
-      # Empty data frame where coordinates neccesaries for
-      # creating grid will be saved
-
-      .grid <- data.frame(x = rep(.x, each = length(.y)),
-                          y = rep(.y, times = length(.x)))
-
-      .grid <- sf::st_as_sf(.grid, coords = c("x","y"))
-
-
-      .grid <- sf::st_buffer(.grid, dist = 0.55, endCapStyle = "SQUARE")
-      .grid <- sf::st_cast(.grid, "POLYGON")
-
-      .grid.2 <- sf::st_intersects(.grid, sf::st_as_sf(.data, coords = c("x","y")))
-      .grid.2 <- as.data.frame(.grid.2)
-      colnames(.grid.2) <- c("id", "code")
-      .data$code <- as.numeric(row.names(.data))
-      .data <- merge(.data, .grid.2, by = "code", all = TRUE)
-      # .data <- subset(.data, select = -code)
-      .data <- .data[, 2:ncol(.data)]
-
-      rm(.grid, .grid.2)
-
-      .dat <- lapply(split(.data[, 1:4], .data$id), as.matrix)
-
-      .dat <- .dat[(lapply(.dat, nrow)) > 4]
-      # .dat <- .dat[(lapply(.dat, nrow)) < 40000]
-
-      .ncr <- do.call(rbind, lapply(.dat, ver_point_cloud_double))
-
-      .ncr <- .ncr[.ncr$ver > 0 & .ncr$ver < 9999, ]
-
-
-      if(is.null(.ncr)){
-        data$ncr <- NA
-        .data <- data
-        return(.data)}
-
-      .data <- merge(data, .ncr, by = "point", all = TRUE)
-
-      .data <- .data[!duplicated(.data), ]
-
-    }
-
-  return(.data)
-
-}
-
+# When no trees are detected ----
 
 
 
@@ -3432,25 +3386,25 @@ if(nrow(.filter) < 1){
 
     # If plot identification (id) is not available
 
-    .colnames <- c("tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "v", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+    .colnames <- c("tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "v", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
   } else if (is.null(data$id) & !is.null(d.top)) {
 
     # If plot identification (id) is not available
 
-    .colnames <- c("tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "h.com", "v", "v.com", "n.pts", "SS.max", "sinuosity", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+    .colnames <- c("tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "h.com", "v", "v.com", "n.pts", "SS.max", "sinuosity", "lean", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
   } else if (!is.null(data$id) & is.null(d.top)) {
 
     # If plot identification (id) is available
 
-    .colnames <- c("id", "file", "tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "v", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+    .colnames <- c("id", "file", "tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "v", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
   } else {
 
     # If plot identification (id) is available
 
-    .colnames <- c("id", "file", "tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+    .colnames <- c("id", "file", "tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
   }
 
@@ -3458,8 +3412,8 @@ if(nrow(.filter) < 1){
 
   if(!is.null(data$id)){
 
-  .tree$id <- data$id[1]
-  .tree$file <- data$file[1]
+    .tree$id <- data$id[1]
+    .tree$file <- data$file[1]
 
   }
 
@@ -3490,25 +3444,25 @@ if(nrow(.filter) < 1){
 
     # If plot identification (id) is not available
 
-    .colnames <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+    .colnames <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
   } else if (is.null(data$id) & !is.null(d.top)) {
 
     # If plot identification (id) is not available
 
-    .colnames <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+    .colnames <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
   } else if (!is.null(data$id) & is.null(d.top)) {
 
     # If plot identification (id) is available
 
-    .colnames <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+    .colnames <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
   } else {
 
     # If plot identification (id) is available
 
-    .colnames <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+    .colnames <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
   }
 
@@ -3540,11 +3494,3 @@ if(nrow(.filter) < 1){
 
 
 }
-
-
-
-
-
-
-
-

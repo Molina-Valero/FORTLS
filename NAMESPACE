@@ -1,6 +1,7 @@
 export(normalize)
 import(RCSF)
 importFrom(Rcpp, evalCpp)
+importFrom(data.table, ":=")
 importFrom(tidyr, "%>%")
 importFrom("stats", "sd", "uniroot", "var")
 importFrom("graphics", "points")

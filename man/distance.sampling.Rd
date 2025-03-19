@@ -21,13 +21,13 @@ distance.sampling(tree.tls,
 
   \item{strata.attributes}{Optional data frame inluding plot radius considered at strata level. It must contain a column named \sQuote{stratum} (numeric) with encoding coinciding with that used in previous functions (\code{\link{normalize}}, \code{\link{tree.detection.single.scan}} and \code{\link{tree.detection.several.plots}}) for identifying strata. Therefore, strata must heve been included previously in \sQuote{tree.tls}. Another column named \sQuote{plot.radius} (numeric) will be required to set maximum horizontal distance (m) considered for fitting detection probability functions. If this argument is not specified by the user, it will be set to NULL by default, and as a consequence, all trees will be included.}}
 
-\details{All internal functions related to distance sampling methodologies are fitted with the \code{\link[Distance]{ds}} function included in the \CRANpkg{Distance} package.
+\details{All internal functions related to distance sampling methodologies are fitted with the \link[Distance]{ds} function included in the \CRANpkg{Distance} package.
 
 Detection functions are left-truncated at 1 m, according to Astrup et al., (2014).
 
-Same warning messages as \code{\link[Distance]{ds}} function are provided when fits do not converge or another warnings occur.
+Same warning messages as \link[Distance]{ds} function are provided when fits do not converge or another warnings occur.
 
-For further details on these point transects methods  and similar sampling methodologies, as well as their application with R, see Buckland et al., (2001); Marques & Buckland, (2003); Miller & Thomas, (2015) and Clark (2016). Examples of distance sampling analyses, as well as lectures, are available at \url{http://examples.distancesampling.org/} and \url{http://workshops.distancesampling.org/}.}
+For further details on these point transects methods  and similar sampling methodologies, as well as their application with R, see Buckland et al., (2001); Marques & Buckland, (2003); Miller & Thomas, (2015) and Clark (2016). Examples of distance sampling analyses, as well as lectures, are available at \url{https://distancesampling.org/resources/vignettes.html}.}
 
 \value{List containing the following elements:
 
@@ -104,7 +104,7 @@ and Adela Martínez-Calvo.}
 \seealso{
 \code{\link{tree.detection.single.scan}}, \code{\link{tree.detection.several.plots}}, \code{\link{metrics.variables}}, \code{\link{simulations}}.
 
-\code{\link{ds}} in \CRANpkg{Distance} package.
+\link[Distance]{ds} in \CRANpkg{Distance} package.
 }
 
 

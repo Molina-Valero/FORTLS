@@ -1,8 +1,8 @@
 
 relative.bias <- function(simulations,
-                          variables = c("N", "G", "V", "d", "dg", "d.0", "h", "h.0"),
+                          variables = c("N", "G", "d", "dg", "d.0", "h", "h.0"),
                           save.result = TRUE, dir.result = NULL) {
-  
+
 
 
   # Checking if id columns are characters or factors, and converting to numeric in that cases
@@ -25,10 +25,10 @@ relative.bias <- function(simulations,
   .field.names <- c(
     # Density (trees/ha), basal area (m2/ha) and volume (m3/ha)
     "N", "G", "V",
-    
+
     # Volume (m3/ha) provided by user
     "V.user",
-    
+
     # Mean diameters (cm), and mean dominant diameters (cm)
     "d", "dg", "dgeom", "dharm",
     paste(c("d", "dg", "dgeom", "dharm"), "0", sep = "."),
