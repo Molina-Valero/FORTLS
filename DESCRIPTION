@@ -28,6 +28,6 @@ Imports: data.table, dbscan, Distance, dplyr, glue, htmlwidgets, lidR, mapview, 
 Suggests: devtools, kableExtra, knitr, rmarkdown, systemfonts, testthat
 LinkingTo: Rcpp, RcppArmadillo, RcppEigen
 Encoding: UTF-8
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 VignetteBuilder: knitr
-StagedInstall: no
+StagedInstall: yes

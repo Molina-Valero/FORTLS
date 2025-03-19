@@ -104,7 +104,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   message("Retention of points with high verticality values")
 
-  threads <- parallel::detectCores() -1
+  threads <- max(1, parallel::detectCores() - 1)
 
   VerSur <- geometric.features(data = stem,
                                grid_method = 'sf_grid',
@@ -317,10 +317,11 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   pb <- progress::progress_bar$new(total = length(breaks))
 
 
-  for(cuts in breaks){
+  for(i in seq_along(breaks)){
 
 
-    # message("Computing section: ", cuts, " m")
+    cuts <- breaks[i]
+
 
     .cut <- woody[woody$z > (cuts - 2 * slice - 0.05) & woody$z < cuts + 0.05, , drop = FALSE]
 
@@ -329,8 +330,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
 
     if(cuts <= stem.section[1] | cuts >= stem.section[2]){
-
-      threads <- max(1, parallel::detectCores() - 1)
 
       VerSur <- geometric.features(data = .cut,
                                    grid_method = 'sf_grid',
@@ -402,12 +401,12 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     if (interactive()) {
 
-
-    .filter <- do.call(rbind, parallel::clusterApply(cl, split(.cut, .cut$cluster), .sections.multi.scan,
-                                     tls.precision = tls.precision,
-                                     .dbh.min = .dbh.min, .dbh.max = .dbh.max,
-                                     slice = slice * 2, bark.roughness = bark.roughness,
-                                     x.center = x.center, y.center = y.center))
+    # Parallel processing within the loop
+    .filter <- do.call(rbind, parallel::parLapply(cl, split(.cut, .cut$cluster), .sections.multi.scan,
+                                                  tls.precision = tls.precision,
+                                                  .dbh.min = .dbh.min, .dbh.max = .dbh.max,
+                                                  slice = slice * 2, bark.roughness = bark.roughness,
+                                                  x.center = x.center, y.center = y.center))
 
 
   } else {
@@ -421,10 +420,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   }
 
-    # .filteraux <- rbind(.filteraux, .filter)
-
-    .filteraux[[length(.filteraux) + 1]] <- .filter
-
+    .filteraux[[i]] <- .filter
 
 
     # Second...
@@ -438,8 +434,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
 
     if(cuts <= stem.section[1] | cuts >= stem.section[2]){
-
-      threads <- max(1, parallel::detectCores() - 1)
 
       VerSur <- geometric.features(data = .cut,
                                    grid_method = 'sf_grid',
@@ -525,11 +519,13 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                                        x.center = x.center, y.center = y.center))
     }
 
-    .filteraux.2 <- rbind(.filteraux.2, .filter)}
+
+    .filteraux.2[[i]] <- .filter}
 
     pb$tick()
 
-    gc()
+    # Run garbage collection only every 5 iterations
+    if (i %% 5 == 0) gc()
 
   }# End of cuts loop
 
@@ -542,6 +538,10 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   .filteraux <- do.call(rbind, .filteraux)
   .filteraux.2 <- do.call(rbind, .filteraux.2)
+
+
+  # Final garbage collection
+  gc()
 
 
 

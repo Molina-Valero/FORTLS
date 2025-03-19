@@ -129,7 +129,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   message("Retention of points with high verticality values")
 
-  threads <- parallel::detectCores() -1
+  threads <- max(1, parallel::detectCores() - 1)
 
   VerSur <- geometric.features(data = stem,
                                grid_method = 'sf_grid',
@@ -151,8 +151,8 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
   stem <- stem[stem$ver > stem$prob.ver, ]
 
-  woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
-  woody <- rbind(woody, stem[, 1:ncol(woody)])
+  # woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
+  # woody <- rbind(woody, stem[, 1:ncol(woody)])
 
 
   message("Detection of tree stem axes")
@@ -302,30 +302,31 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   # data <- data[1, ]
 
 
-
-
+  #### Starting with clustering process ####
 
   message("Computing sections")
+
+
+  # Preallocate lists for efficiency
+  .filteraux <- vector("list", length(breaks))
+  .filteraux.2 <- vector("list", length(breaks))
+
+  slice <- slice / 2  # Adjust slice size
+
+
+  # Set up parallel cluster
+  cl <- parallel::makeCluster(max(1, parallel::detectCores() - 1))
+
 
   pb <- progress::progress_bar$new(total = length(breaks))
 
 
-  .filteraux <- list()
-  .filteraux.2 <- list()
+
+  for(i in seq_along(breaks)){
 
 
-  slice <- slice / 2
+    cuts <- breaks[i]
 
-  # Create a cluster
-
-  cl <- parallel::makeCluster(parallel::detectCores() - 1)
-
-
-
-  for(cuts in breaks){
-
-
-    # start_time <- Sys.time()
 
     .cut <- woody[woody$z > (cuts - 2 * slice - 0.05) & woody$z < cuts + 0.05, , drop = FALSE]
 
@@ -334,8 +335,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
 
     if(cuts <= stem.section[1] | cuts >= stem.section[2]){
-
-      threads <- max(1, parallel::detectCores() - 1)
 
       VerSur <- geometric.features(data = .cut,
                                    grid_method = 'sf_grid',
@@ -403,17 +402,13 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     if (interactive()) {
 
-
-    .filter <- do.call(rbind, parallel::clusterApply(cl, split(.cut, .cut$cluster),
-                                                     .sections.single.scan, .cut = .cut,
-                                                     .alpha.v = .alpha.v, .alpha.h = .alpha.h,
-                                                     .dbh.min = .dbh.min, .dbh.max = .dbh.max,
-                                                     slice = slice * 2, bark.roughness = bark.roughness,
-                                                     x.center = x.center, y.center = y.center))
-
-    # Stop cluster
-
-    # parallel::stopCluster(cl)
+    # Parallel processing within the loop
+    .filter <- do.call(rbind, parallel::parLapply(cl, split(.cut, .cut$cluster),
+                                                  .sections.single.scan, .cut = .cut,
+                                                  .alpha.v = .alpha.v, .alpha.h = .alpha.h,
+                                                  .dbh.min = .dbh.min, .dbh.max = .dbh.max,
+                                                  slice = slice * 2, bark.roughness = bark.roughness,
+                                                  x.center = x.center, y.center = y.center))
 
 
     } else {
@@ -429,8 +424,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     }
 
 
-    .filteraux[[length(.filteraux) + 1]] <- .filter
-
+    .filteraux[[i]] <- .filter
 
 
     # Second...
@@ -445,8 +439,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
 
       if(cuts <= stem.section[1] | cuts >= stem.section[2]){
-
-        threads <- max(1, parallel::detectCores() - 1)
 
         VerSur <- geometric.features(data = .cut,
                                      grid_method = 'sf_grid',
@@ -519,16 +511,13 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
                                        slice = slice * 2, bark.roughness = bark.roughness,
                                        x.center = x.center, y.center = y.center))
 
-      .filteraux.2 <- rbind(.filteraux.2, .filter)}
+      .filteraux.2[[i]] <- .filter}
+
 
     pb$tick()
 
-    gc()
-
-    # end_time <- Sys.time()
-    # execution_time <- end_time - start_time
-    # print(execution_time)
-
+    # Run garbage collection only every 5 iterations
+    if (i %% 5 == 0) gc()
 
 
   }# End of cuts loop
