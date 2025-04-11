@@ -108,7 +108,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   VerSur <- geometric.features(data = stem,
                                grid_method = 'sf_grid',
-                               features = c("verticality", "surface_variation"),
+                               features = c("verticality", "surface_variation", "planarity"),
                                dist = 0.1,
                                threads = threads,
                                keep_NaN = FALSE,            # this means, when we run the Rcpp code we don't ex <- ude computed rows if 1 of the features is NA. If we have to compute 13 features and 1 is NA, then we keep this row
@@ -122,7 +122,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   }
 
-  stem <- merge(stem, VerSur[, c("point", "verticality", "surface_variation")], by = "point")
+  stem <- merge(stem, VerSur[, c("point", "verticality", "surface_variation", "planarity")], by = "point")
 
   rm(VerSur)
 
@@ -140,6 +140,12 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
   stem <- stem[stem$ver < stem$prob.ver, ]
+
+  stem$ver <- stem$planarity
+  stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
+
+  stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
+  stem <- stem[stem$ver > stem$prob.ver, ]
 
 
 
