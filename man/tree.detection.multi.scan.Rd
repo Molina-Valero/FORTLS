@@ -190,6 +190,8 @@ pcd <- normalize(las = "PiceaAbies.laz",
 
 tree.tls <- tree.detection.multi.scan(data = pcd,
 
+                                      tls.precision = 0.05,
+
                                       slice = 0.2,
 
                                       dir.result = dir.result)
