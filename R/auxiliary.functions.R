@@ -363,9 +363,9 @@
 
   }
 
-  .center.phi <- atan2(.center.y, .center.x)
+  .center.phi <- atan2(.center.y-y.center, .center.x-x.center)
   .center.phi <- ifelse(.center.phi < 0, .center.phi + (2 * pi), .center.phi)
-  .center.rho <- sqrt((.center.x) ^ 2 + (.center.y) ^ 2)
+  .center.rho <- sqrt((.center.x-x.center) ^ 2 + (.center.y-y.center) ^ 2)
   .center.r <- sqrt(.dat$sec[1] ^ 2 + .center.rho ^ 2)
   .center.theta <- atan2(.dat$sec[1], .center.rho)
 
@@ -797,9 +797,9 @@
   # Calculation of other coordinates of the center of the section
   # with respect to the plot center
 
-  .center.phi <- atan2(.center.y, .center.x)
+  .center.phi <- atan2(.center.y-y.center, .center.x-x.center)
   .center.phi <- ifelse(.center.phi < 0, .center.phi + (2 * pi), .center.phi)
-  .center.rho <- sqrt((.center.x) ^ 2 + (.center.y) ^ 2)
+  .center.rho <- sqrt((.center.x-x.center) ^ 2 + (.center.y-y.center) ^ 2)
   .center.r <- sqrt(.dat$sec[1] ^ 2 + .center.rho ^ 2)
   .center.theta <- atan2(.dat$sec[1], .center.rho)
 
