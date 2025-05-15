@@ -22,6 +22,19 @@ remotes::install_github("Molina-Valero/FORTLS", ref = "devel", dependencies = TR
 
 # Taller 9CFE
 
+```r
+pcd <- normalize(las = "HLS_LiGrip.laz",
+                 id = "HLS_LiGrip",
+                 max.dist = 10,
+                 scan.approach = "multi")
+
+tree.tls <- tree.detection.multi.scan(data = pcd)
+
+met.var.TLS <- metrics.variables(tree.tls = tree.tls,
+                                 scan.approach = "multi",
+                                 plot.parameters = data.frame(radius = 10, k = 10, BAF = 2))
+```
+
 # Acknowledgements 
 
 **FORTLS** it is being developed at [Czech University of Life Sciences Prague](https://www.czu.cz/en) and [University of Santiago de Compostela](https://www.usc.gal/en).
