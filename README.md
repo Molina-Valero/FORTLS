@@ -30,14 +30,24 @@ install.packages(“FORTLS”)
 library(FORTLS)
 ```
 
+## Normalización de la nube de puntos
+
 ```r
 pcd <- normalize(las = "HLS_LiGrip.laz",
                  id = "HLS_LiGrip",
                  max.dist = 10,
                  scan.approach = "multi")
+```
 
+## Variables de árbol individual (o dendrométricas)
+
+```r
 tree.tls <- tree.detection.multi.scan(data = pcd)
+```
 
+## Variables de masa (o dasométricas)
+
+```r
 met.var.TLS <- metrics.variables(tree.tls = tree.tls,
                                  scan.approach = "multi",
                                  plot.parameters = data.frame(radius = 10, k = 10, BAF = 2))
