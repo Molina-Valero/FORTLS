@@ -22,6 +22,14 @@ remotes::install_github("Molina-Valero/FORTLS", ref = "devel", dependencies = TR
 
 # Taller 9CFE
 
+## Instalación de FORTLS
+
+```r
+
+install.packages(“FORTLS”)
+library(FORTLS)
+```
+
 ```r
 pcd <- normalize(las = "HLS_LiGrip.laz",
                  id = "HLS_LiGrip",
