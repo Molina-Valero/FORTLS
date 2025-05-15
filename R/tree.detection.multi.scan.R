@@ -131,7 +131,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
 
   stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
-  stem <- stem[stem$ver > stem$prob.ver, ]
+  stem <- stem[stem$ver > 0.75 | stem$ver > stem$prob.ver, ]
 
 
 
