@@ -20,12 +20,11 @@ Get the lat stable version of FORTLS from GitHub (included in the master branch)
 remotes::install_github("Molina-Valero/FORTLS", ref = "devel", dependencies = TRUE)
 ```
 
-# Taller 9CFE
+# Taller de manejo de nubes de puntos forestales - 9CFE
 
 ## Instalación de FORTLS
 
 ```r
-
 install.packages(“FORTLS”)
 library(FORTLS)
 ```
@@ -35,14 +34,15 @@ library(FORTLS)
 ```r
 pcd <- normalize(las = "HLS_LiGrip.laz",
                  id = "HLS_LiGrip",
-                 max.dist = 10,
+                 max.dist = 12.5,
                  scan.approach = "multi")
 ```
 
 ## Variables de árbol individual (o dendrométricas)
 
 ```r
-tree.tls <- tree.detection.multi.scan(data = pcd)
+tree.tls <- tree.detection.multi.scan(data = pcd,
+                                      understory = TRUE)
 ```
 
 ## Variables de masa (o dasométricas)
@@ -51,6 +51,15 @@ tree.tls <- tree.detection.multi.scan(data = pcd)
 met.var.TLS <- metrics.variables(tree.tls = tree.tls,
                                  scan.approach = "multi",
                                  plot.parameters = data.frame(radius = 10, k = 10, BAF = 2))
+                                 
+# Parcela circular de área fija (10 m de radio)
+parcela.circular <- met.var.TLS$fixed.area
+
+# Parceka k-tree (k = x)
+parcela.k.tree <- met.var.TLS$k.tree
+
+# Parcela relascópica (BAF = x)
+parcela.relascopica <- met.var.TLS$angle.count
 ```
 
 # Acknowledgements 
