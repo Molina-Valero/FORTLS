@@ -29,6 +29,15 @@ install.packages(“FORTLS”)
 library(FORTLS)
 ```
 
+## Establecimiento del directorio de trabajo
+
+Por ejemplo: "C:\taller_FORTLS"
+
+```r
+setwd("C:/taller_FORTLS")
+
+```
+
 ## Normalización de la nube de puntos
 
 ```r
