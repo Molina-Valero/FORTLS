@@ -55,10 +55,10 @@ met.var.TLS <- metrics.variables(tree.tls = tree.tls,
 # Parcela circular de área fija (10 m de radio)
 parcela.circular <- met.var.TLS$fixed.area
 
-# Parceka k-tree (k = x)
+# Parceka k-tree (k = 10)
 parcela.k.tree <- met.var.TLS$k.tree
 
-# Parcela relascópica (BAF = x)
+# Parcela relascópica (BAF = 2)
 parcela.relascopica <- met.var.TLS$angle.count
 ```
 
