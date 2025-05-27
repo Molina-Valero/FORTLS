@@ -119,6 +119,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     VerSur$verticality <- NA
     VerSur$surface_variation <- NA
+    VerSur$planarity <- NA
 
   }
 
