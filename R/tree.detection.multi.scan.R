@@ -115,7 +115,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                                verbose = FALSE,
                                solver_threshold = 50000)
 
-  if(is.null(VerSur$verticality) | is.null(VerSur$surface_variation)){
+  if(is.null(VerSur$verticality) | is.null(VerSur$surface_variation) | is.null(VerSur$planarity)){
 
     VerSur$verticality <- NA
     VerSur$surface_variation <- NA
