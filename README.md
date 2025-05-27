@@ -26,23 +26,22 @@ remotes::install_github("Molina-Valero/FORTLS", dependencies = TRUE)
 
 [Data](https://drive.google.com/drive/folders/1lBoe4XIYFdUfPUCAZ3KGU6JhrosPfoY6?usp=sharing)
 
-## Instalación de FORTLS
+## FORTLS installation
 
 ```r
 install.packages(“FORTLS”)
 library(FORTLS)
 ```
 
-## Establecimiento del directorio de trabajo
+## Establishment of the working directory
 
-Por ejemplo: "C:\taller_FORTLS"
+For example: "C:\taller_FORTLS"
 
 ```r
 setwd("C:/taller_FORTLS")
-
 ```
 
-## Normalización de la nube de puntos
+## Point cloud normalization
 
 ```r
 pcd <- normalize(las = "Pinus.laz",
@@ -51,7 +50,7 @@ pcd <- normalize(las = "Pinus.laz",
                  scan.approach = "multi")
 ```
 
-## Variables de árbol individual (o dendrométricas)
+## Tree-level variables
 
 ```r
 tree.tls <- tree.detection.multi.scan(data = pcd,
