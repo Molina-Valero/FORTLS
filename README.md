@@ -47,7 +47,7 @@ setwd("C:/taller_FORTLS")
 ```r
 pcd <- normalize(las = "Pinus.laz",
                  id = "Pinus",
-                 max.dist = 10,
+                 max.dist = 12.5,
                  scan.approach = "multi")
 ```
 
