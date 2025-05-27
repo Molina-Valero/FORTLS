@@ -35,10 +35,10 @@ library(FORTLS)
 
 ## Establishment of the working directory
 
-For example: "C:\taller_FORTLS"
+For example: "C:\FORTLS_Workshop
 
 ```r
-setwd("C:/taller_FORTLS")
+setwd("C:/FORTLS_Workshop")
 ```
 
 ## Point cloud normalization
