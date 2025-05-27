@@ -20,7 +20,11 @@ Get the lat stable version of FORTLS from GitHub (included in the master branch)
 remotes::install_github("Molina-Valero/FORTLS", dependencies = TRUE)
 ```
 
-# Taller de manejo de nubes de puntos forestales - 9CFE
+# Processing TLS data with the R package FORTLS - Summer school Remote Sensing of Forests
+
+## Data
+
+[Data](https://drive.google.com/drive/folders/1lBoe4XIYFdUfPUCAZ3KGU6JhrosPfoY6?usp=sharing)
 
 ## Instalación de FORTLS
 
