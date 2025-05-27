@@ -340,7 +340,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
       VerSur <- geometric.features(data = .cut,
                                    grid_method = 'sf_grid',
                                    features = c("verticality", "surface_variation"),
-                                   dist = 0.05,
+                                   dist = 0.1,
                                    threads = threads,
                                    keep_NaN = FALSE,            # this means, when we run the Rcpp code we don't exclude computed rows if 1 of the features is NA. If we have to compute 13 features and 1 is NA, then we keep this row
                                    verbose = FALSE,
@@ -365,7 +365,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
       .cut <- .cut[.cut$ver > .cut$prob.ver, ]
 
 
-      .cut$ver <- .cut$surface_variation
+      .cut$ver <- .cut$surface_variation / 0.33
       .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
 
       .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
@@ -444,7 +444,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
       VerSur <- geometric.features(data = .cut,
                                    grid_method = 'sf_grid',
                                    features = c("verticality", "surface_variation"),
-                                   dist = 0.05,
+                                   dist = 0.1,
                                    threads = threads,
                                    keep_NaN = FALSE,            # this means, when we run the Rcpp code we don't exclude computed rows if 1 of the features is NA. If we have to compute 13 features and 1 is NA, then we keep this row
                                    verbose = FALSE,
@@ -468,7 +468,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
       .cut <- .cut[.cut$ver > .cut$prob.ver, ]
 
 
-      .cut$ver <- .cut$surface_variation
+      .cut$ver <- .cut$surface_variation / 0.33
       .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
 
       .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
