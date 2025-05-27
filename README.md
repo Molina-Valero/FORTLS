@@ -45,9 +45,9 @@ setwd("C:/taller_FORTLS")
 ## Normalización de la nube de puntos
 
 ```r
-pcd <- normalize(las = "HLS_LiGrip.laz",
-                 id = "HLS_LiGrip",
-                 max.dist = 12.5,
+pcd <- normalize(las = "Pinus.laz",
+                 id = "Pinus",
+                 max.dist = 10,
                  scan.approach = "multi")
 ```
 
@@ -56,23 +56,6 @@ pcd <- normalize(las = "HLS_LiGrip.laz",
 ```r
 tree.tls <- tree.detection.multi.scan(data = pcd,
                                       understory = TRUE)
-```
-
-## Variables de masa (o dasométricas)
-
-```r
-met.var.TLS <- metrics.variables(tree.tls = tree.tls,
-                                 scan.approach = "multi",
-                                 plot.parameters = data.frame(radius = 10, k = 10, BAF = 2))
-                                 
-# Parcela circular de área fija (10 m de radio)
-parcela.circular <- met.var.TLS$fixed.area
-
-# Parceka k-tree (k = 10)
-parcela.k.tree <- met.var.TLS$k.tree
-
-# Parcela relascópica (BAF = 2)
-parcela.relascopica <- met.var.TLS$angle.count
 ```
 
 
