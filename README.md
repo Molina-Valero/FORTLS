@@ -25,7 +25,7 @@ remotes::install_github("Molina-Valero/FORTLS", ref = "devel", dependencies = TR
 ## Instalación de FORTLS
 
 ```r
-install.packages(“FORTLS”)
+install.packages("FORTLS")
 library(FORTLS)
 ```
 
