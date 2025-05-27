@@ -20,6 +20,58 @@ Get the lat stable version of FORTLS from GitHub (included in the master branch)
 remotes::install_github("Molina-Valero/FORTLS", dependencies = TRUE)
 ```
 
+# Taller de manejo de nubes de puntos forestales - 9CFE
+
+## Instalación de FORTLS
+
+```r
+install.packages(“FORTLS”)
+library(FORTLS)
+```
+
+## Establecimiento del directorio de trabajo
+
+Por ejemplo: "C:\taller_FORTLS"
+
+```r
+setwd("C:/taller_FORTLS")
+
+```
+
+## Normalización de la nube de puntos
+
+```r
+pcd <- normalize(las = "HLS_LiGrip.laz",
+                 id = "HLS_LiGrip",
+                 max.dist = 12.5,
+                 scan.approach = "multi")
+```
+
+## Variables de árbol individual (o dendrométricas)
+
+```r
+tree.tls <- tree.detection.multi.scan(data = pcd,
+                                      understory = TRUE)
+```
+
+## Variables de masa (o dasométricas)
+
+```r
+met.var.TLS <- metrics.variables(tree.tls = tree.tls,
+                                 scan.approach = "multi",
+                                 plot.parameters = data.frame(radius = 10, k = 10, BAF = 2))
+                                 
+# Parcela circular de área fija (10 m de radio)
+parcela.circular <- met.var.TLS$fixed.area
+
+# Parceka k-tree (k = 10)
+parcela.k.tree <- met.var.TLS$k.tree
+
+# Parcela relascópica (BAF = 2)
+parcela.relascopica <- met.var.TLS$angle.count
+```
+
+
 # Acknowledgements 
 
 **FORTLS** it is being developed at [Czech University of Life Sciences Prague](https://www.czu.cz/en) and [University of Santiago de Compostela](https://www.usc.gal/en).
