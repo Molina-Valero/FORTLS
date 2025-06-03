@@ -61,8 +61,8 @@ tree.tls <- tree.detection.multi.scan(data = pcd,
 
 ```r
 met.var.TLS <- metrics.variables(tree.tls = tree.tls,
-                                                         scan.approach = "multi",
-                                                         plot.parameters = data.frame(radius = 10, k = 10, BAF = 2))
+                                 scan.approach = "multi",
+                                 plot.parameters = data.frame(radius = 10, k = 10, BAF = 2))
                                  
 # Fixed area plot (10 m radius)
 circular <- met.var.TLS$fixed.area
