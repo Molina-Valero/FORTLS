@@ -29,13 +29,13 @@ remotes::install_github("Molina-Valero/FORTLS", dependencies = TRUE)
 ## FORTLS installation
 
 ```r
-install.packages(“FORTLS”)
+install.packages("FORTLS")
 library(FORTLS)
 ```
 
 ## Establishment of the working directory
 
-For example: "C:\FORTLS_Workshop
+For example: "C:\FORTLS_Workshop"
 
 ```r
 setwd("C:/FORTLS_Workshop")
