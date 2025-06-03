@@ -57,6 +57,23 @@ tree.tls <- tree.detection.multi.scan(data = pcd,
                                       understory = TRUE)
 ```
 
+## Stand-level variables
+
+```r
+met.var.TLS <- metrics.variables(tree.tls = tree.tls,
+                                                         scan.approach = "multi",
+                                                         plot.parameters = data.frame(radius = 10, k = 10, BAF = 2))
+                                 
+# Fixed area plot (10 m radius)
+circular <- met.var.TLS$fixed.area
+
+# k-tree plot (k = 10)
+k.tree <- met.var.TLS$k.tree
+
+# Relascopic plot (BAF = 2)
+relascopic <- met.var.TLS$angle.count
+```
+
 
 # Acknowledgements 
 
