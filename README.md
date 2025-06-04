@@ -55,7 +55,7 @@ id: Optional plot identification encoded as character string or numeric
 
 max.dist: Optional maximum horizontal distance (m) considered from the plot centre
 
-scan.approach: Character parameter indicating TLS single-scan (‘single’) or TLS multi-scan approach or SLAM point clouds (‘multi’) approaches. If this argument is not specified by the user, it will be set to ‘single’ approach.
+scan.approach: Character parameter indicating TLS single-scan (‘single’) or TLS multi-scan approach or mobile laser scanner (MLS) point clouds (‘multi’) approaches.
 
 ```r
 pcd <- normalize(las = "Pinus.laz",
