@@ -66,7 +66,7 @@ pcd <- normalize(las = "Pinus.laz",
 
 ## Tree-level variables
 
-This function (tree.detection.multi.scan) detects trees from point clouds corresponding to TLS multi-scan approaches and MLS devices. For each tree detected, the function calculates the central coordinates and estimates the diameter at 1.3 m above ground level (which is known as dbh, diameter at breast height) and classifies it as fully visible or partially occluded. Finally, the function obtains the number of points belonging to normal sections of trees (those corresponding to dbh +/- 5 cm) and estimates them for both original and reduced (with random selection process) point clouds. The following describes the arguments used in the normalize function:
+This function (tree.detection.multi.scan) detects trees from point clouds corresponding to TLS multi-scan approaches and MLS devices. For each tree detected, the function calculates the central coordinates and estimates the diameter at 1.3 m above ground level (which is known as dbh, diameter at breast height) and classifies it as fully visible or partially occluded. Finally, the function obtains the number of points belonging to normal sections of trees (those corresponding to dbh +/- 5 cm) and estimates them for both original and reduced (with random selection process) point clouds. The following describes the arguments used in the tree.detection.multi.scan function:
 
 data: Data frame obtained from normalized function
 
@@ -78,6 +78,14 @@ tree.tls <- tree.detection.multi.scan(data = pcd,
 ```
 
 ## Stand-level variables
+
+This function (metrics.variables) computes a set of metrics and variables from the Terrestrial-Based Technologies point cloud data, which have a high potential to be related or used as direct estimates (in the case of variables) of forest attributes at plot level. These can be obtained for different plot designs (circular fixed area, k-tree and angle-count plots). This function also includes methodologies for correcting occlusions generated in TLS single-scan point clouds. The following describes the arguments used in the metrics.variables function:
+
+tree.tls: Data frame obtained from tree.detection.multi.scan function
+
+scan.approach: Character parameter indicating TLS single-scan (‘single’) or TLS multi-scan approach or mobile laser scanner (MLS) point clouds (‘multi’) approaches.
+
+plot.parameters: Data frame containing parameters for circular fixed area, k-tree and angle-count plot designs
 
 ```r
 met.var.TLS <- metrics.variables(tree.tls = tree.tls,
