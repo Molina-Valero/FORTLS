@@ -52,7 +52,9 @@ The following describes the arguments used in the normalize function:
 las: Character string containing the name of LAS/LAZ file belonging to point cloud, including .las/.laz extensions
 
 id: Optional plot identification encoded as character string or numeric
+
 max.dist: Optional maximum horizontal distance (m) considered from the plot centre
+
 scan.approach: Character parameter indicating TLS single-scan (‘single’) or TLS multi-scan approach or SLAM point clouds (‘multi’) approaches. If this argument is not specified by the user, it will be set to ‘single’ approach.
 
 ```r
