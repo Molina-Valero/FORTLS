@@ -47,7 +47,7 @@ setwd("C:/FORTLS_Workshop")
 
 ## Point cloud normalization
 
-The following describes the arguments used in the normalize function:
+This function (normalize) obtains coordinates relative to the plot centre speciefied for Terrestrial Laser Scanner (TLS) and Mobile Laser Scanner (MLS) point clouds (supplied as LAS or LAZ files). The following describes the arguments used in the normalize function:
 
 las: Character string containing the name of LAS/LAZ file belonging to point cloud, including .las/.laz extensions
 
