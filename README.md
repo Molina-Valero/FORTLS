@@ -20,11 +20,13 @@ Get the lat stable version of FORTLS from GitHub (included in the master branch)
 remotes::install_github("Molina-Valero/FORTLS", dependencies = TRUE)
 ```
 
-# Processing TLS data with the R package FORTLS - Summer school Remote Sensing of Forests
+# Processing TLS data with the R package FORTLS (Earth Bridge)
 
-## Data
+The example presented here is based on a point cloud collected by a mobile laser scanner (MLS) in a Pinus sylvestris forest.
 
-[Data](https://drive.google.com/drive/folders/1lBoe4XIYFdUfPUCAZ3KGU6JhrosPfoY6?usp=sharing)
+## Materials and data
+
+[Materials and data](https://drive.google.com/drive/folders/1lBoe4XIYFdUfPUCAZ3KGU6JhrosPfoY6?usp=sharing)
 
 ## FORTLS installation
 
@@ -35,6 +37,8 @@ library(FORTLS)
 
 ## Establishment of the working directory
 
+It is extremely important that the working directory matches the directory where the source data (point clouds in las/laz format) are located.
+
 For example: "C:\FORTLS_Workshop"
 
 ```r
@@ -42,6 +46,13 @@ setwd("C:/FORTLS_Workshop")
 ```
 
 ## Point cloud normalization
+
+The following describes the arguments used in the normalize function:
+
+las: Character string containing the name of LAS/LAZ file belonging to point cloud, including .las/.laz extensions
+id: Optional plot identification encoded as character string or numeric
+max.dist: Optional maximum horizontal distance (m) considered from the plot centre
+scan.approach: Character parameter indicating TLS single-scan (‘single’) or TLS multi-scan approach or SLAM point clouds (‘multi’) approaches. If this argument is not specified by the user, it will be set to ‘single’ approach.
 
 ```r
 pcd <- normalize(las = "Pinus.laz",
