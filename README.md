@@ -66,6 +66,12 @@ pcd <- normalize(las = "Pinus.laz",
 
 ## Tree-level variables
 
+This function (tree.detection.multi.scan) detects trees from point clouds corresponding to TLS multi-scan approaches and MLS devices. For each tree detected, the function calculates the central coordinates and estimates the diameter at 1.3 m above ground level (which is known as dbh, diameter at breast height) and classifies it as fully visible or partially occluded. Finally, the function obtains the number of points belonging to normal sections of trees (those corresponding to dbh +/- 5 cm) and estimates them for both original and reduced (with random selection process) point clouds. The following describes the arguments used in the normalize function:
+
+data: Data frame obtained from normalized function
+
+understory: Optional argument to indicate if there is dense understory vegetation
+
 ```r
 tree.tls <- tree.detection.multi.scan(data = pcd,
                                       understory = TRUE)
