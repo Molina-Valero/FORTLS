@@ -74,7 +74,9 @@ understory: Optional argument to indicate if there is dense understory vegetatio
 
 ```r
 tree.tls <- tree.detection.multi.scan(data = pcd,
-                                      understory = TRUE)
+                                      understory = TRUE,
+                                      slice = 0.15,
+                                      tls.precision = 0.05)
 ```
 
 ## Stand-level variables
