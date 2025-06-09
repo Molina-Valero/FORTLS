@@ -111,6 +111,12 @@ Local surface variation (also known as normal change rate ,NCR), is a quantitati
 
 \item{\emph{v.com}}{estimated commercial tree stem volume (m^3) according to the top diameter defined in the argument \code{d.top}.}
 
+\item{\emph{SS.max}}{Maximum sagitta (see Prendes et al. (2022)).}
+
+\item{\emph{sinuosity}}{Sinuosity (see Prendes et al. (2022)).}
+
+\item{\emph{lean}}{Lean (see Prendes et al. (2022)).}
+
 \item{n.pts}{number of points corresponding to a normal section (+/- 5 cm) in the original point cloud.}
 
 \item{n.pts.red}{number of points corresponding to a normal section (+/- 5 cm) in the point cloud reduced by the point cropping process.}
@@ -142,6 +148,8 @@ Jin, S., Tamura, M., & Susaki, J. (2016). A new approach to retrieve leaf normal
 Ma, L., Zheng, G., Eitel, J. U., Moskal, L. M., He, W., & Huang, H. (2015). Improved salient feature-based approach for automatically separating photosynthetic and nonphotosynthetic components within terrestrial lidar point cloud data of forest canopies. \emph{IEEE Transactions Geoscience Remote Sensing}, \bold{54(2)}, 679-696. \doi{https://doi.org/10.1109/TGRS.2015.2459716}
 
 Pauly, M., Gross, M., & Kobbelt, L. P., (2002). Efficient simplification of point-sampled surfaces. In IEEE Conference on Visualization. (pp. 163-170). Boston, USA. \doi{https://doi.org/10.1109/VISUAL.2002.1183771}
+
+Prendes, C., Canga, E., Ordoñez, C., Majada, J., Acuna, M., & Cabo, C. (2022). Automatic assessment of individual stem shape parameters in forest stands from tls point clouds: Application in pinus pinaster. Forests, 13(3), 431. \doi{https://doi.org/10.3390/f13030431}
 
 Xia, S., Wang, C., Pan, F., Xi, X., Zeng, H., & Liu, H. (2015). Detecting stems in dense and homogeneous forest using single-scan TLS. \emph{Forests}. \bold{6(11)}, 3923-3945. \doi{https://doi.org/10.3390/f6113923}
 
