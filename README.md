@@ -31,7 +31,7 @@ library(FORTLS)
 
 ## Establecimiento del directorio de trabajo
 
-Por ejemplo: "C:\taller_FORTLS"
+Es **extremadamente importante** que el directorio de trabajo (p. ej. "C:\taller_FORTLS") coincida con el directorio donde se encuentran los datos de origen (nubes de puntos en formato LAS o LAZ). Recordad que en R los directorios se escriben con la barra inclinada u oblícua ( / ).
 
 ```r
 setwd("C:/taller_FORTLS")
@@ -39,6 +39,16 @@ setwd("C:/taller_FORTLS")
 ```
 
 ## Normalización de la nube de puntos
+
+Esta función (normalize) se utiliza para obtener coordenadas relativas al centro de la parcela especificado para las nubes de puntos del Escáner Láser Terrestre (TLS) y del Escáner Láser Móvil (MLS) (suministradas como archivos LAS o LAZ). A continuación se describen los argumentos utilizados en la función normalizar:
+
+las: texto que contiene el nombre del archivo LAS/LAZ perteneciente a la nube de puntos, incluiyendo las extensiones del archico (.las/.laz).
+
+id: identificación opcional de la parcela, codificada como texto o de forma numérica.
+
+dist.max: distancia horizontal máxima (m) considerada desde el centro de la parcela.
+
+scan.approach: argumento que indica el tipo de escaneo realizado, tanto para escaneos únicos de TLS ('single') como múltiples o nubes de puntos generadas con escáner láser móvil (MLS) ('multi').
 
 ```r
 pcd <- normalize(las = "HLS_LiGrip.laz",
@@ -49,12 +59,26 @@ pcd <- normalize(las = "HLS_LiGrip.laz",
 
 ## Variables de árbol individual (o dendrométricas)
 
+Esta función (tree.detection.multi.scan) detecta árboles a partir de nubes de puntos correspondientes a escaneos múltiples de TLS o nubes de puntos generadas con escáner láser móvil (MLS). Para cada árbol detectado, la función calcula las coordenadas centrales de la sección normal y estima el diámetro a 1,3 m sobre el nivel del suelo (lo que se conoce como dbh, diámetro a la altura del pecho), así como otras variables deárbol individual (altura total, volumen del fuste, etc.); clasificando el árbol como totalmente visible o parcialmente ocluido. A continuación se describen los argumentos utilizados en la función tree.detection.multi.scan:
+
+data: data frame obtenido tras ejecutar la función normalize.
+
+understory: argumento opcional para indicar si hay vegetación densa en el sotobosque.
+
 ```r
 tree.tls <- tree.detection.multi.scan(data = pcd,
                                       understory = TRUE)
 ```
 
 ## Variables de masa (o dasométricas)
+
+Esta función (metrics.variables) calcula un conjunto de métricas y variables de masa a partir de nubes de puntos tomadas con escáneres terrestres de tecnología LiDAR. Mientras que las métricas puden ser vistas como potenciales variables explicativas en modelos, las variables podrían utilizarse como estimaciones directas de los atributos forestales a nivel de parcela. Esta función puede implementar diferentes diseños de parcela (parcelas circulares de área fija, k-tree y relascópicas) e incluye metodologías para corregir las oclusiones generadas en las nubes de puntos de escaneos únicos de TLS. A continuación se describen los argumentos utilizados en la función metrics.variables:
+
+tree.tls: data frame obtenido tras ejecutar la función tree.detection.multi.scan.
+
+scan.approach: argumento que indica el tipo de escaneo realizado, tanto para escaneos únicos de TLS ('single') como múltiples o nubes de puntos generadas con escáner láser móvil (MLS) ('multi').
+
+plot.parameters: data frame que contiene los parámetros para definir los diseños de parcela de área fija circular (radio en m), k-tree (k) y relascópica (BAF).
 
 ```r
 met.var.TLS <- metrics.variables(tree.tls = tree.tls,
