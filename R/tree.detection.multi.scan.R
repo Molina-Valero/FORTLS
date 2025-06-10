@@ -328,6 +328,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   for(i in seq_along(breaks)){
 
+    pb$tick()
 
     cuts <- breaks[i]
 
@@ -530,8 +531,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
 
     .filteraux.2[[i]] <- .filter}
-
-    pb$tick()
 
     # Run garbage collection only every 5 iterations
     if (i %% 5 == 0) gc()

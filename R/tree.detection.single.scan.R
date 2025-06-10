@@ -133,7 +133,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   VerSur <- geometric.features(data = stem,
                                grid_method = 'sf_grid',
-                               features = c("verticality", "surface_variation"),
+                               features = c("verticality", "surface_variation", "planarity"),
                                dist = 0.05,
                                threads = threads,
                                keep_NaN = FALSE,            # this means, when we run the Rcpp code we don't exclude computed rows if 1 of the features is NA. If we have to compute 13 features and 1 is NA, then we keep this row
@@ -161,20 +161,20 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
 
   stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
-  stem <- stem[stem$ver > stem$prob.ver, ]
+  stem <- stem[stem$ver > 0.75 | stem$ver > stem$prob.ver, ]
 
-  # stem$ver <- stem$surface_variation / 0.33
-  # stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
-  #
-  # stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
-  # stem <- stem[stem$ver < stem$prob.ver, ]
-  #
-  #
-  # stem$ver <- stem$planarity
-  # stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
-  #
-  # stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
-  # stem <- stem[stem$ver > stem$prob.ver, ]
+  stem$ver <- stem$surface_variation / 0.33
+  stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
+
+  stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
+  stem <- stem[stem$ver < stem$prob.ver, ]
+
+
+  stem$ver <- stem$planarity
+  stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
+
+  stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
+  stem <- stem[stem$ver > stem$prob.ver, ]
 
 
   # woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
@@ -192,7 +192,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
 
   stem <- VoxR::project_voxels(stem)
-  # plot(stem$x, stem$y, asp = 1, col = "grey")
 
 
   # Filtering pixels - double branch peeling
@@ -349,6 +348,8 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
 
   for(i in seq_along(breaks)){
+
+    pb$tick()
 
 
     cuts <- breaks[i]
@@ -539,8 +540,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
       .filteraux.2[[i]] <- .filter}
 
-
-    pb$tick()
 
     # Run garbage collection only every 5 iterations
     if (i %% 5 == 0) gc()
