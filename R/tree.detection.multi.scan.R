@@ -366,7 +366,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
       .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
 
       .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
-      .cut <- .cut[.cut$ver > .cut$prob.ver, ]
+      .cut <- .cut[.cut$ver > 0.75 | .cut$ver > .cut$prob.ver, ]
 
 
       .cut$ver <- .cut$surface_variation / 0.33
@@ -469,7 +469,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
       .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
 
       .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
-      .cut <- .cut[.cut$ver > .cut$prob.ver, ]
+      .cut <- .cut[.cut$ver > 0.75 | .cut$ver > .cut$prob.ver, ]
 
 
       .cut$ver <- .cut$surface_variation / 0.33

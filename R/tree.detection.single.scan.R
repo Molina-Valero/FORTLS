@@ -163,6 +163,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
   stem <- stem[stem$ver > 0.75 | stem$ver > stem$prob.ver, ]
 
+
   stem$ver <- stem$surface_variation / 0.33
   stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
 
@@ -387,10 +388,10 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
       .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
 
       .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
-      .cut <- .cut[.cut$ver > .cut$prob.ver, ]
+      .cut <- .cut[.cut$ver > 0.75 | .cut$ver > .cut$prob.ver, ]
 
 
-      .cut$ver <- .cut$surface_variation
+      .cut$ver <- .cut$surface_variation / 0.33
       .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
 
       .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
@@ -491,10 +492,10 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
         .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
 
         .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
-        .cut <- .cut[.cut$ver > .cut$prob.ver, ]
+        .cut <- .cut[.cut$ver > 0.75 | .cut$ver > .cut$prob.ver, ]
 
 
-        .cut$ver <- .cut$surface_variation
+        .cut$ver <- .cut$surface_variation / 0.33
         .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
 
         .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
