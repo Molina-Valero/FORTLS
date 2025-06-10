@@ -19,6 +19,7 @@ tree.detection.multi.scan(data, single.tree = NULL,
                           den.type = 1, d.top = NULL,
                           segmentation = NULL,
                           plot.attributes = NULL, plot = TRUE,
+                          threads = 1,
                           dir.data = NULL, save.result = TRUE, dir.result = NULL)}
 
 \arguments{
@@ -60,6 +61,8 @@ tree.detection.multi.scan(data, single.tree = NULL,
   \item{plot.attributes}{Data frame with attributes at plot level. It must contain a column named \code{id} (character string or numeric value) with encoding coinciding with that used in \code{id} argument of \code{\link{normalize}} for identifying plots. If there are strata, another column named \sQuote{stratum} (numeric) will be required for other functionalities of \pkg{FORTLS} (see, for instance, \code{\link{estimation.plot.size}} or \code{\link{metrics.variables}}). If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, the function will not add these possible plot attributes.}
 
   \item{plot}{Optional logical which indicates whether or not the normalized point cloud will be plot. If this argument is not specified by the user, it will be set to \code{TRUE} by default and, as consequence, the normalized point cloud will be plot.}
+
+  \item{threads}{Number of threads.}
 
   \item{dir.data}{Optional character string naming the absolute path of the directory where LAS files containing TLS point clouds are located. \code{.Platform$file.sep} must be used as the path separator in \code{dir.data}. If this argument is not specified by the user, it will be set to \code{NULL} by default and, as a consequence, the current working directory of the \R process will be assigned to \code{dir.data} during the execution.}
 
@@ -201,6 +204,8 @@ tree.tls <- tree.detection.multi.scan(data = pcd,
                                       tls.precision = 0.05,
 
                                       slice = 0.2,
+
+                                      threads = 2,
 
                                       dir.result = dir.result)
 

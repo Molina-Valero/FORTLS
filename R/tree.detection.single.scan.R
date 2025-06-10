@@ -8,6 +8,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
                                        den.type = 1, d.top = NULL,
                                        segmentation = NULL,
                                        plot.attributes = NULL, plot = TRUE,
+                                       threads = 1,
                                        dir.data = NULL, save.result = TRUE, dir.result = NULL){
 
 
@@ -129,7 +130,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   message("Retention of points with high verticality values")
 
-  threads <- max(1, parallel::detectCores() - 1)
+  threads <- max(1, threads)
 
   VerSur <- geometric.features(data = stem,
                                grid_method = 'sf_grid',
@@ -341,7 +342,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
 
   # Set up parallel cluster
-  cl <- parallel::makeCluster(max(1, parallel::detectCores() - 1))
+  cl <- parallel::makeCluster(max(1, threads))
 
 
   pb <- progress::progress_bar$new(total = length(breaks))

@@ -31,6 +31,8 @@ tree.detection.several.plots(las.list, id.list = NULL, file = NULL,
 
                              plot.attributes = NULL, plot = NULL,
 
+                             threads = 1,
+
                              dir.data = NULL, save.result = TRUE, dir.result = NULL)}
 
 \arguments{
@@ -123,6 +125,8 @@ tree.detection.several.plots(las.list, id.list = NULL, file = NULL,
 
   \item{plot}{Optional logical which indicates whether or not the normalized point cloud will be plot. If this argument is not specified by the user, it will be set to \code{TRUE} by default and, as consequence, the normalized point cloud will be plot.}
 
+  \item{threads}{Number of threads.}
+
   \item{dir.data}{Optional character string naming the absolute path of the directory where LAS files containing TLS point clouds are located. \code{.Platform$file.sep} must be used as the path separator in \code{dir.dat}. If this argument is not specified by the user, it will be set to \code{NULL} by default and, as consequence, the current working directory of the \R process will be assigned to \code{dir.dat} during the execution.}
 
   \item{save.result}{Optional logical which indicates whether or not the output files described in \sQuote{Output Files} section should be saved in the \code{dir.result}. If this argument is not specified by the user, it will be set to \code{TRUE} by default and, as a consequence, the output files will be saved.}
@@ -197,6 +201,8 @@ tree.tls <- tree.detection.several.plots(las.list =
                                          id = id,
 
                                          tls.resolution = list(point.dist = 7.67, tls.dist = 10),
+
+                                         threads = 2,
 
                                          plot = TRUE)
 

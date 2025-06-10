@@ -21,6 +21,8 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
                                          den.type = 1, d.top = NULL,
                                          plot.attributes = NULL, plot = NULL,
 
+                                         threads = 1,
+
                                          dir.data = NULL, save.result = TRUE, dir.result = NULL){
 
 
@@ -132,6 +134,8 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
 
                                               plot.attributes = plot.attributes, plot = plot,
 
+                                              threads = threads,
+
                                               save.result = FALSE, dir.result = dir.result)
 
     rm(.data)
@@ -160,6 +164,8 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
                                              den.type = den.type, d.top = d.top,
 
                                              plot.attributes = plot.attributes, plot = plot,
+
+                                             threads = threads,
 
                                              save.result = FALSE, dir.result = dir.result)
 
