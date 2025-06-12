@@ -71,7 +71,9 @@ understory: argumento opcional para indicar si hay vegetación densa en el sotob
 
 ```r
 tree.tls <- tree.detection.multi.scan(data = pcd,
-                                      understory = TRUE)
+                                      slice = 0.15,
+                                      understory = TRUE,
+                                      threads = parallel::detectCores()-1)
 ```
 
 ## Variables de masa (o dasométricas)
@@ -85,18 +87,18 @@ scan.approach: argumento que indica el tipo de escaneo realizado, tanto para esc
 plot.parameters: data frame que contiene los parámetros para definir los diseños de parcela de área fija circular (radio en m), k-tree (k) y relascópica (BAF).
 
 ```r
-met.var.TLS <- metrics.variables(tree.tls = tree.tls,
-                                 scan.approach = "multi",
-                                 plot.parameters = data.frame(radius = 10, k = 10, BAF = 2))
+met.var <- metrics.variables(tree.tls = tree.tls,
+                             scan.approach = "multi",
+                             plot.parameters = data.frame(radius = 10, k = 10, BAF = 2))
                                  
 # Parcela circular de área fija (10 m de radio)
-parcela.circular <- met.var.TLS$fixed.area
+parcela.circular <- met.var$fixed.area
 
 # Parceka k-tree (k = 10)
-parcela.k.tree <- met.var.TLS$k.tree
+parcela.k.tree <- met.var$k.tree
 
 # Parcela relascópica (BAF = 2)
-parcela.relascopica <- met.var.TLS$angle.count
+parcela.relascopica <- met.var$angle.count
 ```
 
 # Acknowledgements 
