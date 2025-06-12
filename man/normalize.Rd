@@ -167,8 +167,8 @@ Adela Martínez-Calvo.}
 # Establishment of working directories (optional)
 # By default here we propose the current working directory of the R process
 
-dir.data <- getwd()
-dir.result <- getwd()
+dir.data <- tempdir()
+dir.result <- tempdir()
 
 
 # TLS SINGLE-SCAN APPROACH

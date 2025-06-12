@@ -212,7 +212,7 @@ opt.corr <- corr$opt.correlations
 # Establish directory where optimal correlations heatmaps corresponding to Rioja
 # example will be saved. For instance, current working directory
 
-dir.result <- getwd()
+dir.result <- tempdir()
 
 
 # Generate heatmaps for optimal correlations between field estimations and TLS

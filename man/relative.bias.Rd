@@ -254,7 +254,7 @@ data("Rioja.simulations")
 # Establish directory where relative bias results corresponding to Rioja example
 # will be saved. For instance, current working directory
 
-dir.result <- getwd()
+dir.result <- tempdir()
 
 
 # Compute relative bias between field-based estimates of TLS metrics

@@ -500,7 +500,7 @@ example.field <- subset(Rioja.data$tree.field, id < 3)
 # Establish directory where TXT file containing TLS point cloud corresponding to
 # plot 1 from Rioja data set is located. For instance, current working directory
 
-dir.data <- getwd()
+dir.data <- tempdir()
 
 # Download example of TXT file corresponding to plots 1 and 2 from Rioja data set
 
@@ -513,7 +513,7 @@ download.file(url = "https://www.dropbox.com/s/sghmw3zud424s11/Rioja_2.txt?dl=1"
 # Establish directory where simulation results corresponding to plots 1 and 2
 # from Rioja data set will be saved. For instance, current working directory
 
-dir.result <- getwd()
+dir.result <- tempdir()
 
 # Compute metrics and variables for simulated TLS and field plots corresponding
 # to plots 1 and 2 from Rioja data set

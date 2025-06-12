@@ -165,8 +165,8 @@ and Adela Martínez-Calvo.}
 # Establishment of working directories (optional)
 # By default here we propose the current working directory of the R process
 
-dir.data <- getwd()
-dir.result <- getwd()
+dir.data <- tempdir()
+dir.result <- tempdir()
 
 # Loading example data (LAZ files) to dir.data
 
@@ -181,30 +181,27 @@ download.file(
               mode = "wb")
 
 
-# Obtaining a vector with names of LAZ files located in dir.data
-
-files <- list.files(pattern = "laz$", path = dir.data)
-
-
 # Tree detection (TLS single-scan aproach)
 
-id <- c("PinusSylvestris1", "PinusSylvestris2")
-
-center.coord <- data.frame(id = id,
-                           x = rep(0, length(id)),
-                           y = rep(0, length(id)))
-
-tree.tls <- tree.detection.several.plots(las.list =
-                                           c("PinusSylvestris1.laz",
-                                             "PinusSylvestris2.laz"),
-
-                                         id = id,
-
-                                         tls.resolution = list(point.dist = 7.67, tls.dist = 10),
-
-                                         threads = 2,
-
-                                         plot = TRUE)
+# id <- c("PinusSylvestris1", "PinusSylvestris2")
+#
+# center.coord <- data.frame(id = id,
+#                            x = rep(0, length(id)),
+#                            y = rep(0, length(id)))
+#
+# tree.tls <- tree.detection.several.plots(las.list =
+#                                            c("PinusSylvestris1.laz",
+#                                              "PinusSylvestris2.laz"),
+#
+#                                          id.list = id,
+#
+#                                          center.coord = center.coord,
+#
+#                                          tls.resolution = list(point.dist = 7.67, tls.dist = 10),
+#
+#                                          max.dist = 7.5,
+#
+#                                          threads = 2)
 
   }
 }

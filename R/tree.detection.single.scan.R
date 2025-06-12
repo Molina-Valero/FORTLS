@@ -400,6 +400,8 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     }
 
+    if(nrow(.cut) < 25){next}
+
 
     # Restrict to slice corresponding to cuts m +/- 5 cm
 
@@ -503,6 +505,8 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
         .cut <- .cut[.cut$ver < .cut$prob.ver, ]
 
       }
+
+      if(nrow(.cut) < 25){next}
 
 
       # Restrict to slice corresponding to cuts m +/- 5 cm

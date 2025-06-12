@@ -186,15 +186,16 @@ and Adela Martínez-Calvo.}
 # Establishment of working directories (optional)
 # By default here we propose the current working directory of the R process
 
-dir.data <- getwd()
-dir.result <- getwd()
+# dir.data <- getwd()
+# dir.result <- getwd()
 
 
 # Loading example data (LAZ file) to dir.data
 
-download.file("https://www.dropbox.com/s/17yl25pbrapat52/PinusRadiata.laz?dl=1",
-              destfile = file.path(dir.data, "PinusRadiata.laz"),
-              mode = "wb")
+# download.file(
+#   "https://www.dropbox.com/s/17yl25pbrapat52/PinusRadiata.laz?dl=1",
+#   destfile = file.path(dir.data, "PinusRadiata.laz"),
+#   mode = "wb")
 
 
 # Normalizing the whole point cloud data without considering arguments
@@ -203,26 +204,26 @@ download.file("https://www.dropbox.com/s/17yl25pbrapat52/PinusRadiata.laz?dl=1",
 # must be specified by the x.center and y.center arguments, which are
 # x.center = 0 and y.center = 0 in this case
 
-pcd <- normalize(las = "PinusRadiata.laz",
-
-                 id = "PinusRadiata",
-
-                 x.center = 0, y.center = 0,
-
-                 dir.data = dir.data, dir.result = dir.result)
+# pcd <- normalize(las = "PinusRadiata.laz",
+#
+#                  id = "PinusRadiata",
+#
+#                  x.center = 0, y.center = 0,
+#
+#                  dir.data = dir.data, dir.result = dir.result)
 
 
 # Tree detection without considering arguments
 # For this case study, TLS resolution was established as:
 # point.dist = 6.34 mm and tls.dist = 10 m
 
-tree.tls <- tree.detection.single.scan(data = pcd,
-
-                                       tls.resolution = list(point.dist = 6.34, tls.dist = 10),
-
-                                       threads = 2,
-
-                                       dir.result = dir.result)
+# tree.tls <- tree.detection.single.scan(data = pcd,
+#
+#                                        tls.resolution = list(point.dist = 6.34, tls.dist = 10),
+#
+#                                        threads = 2,
+#
+#                                        dir.result = dir.result)
 
   }
 

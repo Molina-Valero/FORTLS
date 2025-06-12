@@ -173,8 +173,8 @@ and Adela Martínez-Calvo.}
 # Establishment of working directories (optional)
 # By default here we propose the current working directory of the R process
 
-dir.data <- getwd()
-dir.result <- getwd()
+dir.data <- tempdir()
+dir.result <- tempdir()
 
 
 # Loading example data of TLS multi-scan approach point cloud (LAZ file) to dir.data
@@ -186,28 +186,26 @@ download.file(
 
 # Normalizing the whole point cloud data without considering arguments
 
-pcd <- normalize(las = "PiceaAbies.laz",
-
-                 id = "PiceaAbies",
-
-                 scan.approach = "multi",
-
-                 voxel_size = 0.01,
-
-                 dir.data = dir.data, dir.result = dir.result)
+# pcd <- normalize(las = "PiceaAbies.laz",
+#
+#                  id = "PiceaAbies",
+#
+#                  scan.approach = "multi",
+#
+#                  dir.data = dir.data, dir.result = dir.result)
 
 
 # Tree detection without considering arguments
 
-tree.tls <- tree.detection.multi.scan(data = pcd,
-
-                                      tls.precision = 0.05,
-
-                                      slice = 0.2,
-
-                                      threads = 2,
-
-                                      dir.result = dir.result)
+# tree.tls <- tree.detection.multi.scan(data = pcd,
+#
+#                                       tls.precision = 0.05,
+#
+#                                       slice = 0.2,
+#
+#                                       threads = 2,
+#
+#                                       dir.result = dir.result)
 
   }
 

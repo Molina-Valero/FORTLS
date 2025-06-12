@@ -97,11 +97,11 @@ parcela.relascopica <- met.var.TLS$angle.count
 
 # Acknowledgements 
 
-**FORTLS** it is being developed at [Czech University of Life Sciences Prague](https://www.czu.cz/en) and [University of Santiago de Compostela](https://www.usc.gal/en).
+**FORTLS** it is being developed at [Czech University of Life Sciences Prague] and [University of Santiago de Compostela](https://www.usc.gal/en).
 
 Development of the `FORTLS` package is being possible thanks to the following fellowships/projects:
 
-* Climate Change Adaptation of Forests in the Brdy Highland [LIFE21-CCA-CZ-LIFE-Adapt-Brdy/101074426](https://adaptbrdy.czu.cz/en)
+* Climate Change Adaptation of Forests in the Brdy Highland [LIFE21-CCA-CZ-LIFE-Adapt-Brdy/101074426]
 * Design of forest monitoring systems on a regional scale [ED431F 2020/02] supported by the Regional Government of Galicia
 * Ramón Areces Foundation Grants for Postdoctoral Studies [XXXV Call for Expansion of Studies Abroad in Life and Matter Sciences](https://www.fundacionareces.es/fundacionareces/es/tratarAplicacionInvestigador.do?paginaActual=2&idConvocatoria=2770&tipo=2)
 
