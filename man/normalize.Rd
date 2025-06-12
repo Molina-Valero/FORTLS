@@ -61,7 +61,7 @@ normalize(las, normalized = NULL,
 
   \item{RGB}{Logical parameter useful when point clouds are colorized, thus including values of RGB colors. It is based on the Green Leaf Algorithm (GLA) (see \sQuote{Details}).}
 
-  \item{scan.approach}{Character parameter indicating TLS single-scan (\sQuote{single}) or TLS multi-scan approach or SLAM point clouds (\sQuote{multi}) approaches. If this argument is not specified by the user, it will be set to \sQuote{multi} approach.}
+  \item{scan.approach}{Character parameter indicating TLS single-scan (\sQuote{single}) or TLS multi-scan approach or SLAM point clouds (\sQuote{multi}) approaches. If this argument is not specified by the user, it will be set to \sQuote{single} approach.}
 
   \item{voxel_size}{Defines the size of the 3D grid cells used for downsampling.}
 
@@ -167,8 +167,8 @@ Adela Martínez-Calvo.}
 # Establishment of working directories (optional)
 # By default here we propose the current working directory of the R process
 
-dir.data <- getwd()
-dir.result <- getwd()
+dir.data <- tempdir()
+dir.result <- tempdir()
 
 
 # TLS SINGLE-SCAN APPROACH

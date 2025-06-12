@@ -9,7 +9,7 @@
 \description{This function create overlapping polygons using the data.table R package}
 
 \usage{
-datatable_grid(data_inp, dist = 0.05, n_grid = 20, verify_visually = FALSE)}
+datatable_grid(data_inp, dist = dist, n_grid = 20, verify_visually = FALSE)}
 
 \arguments{
 

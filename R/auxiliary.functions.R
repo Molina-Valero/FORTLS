@@ -42,8 +42,6 @@
   .n <- (slice / (tan(.alpha.v / 2) * (mean(.dat$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2))
 
   if(nrow(.dat) < .n){return(.filter)}
-  print(.dat$cluster[1])
-  # print(1)
 
   # Second filter
 
@@ -72,7 +70,6 @@
 
 
   if(.dist > 1){return(.filter)}
-  # print(2)
 
   rm(.dat.3, .dist, .dist.2)
 
@@ -170,13 +167,11 @@
 
 
   if(nrow(.dat) < .n){return(.filter)}
-  # print(3)
 
 
   # Ratio points
 
   if(mean(.cut$slope, na.rm = TRUE) > 0.5){.n <- 0.7 * .n}
-  # print(5)
 
 
   # Obtain phi and rho coordinates corresponding to mesh intersections
@@ -211,10 +206,8 @@
   .density <- ifelse(is.nan(.density), NA, .density)
 
   if(is.nan(mean(.density, na.rm = TRUE))){return(.filter)}
-  # print(5)
 
   if(max(.density[!is.na(.density)], na.rm = T) < floor(.n)){return(.filter)}
-  # print(6)
 
   # Remove cells containing only 1 point
   .dat <- merge(.dat, .remove, by = "point", all.y = TRUE)
@@ -377,15 +370,12 @@
   .center.theta <- atan2(.dat$sec[1], .center.rho)
 
   if(is.na(.cv) | .cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2) {return(.filter)}
-  # print(7)
 
   # Center behind tree surface
   if(stats::quantile(.dat$rho, prob = 0.05, na.rm = T) > .center.r) {return(.filter)}
-  # print(8)
 
   # At least 95 % of distances should be greater than .radio / 2
   if(stats::quantile(.dat$dist, prob = 0.05, na.rm = T) < (.radio / 2)) {return(.filter)}
-  # print(9)
 
 
   # Select 1st percentil, if necessary for strange points
@@ -405,7 +395,6 @@
   .rho.cent <- mean(.dat.2$rho[which(round(.dat.2$phi, 3) >= round(.phi.cent - .alpha.h, 3) & round(.dat.2$phi, 3) <= round(.phi.cent + .alpha.h, 3))])
 
   if(is.nan(.rho.cent)){return(.filter)}
-  # print(10)
 
   # Check rho coordinates for ends are greater than center ones
   .arc.circ <- ifelse(.rho.left > .rho.cent & .rho.right > .rho.cent, 1, 0)
@@ -435,10 +424,8 @@
   .n.w.ratio <- stats::sd(.dat$z) / sqrt(stats::sd(.dat$x) ^ 2 + stats::sd(.dat$y) ^ 2)
 
   if(.n.w.ratio > 1 | is.nan(.n.w.ratio)){return(.filter)}
-  # print(11)
 
   if(nrow(.dat) < .n){return(.filter)}
-  # print(12)
 
 
   # Results
@@ -556,8 +543,6 @@
   .x.values <- seq(from = .xmin, to = .xmax, by = .h)
   .y.values <- seq(from = .ymin, to = .ymax, by = .h)
 
-  # print(.x.values)
-  # print(.y.values)
 
   .h <- .h / 2
 
@@ -566,7 +551,6 @@
 
   .density <- matrix(0, ncol = length(.x.values), nrow = length(.y.values))
 
-  # print(class(.dat))
 
   for(i in 1:length(.x.values)){
     for(j in 1:length(.y.values)){

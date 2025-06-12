@@ -19,7 +19,7 @@ geometric.features <- function(data,
                                             "linearity", "surface_variation", "sphericity", "verticality",
                                             "number_neighbors", "omnivariance", "eigenentropy", "surface_density",
                                             "volume_density"),
-                               dist = 0.05,
+                               dist = dist,
                                threads = 1,
                                keep_NaN = FALSE,
                                verbose = FALSE,
@@ -411,7 +411,7 @@ save_file_as_laz = function(input_file,
 #............................................................................... create overlapping polygons using the data.table R package
 
 datatable_grid = function(data_inp,
-                          dist = 0.05,
+                          dist = dist,
                           n_grid = 20,
                           verify_visually = FALSE) {
 

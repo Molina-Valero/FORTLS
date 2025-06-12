@@ -8,6 +8,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
                                        den.type = 1, d.top = NULL,
                                        segmentation = NULL,
                                        plot.attributes = NULL, plot = TRUE,
+                                       threads = 1,
                                        dir.data = NULL, save.result = TRUE, dir.result = NULL){
 
 
@@ -123,24 +124,36 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   } else {
 
-    stem <- woody[woody$z > stem.section[1] & woody$z < stem.section[2], ]
+    stem <- woody[woody$z > stem.section[1] - 0.05 & woody$z < stem.section[2] + 0.05, ]
 
   }
 
   message("Retention of points with high verticality values")
 
-  threads <- max(1, parallel::detectCores() - 1)
+  threads <- max(1, threads)
 
   VerSur <- geometric.features(data = stem,
                                grid_method = 'sf_grid',
-                               features = c("verticality", "surface_variation"),
-                               dist = 0.1,
+                               features = c("verticality", "surface_variation", "planarity"),
+                               dist = 0.05,
                                threads = threads,
                                keep_NaN = FALSE,            # this means, when we run the Rcpp code we don't exclude computed rows if 1 of the features is NA. If we have to compute 13 features and 1 is NA, then we keep this row
                                verbose = FALSE,
                                solver_threshold = 50000)
 
-  stem <- merge(stem, VerSur[, c("point", "verticality", "surface_variation")], by = "point")
+
+  if(is.null(VerSur$verticality) | is.null(VerSur$surface_variation) | is.null(VerSur$planarity)){
+
+    VerSur$verticality <- NA
+    VerSur$surface_variation <- NA
+    VerSur$planarity <- NA
+
+  }
+
+
+  stem <- stem[stem$z > stem.section[1] & stem$z < stem.section[2], ]
+
+  stem <- merge(stem, VerSur[, c("point", "verticality", "surface_variation", "planarity")], by = "point")
 
   rm(VerSur)
 
@@ -149,7 +162,22 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
 
   stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
+  stem <- stem[stem$ver > 0.75 | stem$ver > stem$prob.ver, ]
+
+
+  stem$ver <- stem$surface_variation / 0.33
+  stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
+
+  stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
+  stem <- stem[stem$ver < stem$prob.ver, ]
+
+
+  stem$ver <- stem$planarity
+  stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
+
+  stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
   stem <- stem[stem$ver > stem$prob.ver, ]
+
 
   # woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
   # woody <- rbind(woody, stem[, 1:ncol(woody)])
@@ -166,7 +194,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
 
   stem <- VoxR::project_voxels(stem)
-  # plot(stem$x, stem$y, asp = 1, col = "grey")
 
 
   # Filtering pixels - double branch peeling
@@ -315,7 +342,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
 
   # Set up parallel cluster
-  cl <- parallel::makeCluster(max(1, parallel::detectCores() - 1))
+  cl <- parallel::makeCluster(max(1, threads))
 
 
   pb <- progress::progress_bar$new(total = length(breaks))
@@ -323,6 +350,8 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
 
   for(i in seq_along(breaks)){
+
+    pb$tick()
 
 
     cuts <- breaks[i]
@@ -360,16 +389,18 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
       .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
 
       .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
-      .cut <- .cut[.cut$ver > .cut$prob.ver, ]
+      .cut <- .cut[.cut$ver > 0.75 | .cut$ver > .cut$prob.ver, ]
 
 
-      .cut$ver <- .cut$surface_variation
+      .cut$ver <- .cut$surface_variation / 0.33
       .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
 
       .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
       .cut <- .cut[.cut$ver < .cut$prob.ver, ]
 
     }
+
+    if(nrow(.cut) < 25){next}
 
 
     # Restrict to slice corresponding to cuts m +/- 5 cm
@@ -464,16 +495,18 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
         .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
 
         .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
-        .cut <- .cut[.cut$ver > .cut$prob.ver, ]
+        .cut <- .cut[.cut$ver > 0.75 | .cut$ver > .cut$prob.ver, ]
 
 
-        .cut$ver <- .cut$surface_variation
+        .cut$ver <- .cut$surface_variation / 0.33
         .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
 
         .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
         .cut <- .cut[.cut$ver < .cut$prob.ver, ]
 
       }
+
+      if(nrow(.cut) < 25){next}
 
 
       # Restrict to slice corresponding to cuts m +/- 5 cm
@@ -513,8 +546,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
       .filteraux.2[[i]] <- .filter}
 
-
-    pb$tick()
 
     # Run garbage collection only every 5 iterations
     if (i %% 5 == 0) gc()

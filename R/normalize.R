@@ -319,7 +319,7 @@ normalize <- function(las, normalized = NULL,
   # phi, azimuth is the angle between the reference direction on the chosen plane and the line from the origin to the projection of P on the plane
   # z, axial coordinate or height z is the signed distance from the chosen plane to the point P
   .data$rho <- sqrt((.data$x - x.center) ^ 2 + (.data$y - y.center) ^ 2)
-  .data$phi <- atan2(.data$x - x.center, .data$y - y.center)
+  .data$phi <- atan2(.data$y - y.center, .data$x - x.center)
   .data$phi <- ifelse(.data$phi < 0, .data$phi + (2 * pi), .data$phi)
 
   # Spherical coordinates system (https://en.wikipedia.org/wiki/Spherical_coordinate_system)

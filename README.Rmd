@@ -32,7 +32,6 @@ Get the latest released version of FORTLS from GitHub (included in the devel bra
 remotes::install_github("Molina-Valero/FORTLS", ref = "devel", dependencies = TRUE)
 ```
 
-
 # Acknowledgements 
 
 **FORTLS** it is being developed at [University of Santiago de Compostela](https://www.usc.gal/en).

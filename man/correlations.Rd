@@ -435,7 +435,7 @@ data("Rioja.simulations")
 # Establish directory where correlation results corresponding to the Rioja example
 # will be saved. For instance, current working directory
 
-# dir.result <- getwd()
+# dir.result <- tempdir()
 
 
 # Compute correlations between field estimates and TLS metrics corresponding

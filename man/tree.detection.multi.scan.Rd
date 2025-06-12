@@ -19,6 +19,7 @@ tree.detection.multi.scan(data, single.tree = NULL,
                           den.type = 1, d.top = NULL,
                           segmentation = NULL,
                           plot.attributes = NULL, plot = TRUE,
+                          threads = 1,
                           dir.data = NULL, save.result = TRUE, dir.result = NULL)}
 
 \arguments{
@@ -60,6 +61,8 @@ tree.detection.multi.scan(data, single.tree = NULL,
   \item{plot.attributes}{Data frame with attributes at plot level. It must contain a column named \code{id} (character string or numeric value) with encoding coinciding with that used in \code{id} argument of \code{\link{normalize}} for identifying plots. If there are strata, another column named \sQuote{stratum} (numeric) will be required for other functionalities of \pkg{FORTLS} (see, for instance, \code{\link{estimation.plot.size}} or \code{\link{metrics.variables}}). If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, the function will not add these possible plot attributes.}
 
   \item{plot}{Optional logical which indicates whether or not the normalized point cloud will be plot. If this argument is not specified by the user, it will be set to \code{TRUE} by default and, as consequence, the normalized point cloud will be plot.}
+
+  \item{threads}{Number of threads.}
 
   \item{dir.data}{Optional character string naming the absolute path of the directory where LAS files containing TLS point clouds are located. \code{.Platform$file.sep} must be used as the path separator in \code{dir.data}. If this argument is not specified by the user, it will be set to \code{NULL} by default and, as a consequence, the current working directory of the \R process will be assigned to \code{dir.data} during the execution.}
 
@@ -111,6 +114,12 @@ Local surface variation (also known as normal change rate ,NCR), is a quantitati
 
 \item{\emph{v.com}}{estimated commercial tree stem volume (m^3) according to the top diameter defined in the argument \code{d.top}.}
 
+\item{\emph{SS.max}}{Maximum sagitta (see Prendes et al. (2022)).}
+
+\item{\emph{sinuosity}}{Sinuosity (see Prendes et al. (2022)).}
+
+\item{\emph{lean}}{Lean (see Prendes et al. (2022)).}
+
 \item{n.pts}{number of points corresponding to a normal section (+/- 5 cm) in the original point cloud.}
 
 \item{n.pts.red}{number of points corresponding to a normal section (+/- 5 cm) in the point cloud reduced by the point cropping process.}
@@ -143,6 +152,8 @@ Ma, L., Zheng, G., Eitel, J. U., Moskal, L. M., He, W., & Huang, H. (2015). Impr
 
 Pauly, M., Gross, M., & Kobbelt, L. P., (2002). Efficient simplification of point-sampled surfaces. In IEEE Conference on Visualization. (pp. 163-170). Boston, USA. \doi{https://doi.org/10.1109/VISUAL.2002.1183771}
 
+Prendes, C., Canga, E., Ordoñez, C., Majada, J., Acuna, M., & Cabo, C. (2022). Automatic assessment of individual stem shape parameters in forest stands from tls point clouds: Application in pinus pinaster. Forests, 13(3), 431. \doi{https://doi.org/10.3390/f13030431}
+
 Xia, S., Wang, C., Pan, F., Xi, X., Zeng, H., & Liu, H. (2015). Detecting stems in dense and homogeneous forest using single-scan TLS. \emph{Forests}. \bold{6(11)}, 3923-3945. \doi{https://doi.org/10.3390/f6113923}
 
 Zhang, W., Wan, P., Wang, T., Cai, S., Chen, Y., Jin, X., & Yan, G. (2019). A novel approach for the detection of standing tree stems from plot-level terrestrial laser scanning data. \emph{Remote Sens}. \bold{11(2)}, 211. \doi{https://doi.org/10.3390/rs11020211}}
@@ -162,8 +173,8 @@ and Adela Martínez-Calvo.}
 # Establishment of working directories (optional)
 # By default here we propose the current working directory of the R process
 
-dir.data <- getwd()
-dir.result <- getwd()
+dir.data <- tempdir()
+dir.result <- tempdir()
 
 
 # Loading example data of TLS multi-scan approach point cloud (LAZ file) to dir.data
@@ -175,24 +186,26 @@ download.file(
 
 # Normalizing the whole point cloud data without considering arguments
 
-pcd <- normalize(las = "PiceaAbies.laz",
-
-                 id = "PiceaAbies",
-
-                 scan.approach = "multi",
-
-                 voxel_size = 0.01,
-
-                 dir.data = dir.data, dir.result = dir.result)
+# pcd <- normalize(las = "PiceaAbies.laz",
+#
+#                  id = "PiceaAbies",
+#
+#                  scan.approach = "multi",
+#
+#                  dir.data = dir.data, dir.result = dir.result)
 
 
 # Tree detection without considering arguments
 
-tree.tls <- tree.detection.multi.scan(data = pcd,
-
-                                      slice = 0.2,
-
-                                      dir.result = dir.result)
+# tree.tls <- tree.detection.multi.scan(data = pcd,
+#
+#                                       tls.precision = 0.05,
+#
+#                                       slice = 0.2,
+#
+#                                       threads = 2,
+#
+#                                       dir.result = dir.result)
 
   }
 
