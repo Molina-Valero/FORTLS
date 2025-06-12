@@ -20,90 +20,9 @@ Get the lat stable version of FORTLS from GitHub (included in the master branch)
 remotes::install_github("Molina-Valero/FORTLS", dependencies = TRUE)
 ```
 
-# Processing TLS data with the R package FORTLS (Earth Bridge)
-
-The example presented here is based on a point cloud collected by a mobile laser scanner (MLS) in a Pinus sylvestris forest.
-
-## Materials and data
+## Materiales y datos
 
 [Materials and data](https://drive.google.com/drive/folders/1lBoe4XIYFdUfPUCAZ3KGU6JhrosPfoY6?usp=sharing)
-
-## FORTLS installation
-
-```r
-install.packages("FORTLS")
-library(FORTLS)
-```
-
-## Establishment of the working directory
-
-It is extremely important that the working directory matches the directory where the source data (point clouds in las/laz format) are located.
-
-For example: "C:\FORTLS_Workshop"
-
-```r
-setwd("C:/FORTLS_Workshop")
-```
-
-## Point cloud normalization
-
-This function (normalize) obtains coordinates relative to the plot centre speciefied for Terrestrial Laser Scanner (TLS) and Mobile Laser Scanner (MLS) point clouds (supplied as LAS or LAZ files). The following describes the arguments used in the normalize function:
-
-las: Character string containing the name of LAS/LAZ file belonging to point cloud, including .las/.laz extensions
-
-id: Optional plot identification encoded as character string or numeric
-
-max.dist: Optional maximum horizontal distance (m) considered from the plot centre
-
-scan.approach: Character parameter indicating TLS single-scan (‘single’) or TLS multi-scan approach or mobile laser scanner (MLS) point clouds (‘multi’) approaches.
-
-```r
-pcd <- normalize(las = "Pinus.laz",
-                 id = "Pinus",
-                 max.dist = 12.5,
-                 scan.approach = "multi")
-```
-
-## Tree-level variables
-
-This function (tree.detection.multi.scan) detects trees from point clouds corresponding to TLS multi-scan approaches and MLS devices. For each tree detected, the function calculates the central coordinates and estimates the diameter at 1.3 m above ground level (which is known as dbh, diameter at breast height) and classifies it as fully visible or partially occluded. Finally, the function obtains the number of points belonging to normal sections of trees (those corresponding to dbh +/- 5 cm) and estimates them for both original and reduced (with random selection process) point clouds. The following describes the arguments used in the tree.detection.multi.scan function:
-
-data: Data frame obtained from normalized function
-
-understory: Optional argument to indicate if there is dense understory vegetation
-
-```r
-tree.tls <- tree.detection.multi.scan(data = pcd,
-                                      understory = TRUE,
-                                      slice = 0.15,
-                                      tls.precision = 0.05)
-```
-
-## Stand-level variables
-
-This function (metrics.variables) computes a set of metrics and variables from the Terrestrial-Based Technologies point cloud data, which have a high potential to be related or used as direct estimates (in the case of variables) of forest attributes at plot level. These can be obtained for different plot designs (circular fixed area, k-tree and angle-count plots). This function also includes methodologies for correcting occlusions generated in TLS single-scan point clouds. The following describes the arguments used in the metrics.variables function:
-
-tree.tls: Data frame obtained from tree.detection.multi.scan function
-
-scan.approach: Character parameter indicating TLS single-scan (‘single’) or TLS multi-scan approach or mobile laser scanner (MLS) point clouds (‘multi’) approaches.
-
-plot.parameters: Data frame containing parameters for circular fixed area, k-tree and angle-count plot designs
-
-```r
-met.var.TLS <- metrics.variables(tree.tls = tree.tls,
-                                 scan.approach = "multi",
-                                 plot.parameters = data.frame(radius = 10, k = 10, BAF = 2))
-                                 
-# Fixed area plot (10 m radius)
-circular <- met.var.TLS$fixed.area
-
-# k-tree plot (k = 10)
-k.tree <- met.var.TLS$k.tree
-
-# Relascopic plot (BAF = 2)
-relascopic <- met.var.TLS$angle.count
-```
-
 
 # Acknowledgements 
 
