@@ -73,7 +73,7 @@ understory: argumento opcional para indicar si hay vegetación densa en el sotob
 tree.tls <- tree.detection.multi.scan(data = pcd,
                                       slice = 0.15,
                                       understory = TRUE,
-                                      threads = parallel::detectCores() - 1)
+                                      threads = parallel::detectCores()-1)
 ```
 
 ## Variables de masa (o dasométricas)
