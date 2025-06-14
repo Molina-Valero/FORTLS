@@ -57,7 +57,7 @@ scan.approach: argumento que indica el tipo de escaneo realizado, tanto para esc
 ```r
 pcd <- normalize(las = "HLS_LiGrip.laz",
                  id = "HLS_LiGrip",
-                 max.dist = 12.5,
+                 max.dist = 10,
                  scan.approach = "multi")
 ```
 
