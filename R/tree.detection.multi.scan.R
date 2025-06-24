@@ -159,7 +159,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   message("Detection of tree stem axes")
 
-  stem <- stem[stem$prob.selec == 1, ]
+  # stem <- stem[stem$prob.selec == 1, ]
 
 
   if(is.null(tls.precision)){
