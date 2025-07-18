@@ -918,7 +918,7 @@
 .n.w.ratio <- function(stem){
 
   n.w.ratio <- stats::sd(stem$z) / sqrt(stats::sd(stem$x) ^ 2 + stats::sd(stem$y) ^ 2)
-  out <- data.frame(tree = stem$tree[1], n.w.ratio = n.w.ratio)
+  out <- data.frame(tree = stem$tree[1], n.w.ratio = n.w.ratio, z.sd = sd(stem$z, na.rm = TRUE))
   return(out)
 
 }
@@ -1104,7 +1104,7 @@
 
   if(nrow(data) < 100 | nrow(data) > 1000000 | min(data$z) > 1.3){
 
-    eje <- data.frame(tree = as.numeric(), sec = as.numeric(), x = as.numeric(), y = as.numeric(), n.w.ratio = as.numeric())
+    eje <- data.frame(tree = as.numeric(), sec = as.numeric(), x = as.numeric(), y = as.numeric(), n.w.ratio = as.numeric(), z.sd = as.numeric())
 
     } else {
 
@@ -1129,9 +1129,13 @@
   eje$x <- stats::coef(mod.x)[1] + stats::coef(mod.x)[2] * eje$sec
   eje$y <- stats::coef(mod.y)[1] + stats::coef(mod.y)[2] * eje$sec
 
-  n.w.ratio <- as.numeric(.n.w.ratio(data)[2])
+  # n.w.ratio <- as.numeric(.n.w.ratio(data)[2])
 
-  eje$n.w.ratio <- n.w.ratio
+  eje$n.w.ratio <- as.numeric(.n.w.ratio(data)[2])
+
+  eje$z.sd <- sd(data$z, na.rm = TRUE)
+
+  eje$slope <- max(stats::coef(mod.x)[2], stats::coef(mod.y)[2])
 
   }
 
