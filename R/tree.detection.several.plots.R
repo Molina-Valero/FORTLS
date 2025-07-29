@@ -13,9 +13,8 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
 
                                          single.tree = NULL,
                                          dbh.min = 4, dbh.max = 200, h.min = 1.3,
-                                         ncr.threshold = 0.1,
+                                         geo.dist = 0.1,
                                          tls.resolution = NULL, tls.precision = NULL,
-                                         density.reduction = 2,
                                          stem.section = c(0.7, 3.5), stem.range = NULL, breaks = NULL,
                                          slice = 0.1, understory = NULL, bark.roughness = 1,
                                          den.type = 1, d.top = NULL,
@@ -120,11 +119,9 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
 
                                               dbh.min = dbh.min, dbh.max = dbh.max, h.min = h.min,
 
-                                              ncr.threshold = ncr.threshold,
+                                              geo.dist = geo.dist,
 
                                               tls.resolution = tls.resolution,
-
-                                              density.reduction = density.reduction,
 
                                               stem.section = stem.section, stem.range = stem.range, breaks = breaks,
 
@@ -151,11 +148,9 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
 
                                              dbh.min = dbh.min, dbh.max = dbh.max, h.min = h.min,
 
-                                             ncr.threshold = ncr.threshold,
+                                             geo.dist = geo.dist,
 
                                              tls.precision = tls.precision,
-
-                                             density.reduction = density.reduction,
 
                                              stem.section = stem.section, stem.range = stem.range, breaks = breaks,
 

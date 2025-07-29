@@ -22,9 +22,8 @@ tree.detection.several.plots(las.list, id.list = NULL, file = NULL,
 
                              single.tree = NULL,
                              dbh.min = 4, dbh.max = 200, h.min = 1.3,
-                             ncr.threshold = 0.1,
+                             geo.dist = 0.1,
                              tls.resolution = NULL, tls.precision = NULL,
-                             density.reduction = 2,
                              stem.section = c(0.7, 3.5), stem.range = NULL, breaks = NULL,
                              slice = 0.1, understory = NULL, bark.roughness = 1,
                              den.type = 1, d.top = NULL,
@@ -85,7 +84,7 @@ tree.detection.several.plots(las.list, id.list = NULL, file = NULL,
 
   \item{h.min}{Optional minimum \emph{h} (m) considered for detecting trees. By default it will be set at 1.3 m.}
 
-  \item{ncr.threshold}{Local surface variation (also known as normal change rate, NCR). By default it will be set as 0.1. For better understanding of this argument see \sQuote{Details}.}
+  \item{geo.dist}{Local surface variation (also known as normal change rate, NCR). By default it will be set as 0.1. For better understanding of this argument see \sQuote{Details}.}
 
   \item{tls.resolution}{List containing parameters of TLS resolution. This can be defined by the angle aperture:}
 
@@ -102,8 +101,6 @@ tree.detection.several.plots(las.list, id.list = NULL, file = NULL,
   If this argument is not specified by the user, it will be set to NULL by default and, as a consequence the function will stop giving an error message.}
 
   \item{tls.precision}{Optional argument indicating the average point cloud precision in cm.}
-
-  \item{density.reduction}{Density reduction intensity.}
 
   \item{stem.section}{Section free of noise (shurb, branches, etc.) considered to detect trees. If not specified, an automatic internal algorithm will be applied (see \sQuote{Details}).}
 
@@ -165,8 +162,8 @@ and Adela Martínez-Calvo.}
 # Establishment of working directories (optional)
 # By default here we propose the current working directory of the R process
 
-dir.data <- tempdir()
-dir.result <- tempdir()
+dir.data <- getwd()
+dir.result <- getwd()
 
 # Loading example data (LAZ files) to dir.data
 
@@ -183,25 +180,24 @@ download.file(
 
 # Tree detection (TLS single-scan aproach)
 
-# id <- c("PinusSylvestris1", "PinusSylvestris2")
-#
-# center.coord <- data.frame(id = id,
-#                            x = rep(0, length(id)),
-#                            y = rep(0, length(id)))
-#
-# tree.tls <- tree.detection.several.plots(las.list =
-#                                            c("PinusSylvestris1.laz",
-#                                              "PinusSylvestris2.laz"),
-#
-#                                          id.list = id,
-#
-#                                          center.coord = center.coord,
-#
-#                                          tls.resolution = list(point.dist = 7.67, tls.dist = 10),
-#
-#                                          max.dist = 7.5,
-#
-#                                          threads = 2)
+id <- c("PinusSylvestris1", "PinusSylvestris2")
+
+center.coord <- data.frame(id = id,
+                           x = rep(0, length(id)),
+                           y = rep(0, length(id)))
+
+tree.tls <- tree.detection.several.plots(las.list = c("PinusSylvestris1.laz",
+                                                      "PinusSylvestris2.laz"),
+
+                                         id.list = id,
+
+                                         center.coord = center.coord,
+
+                                         tls.resolution = list(point.dist = 7.67, tls.dist = 10),
+
+                                         max.dist = 7.5,
+
+                                         threads = 2)
 
   }
 }

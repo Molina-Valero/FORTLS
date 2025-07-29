@@ -140,7 +140,6 @@ geometric.features <- function(data,
     # if (verbose) cat('A buffer will be used for overlapping grid-cells ...\n')
     grid <- sf::st_buffer(grid, dist = 0.25 + dist, endCapStyle = "SQUARE")
     grid <- sf::st_cast(grid, "POLYGON")
-    # mapview::mapview(grid)
 
     # if (verbose) cat('Intersection between the initial xyz coordinates and the grid-cells ...\n')
     grid.2 <- sf::st_intersects(grid, sf::st_as_sf(data, coords = c("x","y")))

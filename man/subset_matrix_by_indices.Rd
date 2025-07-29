@@ -1,8 +1,8 @@
 \encoding{UTF-8}
 
-\name{geometric_features_point}
+\name{subset_matrix_by_indices}
 
-\alias{geometric_features_point}
+\alias{subset_matrix_by_indices}
 
 \title{This function obtains geometric features at point level}
 
@@ -10,13 +10,8 @@
 
 
 \usage{
-geometric_features_point(x,
-                         y,
-                         z,
-                         x_pto,
-                         y_pto,
-                         z_pto,
-                         point_pto,
+subset_matrix_by_indices(mat,
+                         index_lists,
                          dist,
                          First_eigenvalue = TRUE,
                          Second_eigenvalue = TRUE,
@@ -35,23 +30,14 @@ geometric_features_point(x,
                          eigenentropy = TRUE,
                          surface_density = TRUE,
                          volume_density = TRUE,
+                         threads = 1,
                          solver_thresh = 50000)}
 
 \arguments{
 
-  \item{x}{x}
+  \item{mat}{mat}
 
-  \item{y}{y}
-
-  \item{z}{z}
-
-  \item{x_pto}{x_pto}
-
-  \item{y_pto}{y_pto}
-
-  \item{z_pto}{z_pto}
-
-  \item{point_pto}{point_pto}
+  \item{index_lists}{index_lists}
 
   \item{dist}{dist}
 
@@ -86,6 +72,8 @@ geometric_features_point(x,
   \item{surface_density}{surface_density}
 
   \item{volume_density}{volume_density}
+
+  \item{threads}{threads}
 
   \item{solver_thresh}{solver_thresh}}
 

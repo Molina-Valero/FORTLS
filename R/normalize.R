@@ -14,7 +14,6 @@ normalize <- function(las, normalized = NULL,
                       save.las = NULL){
 
 
-  set.seed(123)
 
   if(is.null(normalized)){
   .pb <- progress::progress_bar$new(total = 12)} else {
@@ -424,6 +423,31 @@ normalize <- function(las, normalized = NULL,
   else{.data <- .data[, c("id", "file", "point", "x", "y", "z", "rho", "phi", "r", "theta", "slope", "intensity", "R", "G", "B", "GLA", "prob", "prob.selec"), drop = FALSE]}
 
   .pb$tick()
+
+
+  # Adding the point of the plot center
+
+  new_row <- .data[1, ]
+  new_row[1, ] <- NA
+
+  # Set specific values
+
+  new_row$id <- .data$id[1]
+  new_row$file <- .data$file[1]
+  new_row$point <- 0
+  new_row$x <- x.center
+  new_row$y <- y.center
+  new_row$z <- 0
+  new_row$rho <- 0
+  new_row$phi <- 0
+  new_row$r <- 0
+  new_row$theta <- 0
+  new_row$prob <- 1
+  new_row$prob.selec <- 1
+
+  # Bind it to the top of the existing data
+  .data <- rbind(new_row, .data)
+
 
   # Saving data
 

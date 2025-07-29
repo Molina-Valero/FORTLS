@@ -11,10 +11,9 @@
 \usage{
 tree.detection.single.scan(data, single.tree = NULL,
                            dbh.min = 4, dbh.max = 200, h.min = 1.3,
-                           ncr.threshold = 0.1,
+                           geo.dist = 0.1,
                            tls.resolution = list(),
                            tls.precision = NULL,
-                           density.reduction = 2,
                            stem.section = c(0.7, 3.5), stem.range = NULL, breaks = NULL,
                            slice = 0.1, understory = NULL, bark.roughness = 1,
                            den.type = 1, d.top = NULL, segmentation = NULL,
@@ -34,7 +33,7 @@ tree.detection.single.scan(data, single.tree = NULL,
 
   \item{h.min}{Optional minimum \emph{h} (m) considered for detecting trees. By default it will be set at 1.3 m.}
 
-  \item{ncr.threshold}{Local surface variation (also known as normal change rate, NCR). By default it will be set as 0.1. For better understanding of this argument see \sQuote{Details}.}
+  \item{geo.dist}{Local surface variation (also known as normal change rate, NCR). By default it will be set as 0.1. For better understanding of this argument see \sQuote{Details}.}
 
   \item{tls.resolution}{List containing parameters of TLS resolution. This can be defined by the angle aperture:}
 
@@ -51,8 +50,6 @@ tree.detection.single.scan(data, single.tree = NULL,
   If this argument is not specified by the user, it will be set to NULL by default and, as a consequence the function will stop giving an error message.}
 
   \item{tls.precision}{Average point cloud precision in cm.}
-
-  \item{density.reduction}{Density reduction intensity.}
 
   \item{stem.section}{Section free of noise (shurb, branches, etc.) considered to detect trees. If not specified, an automatic internal algorithm will be applied (see \sQuote{Details}).}
 
@@ -186,16 +183,15 @@ and Adela Martínez-Calvo.}
 # Establishment of working directories (optional)
 # By default here we propose the current working directory of the R process
 
-# dir.data <- getwd()
-# dir.result <- getwd()
+dir.data <- getwd()
+dir.result <- getwd()
 
 
 # Loading example data (LAZ file) to dir.data
 
-# download.file(
-#   "https://www.dropbox.com/s/17yl25pbrapat52/PinusRadiata.laz?dl=1",
-#   destfile = file.path(dir.data, "PinusRadiata.laz"),
-#   mode = "wb")
+download.file("https://www.dropbox.com/s/17yl25pbrapat52/PinusRadiata.laz?dl=1",
+              destfile = file.path(dir.data, "PinusRadiata.laz"),
+              mode = "wb")
 
 
 # Normalizing the whole point cloud data without considering arguments
@@ -204,26 +200,26 @@ and Adela Martínez-Calvo.}
 # must be specified by the x.center and y.center arguments, which are
 # x.center = 0 and y.center = 0 in this case
 
-# pcd <- normalize(las = "PinusRadiata.laz",
-#
-#                  id = "PinusRadiata",
-#
-#                  x.center = 0, y.center = 0,
-#
-#                  dir.data = dir.data, dir.result = dir.result)
+pcd <- normalize(las = "PinusRadiata.laz",
+
+                 id = "PinusRadiata",
+
+                 x.center = 0, y.center = 0,
+
+                 dir.data = dir.data, dir.result = dir.result)
 
 
 # Tree detection without considering arguments
 # For this case study, TLS resolution was established as:
 # point.dist = 6.34 mm and tls.dist = 10 m
 
-# tree.tls <- tree.detection.single.scan(data = pcd,
-#
-#                                        tls.resolution = list(point.dist = 6.34, tls.dist = 10),
-#
-#                                        threads = 2,
-#
-#                                        dir.result = dir.result)
+tree.tls <- tree.detection.single.scan(data = pcd,
+
+                                       tls.resolution = list(point.dist = 6.34, tls.dist = 10),
+
+                                       threads = 2,
+
+                                       dir.result = dir.result)
 
   }
 
