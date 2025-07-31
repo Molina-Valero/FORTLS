@@ -31,6 +31,7 @@ remotes::install_github("Molina-Valero/FORTLS", dependencies = TRUE)
 ```r
 install.packages("FORTLS")
 library(FORTLS)
+install_fortls_python_deps()
 ```
 
 ## Establecimiento del directorio de trabajo
@@ -57,7 +58,7 @@ scan.approach: argumento que indica el tipo de escaneo realizado, tanto para esc
 ```r
 pcd <- normalize(las = "HLS_LiGrip.laz",
                  id = "HLS_LiGrip",
-                 max.dist = 10,
+                 max.dist = 12.5,
                  scan.approach = "multi")
 ```
 
@@ -71,8 +72,6 @@ understory: argumento opcional para indicar si hay vegetación densa en el sotob
 
 ```r
 tree.tls <- tree.detection.multi.scan(data = pcd,
-                                      slice = 0.15,
-                                      understory = TRUE,
                                       threads = parallel::detectCores()-1)
 ```
 
