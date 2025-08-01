@@ -7,14 +7,12 @@ Authors@R: c(
     email = "jamolinavalero@gmail.com"),
     person("Adela", "Martínez-Calvo", role = c("aut", "com")),
     person("María José", "Ginzo Villamayor", role = c("aut", "com")),
-    person("Manuel Antonio", "Novo Pérez", role = c("aut", "com")),
     person("Juan Gabriel", "Álvarez-González", role = c("aut", "ths")),
     person("Fernando", "Montes", role = "aut"),
     person("César", "Pérez-Cruzado", role = c("aut", "ths")))
 Author: Juan Alberto Molina-Valero [aut, cph, cre],
   Adela Martínez-Calvo [aut, com],
   María José Ginzo Villamayor [aut, com],
-  Manuel Antonio Novo Pérez [aut, com],
   Juan Gabriel Álvarez-González [aut, ths],
   Fernando Montes [aut],
   César Pérez-Cruzado [aut, ths]

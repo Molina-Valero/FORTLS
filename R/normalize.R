@@ -142,6 +142,7 @@ normalize <- function(las, normalized = NULL,
     # Plot if requested
     if (!is.null(plot)) lidR::plot(.data)
 
+
     # Save LAZ file if required
     if (!is.null(save.las)) {
       lidR::writeLAS(.data, paste(dir.result, "/", id, ".laz", sep = ""))
@@ -243,8 +244,7 @@ normalize <- function(las, normalized = NULL,
 
   # Plot
 
-  if(!is.null(plot))
-    lidR::plot(.data)
+  if (!is.null(plot)) lidR::plot(.data)
 
 
 
@@ -317,9 +317,11 @@ normalize <- function(las, normalized = NULL,
   # rho, axial distance or radial distance (euclidean distance from the z-axis to the point P)
   # phi, azimuth is the angle between the reference direction on the chosen plane and the line from the origin to the projection of P on the plane
   # z, axial coordinate or height z is the signed distance from the chosen plane to the point P
+
   .data$rho <- sqrt((.data$x - x.center) ^ 2 + (.data$y - y.center) ^ 2)
   .data$phi <- atan2(.data$y - y.center, .data$x - x.center)
   .data$phi <- ifelse(.data$phi < 0, .data$phi + (2 * pi), .data$phi)
+
 
   # Spherical coordinates system (https://en.wikipedia.org/wiki/Spherical_coordinate_system)
   # r, radius or radial distance is the Euclidean distance from the origin O to P

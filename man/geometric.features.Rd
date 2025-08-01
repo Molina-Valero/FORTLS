@@ -35,11 +35,9 @@ geometric.features(data,
 
   \item{data}{data}
 
-  \item{grid_method}{grid_method}
+  \item{dist}{dist}
 
-  \item{voxel_resolution}{voxel_resolution}
-
-  \item{data_table_grid_cells}{data_table_grid_cells}
+  \item{approximate_KNN}{approximate_KNN}
 
   \item{features}{features}
 
