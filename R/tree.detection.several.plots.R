@@ -22,7 +22,8 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
 
                                          threads = 1,
 
-                                         dir.data = NULL, save.result = TRUE, dir.result = NULL){
+                                         dir.data = NULL, save.result = TRUE, dir.result = NULL,
+                                         save.las = NULL){
 
 
   # Obtaining working directory for loading files
@@ -103,7 +104,9 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
 
                        id = .id, file = .file, plot = NULL,
 
-                       dir.data = dir.data, save.result = save.result, dir.result = dir.result)
+                       dir.data = dir.data, save.result = save.result, dir.result = dir.result,
+
+                       save.las = save.las)
 
     if(!is.null(pcd.red))
       .data <- .data[.data$prob.selec == 1, ]
