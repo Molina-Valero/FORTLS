@@ -18,6 +18,8 @@ Get the lat stable version of FORTLS from GitHub (included in the master branch)
 
 ```r
 remotes::install_github("Molina-Valero/FORTLS", ref = "devel", dependencies = TRUE)
+library(FORTLS)
+install_fortls_python_deps()
 ```
 
 # Taller de manejo de nubes de puntos forestales - 9CFE
