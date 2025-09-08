@@ -185,7 +185,7 @@
   for(i in 1:length(.x2.values)){
 
     .den <- .dat[.dat$phi <= .x2.values[i] + (.alpha.h/2) &
-                   .dat$phi >  .x2.values[i] - (.alpha.h/2), ]
+                 .dat$phi >  .x2.values[i] - (.alpha.h/2), ]
 
     # Aquellas celdas con menos de 2 puntos no las tengo en cuenta
     # para luego mas tarde calcular la densidad media por celda
@@ -918,7 +918,7 @@
 .n.w.ratio <- function(stem){
 
   n.w.ratio <- stats::sd(stem$z) / sqrt(stats::sd(stem$x) ^ 2 + stats::sd(stem$y) ^ 2)
-  out <- data.frame(tree = stem$tree[1], n.w.ratio = n.w.ratio)
+  out <- data.frame(tree = stem$tree[1], n.w.ratio = n.w.ratio, z.sd = sd(stem$z, na.rm = TRUE))
   return(out)
 
 }
@@ -1104,7 +1104,7 @@
 
   if(nrow(data) < 100 | nrow(data) > 1000000 | min(data$z) > 1.3){
 
-    eje <- data.frame(tree = as.numeric(), sec = as.numeric(), x = as.numeric(), y = as.numeric(), n.w.ratio = as.numeric())
+    eje <- data.frame(tree = as.numeric(), sec = as.numeric(), x = as.numeric(), y = as.numeric(), n.w.ratio = as.numeric(), z.sd = as.numeric())
 
     } else {
 
@@ -1129,46 +1129,18 @@
   eje$x <- stats::coef(mod.x)[1] + stats::coef(mod.x)[2] * eje$sec
   eje$y <- stats::coef(mod.y)[1] + stats::coef(mod.y)[2] * eje$sec
 
-  n.w.ratio <- as.numeric(.n.w.ratio(data)[2])
+  # n.w.ratio <- as.numeric(.n.w.ratio(data)[2])
 
-  eje$n.w.ratio <- n.w.ratio
+  eje$n.w.ratio <- as.numeric(.n.w.ratio(data)[2])
+
+  eje$z.sd <- sd(data$z, na.rm = TRUE)
+
+  eje$slope <- max(stats::coef(mod.x)[2], stats::coef(mod.y)[2])
 
   }
 
   return(eje)
 
-
-}
-
-
-# Select part of point cloud free of low vegetation and crown
-
-.getStem <- function(data){
-
-  k <- stats::density(data$z)
-
-  den <- data.frame(x = k$x, y = k$y)
-
-  n.ini <- sum(den$y)
-
-  n <- sum(den[den$x < den[den$y == max(den$y), ]$x, ]$y)
-  if(n < n.ini / 2){
-    den <- den[den$x > den[den$y == max(den$y), ]$x, ]
-    den <- den[den$y > stats::quantile(den$y, probs = 0.25, na.rm = T), ]} else {
-      den <- den[den$x < den[den$y == max(den$y), ]$x, ]}
-
-
-  den$dev1 <- c(diff(den$y), 0)
-
-  den$dev1 <- abs(den$dev1)
-  den <- den[den$dev1 > stats::quantile(den$dev1, probs = 0.75, na.rm = T), ]
-
-  den$diff <- c(diff(den$x), 0)
-  den$cut <- ifelse(den$diff > .getmode(den$diff) + 0.01, 1, 0)
-  den <- den[den$cut == 1, ]
-  den <- den[den$diff == max(den$diff), ]
-
-  return(den[, c("x", "diff")])
 
 }
 

@@ -13,15 +13,18 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // geometric_features_point
-std::map<std::string, double> geometric_features_point(const Eigen::Map<Eigen::VectorXd>& x, const Eigen::Map<Eigen::VectorXd>& y, const Eigen::Map<Eigen::VectorXd>& z, int pto, double dist, bool First_eigenvalue, bool Second_eigenvalue, bool Third_eigenvalue, bool Sum_of_eigenvalues, bool PCA_1, bool PCA_2, bool Anisotropy, bool Planarity, bool Linearity, bool Surface_variation, bool Normal_change_rate, bool Verticality, bool Number_of_points, bool omnivariance, bool eigenentropy, bool surface_density, bool volume_density, int solver_thresh);
-RcppExport SEXP _FORTLS_geometric_features_point(SEXP xSEXP, SEXP ySEXP, SEXP zSEXP, SEXP ptoSEXP, SEXP distSEXP, SEXP First_eigenvalueSEXP, SEXP Second_eigenvalueSEXP, SEXP Third_eigenvalueSEXP, SEXP Sum_of_eigenvaluesSEXP, SEXP PCA_1SEXP, SEXP PCA_2SEXP, SEXP AnisotropySEXP, SEXP PlanaritySEXP, SEXP LinearitySEXP, SEXP Surface_variationSEXP, SEXP Normal_change_rateSEXP, SEXP VerticalitySEXP, SEXP Number_of_pointsSEXP, SEXP omnivarianceSEXP, SEXP eigenentropySEXP, SEXP surface_densitySEXP, SEXP volume_densitySEXP, SEXP solver_threshSEXP) {
+std::map<std::string, double> geometric_features_point(const Eigen::Map<Eigen::VectorXd>& x, const Eigen::Map<Eigen::VectorXd>& y, const Eigen::Map<Eigen::VectorXd>& z, double x_pto, double y_pto, double z_pto, double point_pto, double dist, bool First_eigenvalue, bool Second_eigenvalue, bool Third_eigenvalue, bool Sum_of_eigenvalues, bool PCA_1, bool PCA_2, bool Anisotropy, bool Planarity, bool Linearity, bool Surface_variation, bool Normal_change_rate, bool Verticality, bool Number_of_points, bool omnivariance, bool eigenentropy, bool surface_density, bool volume_density, int solver_thresh);
+RcppExport SEXP _FORTLS_geometric_features_point(SEXP xSEXP, SEXP ySEXP, SEXP zSEXP, SEXP x_ptoSEXP, SEXP y_ptoSEXP, SEXP z_ptoSEXP, SEXP point_ptoSEXP, SEXP distSEXP, SEXP First_eigenvalueSEXP, SEXP Second_eigenvalueSEXP, SEXP Third_eigenvalueSEXP, SEXP Sum_of_eigenvaluesSEXP, SEXP PCA_1SEXP, SEXP PCA_2SEXP, SEXP AnisotropySEXP, SEXP PlanaritySEXP, SEXP LinearitySEXP, SEXP Surface_variationSEXP, SEXP Normal_change_rateSEXP, SEXP VerticalitySEXP, SEXP Number_of_pointsSEXP, SEXP omnivarianceSEXP, SEXP eigenentropySEXP, SEXP surface_densitySEXP, SEXP volume_densitySEXP, SEXP solver_threshSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Eigen::Map<Eigen::VectorXd>& >::type x(xSEXP);
     Rcpp::traits::input_parameter< const Eigen::Map<Eigen::VectorXd>& >::type y(ySEXP);
     Rcpp::traits::input_parameter< const Eigen::Map<Eigen::VectorXd>& >::type z(zSEXP);
-    Rcpp::traits::input_parameter< int >::type pto(ptoSEXP);
+    Rcpp::traits::input_parameter< double >::type x_pto(x_ptoSEXP);
+    Rcpp::traits::input_parameter< double >::type y_pto(y_ptoSEXP);
+    Rcpp::traits::input_parameter< double >::type z_pto(z_ptoSEXP);
+    Rcpp::traits::input_parameter< double >::type point_pto(point_ptoSEXP);
     Rcpp::traits::input_parameter< double >::type dist(distSEXP);
     Rcpp::traits::input_parameter< bool >::type First_eigenvalue(First_eigenvalueSEXP);
     Rcpp::traits::input_parameter< bool >::type Second_eigenvalue(Second_eigenvalueSEXP);
@@ -41,17 +44,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type surface_density(surface_densitySEXP);
     Rcpp::traits::input_parameter< bool >::type volume_density(volume_densitySEXP);
     Rcpp::traits::input_parameter< int >::type solver_thresh(solver_threshSEXP);
-    rcpp_result_gen = Rcpp::wrap(geometric_features_point(x, y, z, pto, dist, First_eigenvalue, Second_eigenvalue, Third_eigenvalue, Sum_of_eigenvalues, PCA_1, PCA_2, Anisotropy, Planarity, Linearity, Surface_variation, Normal_change_rate, Verticality, Number_of_points, omnivariance, eigenentropy, surface_density, volume_density, solver_thresh));
+    rcpp_result_gen = Rcpp::wrap(geometric_features_point(x, y, z, x_pto, y_pto, z_pto, point_pto, dist, First_eigenvalue, Second_eigenvalue, Third_eigenvalue, Sum_of_eigenvalues, PCA_1, PCA_2, Anisotropy, Planarity, Linearity, Surface_variation, Normal_change_rate, Verticality, Number_of_points, omnivariance, eigenentropy, surface_density, volume_density, solver_thresh));
     return rcpp_result_gen;
 END_RCPP
 }
-// geometric_features
-DataFrame geometric_features(const Eigen::MatrixXd& m, double dist, bool First_eigenvalue, bool Second_eigenvalue, bool Third_eigenvalue, bool Sum_of_eigenvalues, bool PCA_1, bool PCA_2, bool Anisotropy, bool Planarity, bool Linearity, bool Surface_variation, bool Normal_change_rate, bool Verticality, bool Number_of_points, bool omnivariance, bool eigenentropy, bool surface_density, bool volume_density, int threads, int solver_thresh);
-RcppExport SEXP _FORTLS_geometric_features(SEXP mSEXP, SEXP distSEXP, SEXP First_eigenvalueSEXP, SEXP Second_eigenvalueSEXP, SEXP Third_eigenvalueSEXP, SEXP Sum_of_eigenvaluesSEXP, SEXP PCA_1SEXP, SEXP PCA_2SEXP, SEXP AnisotropySEXP, SEXP PlanaritySEXP, SEXP LinearitySEXP, SEXP Surface_variationSEXP, SEXP Normal_change_rateSEXP, SEXP VerticalitySEXP, SEXP Number_of_pointsSEXP, SEXP omnivarianceSEXP, SEXP eigenentropySEXP, SEXP surface_densitySEXP, SEXP volume_densitySEXP, SEXP threadsSEXP, SEXP solver_threshSEXP) {
+// subset_matrix_by_indices
+Rcpp::List subset_matrix_by_indices(const Eigen::MatrixXd& mat, Rcpp::List index_lists, double dist, bool First_eigenvalue, bool Second_eigenvalue, bool Third_eigenvalue, bool Sum_of_eigenvalues, bool PCA_1, bool PCA_2, bool Anisotropy, bool Planarity, bool Linearity, bool Surface_variation, bool Normal_change_rate, bool Verticality, bool Number_of_points, bool omnivariance, bool eigenentropy, bool surface_density, bool volume_density, int threads, int solver_thresh);
+RcppExport SEXP _FORTLS_subset_matrix_by_indices(SEXP matSEXP, SEXP index_listsSEXP, SEXP distSEXP, SEXP First_eigenvalueSEXP, SEXP Second_eigenvalueSEXP, SEXP Third_eigenvalueSEXP, SEXP Sum_of_eigenvaluesSEXP, SEXP PCA_1SEXP, SEXP PCA_2SEXP, SEXP AnisotropySEXP, SEXP PlanaritySEXP, SEXP LinearitySEXP, SEXP Surface_variationSEXP, SEXP Normal_change_rateSEXP, SEXP VerticalitySEXP, SEXP Number_of_pointsSEXP, SEXP omnivarianceSEXP, SEXP eigenentropySEXP, SEXP surface_densitySEXP, SEXP volume_densitySEXP, SEXP threadsSEXP, SEXP solver_threshSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type m(mSEXP);
+    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type mat(matSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type index_lists(index_listsSEXP);
     Rcpp::traits::input_parameter< double >::type dist(distSEXP);
     Rcpp::traits::input_parameter< bool >::type First_eigenvalue(First_eigenvalueSEXP);
     Rcpp::traits::input_parameter< bool >::type Second_eigenvalue(Second_eigenvalueSEXP);
@@ -72,7 +76,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type volume_density(volume_densitySEXP);
     Rcpp::traits::input_parameter< int >::type threads(threadsSEXP);
     Rcpp::traits::input_parameter< int >::type solver_thresh(solver_threshSEXP);
-    rcpp_result_gen = Rcpp::wrap(geometric_features(m, dist, First_eigenvalue, Second_eigenvalue, Third_eigenvalue, Sum_of_eigenvalues, PCA_1, PCA_2, Anisotropy, Planarity, Linearity, Surface_variation, Normal_change_rate, Verticality, Number_of_points, omnivariance, eigenentropy, surface_density, volume_density, threads, solver_thresh));
+    rcpp_result_gen = Rcpp::wrap(subset_matrix_by_indices(mat, index_lists, dist, First_eigenvalue, Second_eigenvalue, Third_eigenvalue, Sum_of_eigenvalues, PCA_1, PCA_2, Anisotropy, Planarity, Linearity, Surface_variation, Normal_change_rate, Verticality, Number_of_points, omnivariance, eigenentropy, surface_density, volume_density, threads, solver_thresh));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -255,8 +259,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_FORTLS_geometric_features_point", (DL_FUNC) &_FORTLS_geometric_features_point, 23},
-    {"_FORTLS_geometric_features", (DL_FUNC) &_FORTLS_geometric_features, 21},
+    {"_FORTLS_geometric_features_point", (DL_FUNC) &_FORTLS_geometric_features_point, 26},
+    {"_FORTLS_subset_matrix_by_indices", (DL_FUNC) &_FORTLS_subset_matrix_by_indices, 22},
     {"_FORTLS_fit_circle_cpp_modified", (DL_FUNC) &_FORTLS_fit_circle_cpp_modified, 1},
     {"_FORTLS_is_one_row_all_na", (DL_FUNC) &_FORTLS_is_one_row_all_na, 1},
     {"_FORTLS_sample_indices", (DL_FUNC) &_FORTLS_sample_indices, 2},

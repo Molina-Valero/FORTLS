@@ -17,7 +17,9 @@ Process automation of point cloud data derived from terrestrial-based technologi
 Get the lat stable version of FORTLS from GitHub (included in the master branch)
 
 ```r
-remotes::install_github("Molina-Valero/FORTLS", dependencies = TRUE)
+remotes::install_github("Molina-Valero/FORTLS", ref = "devel", dependencies = TRUE)
+library(FORTLS)
+install_fortls_python_deps()
 ```
 
 # Taller de manejo de nubes de puntos forestales - 9CFE

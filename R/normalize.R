@@ -14,7 +14,6 @@ normalize <- function(las, normalized = NULL,
                       save.las = NULL){
 
 
-  set.seed(123)
 
   if(is.null(normalized)){
   .pb <- progress::progress_bar$new(total = 12)} else {
@@ -143,6 +142,7 @@ normalize <- function(las, normalized = NULL,
     # Plot if requested
     if (!is.null(plot)) lidR::plot(.data)
 
+
     # Save LAZ file if required
     if (!is.null(save.las)) {
       lidR::writeLAS(.data, paste(dir.result, "/", id, ".laz", sep = ""))
@@ -244,8 +244,7 @@ normalize <- function(las, normalized = NULL,
 
   # Plot
 
-  if(!is.null(plot))
-    lidR::plot(.data)
+  if (!is.null(plot)) lidR::plot(.data)
 
 
 
@@ -318,9 +317,11 @@ normalize <- function(las, normalized = NULL,
   # rho, axial distance or radial distance (euclidean distance from the z-axis to the point P)
   # phi, azimuth is the angle between the reference direction on the chosen plane and the line from the origin to the projection of P on the plane
   # z, axial coordinate or height z is the signed distance from the chosen plane to the point P
+
   .data$rho <- sqrt((.data$x - x.center) ^ 2 + (.data$y - y.center) ^ 2)
   .data$phi <- atan2(.data$y - y.center, .data$x - x.center)
   .data$phi <- ifelse(.data$phi < 0, .data$phi + (2 * pi), .data$phi)
+
 
   # Spherical coordinates system (https://en.wikipedia.org/wiki/Spherical_coordinate_system)
   # r, radius or radial distance is the Euclidean distance from the origin O to P
@@ -424,6 +425,31 @@ normalize <- function(las, normalized = NULL,
   else{.data <- .data[, c("id", "file", "point", "x", "y", "z", "rho", "phi", "r", "theta", "slope", "intensity", "R", "G", "B", "GLA", "prob", "prob.selec"), drop = FALSE]}
 
   .pb$tick()
+
+
+  # Adding the point of the plot center
+
+  new_row <- .data[1, ]
+  new_row[1, ] <- NA
+
+  # Set specific values
+
+  new_row$id <- .data$id[1]
+  new_row$file <- .data$file[1]
+  new_row$point <- 0
+  new_row$x <- x.center
+  new_row$y <- y.center
+  new_row$z <- 0
+  new_row$rho <- 0
+  new_row$phi <- 0
+  new_row$r <- 0
+  new_row$theta <- 0
+  new_row$prob <- 1
+  new_row$prob.selec <- 1
+
+  # Bind it to the top of the existing data
+  .data <- rbind(new_row, .data)
+
 
   # Saving data
 

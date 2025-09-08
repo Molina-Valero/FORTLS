@@ -256,8 +256,9 @@
   eje$rho <- sqrt((eje$x - x.center) ^ 2 + (eje$y - y.center) ^ 2)
 
 
+
   .filter$cluster <- 1:nrow(.filter)
-  # .filter$sec <- as.character(.filter$sec)
+  .filter$sec <- as.character(.filter$sec)
   .filter <- merge(eje, .filter, by = "sec", all.y = TRUE)
   .filter$dist <- sqrt((.filter$center.x - .filter$x) ^ 2 + (.filter$center.y - .filter$y) ^ 2)
   .filter$dist.rho <- abs(.filter$center.rho - .filter$rho)

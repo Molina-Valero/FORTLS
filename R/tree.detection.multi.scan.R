@@ -1,8 +1,7 @@
 
 tree.detection.multi.scan <- function(data, single.tree = NULL,
                                       dbh.min = 4, dbh.max = 200, h.min = 1.3,
-                                      ncr.threshold = 0.1, tls.precision = NULL,
-                                      density.reduction = 2,
+                                      geo.dist = 0.1, tls.precision = NULL,
                                       stem.section = c(0.7, 3.5), stem.range = NULL, breaks = NULL,
                                       slice = 0.1, understory = NULL, bark.roughness = 1,
                                       den.type = 1, d.top = NULL,
@@ -13,34 +12,35 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
 
 
-  set.seed(123)
+  #### Transforming data (as data frame class) to data table class
+
+  data <- data.table::setDT(data)
+
+
+  #### Checking some function arguments ####
 
   # Obtaining working directory for loading files
   if(is.null(dir.data))
     dir.data <- getwd()
 
-  data <- data.table::setDT(data)
-
-  #### Checking some function arguments ####
 
   # Obtaining working directory for saving files
   if(is.null(dir.result))
     dir.result <- getwd()
 
-  # Converting arguments to International System of Units
-  # Arguments of the forest inventory
+
+  # Conversion of the units of the arguments to units of the international system
 
   .dbh.min <- dbh.min / 100
   .dbh.max <- dbh.max / 100
 
-  # Obtaining Cartesian coordinates (x,y) from center
 
-  kk <- data[data$phi < (pi/2) & data$prob.selec == 1, c("x", "y", "phi", "rho")]
+  # Obtaining the Cartesian coordinates (x,y) of the plot center
 
-  x.center <- mean(kk$x - sin(kk$phi) * kk$rho)
-  y.center <- mean(kk$y - cos(kk$phi) * kk$rho)
+  x.center <- as.numeric(data[data$point == 0, "x"])
+  y.center <- as.numeric(data[data$point == 0, "y"])
 
-  rm(kk)
+  data <- data[-1, ]
 
 
   #### Detecting possible areas with trees in the point cloud ####
@@ -48,82 +48,72 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   if(!is.null(data$GLA)){
     woody <- data[data$GLA <= 0, ]
-    woody <- woody[!is.na(woody$x) & !is.na(woody$y) & !is.na(woody$z), ]} else {woody <- data}
-
+    woody <- woody[!is.na(woody$x) & !is.na(woody$y) & !is.na(woody$z), ]}
+  else {woody <- data}
 
 
   if(!is.null(data$intensity) & suppressWarnings(mean(data$intensity, na.rm = T)) > 0 & is.null(data$GLA)){
-
-    woody <- data[data$intensity > mean(data$intensity, na.rm = T), ]
-
-  }
-
+    woody <- data[data$intensity > mean(data$intensity, na.rm = T), ]}
 
 
   if(!is.null(data$intensity) & suppressWarnings(mean(data$intensity, na.rm = T)) > 0 & !is.null(data$GLA)){
-
-    woody <- woody[woody$intensity > mean(woody$intensity, na.rm = T), ]
-
-  }
+    woody <- woody[woody$intensity > mean(woody$intensity, na.rm = T), ]}
 
 
 
-  # Statistical filtering of a point cloud
-  # Implements the Statistical Outliers Removal (SOR)
+  # Statistical point cloud filtering ----
+
+  # 1. Statistical Outliers Removal (SOR)
 
   message("Application of Statistical Outlier Removal (SOR) to the entire point cloud")
 
   woody <- woody[, c("x", "y", "z")]
+
   woody <- VoxR::filter_noise(data = data.table::setDT(woody), store_noise = TRUE, message = FALSE)
 
-  # noise <- woody[woody$Noise == 2, ]
   woody <- woody[woody$Noise == 1, ]
 
   woody <- merge(data, woody[, c("x", "y", "z")], by = c("x", "y", "z"), all = FALSE)
-  # noise <- merge(data, noise, by = c("x", "y", "z"), all = FALSE)
 
 
 
-  # Detection of stem part without shrub vegetation and crown
-
-  stem <- woody
-
-  # Defining the vertical section in which trees are detected
-
-  if(is.null(stem.section)){
-
-    stem.section <- .getStem(stem)
-    stem.section <- c(stem.section$x, stem.section$x + stem.section$diff)
-    stem <- stem[stem$z > stem.section[1] & stem$z < stem.section[2], ]
-
-  } else {
-
-    stem <- stem[stem$z > stem.section[1] - 0.05 & stem$z < stem.section[2] + 0.05, ]
-
-  }
+  # 2. Defining the vertical section in which trees are detected
+  # Applying +/- geo.dist as a buffer to compute geometric features properly
 
 
-  message("Retention of points with high verticality values")
+  stem <- woody[woody$z > stem.section[1] - geo.dist & woody$z < stem.section[2] + geo.dist, ]
+
+
+
+  # 3. Computing geometric features
+
+  message("Retention of points with high verticality & low surface variation")
 
   threads <- max(1, threads)
 
-  VerSur <- geometric.features(data = stem,
-                               grid_method = 'sf_grid',
-                               features = c("verticality", "surface_variation", "planarity"),
-                               dist = 0.05,
-                               threads = threads,
-                               keep_NaN = FALSE,            # this means, when we run the Rcpp code we don't ex <- ude computed rows if 1 of the features is NA. If we have to compute 13 features and 1 is NA, then we keep this row
-                               verbose = FALSE,
-                               solver_threshold = 50000)
+  # VerSur <- geometric.features(data = stem,
+  #                              approximate_KNN = FALSE,
+  #                              features = c("verticality", "surface_variation", "planarity"),
+  #                              dist = geo.dist,
+  #                              threads = threads,
+  #                              keep_NaN = FALSE,            # this means, when we run the Rcpp code we don't ex <- ude computed rows if 1 of the features is NA. If we have to compute 13 features and 1 is NA, then we keep this row
+  #                              verbose = TRUE,
+  #                              solver_threshold = 50000)
+  #
+  # if(is.null(VerSur$verticality) | is.null(VerSur$surface_variation) | is.null(VerSur$planarity)){
+  #
+  #   VerSur$verticality <- NA
+  #   VerSur$surface_variation <- NA
+  #   VerSur$planarity <- NA
+  #
+  # }
 
-  if(is.null(VerSur$verticality) | is.null(VerSur$surface_variation) | is.null(VerSur$planarity)){
+  VerSur <- geometric_features_py(data = stem,
+                                  dist = geo.dist,
+                                  threads = as.integer(threads))
 
-    VerSur$verticality <- NA
-    VerSur$surface_variation <- NA
-    VerSur$planarity <- NA
 
-  }
-
+  # Retaining those points within the vertical section defined in the arguments
 
   stem <- stem[stem$z > stem.section[1] & stem$z < stem.section[2], ]
 
@@ -132,11 +122,17 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   rm(VerSur)
 
 
+
+  # 4. Retention of points with high verticality
+
   stem$ver <- stem$verticality
   stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
 
   stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
-  stem <- stem[stem$ver > 0.75 | stem$ver > stem$prob.ver, ]
+  stem <- stem[stem$ver > stem$prob.ver, ]
+
+
+  # 5. Retention of points with low surface variation
 
   stem$ver <- stem$surface_variation / 0.33
   stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
@@ -145,6 +141,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   stem <- stem[stem$ver < stem$prob.ver, ]
 
 
+  # 6. Retention of points with high planarity
+
   stem$ver <- stem$planarity
   stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
 
@@ -152,12 +150,26 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   stem <- stem[stem$ver > stem$prob.ver, ]
 
 
+  # Keeping only points with high verticality, planarity & low surface variation
+  # within the vertical section defined in the arguments in the whole point cloud
 
   woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
   woody <- rbind(woody, stem[, 1:ncol(woody)])
 
 
+  # 7. Retention of high points
+
+  stem$ver <- (stem$z - stem.section[1]) / (stem.section[2] - stem.section[1])
+  stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
+  stem <- stem[stem$ver > stem$prob.ver, ]
+
+
+
+  # Detection of regions of high point density ----
+
   message("Detection of tree stem axes")
+
+  # Reducing point density to 50% approx.
 
   stem <- stem[stem$prob.selec == 1, ]
 
@@ -166,6 +178,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   stem <- VoxR::vox(stem[, c("x", "y", "z")], res = 0.03)} else {
     stem <- VoxR::vox(stem[, c("x", "y", "z")], res = tls.precision)}
   stem <- stem[, c("x", "y", "z", "npts")]
+
 
   # Creation of raster with projected voxels
 
@@ -176,21 +189,11 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   stem.2 <- NULL
 
 
-  if(density.reduction == 1)
-    stem <- stem[stem$npts > mean(stem$npts) & stem$nvox > mean(stem$nvox), ]
-
-  if(density.reduction == 2)
-    stem <- stem[stem$npts > mean(stem$npts) & stem$nvox > mean(stem$nvox) & stem$ratio > mean(stem$ratio), ]
+  stem <- stem[stem$npts > mean(stem$npts) & stem$nvox > mean(stem$nvox) & stem$ratio > mean(stem$ratio), ]
 
 
-  if(!is.null(understory)){
-
-    # if(is.null(single.tree))
-    #   stem.2 <- stem[stem$npts > mean(stem$npts), ]
-
+  if(!is.null(understory))
     stem <- stem[stem$npts > mean(stem$npts) & stem$ratio > mean(stem$ratio) & stem$nvox > mean(stem$nvox), ]
-
-  }
 
 
   if(nrow(stem) < 1){
@@ -203,12 +206,16 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   }
 
 
-  # Creation polygon to extract those projected areas in the original point cloud
-  # where trees are probably located
+  stem <- stem[stem$npts > min(stem$npts, na.rm = TRUE), ]
+
+
+
+  # Creation of polygons to extract those projected areas in the original point cloud
+  # where trees are probably located according to high point density regions
 
 
   buf <- sf::st_as_sf(data.frame(stem), coords = c("x","y"))
-  buf <- sf::st_buffer(buf, max(.dbh.min, 0.5))
+  buf <- sf::st_buffer(buf, max(.dbh.min, 0.25))
   buf <- sf::st_cast(sf::st_union(buf), "POLYGON")
 
 
@@ -229,15 +236,28 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   rm(stem.3)
 
+
+
   # Filtering stems axis
+
+  # n.w.ratio
 
   stem.i <- do.call(rbind, lapply(split(stem, stem$tree), .n.w.ratio))
   .Q1 <- stats::quantile(stem.i$n.w.ratio, prob = 0.25, na.rm = TRUE)
   .Q3 <- stats::quantile(stem.i$n.w.ratio, prob = 0.75, na.rm = TRUE)
-  stem.i <- stem.i[stem.i$n.w.ratio >= .Q1 - 1.5 * (.Q3 - .Q1) & stem.i$n.w.ratio <= .Q3 + 1.5 * (.Q3 - .Q1), ]
+  # stem.i <- stem.i[stem.i$n.w.ratio >= .Q1 - 1.5 * (.Q3 - .Q1) & stem.i$n.w.ratio <= .Q3 + 1.5 * (.Q3 - .Q1), ]
+  stem.i <- stem.i[stem.i$n.w.ratio > .Q1 - 1.5 * (.Q3 - .Q1), ]
+  stem <- stem[stem$tree %in% stem.i$tree, ]
+
+  # sd
+
+  .Q1 <- stats::quantile(stem.i$z.sd, prob = 0.25, na.rm = TRUE)
+  .Q3 <- stats::quantile(stem.i$z.sd, prob = 0.75, na.rm = TRUE)
+  stem.i <- stem.i[stem.i$z.sd > .Q1 - 1.5 * (.Q3 - .Q1), ]
   stem <- stem[stem$tree %in% stem.i$tree, ]
 
   rm(stem.i)
+
 
 
   # If there is only one tree in the point cloud
@@ -261,13 +281,27 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   # Defining stem axis
 
   eje <- do.call(rbind, lapply(split(stem, stem$tree), .stem.axis, scan.approach = "multi"))
+
   .Q1 <- stats::quantile(eje$n.w.ratio, prob = 0.25, na.rm = TRUE)
   .Q3 <- stats::quantile(eje$n.w.ratio, prob = 0.75, na.rm = TRUE)
-  eje <- eje[eje$n.w.ratio >= .Q1 - 1.5 * (.Q3 - .Q1), ]
+  eje <- eje[eje$n.w.ratio > .Q1 - 1.5 * (.Q3 - .Q1), ]
+
+  .Q1 <- stats::quantile(eje$z.sd, prob = 0.25, na.rm = TRUE)
+  .Q3 <- stats::quantile(eje$z.sd, prob = 0.75, na.rm = TRUE)
+  eje <- eje[eje$z.sd > .Q1 - 1.5 * (.Q3 - .Q1), ]
+
   eje <- eje[eje$tree %in% eje$tree, ]
   eje <- eje[eje$sec %in% as.character(breaks) & !is.na(eje$x), ]
 
+  eje <- eje[abs(eje$slope) < 0.25, ]
+
   rm(stem)
+
+
+  # Removing those axis very inclinates (slope > 0.1)
+
+  eje <- eje[abs(eje$slope) < 0.25, ]
+
 
   # Removing those axis ver very closed (0.25 m) to each other
 
@@ -282,6 +316,13 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   # Assigning points to trees previously detected
 
+  # Temporal!!!
+
+  buf <- sf::st_as_sf(data.frame(eje[eje$sec > stem.section[1] & eje$sec < stem.section[2], ]), coords = c("x","y"))
+  buf <- sf::st_buffer(buf, max(.dbh.min, 1))
+  buf <- sf::st_cast(sf::st_union(buf), "POLYGON")
+
+
   woody.2 <- sf::st_intersects(buf, sf::st_as_sf(data.frame(woody), coords = c("x","y")))
   woody.2 <- data.table::setDT(as.data.frame(woody.2))
   colnames(woody.2) <- c("tree", "code")
@@ -290,21 +331,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   woody <- subset(woody, select = -code)
   # woody <- woody[, !(names(woody) %in% c("code"))]
 
-  woody <- woody[woody$tree %in% eje$tree, ]
-  woody <- woody[!is.na(woody$tree), ]
-
 
   rm(buf, woody.2)
-
-  # Estimating NCR threshold when RGB is available
-
-  # if(!is.null(data$GLA)){
-  #   ncr <- data[data$GLA > 0, ]
-  #   ncr <- as.matrix(ncr[, c("point", "x", "y", "z")])
-  #   ncr.threshold <- ncr_point_cloud_double(ncr[1:10000, ])
-  #   ncr.threshold <- mean(ncr.threshold$ncr, na.rm = TRUE)}
-
-
   gc()
 
 
@@ -315,7 +343,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   # Preallocate lists for efficiency
   .filteraux <- vector("list", length(breaks))
-  .filteraux.2 <- vector("list", length(breaks))
+
 
   slice <- slice / 2  # Adjust slice size
 
@@ -334,7 +362,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     cuts <- breaks[i]
 
 
-    .cut <- woody[woody$z > (cuts - 2 * slice - 0.05) & woody$z < cuts + 0.05, , drop = FALSE]
+    .cut <- woody[woody$z > (cuts - 2 * slice - geo.dist) & woody$z < cuts + geo.dist, , drop = FALSE]
 
 
     if(nrow(.cut) < 50){next}
@@ -342,24 +370,31 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     if(cuts <= stem.section[1] | cuts >= stem.section[2]){
 
-      VerSur <- geometric.features(data = .cut,
-                                   grid_method = 'sf_grid',
-                                   features = c("verticality", "surface_variation"),
-                                   dist = 0.05,
-                                   threads = threads,
-                                   keep_NaN = FALSE,            # this means, when we run the Rcpp code we don't exclude computed rows if 1 of the features is NA. If we have to compute 13 features and 1 is NA, then we keep this row
-                                   verbose = FALSE,
-                                   solver_threshold = 50000)
+      # VerSur <- geometric.features(data = .cut,
+      #                              approximate_KNN = FALSE,
+      #                              features = c("verticality", "surface_variation", "planarity"),
+      #                              dist = geo.dist,
+      #                              threads = threads,
+      #                              keep_NaN = FALSE,            # this means, when we run the Rcpp code we don't exclude computed rows if 1 of the features is NA. If we have to compute 13 features and 1 is NA, then we keep this row
+      #                              verbose = FALSE,
+      #                              solver_threshold = 50000)
+      #
+      # if(is.null(VerSur$verticality) | is.null(VerSur$surface_variation) | is.null(VerSur$planarity)){
+      #
+      #   VerSur$verticality <- NA
+      #   VerSur$surface_variation <- NA
+      #   VerSur$planarity <- NA
+      #
+      # }
 
-      if(is.null(VerSur$verticality) | is.null(VerSur$surface_variation)){
-
-        VerSur$verticality <- NA
-        VerSur$surface_variation <- NA
-
-      }
+      VerSur <- geometric_features_py(data = .cut,
+                                      dist = geo.dist,
+                                      threads = as.integer(threads))
 
 
-      .cut <- merge(.cut, VerSur[, c("point", "verticality", "surface_variation")], by = "point")
+      VerSur <- VerSur[!duplicated(VerSur$point), ]
+
+      .cut <- merge(.cut, VerSur[, c("point", "verticality", "surface_variation", "planarity")], by = "point")
 
       rm(VerSur)
 
@@ -367,7 +402,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
       .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
 
       .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
-      .cut <- .cut[.cut$ver > 0.75 | .cut$ver > .cut$prob.ver, ]
+      .cut <- .cut[.cut$ver > .cut$prob.ver, ]
 
 
       .cut$ver <- .cut$surface_variation / 0.33
@@ -376,9 +411,16 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
       .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
       .cut <- .cut[.cut$ver < .cut$prob.ver, ]
 
+
+      .cut$ver <- .cut$planarity
+      .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
+
+      .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
+      .cut <- .cut[.cut$ver > .cut$prob.ver, ]
+
     }
 
-
+    if(nrow(.cut) < 25){next}
 
     # Restrict to slice corresponding to cuts m +/- 5 cm
 
@@ -386,13 +428,14 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
 
 
-    # Dbscan parameters
+    # DBSCAN parameters
 
     if(is.null(tls.precision)){.eps <- 0.03} else {.eps <- tls.precision}
 
+
     # Clustering
 
-    .error <- try(suppressMessages(dbscan::dbscan(.cut[, c("x", "y"), drop = FALSE], eps = .eps, minPts = 10)))
+    .error <- try(suppressMessages(dbscan::dbscan(.cut[, c("x", "y"), drop = FALSE], eps = .eps)))
     if(class(.error)[1] == "try-error"){
       message("No computed section: ", cuts, " m")
       next} else {
@@ -417,123 +460,21 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                                                   tls.precision = tls.precision,
                                                   .dbh.min = .dbh.min, .dbh.max = .dbh.max,
                                                   slice = slice * 2, bark.roughness = bark.roughness,
-                                                  x.center = x.center, y.center = y.center))
+                                                  x.center = x.center, y.center = y.center))}
+    else {
 
-
-  } else {
-
-
-    .filter <- do.call(rbind, lapply(split(.cut, .cut$cluster), .sections.multi.scan,
+      .filter <- do.call(rbind, lapply(split(.cut, .cut$cluster), .sections.multi.scan,
                                      tls.precision = tls.precision,
                                      .dbh.min = .dbh.min, .dbh.max = .dbh.max,
                                      slice = slice * 2, bark.roughness = bark.roughness,
                                      x.center = x.center, y.center = y.center))
+    }
 
-  }
 
     .filteraux[[i]] <- .filter
 
 
-    # Second...
-
-
-    if(!is.null(stem.2)){
-
-    .cut <- stem.2[stem.2$z > (cuts - 2 * slice - 0.05) & stem.2$z < cuts + 0.05, , drop = FALSE]
-
-    if(nrow(.cut) < 50){next}
-
-
-    if(cuts <= stem.section[1] | cuts >= stem.section[2]){
-
-      VerSur <- geometric.features(data = .cut,
-                                   grid_method = 'sf_grid',
-                                   features = c("verticality", "surface_variation"),
-                                   dist = 0.05,
-                                   threads = threads,
-                                   keep_NaN = FALSE,            # this means, when we run the Rcpp code we don't exclude computed rows if 1 of the features is NA. If we have to compute 13 features and 1 is NA, then we keep this row
-                                   verbose = FALSE,
-                                   solver_threshold = 50000)
-
-      if(is.null(VerSur$verticality) | is.null(VerSur$surface_variation)){
-
-        VerSur$verticality <- NA
-        VerSur$surface_variation <- NA
-
-      }
-
-      .cut <- merge(.cut, VerSur[, c("point", "verticality", "surface_variation")], by = "point")
-
-      rm(VerSur)
-
-      .cut$ver <- .cut$verticality
-      .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
-
-      .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
-      .cut <- .cut[.cut$ver > 0.75 | .cut$ver > .cut$prob.ver, ]
-
-
-      .cut$ver <- .cut$surface_variation / 0.33
-      .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
-
-      .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
-      .cut <- .cut[.cut$ver < .cut$prob.ver, ]
-
-
-
-    }
-
-
-    # Restrict to slice corresponding to cuts m +/- 5 cm
-
-    .cut <- .cut[.cut$z > (cuts - 2 * slice) & .cut$z < cuts, , drop = FALSE]
-
-    # Dbscan parameters
-
-    if(is.null(tls.precision)){.eps <- 0.03} else {.eps <- tls.precision}
-
-    # Clustering
-
-    .error <- try(suppressMessages(dbscan::dbscan(.cut[, c("x", "y"), drop = FALSE], eps = .eps, minPts = 15)))
-    if(class(.error)[1] == "try-error"){
-      message("No computed section: ", cuts, " m")
-      next} else {
-        .dbscan <- dbscan::dbscan(.cut[, c("x", "y"), drop = FALSE], eps = .eps)
-        .cut$cluster <- .dbscan$cluster
-        .cut <- .cut[which(.cut$cluster > 0), , drop = FALSE]}
-
-    # Checking if there are clusters
-
-    if(nrow(.cut) < 1){next}
-
-    # Assigning section to the slice
-
-    .cut$sec <- cuts
-
-
-    if (interactive()) {
-
-
-    .filter <- do.call(rbind, parallel::clusterApply(cl, split(.cut, .cut$cluster), .sections.multi.scan,
-                                                     tls.precision = tls.precision,
-                                                     .dbh.min = .dbh.min, .dbh.max = .dbh.max,
-                                                     slice = slice * 2, bark.roughness = bark.roughness,
-                                                     x.center = x.center, y.center = y.center))
-
-
-    } else {
-
-      .filter <- do.call(rbind, lapply(split(.cut, .cut$cluster), .sections.multi.scan,
-                                       tls.precision = tls.precision,
-                                       .dbh.min = .dbh.min, .dbh.max = .dbh.max,
-                                       slice = slice * 2, bark.roughness = bark.roughness,
-                                       x.center = x.center, y.center = y.center))
-    }
-
-
-    .filteraux.2[[i]] <- .filter}
-
-    # Run garbage collection only every 5 iterations
+    # Run garbage collection every 5 iterations
     if (i %% 5 == 0) gc()
 
   }# End of cuts loop
@@ -545,9 +486,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   parallel::stopCluster(cl)
 
 
-  .filteraux <- do.call(rbind, .filteraux)
-  .filteraux.2 <- do.call(rbind, .filteraux.2)
-
+  .filter <- do.call(rbind, .filteraux)
+  rm(.filteraux)
 
   # Final garbage collection
   gc()
@@ -556,7 +496,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   #### Assigning sections to tree axis ####
 
-  if(length(.filteraux) < 1 & length(.filteraux.2) < 1) {
+  if(length(.filter) < 1) {
 
     # Generate a warning and create empty data.frame to be returned, if no row
     # was included in .filter
@@ -568,27 +508,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   }
 
-  if(!is.null(.filteraux.2) & sum(c(.filteraux.2$circ, .filteraux.2$arc.circ)) > 0){
-
-    # Assigning sections to tree axis
-
-    eje.2 <- .stem.assignment.single.scan(.filteraux.2, stem.section, breaks)
-
-    eje.2$tree <- eje.2$tree +  max(eje$tree)
-
-    eje <- rbind(eje[, c("tree", "sec", "x", "y")], eje.2[, c("tree", "sec", "x", "y")])
-    rm(eje.2)
-
-    .filter <- rbind(.filteraux, .filteraux.2)
-    rm(.filteraux, .filteraux.2)
-
-
-    }  else {
-
-    .filter <- .filteraux
-    rm(.filteraux)
-
-    }
 
 
   .filter <- .stem.assignment.multi.scan(.filter, eje, stem.section, x.center, y.center, single.tree)

@@ -1,8 +1,7 @@
 
 tree.detection.single.scan <- function(data, single.tree = NULL,
                                        dbh.min = 4, dbh.max = 200, h.min = 1.3,
-                                       ncr.threshold = 0.1, tls.resolution = list(), tls.precision = NULL,
-                                       density.reduction = 2,
+                                       geo.dist = 0.1, tls.resolution = list(), tls.precision = NULL,
                                        stem.section = c(0.7, 3.5), stem.range = NULL, breaks = NULL,
                                        slice = 0.1, understory = NULL, bark.roughness = 1,
                                        den.type = 1, d.top = NULL,
@@ -12,15 +11,18 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
                                        dir.data = NULL, save.result = TRUE, dir.result = NULL){
 
 
-  set.seed(123)
+
+  #### Transforming data (as data frame class) to data table class
+
+  data <- data.table::setDT(data)
+
+
+  #### Checking some function arguments ####
 
   # Obtaining working directory for loading files
   if(is.null(dir.data))
     dir.data <- getwd()
 
-  data <- data.table::setDT(data)
-
-  #### Checking some function arguments ####
 
   # Obtaining working directory for saving files
   if(is.null(dir.result))
@@ -65,39 +67,33 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   # Obtaining Cartesian coordinates (x,y) from center
 
-  kk <- data[data$phi < (pi/2) & data$prob.selec == 1, c("x", "y", "phi", "rho")]
+  x.center <- as.numeric(data[data$point == 0, "x"])
+  y.center <- as.numeric(data[data$point == 0, "y"])
 
-  x.center <- mean(kk$x - sin(kk$phi) * kk$rho)
-  y.center <- mean(kk$y - cos(kk$phi) * kk$rho)
+  data <- data[-1, ]
 
-  rm(kk)
-  gc()
+
 
   #### Detecting possible areas with trees in the point cloud ####
 
   if(!is.null(data$GLA)){
     woody <- data[data$GLA <= 0, ]
-    woody <- woody[!is.na(woody$x) & !is.na(woody$y) & !is.na(woody$z), ]} else {woody <- data}
-
+    woody <- woody[!is.na(woody$x) & !is.na(woody$y) & !is.na(woody$z), ]}
+  else {woody <- data}
 
 
   if(!is.null(data$intensity) & suppressWarnings(mean(data$intensity, na.rm = T)) > 0 & is.null(data$GLA)){
-
-    woody <- data[data$intensity > mean(data$intensity, na.rm = T), ]
-
-  }
-
+    woody <- data[data$intensity > mean(data$intensity, na.rm = T), ]}
 
 
   if(!is.null(data$intensity) & suppressWarnings(mean(data$intensity, na.rm = T)) > 0 & !is.null(data$GLA)){
-
-    woody <- woody[woody$intensity > mean(woody$intensity, na.rm = T), ]
-
-  }
+    woody <- woody[woody$intensity > mean(woody$intensity, na.rm = T), ]}
 
 
-  # Statistical filtering of a point cloud
-  # Implements the Statistical Outliers Removal (SOR)
+
+  # Statistical point cloud filtering ----
+
+  # 1. Statistical Outliers Removal (SOR)
 
   message("Application of Statistical Outlier Removal (SOR) to the entire point cloud")
 
@@ -112,44 +108,43 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   noise <- noise[, c("id", "file", "x", "y", "z", "rho")]
 
 
-  # Detection of stem part without shrub vegetation and crown
+  # 2. Defining the vertical section in which trees are detected
+  # Applying +/- geo.dist as a buffer to compute geometric features properly
 
-  # Defining the vertical section in which trees are detected
 
-  if(is.null(stem.section)){
+  stem <- woody[woody$z > stem.section[1] - geo.dist & woody$z < stem.section[2] + geo.dist, ]
 
-    stem.section <- .getStem(woody)
-    stem.section <- c(stem.section$x, stem.section$x + stem.section$diff)
-    stem <- woody[stem$z > stem.section[1] & woody$z < stem.section[2], ]
 
-  } else {
 
-    stem <- woody[woody$z > stem.section[1] - 0.05 & woody$z < stem.section[2] + 0.05, ]
+  # 3. Computing geometric features
 
-  }
-
-  message("Retention of points with high verticality values")
+  message("Retention of points with high verticality & low surface variation")
 
   threads <- max(1, threads)
 
-  VerSur <- geometric.features(data = stem,
-                               grid_method = 'sf_grid',
-                               features = c("verticality", "surface_variation", "planarity"),
-                               dist = 0.05,
-                               threads = threads,
-                               keep_NaN = FALSE,            # this means, when we run the Rcpp code we don't exclude computed rows if 1 of the features is NA. If we have to compute 13 features and 1 is NA, then we keep this row
-                               verbose = FALSE,
-                               solver_threshold = 50000)
+  # VerSur <- geometric.features(data = stem,
+  #                              approximate_KNN = FALSE,
+  #                              features = c("verticality", "surface_variation", "planarity"),
+  #                              dist = geo.dist,
+  #                              threads = threads,
+  #                              keep_NaN = FALSE,            # this means, when we run the Rcpp code we don't ex <- ude computed rows if 1 of the features is NA. If we have to compute 13 features and 1 is NA, then we keep this row
+  #                              verbose = TRUE,
+  #                              solver_threshold = 50000)
+  #
+  # if(is.null(VerSur$verticality) | is.null(VerSur$surface_variation) | is.null(VerSur$planarity)){
+  #
+  #   VerSur$verticality <- NA
+  #   VerSur$surface_variation <- NA
+  #   VerSur$planarity <- NA
+  #
+  # }
+
+  VerSur <- geometric_features_py(data = stem,
+                                  dist = geo.dist,
+                                  threads = as.integer(threads))
 
 
-  if(is.null(VerSur$verticality) | is.null(VerSur$surface_variation) | is.null(VerSur$planarity)){
-
-    VerSur$verticality <- NA
-    VerSur$surface_variation <- NA
-    VerSur$planarity <- NA
-
-  }
-
+  # Retaining those points within the vertical section defined in the arguments
 
   stem <- stem[stem$z > stem.section[1] & stem$z < stem.section[2], ]
 
@@ -158,12 +153,24 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   rm(VerSur)
 
 
+
+  # 4. Retention of points with high verticality
+
   stem$ver <- stem$verticality
   stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
 
   stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
-  stem <- stem[stem$ver > 0.75 | stem$ver > stem$prob.ver, ]
+  stem <- stem[stem$ver > stem$prob.ver, ]
 
+
+  # Keeping only points with high verticality, planarity & low surface variation
+  # within the vertical section defined in the arguments in the whole point cloud
+
+  woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
+  woody <- rbind(woody, stem[, 1:ncol(woody)])
+
+
+  # 5. Retention of points with low surface variation
 
   stem$ver <- stem$surface_variation / 0.33
   stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
@@ -172,6 +179,8 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   stem <- stem[stem$ver < stem$prob.ver, ]
 
 
+  # 6. Retention of points with high planarity
+
   stem$ver <- stem$planarity
   stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
 
@@ -179,11 +188,19 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   stem <- stem[stem$ver > stem$prob.ver, ]
 
 
-  # woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
-  # woody <- rbind(woody, stem[, 1:ncol(woody)])
+  # 7. Retention of high points
 
+  # stem$ver <- (stem$z - stem.section[1]) / (stem.section[2] - stem.section[1])
+  # stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
+  # stem <- stem[stem$ver > stem$prob.ver, ]
+
+
+
+  # Detection of regions of high point density ----
 
   message("Detection of tree stem axes")
+
+  # Reducing point density to 50% approx.
 
   stem <- stem[stem$prob.selec == 1, ]
 
@@ -201,12 +218,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   stem.2 <- NULL
 
 
-  if(density.reduction == 1)
-    stem <- stem[stem$npts > mean(stem$npts) & stem$nvox > mean(stem$nvox), ]
-
-  if(density.reduction == 2)
-    stem <- stem[stem$npts > mean(stem$npts) & stem$nvox > mean(stem$nvox) & stem$ratio > mean(stem$ratio), ]
-  # points(stem$x, stem$y, asp = 1, col = "green")
+  stem <- stem[stem$npts > mean(stem$npts) & stem$nvox > mean(stem$nvox) & stem$ratio > mean(stem$ratio), ]
 
 
   if(!is.null(understory)){
@@ -229,8 +241,16 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   }
 
 
+  stem <- stem[stem$npts > min(stem$npts, na.rm = TRUE), ]
+
+
+
+  # Creation of polygons to extract those projected areas in the original point cloud
+  # where trees are probably located according to high point density regions
+
+
   buf <- sf::st_as_sf(data.frame(stem), coords = c("x","y"))
-  buf <- sf::st_buffer(buf, max(.dbh.min, 0.5))
+  buf <- sf::st_buffer(buf, max(.dbh.min, 1))
   buf <- sf::st_cast(sf::st_union(buf), "POLYGON")
 
   rm(stem)
@@ -312,15 +332,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     breaks <- c(0.2, seq(from = 0.4, to = max(woody$z), by = 0.3))
     breaks <- breaks[-length(breaks)]}
 
-
-  # Estimating NCR threshold when RGB are available
-
-  # if(!is.null(data$GLA)){
-  #   ncr <- data[data$GLA > 0, ]
-  #   ncr <- as.matrix(ncr[, c("point", "x", "y", "z")])
-  #   ncr.threshold <- ncr_point_cloud_double(ncr[1:10000, ])
-  #   ncr.threshold <- mean(ncr.threshold$ncr, na.rm = TRUE)}
-
   gc()
 
   #### Starting with clustering process ####
@@ -357,7 +368,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     cuts <- breaks[i]
 
 
-    .cut <- woody[woody$z > (cuts - 2 * slice - 0.05) & woody$z < cuts + 0.05, , drop = FALSE]
+    .cut <- woody[woody$z > (cuts - 2 * slice - geo.dist) & woody$z < cuts + geo.dist, , drop = FALSE]
 
 
     if(nrow(.cut) < 50){next}
@@ -365,23 +376,31 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     if(cuts <= stem.section[1] | cuts >= stem.section[2]){
 
-      VerSur <- geometric.features(data = .cut,
-                                   grid_method = 'sf_grid',
-                                   features = c("verticality", "surface_variation"),
-                                   dist = 0.05,
-                                   threads = threads,
-                                   keep_NaN = FALSE,            # this means, when we run the Rcpp code we don't exclude computed rows if 1 of the features is NA. If we have to compute 13 features and 1 is NA, then we keep this row
-                                   verbose = FALSE,
-                                   solver_threshold = 50000)
+      # VerSur <- geometric.features(data = .cut,
+      #                              approximate_KNN = FALSE,
+      #                              features = c("verticality", "surface_variation", "planarity"),
+      #                              dist = geo.dist,
+      #                              threads = threads,
+      #                              keep_NaN = FALSE,            # this means, when we run the Rcpp code we don't exclude computed rows if 1 of the features is NA. If we have to compute 13 features and 1 is NA, then we keep this row
+      #                              verbose = FALSE,
+      #                              solver_threshold = 50000)
+      #
+      # if(is.null(VerSur$verticality) | is.null(VerSur$surface_variation) | is.null(VerSur$planarity)){
+      #
+      #   VerSur$verticality <- NA
+      #   VerSur$surface_variation <- NA
+      #   VerSur$planarity <- NA
+      #
+      # }
 
-      if(is.null(VerSur$verticality) | is.null(VerSur$surface_variation)){
+      VerSur <- geometric_features_py(data = .cut,
+                                      dist = geo.dist,
+                                      threads = as.integer(threads))
 
-        VerSur$verticality <- NA
-        VerSur$surface_variation <- NA
 
-      }
+      VerSur <- VerSur[!duplicated(VerSur$point), ]
 
-      .cut <- merge(.cut, VerSur[, c("point", "verticality", "surface_variation")], by = "point")
+      .cut <- merge(.cut, VerSur[, c("point", "verticality", "surface_variation", "planarity")], by = "point")
 
       rm(VerSur)
 
@@ -389,14 +408,21 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
       .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
 
       .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
-      .cut <- .cut[.cut$ver > 0.75 | .cut$ver > .cut$prob.ver, ]
+      .cut <- .cut[.cut$ver > .cut$prob.ver, ]
 
 
-      .cut$ver <- .cut$surface_variation / 0.33
-      .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
-
-      .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
-      .cut <- .cut[.cut$ver < .cut$prob.ver, ]
+      # .cut$ver <- .cut$surface_variation / 0.33
+      # .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
+      #
+      # .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
+      # .cut <- .cut[.cut$ver < .cut$prob.ver, ]
+      #
+      #
+      # .cut$ver <- .cut$planarity
+      # .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
+      #
+      # .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
+      # .cut <- .cut[.cut$ver > .cut$prob.ver, ]
 
     }
 
@@ -410,7 +436,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     # DBSCAN parameters
 
-    .eps <- 2 * (tan(.alpha.h / 2) * (max(.cut$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2)
+    .eps <- 2 * (tan(.alpha.h / 2) * (max(.cut$r, na.rm = TRUE) / cos(mean(.cut$slope, na.rm = TRUE))) * 2)
 
 
     # Clustering
@@ -419,7 +445,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     if(class(.error)[1] == "try-error"){
       message("No computed section: ", cuts, " m")
       next} else {
-    .dbscan <- dbscan::dbscan(.cut[, c("x", "y"), drop = FALSE], eps = .eps, minPts = 15)
+    .dbscan <- dbscan::dbscan(.cut[, c("x", "y"), drop = FALSE], eps = .eps)
     .cut$cluster <- .dbscan$cluster
     .cut <- .cut[which(.cut$cluster > 0), , drop = FALSE]}
 
@@ -463,7 +489,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     if(!is.null(stem.2)){
 
-      .cut <- stem.2[stem.2$z > (cuts - 2 * slice - 0.05) & stem.2$z < cuts + 0.05, , drop = FALSE]
+      .cut <- stem.2[stem.2$z > (cuts - 2 * slice - geo.dist) & stem.2$z < cuts + geo.dist, , drop = FALSE]
 
 
       if(nrow(.cut) < 50){next}
@@ -472,9 +498,9 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
       if(cuts <= stem.section[1] | cuts >= stem.section[2]){
 
         VerSur <- geometric.features(data = .cut,
-                                     grid_method = 'sf_grid',
+                                     approximate_KNN = FALSE,
                                      features = c("verticality", "surface_variation"),
-                                     dist = 0.05,
+                                     dist = geo.dist,
                                      threads = threads,
                                      keep_NaN = FALSE,            # this means, when we run the Rcpp code we don't exclude computed rows if 1 of the features is NA. If we have to compute 13 features and 1 is NA, then we keep this row
                                      verbose = FALSE,
@@ -515,11 +541,11 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
       # DBSCAN parameters
 
-      .eps <- 2 * (tan(.alpha.h / 2) * (max(.cut$r) / cos(mean(.cut$slope, na.rm = TRUE))) * 2)
+      .eps <- 2 * (tan(.alpha.h / 2) * (max(.cut$r, na.rm = TRUE) / cos(mean(.cut$slope, na.rm = TRUE))) * 2)
 
       # Clustering
 
-      .error <- try(suppressMessages(dbscan::dbscan(.cut[, c("x", "y"), drop = FALSE], eps = .eps, minPts = 15)))
+      .error <- try(suppressMessages(dbscan::dbscan(.cut[, c("x", "y"), drop = FALSE], eps = .eps)))
       if(class(.error)[1] == "try-error"){
         message("No computed section: ", cuts, " m")
         next} else {

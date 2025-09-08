@@ -11,9 +11,8 @@
 
 \usage{
 geometric.features(data,
-                   grid_method,
-                   voxel_resolution = 6.0,
-                   data_table_grid_cells = 20,
+                   dist,
+                   approximate_KNN = FALSE,
                    features = c("PCA1",
                                 "PCA2",
                                 "anisotropy",
@@ -27,7 +26,6 @@ geometric.features(data,
                                 "eigenentropy",
                                 "surface_density",
                                 "volume_density"),
-                   dist = dist,
                    threads = 1,
                    keep_NaN = FALSE,
                    verbose = FALSE,
@@ -37,11 +35,9 @@ geometric.features(data,
 
   \item{data}{data}
 
-  \item{grid_method}{grid_method}
+  \item{dist}{dist}
 
-  \item{voxel_resolution}{voxel_resolution}
-
-  \item{data_table_grid_cells}{data_table_grid_cells}
+  \item{approximate_KNN}{approximate_KNN}
 
   \item{features}{features}
 
