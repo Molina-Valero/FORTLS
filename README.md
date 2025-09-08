@@ -31,6 +31,7 @@ remotes::install_github("Molina-Valero/FORTLS", ref = "devel", dependencies = TR
 ```r
 install.packages("FORTLS")
 library(FORTLS)
+install_fortls_python_deps()
 ```
 
 ## Establecimiento del directorio de trabajo
