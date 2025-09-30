@@ -4,7 +4,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                                       geo.dist = 0.1, tls.precision = NULL,
                                       stem.section = c(0.7, 3.5), stem.range = NULL, breaks = NULL,
                                       slice = 0.1, understory = NULL, bark.roughness = 1,
-                                      den.type = 1, d.top = NULL,
+                                      den.type = 1, d.mer = NULL,
                                       segmentation = NULL,
                                       plot.attributes = NULL, plot = TRUE,
                                       threads = 1,
@@ -200,7 +200,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     warning("No tree was detected")
 
-    .tree <- .no.trees.detected.multi(data, d.top, plot.attributes, dir.result, save.result)
+    .tree <- .no.trees.detected.multi(data, d.mer, plot.attributes, dir.result, save.result)
     return(.tree)
 
   }
@@ -503,7 +503,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     warning("No tree was detected")
 
-    .tree <- .no.trees.detected.multi(data, d.top, plot.attributes, dir.result, save.result)
+    .tree <- .no.trees.detected.multi(data, d.mer, plot.attributes, dir.result, save.result)
     return(.tree)
 
   }
@@ -517,7 +517,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     warning("No tree was detected")
 
-    .tree <- .no.trees.detected.multi(data, d.top, plot.attributes, dir.result, save.result)
+    .tree <- .no.trees.detected.multi(data, d.mer, plot.attributes, dir.result, save.result)
     return(.tree)
 
   }
@@ -673,7 +673,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     warning("No tree was detected")
 
-    .tree <- .no.trees.detected.multi(data, d.top, plot.attributes, dir.result, save.result)
+    .tree <- .no.trees.detected.multi(data, d.mer, plot.attributes, dir.result, save.result)
     return(.tree)
 
   }
@@ -719,7 +719,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     warning("No tree was detected")
 
-    .tree <- .no.trees.detected.multi(data, d.top, plot.attributes, dir.result, save.result)
+    .tree <- .no.trees.detected.multi(data, d.mer, plot.attributes, dir.result, save.result)
     return(.tree)
 
   }
@@ -733,7 +733,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     warning("No tree was detected")
 
-    .tree <- .no.trees.detected.multi(data, d.top, plot.attributes, dir.result, save.result)
+    .tree <- .no.trees.detected.multi(data, d.mer, plot.attributes, dir.result, save.result)
     return(.tree)
 
   }
@@ -749,7 +749,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     warning("No tree was detected")
 
-    .tree <- .no.trees.detected.multi(data, d.top, plot.attributes, dir.result, save.result)
+    .tree <- .no.trees.detected.multi(data, d.mer, plot.attributes, dir.result, save.result)
     return(.tree)
 
   }
@@ -764,7 +764,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     warning("No tree was detected")
 
-    .tree <- .no.trees.detected.multi(data, d.top, plot.attributes, dir.result, save.result)
+    .tree <- .no.trees.detected.multi(data, d.mer, plot.attributes, dir.result, save.result)
     return(.tree)
 
   }
@@ -1011,29 +1011,29 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   # Compute volume (m3)
 
-  if(length(table(.stem$hi)) > 3 & is.null(d.top)){
+  if(length(table(.stem$hi)) > 3 & is.null(d.mer)){
 
   # Stem curve
 
   stem.v <- .volume(.stem, id = data$id[1], den.type = den.type)
   .tree <- merge(.tree, stem.v, all = TRUE)
 
-  } else if (length(table(.stem$hi)) > 3 & !is.null(d.top)) {
+  } else if (length(table(.stem$hi)) > 3 & !is.null(d.mer)) {
 
-  stem.v <- .volume(.stem, d.top, id = data$id[1], den.type = den.type)
+  stem.v <- .volume(.stem, d.mer, id = data$id[1], den.type = den.type)
   .tree <- merge(.tree, stem.v, all = TRUE)
 
-  } else if (length(table(.stem$hi)) <= 3 & !is.null(d.top)) {
+  } else if (length(table(.stem$hi)) <= 3 & !is.null(d.mer)) {
 
   n <- den.type
 
   # Estimating volume according to dendrometric type
 
   .tree$v <- pi * (.tree[, "h"] ^ (n + 1) / (n + 1)) * ((.tree[, "dbh"] / 200) ^ 2 / (.tree[, "h"] - 1.3) ^ n)
-  h.lim <- (((d.top / 200) ^ 2) / ((.tree[, "dbh"] / 200) ^ 2 / (.tree[, "h"] - 1.3) ^ n)) ^ (1 / n)
-  .tree$v.com <- pi * ((.tree[, "h"] ^ (n + 1) - h.lim ^ (n + 1)) / (n + 1)) * ((.tree[, "dbh"] / 200) ^ 2 / (.tree[, "h"] - 1.3) ^ n)
-  .tree$v.com <- ifelse(.tree$v.com < 0, 0, .tree$v.com)
-  .tree$h.com <- h.lim
+  h.lim <- (((d.mer / 200) ^ 2) / ((.tree[, "dbh"] / 200) ^ 2 / (.tree[, "h"] - 1.3) ^ n)) ^ (1 / n)
+  .tree$v.mer <- pi * ((.tree[, "h"] ^ (n + 1) - h.lim ^ (n + 1)) / (n + 1)) * ((.tree[, "dbh"] / 200) ^ 2 / (.tree[, "h"] - 1.3) ^ n)
+  .tree$v.mer <- ifelse(.tree$v.mer < 0, 0, .tree$v.mer)
+  .tree$h.mer <- h.lim
 
   } else {
 
@@ -1066,18 +1066,18 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   # If plot identification (id) is not available
 
-  if(is.null(data$id) & is.null(.tree$v.com)){
+  if(is.null(data$id) & is.null(.tree$v.mer)){
 
     .tree <- .tree[, c("tree", "x", "y", "phi", "horizontal.distance", "dbh", "h", "v", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion"), drop = FALSE]
     colnames(.tree) <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
-  } else if (is.null(data$id) & !is.null(.tree$v.com)) {
+  } else if (is.null(data$id) & !is.null(.tree$v.mer)) {
 
-    .tree <- .tree[, c("tree", "x", "y", "phi", "horizontal.distance", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion"), drop = FALSE]
-    colnames(.tree) <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+    .tree <- .tree[, c("tree", "x", "y", "phi", "horizontal.distance", "dbh", "h", "h.mer", "v", "v.mer", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion"), drop = FALSE]
+    colnames(.tree) <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "h.mer", "v", "v.mer", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
 
-  } else if (!is.null(data$id) & is.null(.tree$v.com)) {
+  } else if (!is.null(data$id) & is.null(.tree$v.mer)) {
 
     # If plot identification (id) is available
 
@@ -1094,8 +1094,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     .tree$id <- data$id[1]
     .tree$file <- data$file[1]
 
-    .tree <- .tree[, c("id", "file", "tree", "x", "y", "phi", "horizontal.distance", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion"), drop = FALSE]
-    colnames(.tree) <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+    .tree <- .tree[, c("id", "file", "tree", "x", "y", "phi", "horizontal.distance", "dbh", "h", "h.mer", "v", "v.mer", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion"), drop = FALSE]
+    colnames(.tree) <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "h.mer", "v", "v.mer", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
   }
 

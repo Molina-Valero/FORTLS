@@ -9,10 +9,14 @@ normalize <- function(las, normalized = NULL,
                       intensity = NULL, RGB = NULL,
                       scan.approach = "single",
                       voxel_size = NULL,
+                      threads = 1,
                       id = NULL, file = NULL, plot = TRUE,
                       dir.data = NULL, save.result = TRUE, dir.result = NULL,
                       save.las = NULL){
 
+
+  threads <- max(1, threads)
+  lidR::set_lidr_threads(threads)
 
 
   if(is.null(normalized)){
