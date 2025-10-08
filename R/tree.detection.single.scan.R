@@ -430,6 +430,9 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     .cut <- .cut[.cut$z > (cuts - 2 * slice) & .cut$z < cuts, , drop = FALSE]
 
 
+    if(nrow(.cut) < 25){next}
+
+
     # DBSCAN parameters
 
     .eps <- 2 * (tan(.alpha.h / 2) * (max(.cut$r, na.rm = TRUE) / cos(mean(.cut$slope, na.rm = TRUE))) * 2)
@@ -536,6 +539,8 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
       # Restrict to slice corresponding to cuts m +/- 5 cm
 
       .cut <- .cut[.cut$z > (cuts - 2 * slice) & .cut$z < cuts, , drop = FALSE]
+
+      if(nrow(.cut) < 25){next}
 
       # DBSCAN parameters
 
