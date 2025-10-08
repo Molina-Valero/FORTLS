@@ -396,7 +396,9 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
       # Retention of points with low surface variation
 
       .cut$surface_variation <- .cut$surface_variation / 0.33
-      .cut <- .cut[.cut$surface_variation < 0.95, ]
+      .cut$surface_variation <- ifelse(is.na(.cut$surface_variation), stats::runif(1), .cut$surface_variation)
+      .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
+      .cut <- .cut[.cut$surface_variation < .cut$prob.ver, ]
 
 
       # Retention of points with high planarity

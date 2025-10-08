@@ -156,10 +156,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   # 4. Retention of points with high verticality
 
-  # stem$ver <- stem$verticality
-  # stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
-  # stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
-  # stem <- stem[stem$ver > stem$prob.ver, ]
   stem <- stem[stem$verticality > 0.7, ]
 
 
@@ -172,21 +168,16 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   # 5. Retention of points with low surface variation
 
-  # stem$ver <- stem$surface_variation / 0.33
-  # stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
-  # stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
-  # stem <- stem[stem$ver < stem$prob.ver, ]
   stem$surface_variation <- stem$surface_variation / 0.33
-  stem <- stem[stem$surface_variation < 0.95, ]
+  stem$surface_variation <- ifelse(is.na(stem$surface_variation), stats::runif(1), stem$surface_variation)
+  stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
+  stem <- stem[stem$surface_variation < stem$prob.ver, ]
 
 
   # 6. Retention of points with high planarity
 
-  # stem$ver <- stem$planarity
-  # stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
-  # stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
-  # stem <- stem[stem$ver > stem$prob.ver, ]
   stem <- stem[stem$planarity > 0.05, ]
+
 
 
   # 7. Retention of high points
@@ -219,8 +210,8 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   stem.2 <- NULL
 
 
-  stem <- stem[stem$npts > mean(stem$npts) & stem$nvox > mean(stem$nvox) & stem$ratio > mean(stem$ratio), ]
-
+  # stem <- stem[stem$npts > mean(stem$npts) & stem$nvox > mean(stem$nvox) & stem$ratio > mean(stem$ratio), ]
+  stem <- stem[stem$ratio > mean(stem$ratio), ]
 
   if(!is.null(understory)){
 
@@ -413,7 +404,9 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
       # Retention of points with low surface variation
 
       .cut$surface_variation <- .cut$surface_variation / 0.33
-      .cut <- .cut[.cut$surface_variation < 0.95, ]
+      .cut$surface_variation <- ifelse(is.na(.cut$surface_variation), stats::runif(1), .cut$surface_variation)
+      .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
+      .cut <- .cut[.cut$surface_variation < .cut$prob.ver, ]
 
 
       # Retention of points with high planarity
@@ -524,7 +517,9 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
         # Retention of points with low surface variation
 
         .cut$surface_variation <- .cut$surface_variation / 0.33
-        .cut <- .cut[.cut$surface_variation < 0.95, ]
+        .cut$surface_variation <- ifelse(is.na(.cut$surface_variation), stats::runif(1), .cut$surface_variation)
+        .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
+        .cut <- .cut[.cut$surface_variation < .cut$prob.ver, ]
 
 
         # Retention of points with high planarity
