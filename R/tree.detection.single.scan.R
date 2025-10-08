@@ -210,8 +210,8 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   stem.2 <- NULL
 
 
-  # stem <- stem[stem$npts > mean(stem$npts) & stem$nvox > mean(stem$nvox) & stem$ratio > mean(stem$ratio), ]
-  stem <- stem[stem$ratio > mean(stem$ratio), ]
+  stem <- stem[stem$npts > mean(stem$npts) & stem$nvox > mean(stem$nvox) & stem$ratio > mean(stem$ratio), ]
+
 
   if(!is.null(understory)){
 
