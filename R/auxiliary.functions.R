@@ -508,6 +508,7 @@
 
   .dat <- cut
 
+
   if(nrow(.dat) < 10){return(.filter)}
 
   # Optional, just to see what you are doing here:
@@ -806,10 +807,17 @@
 
   # Application of some quality criteria to make sure that the point cloud belongs to a tree section
 
-  if(is.na(.cv) | .cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2){return(.filter)}
+  if(.radio > 0.1){
+    if(is.na(.cv) | .cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2){return(.filter)}}
 
-  # At least 95 % of distances should be greater than .radio / 2
-  if(stats::quantile(.dat$dist, prob = 0.05, na.rm = T) < (.radio / 2)){return(.filter)}
+
+  if(.radio < 0.1){
+    if(is.na(.cv) | .cv > 0.2 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2){return(.filter)}}
+
+
+  # At least 95 % of distances should be greater than .radio / 2 for trees larger than 20 cm at dbh
+
+  if(.radio > 0.1){if(stats::quantile(.dat$dist, prob = 0.05, na.rm = T) < (.radio / 2)){return(.filter)}}
 
 
   .dat.2 <- .dat[order(.dat$x, .dat$y, decreasing = F), ]

@@ -100,6 +100,8 @@ tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
 
                        voxel_size = voxel_size,
 
+                       threads = threads,
+
                        scan.approach = scan.approach,
 
                        id = .id, file = .file, plot = NULL,

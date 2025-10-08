@@ -125,29 +125,18 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   # 4. Retention of points with high verticality
 
-  stem$ver <- stem$verticality
-  stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
-
-  stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
-  stem <- stem[stem$ver > 0.75 | stem$ver > stem$prob.ver, ]
+  stem <- stem[stem$verticality > 0.7, ]
 
 
   # 5. Retention of points with low surface variation
 
-  stem$ver <- stem$surface_variation / 0.33
-  stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
-
-  stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
-  stem <- stem[stem$ver < stem$prob.ver, ]
+  stem$surface_variation <- stem$surface_variation / 0.33
+  stem <- stem[stem$surface_variation < 0.95, ]
 
 
   # 6. Retention of points with high planarity
 
-  stem$ver <- stem$planarity
-  stem$ver <- ifelse(is.na(stem$ver), stats::runif(1), stem$ver)
-
-  stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
-  stem <- stem[stem$ver > stem$prob.ver, ]
+  stem <- stem[stem$planarity > 0.05, ]
 
 
   # Keeping only points with high verticality, planarity & low surface variation
@@ -293,8 +282,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   eje <- eje[eje$tree %in% eje$tree, ]
   eje <- eje[eje$sec %in% as.character(breaks) & !is.na(eje$x), ]
 
-  eje <- eje[abs(eje$slope) < 0.25, ]
-
   rm(stem)
 
 
@@ -398,25 +385,20 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
       rm(VerSur)
 
-      .cut$ver <- .cut$verticality
-      .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
+      # Retention of points with high verticality
 
-      .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
-      .cut <- .cut[.cut$ver > .cut$prob.ver, ]
+      .cut <- .cut[.cut$verticality > 0.7, ]
 
 
-      .cut$ver <- .cut$surface_variation / 0.33
-      .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
+      # Retention of points with low surface variation
 
-      .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
-      .cut <- .cut[.cut$ver < .cut$prob.ver, ]
+      .cut$surface_variation <- .cut$surface_variation / 0.33
+      .cut <- .cut[.cut$surface_variation < 0.95, ]
 
 
-      .cut$ver <- .cut$planarity
-      .cut$ver <- ifelse(is.na(.cut$ver), stats::runif(1), .cut$ver)
+      # Retention of points with high planarity
 
-      .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
-      .cut <- .cut[.cut$ver > .cut$prob.ver, ]
+      .cut <- .cut[.cut$planarity > 0.05, ]
 
     }
 
