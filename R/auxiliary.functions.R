@@ -819,6 +819,8 @@
 
   if(.radio > 0.1){if(stats::quantile(.dat$dist, prob = 0.05, na.rm = T) < (.radio / 2)){return(.filter)}}
 
+  if(.radio < 0.1){if(stats::quantile(.dat$dist, prob = 0.01, na.rm = T) < (.radio / 2)){return(.filter)}}
+
 
   .dat.2 <- .dat[order(.dat$x, .dat$y, decreasing = F), ]
 
