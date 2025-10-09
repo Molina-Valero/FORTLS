@@ -730,7 +730,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
 
   if(length(breaks) > 3)
-    .tree <- .tree[.tree$filter >  1, ]
+    .tree <- .tree[.tree$filter >  2, ]
 
   if(nrow(.tree) < 1){
 
