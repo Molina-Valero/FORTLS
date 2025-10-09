@@ -812,7 +812,7 @@
 
 
   if(.radio < 0.1){
-    if(is.na(.cv) | .cv > 0.2 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2){return(.filter)}}
+    if(is.na(.cv) | .cv > 0.25 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2){return(.filter)}}
 
 
   # At least 95 % of distances should be greater than .radio / 2 for trees larger than 20 cm at dbh
