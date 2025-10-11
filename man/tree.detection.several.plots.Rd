@@ -26,13 +26,14 @@ tree.detection.several.plots(las.list, id.list = NULL, file = NULL,
                              tls.resolution = NULL, tls.precision = NULL,
                              stem.section = c(0.7, 3.5), stem.range = NULL, breaks = NULL,
                              slice = 0.1, understory = NULL, bark.roughness = 1,
-                             den.type = 1, d.top = NULL,
+                             den.type = 1, d.mer = NULL,
 
                              plot.attributes = NULL, plot = NULL,
 
                              threads = 1,
 
-                             dir.data = NULL, save.result = TRUE, dir.result = NULL)}
+                             dir.data = NULL, save.result = TRUE, dir.result = NULL,
+                             save.las = NULL)}
 
 \arguments{
 
@@ -116,7 +117,7 @@ tree.detection.several.plots(las.list, id.list = NULL, file = NULL,
 
   \item{den.type}{Numeric argument indicating the dendrometic type used to estimate volumen when there are not sections enough to fit a taper equation. Dendrometrics types available are the following: cylinder = 0, paraboloid = 1 (by default), cone = 2 and neiloid = 3.}
 
-  \item{d.top}{Top stem diameter (cm) considered to estimate commercial timber volume.}
+  \item{d.mer}{Top stem diameter (cm) considered to estimate commercial timber volume.}
 
   \item{plot.attributes}{Data frame with attributes at plot level. It must contain a column named \code{id} (character string or numeric value) with encoding coinciding with that used in \code{id} argument of \code{\link{normalize}} for identifying plots. If there are strata, another column named \sQuote{stratum} (numeric) will be required for other functionalities of \pkg{FORTLS} (see, for instance, \code{\link{estimation.plot.size}} or \code{\link{metrics.variables}}). If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, the function will not add these possible plot attributes.}
 
@@ -128,7 +129,9 @@ tree.detection.several.plots(las.list, id.list = NULL, file = NULL,
 
   \item{save.result}{Optional logical which indicates whether or not the output files described in \sQuote{Output Files} section should be saved in the \code{dir.result}. If this argument is not specified by the user, it will be set to \code{TRUE} by default and, as a consequence, the output files will be saved.}
 
-  \item{dir.result}{Optional character string naming the absolute path of an existing directory where files described in \sQuote{Output Files} section will be saved. \code{.Platform$file.sep} must be used as the path separator in \code{dir.result}. If this argument is not specified by the user, and \code{save.result} is \code{TRUE}, it will be set to \code{NULL} by default and, as a consequence, the current working directory of the \R process will be assigned to \code{dir.result} during the execution.}}
+  \item{dir.result}{Optional character string naming the absolute path of an existing directory where files described in \sQuote{Output Files} section will be saved. \code{.Platform$file.sep} must be used as the path separator in \code{dir.result}. If this argument is not specified by the user, and \code{save.result} is \code{TRUE}, it will be set to \code{NULL} by default and, as a consequence, the current working directory of the \R process will be assigned to \code{dir.result} during the execution.}
+
+  \item{save.las}{Optional logical which indicates whether or not the imput point cloud must be saved in \code{dir.result} as LAZ file.}}
 
 
 \details{
