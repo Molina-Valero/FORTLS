@@ -15,7 +15,7 @@ data must come from any of the three different plot designs currently available
 values for the plot design parameter (radius, k and BAF, respectively). In
 addition to computing relative bias, interactive line charts graphically
 representing the values obtained between each field estimate and its related
-TLS metrics are also generated."><meta property="og:image" content="/logo.png"></head><body>
+TLS metrics are also generated."><meta property="og:image" content="https://molina-valero.github.io/FORTLS/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -35,8 +35,8 @@ TLS metrics are also generated."><meta property="og:image" content="/logo.png"><
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/plot_design_optimization.html">Plot design optimization</a></li>
-    <li><a class="dropdown-item" href="../articles/stand_level.html">Stand-level</a></li>
-    <li><a class="dropdown-item" href="../articles/tree_level.html">Tree-level</a></li>
+    <li><a class="dropdown-item" href="../articles/stand_level.html">Stand-level variables</a></li>
+    <li><a class="dropdown-item" href="../articles/tree_level.html">Tree-level variables</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -285,11 +285,11 @@ Adela Martínez-Calvo.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">rb</span> <span class="op">&lt;-</span> <span class="fu">relative.bias</span><span class="op">(</span>simulations <span class="op">=</span> <span class="va">Rioja.simulations</span>, dir.result <span class="op">=</span> <span class="va">dir.result</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing relative bias for fixed area plots</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (7.56 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (8.07 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing relative bias for k-tree plots</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (7.2 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (8.88 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing relative bias for angle-count plots</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (7.13 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (8.54 secs)</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Relative bias for variable 'N'</span></span></span>
@@ -297,11 +297,11 @@ Adela Martínez-Calvo.</p>
 <span class="r-in"><span><span class="va">rb</span> <span class="op">&lt;-</span> <span class="fu">relative.bias</span><span class="op">(</span>simulations <span class="op">=</span> <span class="va">Rioja.simulations</span>, variables <span class="op">=</span> <span class="st">"N"</span>,</span></span>
 <span class="r-in"><span>                    dir.result <span class="op">=</span> <span class="va">dir.result</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing relative bias for fixed area plots</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (1.97 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (2.29 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing relative bias for k-tree plots</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (1.83 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (2.03 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing relative bias for angle-count plots</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (1.94 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (1.96 secs)</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Relative bias corresponding to angle-count design for all available variables</span></span></span>
@@ -313,7 +313,7 @@ Adela Martínez-Calvo.</p>
 <span class="r-in"><span>                                   <span class="st">"hgeom.0"</span>, <span class="st">"hharm.0"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                    dir.result <span class="op">=</span> <span class="va">dir.result</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing relative bias for angle-count plots</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (9.12 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (10.44 secs)</span>
 <span class="r-in"><span>  <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

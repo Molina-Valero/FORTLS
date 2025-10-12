@@ -11,7 +11,7 @@ derived from TLS data. These data must be derived from any of the three differen
 plot designs currently available (circular fixed area, k-tree and angle-count) and
 correspond to plots with incremental values for the plot design parameter
 (radius, k and BAF, respectively). In addition, correlation measures that are currently
-admissible are Pearson's correlation coefficient and/or Spearman's rho."><meta property="og:image" content="/logo.png"></head><body>
+admissible are Pearson's correlation coefficient and/or Spearman's rho."><meta property="og:image" content="https://molina-valero.github.io/FORTLS/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -31,8 +31,8 @@ admissible are Pearson's correlation coefficient and/or Spearman's rho."><meta p
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/plot_design_optimization.html">Plot design optimization</a></li>
-    <li><a class="dropdown-item" href="../articles/stand_level.html">Stand-level</a></li>
-    <li><a class="dropdown-item" href="../articles/tree_level.html">Tree-level</a></li>
+    <li><a class="dropdown-item" href="../articles/stand_level.html">Stand-level variables</a></li>
+    <li><a class="dropdown-item" href="../articles/tree_level.html">Tree-level variables</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -223,11 +223,11 @@ Adela Martínez-Calvo.</p>
 <span class="r-in"><span>                                   <span class="st">"hgeom.0"</span>, <span class="st">"hharm.0"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                     save.result <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing correlations for fixed area plots</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (306.84 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (366.09 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing correlations for k-tree plots</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (77.77 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (82.38 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing correlations for angle-count plots</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (60.46 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (63.43 secs)</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">opt.corr</span> <span class="op">&lt;-</span> <span class="va">corr</span><span class="op">$</span><span class="va">opt.correlations</span></span></span>
 <span class="r-in"><span></span></span>
@@ -250,9 +250,9 @@ Adela Martínez-Calvo.</p>
 <span class="r-in"><span><span class="fu">optimize.plot.design</span><span class="op">(</span>correlations <span class="op">=</span> <span class="va">opt.corr</span>, variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"N"</span>, <span class="st">"G"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                     dir.result <span class="op">=</span> <span class="va">dir.result</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Plotting heatmap(s) for optimal Pearson's correlations </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (4.78 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (5.31 secs)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Plotting heatmap(s) for optimal Spearman's correlations </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  (4.74 secs)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  (5.86 secs)</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co"># }</span></span></span>

@@ -6,3 +6,6 @@
 ^README.Rmd
 ^packrat/
 ^\.Rprofile$
+^doc$
+^Meta$
+^\.github$
