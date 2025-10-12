@@ -4,7 +4,7 @@ author: "Anika Seppelt & Juan Alberto Molina Valero"
 #date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{1. Tree-level}
+  %\VignetteIndexEntry{Tree-level variables}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
