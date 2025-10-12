@@ -26,6 +26,6 @@ Imports: data.table, dbscan, Distance, glue, htmlwidgets, lidR, methods, moments
 Suggests: devtools, kableExtra, knitr, rmarkdown, systemfonts, testthat
 LinkingTo: Rcpp, RcppArmadillo, RcppEigen
 Encoding: UTF-8
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 VignetteBuilder: knitr
 StagedInstall: yes
