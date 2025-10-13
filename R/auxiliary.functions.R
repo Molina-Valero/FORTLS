@@ -508,6 +508,7 @@
 
   .dat <- cut
 
+
   if(nrow(.dat) < 10){return(.filter)}
 
   # Optional, just to see what you are doing here:
@@ -806,10 +807,19 @@
 
   # Application of some quality criteria to make sure that the point cloud belongs to a tree section
 
-  if(is.na(.cv) | .cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2){return(.filter)}
+  if(.radio > 0.1){
+    if(is.na(.cv) | .cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2){return(.filter)}}
 
-  # At least 95 % of distances should be greater than .radio / 2
-  if(stats::quantile(.dat$dist, prob = 0.05, na.rm = T) < (.radio / 2)){return(.filter)}
+
+  if(.radio < 0.1){
+    if(is.na(.cv) | .cv > 0.25 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2){return(.filter)}}
+
+
+  # At least 95 % of distances should be greater than .radio / 2 for trees larger than 20 cm at dbh
+
+  if(.radio > 0.1){if(stats::quantile(.dat$dist, prob = 0.05, na.rm = T) < (.radio / 2)){return(.filter)}}
+
+  if(.radio < 0.1){if(stats::quantile(.dat$dist, prob = 0.01, na.rm = T) < (.radio / 2)){return(.filter)}}
 
 
   .dat.2 <- .dat[order(.dat$x, .dat$y, decreasing = F), ]
@@ -925,7 +935,7 @@
 
 
 
-.volume <- function(data, d.top = NULL, id, den.type){
+.volume <- function(data, d.mer = NULL, id, den.type){
 
   datos <- data.frame(tree = as.numeric(),
                       x = as.numeric(), y = as.numeric(),
@@ -996,7 +1006,7 @@
 
   if(nrow(datos) < 3){
 
-    if(is.null(d.top)){
+    if(is.null(d.mer)){
 
       n <- den.type
 
@@ -1009,11 +1019,11 @@
       n <- den.type
 
       v <- pi * (unique(data$h) ^ (n + 1) / (n + 1)) * ((unique(data$dbh) / 200) ^ 2 / (unique(data$h) - 1.3) ^ n)
-      h.lim <- (((d.top / 200) ^ 2) / ((unique(data$dbh) / 200) ^ 2 / (unique(data$h) - 1.3) ^ n)) ^ (1 / n)
-      v.com <- pi * ((unique(data$h) ^ (n + 1) - h.lim ^ (n + 1)) / (n + 1)) * ((unique(data$dbh) / 200) ^ 2 / (unique(data$h) - 1.3) ^ n)
-      v.com <- ifelse(v.com < 0, 0, v.com)
+      h.lim <- (((d.mer / 200) ^ 2) / ((unique(data$dbh) / 200) ^ 2 / (unique(data$h) - 1.3) ^ n)) ^ (1 / n)
+      v.mer <- pi * ((unique(data$h) ^ (n + 1) - h.lim ^ (n + 1)) / (n + 1)) * ((unique(data$dbh) / 200) ^ 2 / (unique(data$h) - 1.3) ^ n)
+      v.mer <- ifelse(v.mer < 0, 0, v.mer)
 
-      volume <- data.frame(tree = unique(data$tree), v = v, v.com = v.com, h.com = h.lim)}
+      volume <- data.frame(tree = unique(data$tree), v = v, v.mer = v.mer, h.mer = h.lim)}
 
   } else {
 
@@ -1038,7 +1048,7 @@
 
   }
 
-  if (is.null(d.top)) {
+  if (is.null(d.mer)) {
 
     volume <- data.frame(tree = as.numeric(), v = as.numeric())
 
@@ -1055,29 +1065,29 @@
   } else {
 
     volume <- data.frame(tree = as.numeric(), v = as.numeric(),
-                         v.com = as.numeric())
+                         v.mer = as.numeric())
 
     for (i in unique(data$tree)) {
 
       tree <- data[data$tree == i, ]
 
-      # If diameter at the bottom is smaller than 'd.top' then 'h.lim' is forced
-      # to be zero (consequently, 'v.com' will be also zero)
+      # If diameter at the bottom is smaller than 'd.mer' then 'h.lim' is forced
+      # to be zero (consequently, 'v.mer' will be also zero)
       if (stats::predict(ajuste, data.frame(hi = 0, h = tree$h[1],
-                                     dbh = tree$dbh[1])) < d.top) {
+                                     dbh = tree$dbh[1])) < d.mer) {
 
         h.lim <- 0
 
       } else {
 
-        h.lim <- h_d_lim(tree$dbh[1], tree$h[1], d.top, b1)
+        h.lim <- h_d_lim(tree$dbh[1], tree$h[1], d.mer, b1)
 
       }
 
       volume.i <- data.frame(tree = i,
                              v = vol_m3(tree$dbh[1], tree$h[1], 0, tree$h[1], b1),
-                             v.com = vol_m3(tree$dbh[1], tree$h[1], 0, h.lim, b1),
-                             h.com = h.lim)
+                             v.mer = vol_m3(tree$dbh[1], tree$h[1], 0, h.lim, b1),
+                             h.mer = h.lim)
 
       volume <- rbind(volume, volume.i)
 
@@ -1344,7 +1354,7 @@
   if ("v" %in% colnames(tree)) tree[, "v"] <- tree[, "v"]
 
   # Compute comercial volume (m^3)
-  if ("v.com" %in% colnames(tree)) tree[, "v.com"] <- tree[, "v.com"]
+  if ("v.mer" %in% colnames(tree)) tree[, "v.mer"] <- tree[, "v.mer"]
 
   # if ("v" %in% colnames(tree)) {
   #
@@ -1450,7 +1460,7 @@
 
   # Identify stand variables to be computed, and associated tree variable and
   # expansion factor
-  .col.names <- c(sapply(c("N", "G", "V", "V.com", "h.com"), paste,
+  .col.names <- c(sapply(c("N", "G", "V", "v.mer", "h.mer"), paste,
                          c("tls", names(ds.meth), "sh", "pam"), sep = "."),
                   "N", "G", "V", names(var.field.user))
   .col.names <- matrix("", nrow = length(.col.names), ncol = 2,
@@ -1460,19 +1470,19 @@
                         sep = "."), .i), "var"] <-
     switch(.i, N = "n", G = "g", V = "v")
 
-  .col.names[c("V.com.tls", "V.com.hn", "V.com.hr", "V.com.hn.cov", "V.com.hr.cov", "V.com.sh", "V.com.pam"), "var"] <- "v.com"
-  .col.names[c("h.com.tls", "h.com.hn", "h.com.hr", "h.com.hn.cov", "h.com.hr.cov", "h.com.sh", "h.com.pam"), "var"] <- "h.com"
+  .col.names[c("v.mer.tls", "v.mer.hn", "v.mer.hr", "v.mer.hn.cov", "v.mer.hr.cov", "v.mer.sh", "v.mer.pam"), "var"] <- "v.mer"
+  .col.names[c("h.mer.tls", "h.mer.hn", "h.mer.hr", "h.mer.hn.cov", "h.mer.hr.cov", "h.mer.sh", "h.mer.pam"), "var"] <- "h.mer"
 
   for (.i in names(var.field.user))
     .col.names[.i, "var"] <- var.field.user[[.i]]
   .col.names[c(paste(c("N", "G", "V"), "tls", sep = "."), "N", "G", "V",
                names(var.field.user)), "ef"] <- "EF"
 
-  .col.names["V.com.tls", "ef"] <- "EF"
-  .col.names["h.com.tls", "ef"] <- "EF"
+  .col.names["v.mer.tls", "ef"] <- "EF"
+  .col.names["h.mer.tls", "ef"] <- "EF"
 
   for (.i in c(names(ds.meth), "sh", "pam"))
-    .col.names[paste(c("N", "G", "V", "V.com", "h.com"), .i, sep = "."), "ef"] <- paste("EF", .i,
+    .col.names[paste(c("N", "G", "V", "v.mer", "h.mer"), .i, sep = "."), "ef"] <- paste("EF", .i,
                                                                       sep =".")
   .col.names <- .col.names[rownames(.col.names) %in% colnames(stand), ,
                            drop = FALSE]
@@ -2022,8 +2032,8 @@
   # case 'sim'. (6) Only if corresponding trees variable ('v.user' for 'V.user',
   # 'w.user' for 'W.user') are provided by user in 'tree.field' argument.
   .var.metr <- list(tls = NULL, field = NULL)
-  .var.metr$tls <- c(sapply(if(length(tree.tls$v.com) > 0){
-                   c("N", "G", "V", "V.com", "h.com")} else{
+  .var.metr$tls <- c(sapply(if(length(tree.tls$v.mer) > 0){
+                   c("N", "G", "V", "v.mer", "h.mer")} else{
                    c("N", "G", "V")}, paste,
                             c("tls", names(.ds.meth), "sh", "pam"), sep = "."),
                      t(sapply(names(c(.mean.d, .mean.h)),
@@ -2159,9 +2169,9 @@
                                        sapply(c("N", "G", "V"), paste,
                                               names(.ds.meth), sep = ".")]
 
-    if (is.null(tree.ds) & length(tree.tls$v.com) > 0)
+    if (is.null(tree.ds) & length(tree.tls$v.mer) > 0)
       .var.metr$tls <- .var.metr$tls[!.var.metr$tls %in%
-                                       sapply(c("N", "G", "V", "V.com", "h.com"), paste,
+                                       sapply(c("N", "G", "V", "v.mer", "h.mer"), paste,
                                               names(.ds.meth), sep = ".")]
 
     if (!scan.approach %in% "single")
@@ -2170,9 +2180,9 @@
                                               c(names(.ds.meth), "sh", "pam"),
                                               sep = ".")]
 
-    if (!scan.approach %in% "single" & length(tree.tls$v.com) > 0)
+    if (!scan.approach %in% "single" & length(tree.tls$v.mer) > 0)
       .var.metr$tls <- .var.metr$tls[!.var.metr$tls %in%
-                                       sapply(c("N", "G", "V", "V.com", "h.com"), paste,
+                                       sapply(c("N", "G", "V", "v.mer", "h.mer"), paste,
                                               c(names(.ds.meth), "sh", "pam"),
                                               sep = ".")]
 
@@ -2180,24 +2190,24 @@
                             ncol = length(.var.metr$tls),
                             dimnames = list(plot.design, .var.metr$tls))
 
-    if (length(tree.tls$v.com) > 0)
+    if (length(tree.tls$v.mer) > 0)
     .var.metr$tls[!rownames(.var.metr$tls) %in% c("fixed.area", "k.tree"),
-                  colnames(.var.metr$tls) %in% sapply(c("N", "G", "V", "V.com", "h.com"), paste,
+                  colnames(.var.metr$tls) %in% sapply(c("N", "G", "V", "v.mer", "h.mer"), paste,
                                                       c(names(.ds.meth), "sh"),
                                                       sep = ".")] <- FALSE
 
-    if (length(tree.tls$v.com) < 1)
+    if (length(tree.tls$v.mer) < 1)
     .var.metr$tls[!rownames(.var.metr$tls) %in% c("fixed.area", "k.tree"),
                   colnames(.var.metr$tls) %in% sapply(c("N", "G", "V"), paste,
                                                       c(names(.ds.meth), "sh"),
                                                       sep = ".")] <- FALSE
 
-    if (length(tree.tls$v.com) > 0)
+    if (length(tree.tls$v.mer) > 0)
     .var.metr$tls[!rownames(.var.metr$tls) %in% "angle.count",
-                  colnames(.var.metr$tls) %in% paste(c("N", "G", "V", "V.com", "h.com"), "pam",
+                  colnames(.var.metr$tls) %in% paste(c("N", "G", "V", "v.mer", "h.mer"), "pam",
                                                      sep = ".")] <- FALSE
 
-    if (length(tree.tls$v.com) < 1)
+    if (length(tree.tls$v.mer) < 1)
     .var.metr$tls[!rownames(.var.metr$tls) %in% "angle.count",
                   colnames(.var.metr$tls) %in% paste(c("N", "G", "V"), "pam",
                                                      sep = ".")] <- FALSE
@@ -2383,16 +2393,16 @@
 
     # Define a logical matrix containing all possible mandatory columns in
     # 'tree.tls' according to 'function case', '.by.stratum.2' and 'var.metr'
-    if(length(tree.tls$v.com) < 1)
+    if(length(tree.tls$v.mer) < 1)
     .col.mand <- c("id", "file", "tree", unlist(.scan.approach), "h.dist",
                    "dbh", "h", "v",
                    paste("n.pts", c("", ".est", ".red", ".red.est"),
                          sep = ""),
                    "partial.occlusion")
 
-    if(length(tree.tls$v.com) > 0)
+    if(length(tree.tls$v.mer) > 0)
       .col.mand <- c("id", "file", "tree", unlist(.scan.approach), "h.dist",
-                     "dbh", "h", "h.com", "v", "v.com",
+                     "dbh", "h", "h.mer", "v", "v.mer",
                      paste("n.pts", c("", ".est", ".red", ".red.est"),
                            sep = ""),
                      "partial.occlusion")
@@ -2402,13 +2412,13 @@
                         ncol = length(.col.mand),
                         dimnames = list(var.metr$tls, .col.mand))
 
-    if(length(tree.tls$v.com) < 1)
+    if(length(tree.tls$v.mer) < 1)
     .col.mand[, colnames(.col.mand) %in%
                 c("stratum", "id", "tree", "h.dist", "dbh", "h", "v")] <- TRUE
 
-    if(length(tree.tls$v.com) > 0)
+    if(length(tree.tls$v.mer) > 0)
     .col.mand[, colnames(.col.mand) %in%
-                c("stratum", "id", "tree", "h.dist", "dbh", "h", "h.com", "v", "v.com")] <- TRUE
+                c("stratum", "id", "tree", "h.dist", "dbh", "h", "h.mer", "v", "v.mer")] <- TRUE
 
     .col.mand[rownames(.col.mand) %in%
                 c(sprintf("P%02i", .prob),
@@ -2445,13 +2455,13 @@
 
               colnames(.col.mand) %in% "file"] <- TRUE
 
-    if(length(tree.tls$v.com) < 1)
+    if(length(tree.tls$v.mer) < 1)
     .col.mand[rownames(.col.mand) %in% paste(c("N", "G", "V"), "sh", sep = "."),
               colnames(.col.mand) %in%
                 c(unlist(.scan.approach), "partial.occlusion")] <- TRUE
 
-    if(length(tree.tls$v.com) > 0)
-    .col.mand[rownames(.col.mand) %in% paste(c("N", "G", "V", "V.com", "h.com"), "sh", sep = "."),
+    if(length(tree.tls$v.mer) > 0)
+    .col.mand[rownames(.col.mand) %in% paste(c("N", "G", "V", "v.mer", "h.mer"), "sh", sep = "."),
               colnames(.col.mand) %in%
                 c(unlist(.scan.approach), "partial.occlusion")] <- TRUE
 
@@ -2645,7 +2655,7 @@
                         ncol = length(.col.mand),
                         dimnames = list(var.metr$tls, .col.mand))
     for (.i in names(.ds.meth))
-      .col.mand[rownames(.col.mand) %in% paste(c("N", "G", "V", "V.com", "h.com"), .i, sep = "."),
+      .col.mand[rownames(.col.mand) %in% paste(c("N", "G", "V", "v.mer", "h.mer"), .i, sep = "."),
                 colnames(.col.mand) %in%
                   c("id", "tree", paste("P", .i, sep = "."))] <- TRUE
     .col.mand <- .col.mand[, apply(.col.mand, 2, any), drop = FALSE]
@@ -2928,7 +2938,7 @@
       # Compute radius, k and BAF, and tree variables according to plot
       # design(s) and 'tree.var'. Currently available tree variables: basal area
       # (g) and volume (v)
-      .col.mand <- c("g", "v", "v.com", "h.com")
+      .col.mand <- c("g", "v", "v.mer", "h.mer")
 
       .col.mand <- matrix(FALSE, nrow = length(var.metr[[.j]]),
                           ncol = length(.col.mand),
@@ -2942,13 +2952,13 @@
                           sep = "."), "V"),
                 colnames(.col.mand) %in% "v"] <- TRUE
       .col.mand[rownames(.col.mand) %in%
-                  c(paste("V.com", c("tls", names(.ds.meth), "sh", "pam"),
-                          sep = "."), "V.com"),
-                colnames(.col.mand) %in% "v.com"] <- TRUE
+                  c(paste("v.mer", c("tls", names(.ds.meth), "sh", "pam"),
+                          sep = "."), "v.mer"),
+                colnames(.col.mand) %in% "v.mer"] <- TRUE
       .col.mand[rownames(.col.mand) %in%
-                  c(paste("h.com", c("tls", names(.ds.meth), "sh", "pam"),
-                          sep = "."), "h.com"),
-                colnames(.col.mand) %in% "v.com"] <- TRUE
+                  c(paste("h.mer", c("tls", names(.ds.meth), "sh", "pam"),
+                          sep = "."), "h.mer"),
+                colnames(.col.mand) %in% "v.mer"] <- TRUE
       .col.mand <- colnames(.col.mand)[apply(.col.mand, 2, any)]
       .tree <- .tree.calc(tree = .tree, plot.design = .plot.design[plot.design],
                           tree.var = .col.mand, v.calc = v.calc)
@@ -3110,7 +3120,7 @@
         .col.names <- var.metr[[.j]][.var.metr[[.j]][.k, var.metr[[.j]]]]
         .col.names <-
           .col.names[.col.names %in%
-                       c(sapply(c("N", "G", "V", "V.com", "h.com"), paste,
+                       c(sapply(c("N", "G", "V", "v.mer", "h.mer"), paste,
                                 c("tls", names(.ds.meth), "sh", "pam"),
                                 sep = "."),
                          paste(names(c(.mean.d, .mean.h)), "tls", sep = "."),
@@ -3336,21 +3346,21 @@
 
 
 
-.no.trees.detected.single <- function(data, d.top, plot.attributes, dir.result, save.result){
+.no.trees.detected.single <- function(data, d.mer, plot.attributes, dir.result, save.result){
 
-  if(is.null(data$id) & is.null(d.top)){
+  if(is.null(data$id) & is.null(d.mer)){
 
     # If plot identification (id) is not available
 
     .colnames <- c("tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "v", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
-  } else if (is.null(data$id) & !is.null(d.top)) {
+  } else if (is.null(data$id) & !is.null(d.mer)) {
 
     # If plot identification (id) is not available
 
-    .colnames <- c("tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "h.com", "v", "v.com", "n.pts", "SS.max", "sinuosity", "lean", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+    .colnames <- c("tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "h.mer", "v", "v.mer", "n.pts", "SS.max", "sinuosity", "lean", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
-  } else if (!is.null(data$id) & is.null(d.top)) {
+  } else if (!is.null(data$id) & is.null(d.mer)) {
 
     # If plot identification (id) is available
 
@@ -3360,7 +3370,7 @@
 
     # If plot identification (id) is available
 
-    .colnames <- c("id", "file", "tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+    .colnames <- c("id", "file", "tree", "x", "y", "phi", "phi.left", "phi.right", "h.dist", "dbh", "h", "h.mer", "v", "v.mer", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
   }
 
@@ -3394,21 +3404,21 @@
 
 
 
-.no.trees.detected.multi <- function(data, d.top, plot.attributes, dir.result, save.result){
+.no.trees.detected.multi <- function(data, d.mer, plot.attributes, dir.result, save.result){
 
-  if(is.null(data$id) & is.null(d.top)){
+  if(is.null(data$id) & is.null(d.mer)){
 
     # If plot identification (id) is not available
 
     .colnames <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "v", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
-  } else if (is.null(data$id) & !is.null(d.top)) {
+  } else if (is.null(data$id) & !is.null(d.mer)) {
 
     # If plot identification (id) is not available
 
-    .colnames <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+    .colnames <- c("tree", "x", "y", "phi", "h.dist", "dbh", "h", "h.mer", "v", "v.mer", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
-  } else if (!is.null(data$id) & is.null(d.top)) {
+  } else if (!is.null(data$id) & is.null(d.mer)) {
 
     # If plot identification (id) is available
 
@@ -3418,7 +3428,7 @@
 
     # If plot identification (id) is available
 
-    .colnames <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "h.com", "v", "v.com", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
+    .colnames <- c("id", "file", "tree", "x", "y", "phi", "h.dist", "dbh", "h", "h.mer", "v", "v.mer", "SS.max", "sinuosity", "lean", "n.pts", "n.pts.red", "n.pts.est", "n.pts.red.est", "partial.occlusion")
 
   }
 

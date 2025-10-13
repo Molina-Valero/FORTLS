@@ -5,63 +5,54 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="FORTLS">
-<title>Stand-level • FORTLS</title>
+<title>Stand-level variables • FORTLS</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.1.0/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.1.0/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Stand-level">
-<meta property="og:description" content="FORTLS">
-<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
+<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Stand-level variables">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
-    
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
-    
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
     <a class="navbar-brand me-2" href="../index.html">FORTLS</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.6.1</small>
 
-    
+
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item">
-  <a class="nav-link" href="../reference/index.html">Reference</a>
-</li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/stand_level.html">Stand-level</a>
-    <a class="dropdown-item" href="../articles/tree_level.html">Tree-level</a>
-    <a class="dropdown-item" href="../articles/plot_design_optimization.html">Plot design optimization</a>
-  </div>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="../articles/plot_design_optimization.html">Plot design optimization</a></li>
+    <li><a class="dropdown-item" href="../articles/stand_level.html">Stand-level variables</a></li>
+    <li><a class="dropdown-item" href="../articles/tree_level.html">Tree-level variables</a></li>
+  </ul>
 </li>
       </ul>
-<form class="form-inline my-2 my-lg-0" role="search">
-        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
-</form>
-
-      <ul class="navbar-nav">
-<li class="nav-item">
-  <a class="external-link nav-link" href="https://github.com/Molina-Valero/FORTLS/" aria-label="github">
-    <span class="fab fa fab fa-github fa-lg"></span>
-     
-  </a>
-</li>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/Molina-Valero/FORTLS/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
-    
+
   </div>
 </nav><div class="container template-article">
 
@@ -70,7 +61,7 @@
 <script src="stand_level_files/kePrint-0.0.1/kePrint.js"></script><link href="stand_level_files/lightable-0.0.1/lightable.css" rel="stylesheet">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="" class="logo" alt=""><h1>Stand-level</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Stand-level variables</h1>
                         <h4 data-toc-skip class="author">Anika
 Seppelt</h4>
             
@@ -94,13 +85,13 @@ factor (BAF) respectively.</p>
 function <strong><code>metrics.variables</code></strong> is applied as
 follows:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">metrics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/metrics.variables.html">metrics.variables</a></span><span class="op">(</span>tree.tls <span class="op">=</span> <span class="va">tree.list</span>, 
-                  tree.ds <span class="op">=</span> <span class="va">tree.ds</span>, tree.field <span class="op">=</span> <span class="va">tree.field</span>,
-                  plot.design <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fixed.area"</span>, <span class="st">"k.tree"</span>, <span class="st">"angle.count"</span><span class="op">)</span>,
-                  plot.parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>radius <span class="op">=</span> <span class="fl">10</span>, k <span class="op">=</span> <span class="fl">10</span>, BAF <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,
-                  scan.approach <span class="op">=</span> <span class="st">"single"</span>, var.metr <span class="op">=</span> <span class="cn">NULL</span>,
-                  dbh.min <span class="op">=</span> <span class="fl">4</span>, h.min <span class="op">=</span> <span class="fl">1.3</span>, max.dist <span class="op">=</span> <span class="cn">Inf</span>, 
-                  dir.data <span class="op">=</span> <span class="va">dir.data</span>, save.result <span class="op">=</span> <span class="cn">FALSE</span>, dir.result <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">metrics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/metrics.variables.html">metrics.variables</a></span><span class="op">(</span>tree.tls <span class="op">=</span> <span class="va">tree.list</span>, </span>
+<span>                  tree.ds <span class="op">=</span> <span class="va">tree.ds</span>, tree.field <span class="op">=</span> <span class="va">tree.field</span>,</span>
+<span>                  plot.design <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fixed.area"</span>, <span class="st">"k.tree"</span>, <span class="st">"angle.count"</span><span class="op">)</span>,</span>
+<span>                  plot.parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>radius <span class="op">=</span> <span class="fl">10</span>, k <span class="op">=</span> <span class="fl">10</span>, BAF <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
+<span>                  scan.approach <span class="op">=</span> <span class="st">"single"</span>, var.metr <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>                  dbh.min <span class="op">=</span> <span class="fl">4</span>, h.min <span class="op">=</span> <span class="fl">1.3</span>, max.dist <span class="op">=</span> <span class="cn">Inf</span>, </span>
+<span>                  dir.data <span class="op">=</span> <span class="va">dir.data</span>, save.result <span class="op">=</span> <span class="cn">FALSE</span>, dir.result <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
 <p>The input data frame is introduced in
 <strong><code>tree.tls</code></strong> and should contain information
 about the trees detected from TLS based data e.g., the output data frame
@@ -136,9 +127,9 @@ to <code>NULL</code> and metrics using distance sampling corrections
 will not be calculated. The <code>distance.sampling</code> is applied as
 follows:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tree.ds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/distance.sampling.html">distance.sampling</a></span><span class="op">(</span>tree.tls <span class="op">=</span> <span class="va">tree.list</span>,
-                             id.plots <span class="op">=</span> <span class="cn">NULL</span>,
-                             strata.attributes <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">tree.ds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/distance.sampling.html">distance.sampling</a></span><span class="op">(</span>tree.tls <span class="op">=</span> <span class="va">tree.list</span>,</span>
+<span>                             id.plots <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>                             strata.attributes <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
 <p>The <strong><code>distance.sampling</code></strong> function computes
 the probability of detection of trees depending on their distance to the
 TLS device. Detection functions are fitted to the histogram representing
@@ -154,42 +145,45 @@ vector containing the plot identification numbers. If not specified,
 this argument is set to <code>id.plots = NULL</code> and all plots will
 be considered.</p>
 <p>Two detection functions are fitted, that are the half normal and
-hazard rate functions, with and without <span class="math inline">\(dbh\)</span> as covariate. These functions
-describe the decreasing detection probability with increasing distance.
-The probabilities are used for correcting estimation bias of the
-stand-level variables caused by the lack of detection of trees due to
-occlusion.</p>
+hazard rate functions, with and without
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mi>b</mi><mi>h</mi></mrow><annotation encoding="application/x-tex">dbh</annotation></semantics></math>
+as covariate. These functions describe the decreasing detection
+probability with increasing distance. The probabilities are used for
+correcting estimation bias of the stand-level variables caused by the
+lack of detection of trees due to occlusion.</p>
 <p>A list with three elements is generated by the
 <code>distance.sampling</code> function. The data frame
 <strong><code>tree</code></strong> represents the detection
 probabilities for each tree of all plots according to the four different
 detection functions. The columns <code>P.hn</code> and
 <code>P.hn.cov</code> show the detection probabilities calculated by the
-half normal function without and with <span class="math inline">\(dbh\)</span> as covariate, while <code>P.hr</code>
-and <code>P.hr.cov</code> contain the probabilities according to the
-hazard rate function without and with covariate respectively.</p>
+half normal function without and with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mi>b</mi><mi>h</mi></mrow><annotation encoding="application/x-tex">dbh</annotation></semantics></math>
+as covariate, while <code>P.hr</code> and <code>P.hr.cov</code> contain
+the probabilities according to the hazard rate function without and with
+covariate respectively.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">tree.ds</span><span class="op">$</span><span class="va">tree</span><span class="op">)</span>
-<span class="co">#&gt;   stratum id tree     P.hn  P.hn.cov      P.hr  P.hr.cov</span>
-<span class="co">#&gt; 1       1  1    1 0.922808 0.9293580 0.9388107 0.9519734</span>
-<span class="co">#&gt; 2       1  1    2 0.922808 0.8922843 0.9388107 0.9199997</span>
-<span class="co">#&gt; 3       1  1    3 0.922808 0.9146826 0.9388107 0.9389643</span>
-<span class="co">#&gt; 4       1  1    4 0.922808 0.9017652 0.9388107 0.9278849</span>
-<span class="co">#&gt; 5       1  1    5 0.922808 0.9277925 0.9388107 0.9505678</span>
-<span class="co">#&gt; 6       1  1    6 0.922808 0.9424095 0.9388107 0.9637861</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">tree.ds</span><span class="op">$</span><span class="va">tree</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   stratum id tree     P.hn  P.hn.cov      P.hr  P.hr.cov</span></span>
+<span><span class="co">#&gt; 1       1  1    1 0.922808 0.9293580 0.9388107 0.9519734</span></span>
+<span><span class="co">#&gt; 2       1  1    2 0.922808 0.8922843 0.9388107 0.9199997</span></span>
+<span><span class="co">#&gt; 3       1  1    3 0.922808 0.9146826 0.9388107 0.9389643</span></span>
+<span><span class="co">#&gt; 4       1  1    4 0.922808 0.9017652 0.9388107 0.9278849</span></span>
+<span><span class="co">#&gt; 5       1  1    5 0.922808 0.9277925 0.9388107 0.9505678</span></span>
+<span><span class="co">#&gt; 6       1  1    6 0.922808 0.9424095 0.9388107 0.9637861</span></span></code></pre></div>
 <p>The data frame <strong><code>par</code></strong> shows the parameters
 of the detection functions and <strong><code>AIC</code></strong> the
 Akaike information criterion (AIC) for every detection function fit.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">tree.ds</span><span class="op">$</span><span class="va">par</span><span class="op">)</span>
-<span class="co">#&gt;              P.hn.scale P.hn.cov.scale.intercept P.hn.cov.dbh P.hr.scale</span>
-<span class="co">#&gt; X.Intercept.   35.84341                 64.17593    -2.231185   21.85271</span>
-<span class="co">#&gt;              P.hr.shape P.hr.cov.scale.intercept P.hr.cov.dbh P.hr.cov.shape</span>
-<span class="co">#&gt; X.Intercept.   3.544516                 26.38362   -0.7110327       3.832857</span>
-
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">tree.ds</span><span class="op">$</span><span class="va">AIC</span><span class="op">)</span>
-<span class="co">#&gt;       P.hn P.hn.cov     P.hr P.hr.cov</span>
-<span class="co">#&gt; 1 3375.162 3376.521 3374.114 3375.123</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">tree.ds</span><span class="op">$</span><span class="va">par</span><span class="op">)</span></span>
+<span><span class="co">#&gt;              P.hn.scale P.hn.cov.scale.intercept P.hn.cov.dbh P.hr.scale</span></span>
+<span><span class="co">#&gt; X.Intercept.   35.84341                 64.17593    -2.231185   21.85271</span></span>
+<span><span class="co">#&gt;              P.hr.shape P.hr.cov.scale.intercept P.hr.cov.dbh P.hr.cov.shape</span></span>
+<span><span class="co">#&gt; X.Intercept.   3.544516                 26.38362   -0.7110327       3.832857</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">tree.ds</span><span class="op">$</span><span class="va">AIC</span><span class="op">)</span></span>
+<span><span class="co">#&gt;       P.hn P.hn.cov     P.hr P.hr.cov</span></span>
+<span><span class="co">#&gt; 1 3375.162 3376.521 3374.114 3375.123</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="additional-information-about-trees-through-field-data">Additional information about trees through field data<a class="anchor" aria-label="anchor" href="#additional-information-about-trees-through-field-data"></a>
@@ -222,8 +216,9 @@ m)</li>
 </ul>
 <p>Further optional columns are <code>h.blc</code> (height based live
 crown, in m), <code>h.bdc</code> (height based dead crown, in m),
-<code>v.user</code> (tree volume, in m<span class="math inline">\(^3\)</span>) and <code>w.user</code> (tree
-biomass, in Mg).</p>
+<code>v.user</code> (tree volume, in
+m<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi></mi><mn>3</mn></msup><annotation encoding="application/x-tex">^3</annotation></semantics></math>)
+and <code>w.user</code> (tree biomass, in Mg).</p>
 </div>
 <div class="section level4">
 <h4 id="selecting-trees-to-be-included-in-the-calculations">Selecting trees to be included in the calculations<a class="anchor" aria-label="anchor" href="#selecting-trees-to-be-included-in-the-calculations"></a>
@@ -232,13 +227,14 @@ biomass, in Mg).</p>
 <strong><code>h.min</code></strong> and
 <strong><code>max.dist</code></strong> are used to determine the trees
 that are included in the calculations. The minimum diameter at breast
-height (<span class="math inline">\(dbh\)</span>) and the minimum tree
-height can be specified in <code>dbh.min</code> (in cm) and
-<code>h.min</code> (in m) and are set to 4 cm and 1.3 m respectively by
-default. In <code>max.dist</code>, the maximal horizontal distance (in
-m) of a tree from the plot’s center to be included in the calculations
-can be defined. If not specified, no trees are discarded because of
-their distance.</p>
+height
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mi>b</mi><mi>h</mi></mrow><annotation encoding="application/x-tex">dbh</annotation></semantics></math>)
+and the minimum tree height can be specified in <code>dbh.min</code> (in
+cm) and <code>h.min</code> (in m) and are set to 4 cm and 1.3 m
+respectively by default. In <code>max.dist</code>, the maximal
+horizontal distance (in m) of a tree from the plot’s center to be
+included in the calculations can be defined. If not specified, no trees
+are discarded because of their distance.</p>
 </div>
 <div class="section level4">
 <h4 id="plot-design-and-parameters">Plot design and parameters<a class="anchor" aria-label="anchor" href="#plot-design-and-parameters"></a>
@@ -254,8 +250,9 @@ be considered.</p>
 (<code>"fixed.area"</code>) are plots with a circular area defined by
 the plot radius (in m). The size of k-tree plots (<code>"k.tree"</code>)
 is determined by the number of trees (k) that enter the plot. The basal
-area factor (BAF in m<span class="math inline">\(^2\)</span>/ha) defines
-the size of angle-count plots (<code>"angle.count"</code>). The
+area factor (BAF in
+m<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi></mi><mn>2</mn></msup><annotation encoding="application/x-tex">^2</annotation></semantics></math>/ha)
+defines the size of angle-count plots (<code>"angle.count"</code>). The
 parameters <code>radius</code>, <code>k</code> and <code>BAF</code> have
 to be specified as data frame in <code>plot.parameters</code>. If one of
 these parameters is not specified, the corresponding plot design will
@@ -288,7 +285,7 @@ directory). The .csv files (without row names) will be created using the
 <h3 id="stand-level-metrics">Stand-level metrics<a class="anchor" aria-label="anchor" href="#stand-level-metrics"></a>
 </h3>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">metrics</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span><span class="op">:</span><span class="fl">36</span><span class="op">)</span><span class="op">]</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">metrics</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span><span class="op">:</span><span class="fl">36</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 <div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
 <table class="table">
 <thead><tr>
@@ -2699,13 +2696,16 @@ the reduced point cloud (<code>n.pts.red</code>,
 <code>P30</code>, <code>P40</code>, <code>P50</code>, <code>P60</code>,
 <code>P70</code>, <code>P75</code>, <code>P80</code>, <code>P90</code>,
 <code>P95</code>, <code>P99</code>, numbers indicating the <em>k</em>-th
-percentile) are calculated for the <span class="math inline">\(z\)</span> coordinate of the TLS point cloud.
-Therefore they denominate the height (in m) above ground level.</p>
+percentile) are calculated for the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>z</mi><annotation encoding="application/x-tex">z</annotation></semantics></math>
+coordinate of the TLS point cloud. Therefore they denominate the height
+(in m) above ground level.</p>
 <div class="section level4">
 <h4 id="statistics-of-the-z-rho-and-r">Statistics of the z, rho and r<a class="anchor" aria-label="anchor" href="#statistics-of-the-z-rho-and-r"></a>
 </h4>
 <p>To describe the tendencies and distribution of the spherical
-coordinates <code>z</code>, <span class="math inline">\(\rho\)</span>
+coordinates <code>z</code>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>
 (horizontal distance, <code>rho</code>) and <code>r</code> (euclidean
 distance), the following statistics are calculated:</p>
 <ul>
@@ -2731,9 +2731,13 @@ distance), the following statistics are calculated:</p>
 (<code>p.b.mean.z/rho/r</code>) and the mode
 (<code>p.b.mode.z/rho/r</code>)</li>
 <li>percentage of points above a height of 2 m (<code>p.a.2m.z</code>,
-only for the <span class="math inline">\(z\)</span> coordinate)</li>
+only for the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>z</mi><annotation encoding="application/x-tex">z</annotation></semantics></math>
+coordinate)</li>
 <li>percentage of points below a height of 2 m (<code>p.b.2m.z</code>,
-only for the <span class="math inline">\(z\)</span> coordinate)</li>
+only for the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>z</mi><annotation encoding="application/x-tex">z</annotation></semantics></math>
+coordinate)</li>
 <li>L-moments of order 2, 3 and 4 (<code>L2.z/rho/r</code>,
 <code>L3.z/rho/r</code> and <code>L4.z/rho/r</code>)</li>
 <li>third and forth central L-moments (<code>L3.mu.z/rho/r</code> and
@@ -2755,7 +2759,7 @@ the spherical coordinates (<code>weibull_c.z/rho/r</code>,
 <h3 id="stand-level-variables">Stand-level variables<a class="anchor" aria-label="anchor" href="#stand-level-variables"></a>
 </h3>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">metrics</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">36</span><span class="op">]</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">metrics</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">36</span><span class="op">]</span></span></code></pre></div>
 <div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
 <table class="table">
 <thead><tr>
@@ -3544,52 +3548,68 @@ and are therefore extended to an area of one ha.</p>
 <p>The stand density (<strong><code>N.tls</code></strong>, trees/ha) is
 calculated by the following equations. For the circular fixed area and
 k-tree plots, <code>N.tls</code> is calculated by</p>
-<p><span class="math display">\[
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mi>.</mi><mi>t</mi><mi>l</mi><mi>s</mi><mo>=</mo><mfrac><mn>10000</mn><mrow><mi>π</mi><msup><mi>R</mi><mn>2</mn></msup></mrow></mfrac><mo>⋅</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">
 N.tls=\frac{10000}{\pi R^2}\cdot n
-\]</span></p>
-<p>with <span class="math inline">\(R\)</span> being the radius of the
-plot (in m) and <span class="math inline">\(n\)</span> the number of
-detected trees. The density of angle-count plots is calculated by</p>
-<p><span class="math display">\[
+</annotation></semantics></math></p>
+<p>with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>R</mi><annotation encoding="application/x-tex">R</annotation></semantics></math>
+being the radius of the plot (in m) and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+the number of detected trees. The density of angle-count plots is
+calculated by</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mi>.</mi><mi>t</mi><mi>l</mi><mi>s</mi><mo>=</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><mfrac><mrow><mi>B</mi><mi>A</mi><mi>F</mi></mrow><msub><mi>g</mi><mi>i</mi></msub></mfrac></mrow><annotation encoding="application/x-tex">
 N.tls=\sum_{i=1}^{n} \frac{BAF}{g_i}
-\]</span></p>
-<p>with <span class="math inline">\(BAF\)</span> being the basal area
-factor (in m<span class="math inline">\(^2\)</span>/ha) and <span class="math inline">\(g_i\)</span> the basal area of the tree <span class="math inline">\(i\)</span> (in m<span class="math inline">\(^2\)</span>).</p>
-<p>The basal area (<strong><code>G.tls</code></strong>, in m<span class="math inline">\(^2\)</span>/ha) is estimated for circular fixed
-area and k-tree plots by the following equation:</p>
-<p><span class="math display">\[
+</annotation></semantics></math></p>
+<p>with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mi>A</mi><mi>F</mi></mrow><annotation encoding="application/x-tex">BAF</annotation></semantics></math>
+being the basal area factor (in
+m<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi></mi><mn>2</mn></msup><annotation encoding="application/x-tex">^2</annotation></semantics></math>/ha)
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>g</mi><mi>i</mi></msub><annotation encoding="application/x-tex">g_i</annotation></semantics></math>
+the basal area of the tree
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
+(in
+m<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi></mi><mn>2</mn></msup><annotation encoding="application/x-tex">^2</annotation></semantics></math>).</p>
+<p>The basal area (<strong><code>G.tls</code></strong>, in
+m<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi></mi><mn>2</mn></msup><annotation encoding="application/x-tex">^2</annotation></semantics></math>/ha)
+is estimated for circular fixed area and k-tree plots by the following
+equation:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mi>.</mi><mi>t</mi><mi>l</mi><mi>s</mi><mo>=</mo><mfrac><mn>10000</mn><mrow><mi>π</mi><msup><mi>R</mi><mn>2</mn></msup></mrow></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>g</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">
 G.tls=\frac{10000}{\pi R^2}\sum_{i=1}^{n} g_i
-\]</span></p>
+</annotation></semantics></math></p>
 <p>and for angle-count plots, the following equation is applied:</p>
-<p><span class="math display">\[
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mi>.</mi><mi>t</mi><mi>l</mi><mi>s</mi><mo>=</mo><mi>B</mi><mi>A</mi><mi>F</mi><mo>⋅</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">
 G.tls=BAF \cdot n
-\]</span></p>
-<p>The stem volume (<strong><code>V.tls</code></strong>, in m<span class="math inline">\(^3\)</span>/ha) is estimated by modelling the stem
-profile as a paraboloid. The volume is calculated as the volume of the
-revolution of the paraboloid function. The total heights of the detected
-trees are estimated as the 99th percentile of the points of the <span class="math inline">\(z\)</span> coordinate delimited by Voronoi
-polygons (<span class="math inline">\(h_{P_{99}i}\)</span>, in m). The
-equation used for the calculation for circular fixed area and k-tree
-plots is</p>
-<p><span class="math display">\[
-V.tls=\frac{10000}{\pi R^2}\sum_{i=1}^{n} \pi \cdot
-\frac{h_{P_{99}i}^2}{2} \cdot \frac{(\frac{1}{2} \cdot
-dbh_i)^2}{(h_{P_{99}i} - 1.3)^2}
-\]</span></p>
+</annotation></semantics></math></p>
+<p>The stem volume (<strong><code>V.tls</code></strong>, in
+m<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi></mi><mn>3</mn></msup><annotation encoding="application/x-tex">^3</annotation></semantics></math>/ha)
+is estimated by modelling the stem profile as a paraboloid. The volume
+is calculated as the volume of the revolution of the paraboloid
+function. The total heights of the detected trees are estimated as the
+99th percentile of the points of the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>z</mi><annotation encoding="application/x-tex">z</annotation></semantics></math>
+coordinate delimited by Voronoi polygons
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>h</mi><mrow><msub><mi>P</mi><mn>99</mn></msub><mi>i</mi></mrow></msub><annotation encoding="application/x-tex">h_{P_{99}i}</annotation></semantics></math>,
+in m). The equation used for the calculation for circular fixed area and
+k-tree plots is</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mi>.</mi><mi>t</mi><mi>l</mi><mi>s</mi><mo>=</mo><mfrac><mn>10000</mn><mrow><mi>π</mi><msup><mi>R</mi><mn>2</mn></msup></mrow></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><mi>π</mi><mo>⋅</mo><mfrac><msubsup><mi>h</mi><mrow><msub><mi>P</mi><mn>99</mn></msub><mi>i</mi></mrow><mn>2</mn></msubsup><mn>2</mn></mfrac><mo>⋅</mo><mfrac><msup><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>⋅</mo><mi>d</mi><mi>b</mi><msub><mi>h</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><msup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>h</mi><mrow><msub><mi>P</mi><mn>99</mn></msub><mi>i</mi></mrow></msub><mo>−</mo><mn>1.3</mn><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mfrac></mrow><annotation encoding="application/x-tex">
+V.tls=\frac{10000}{\pi R^2}\sum_{i=1}^{n} \pi \cdot \frac{h_{P_{99}i}^2}{2} \cdot \frac{(\frac{1}{2} \cdot dbh_i)^2}{(h_{P_{99}i} - 1.3)^2}
+</annotation></semantics></math></p>
 <p>and for angle-count plots is</p>
-<p><span class="math display">\[
-V.tls=\sum_{i=1}^{n} \frac{BAF}{g_i} \cdot \pi \cdot
-\frac{h_{P_{99}i}^2}{2} \cdot \frac{(\frac{1}{2} \cdot
-dbh_i)^2}{(h_{P_{99}i} - 1.3)^2}
-\]</span></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mi>.</mi><mi>t</mi><mi>l</mi><mi>s</mi><mo>=</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><mfrac><mrow><mi>B</mi><mi>A</mi><mi>F</mi></mrow><msub><mi>g</mi><mi>i</mi></msub></mfrac><mo>⋅</mo><mi>π</mi><mo>⋅</mo><mfrac><msubsup><mi>h</mi><mrow><msub><mi>P</mi><mn>99</mn></msub><mi>i</mi></mrow><mn>2</mn></msubsup><mn>2</mn></mfrac><mo>⋅</mo><mfrac><msup><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>⋅</mo><mi>d</mi><mi>b</mi><msub><mi>h</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><msup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>h</mi><mrow><msub><mi>P</mi><mn>99</mn></msub><mi>i</mi></mrow></msub><mo>−</mo><mn>1.3</mn><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mfrac></mrow><annotation encoding="application/x-tex">
+V.tls=\sum_{i=1}^{n} \frac{BAF}{g_i} \cdot \pi \cdot \frac{h_{P_{99}i}^2}{2} \cdot \frac{(\frac{1}{2} \cdot dbh_i)^2}{(h_{P_{99}i} - 1.3)^2}
+</annotation></semantics></math></p>
 </div>
 <div class="section level4">
 <h4 id="occlusion-correction">Occlusion correction<a class="anchor" aria-label="anchor" href="#occlusion-correction"></a>
 </h4>
-<p>The above mentioned calculations of the stand-level variables <span class="math inline">\(N\)</span>, <span class="math inline">\(V\)</span>
-and <span class="math inline">\(G\)</span> do not consider possible
-occlusions of trees. Therefore, different occlusion correction
-approaches are included in the function.</p>
+<p>The above mentioned calculations of the stand-level variables
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>V</mi><annotation encoding="application/x-tex">V</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>G</mi><annotation encoding="application/x-tex">G</annotation></semantics></math>
+do not consider possible occlusions of trees. Therefore, different
+occlusion correction approaches are included in the function.</p>
 <p>For angle-count plots, the occlusion correction is based on the
 Poisson attenuation model. This approach calculates geometric gap
 probabilities which decreases with increasing distance from the TLS
@@ -3623,7 +3643,8 @@ and are Half-Normal and Hazard-Rate respectively. Additionally,
 and
 <strong><code>N.hr.cov</code></strong>/<strong><code>V.hr.cov</code></strong>/<strong><code>G.hr.cov</code></strong>
 are calculated with expanding the scale component of the function with
-<span class="math inline">\(dbh\)</span> as covariate.</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mi>b</mi><mi>h</mi></mrow><annotation encoding="application/x-tex">dbh</annotation></semantics></math>
+as covariate.</p>
 <p>The other approach corrects shadowing effects. Tthis method
 calculates an expansion factor to correct the variables. The expansion
 factor is based on the percentage of the shaded area i.e., unsample area
@@ -3646,11 +3667,12 @@ geometric (<strong><code>h.geom</code></strong>,
 <strong><code>d.geom</code></strong>) and harmonic means
 (<strong><code>h.harm</code></strong>,
 <strong><code>d.harm</code></strong>). To calculate the dominant heights
-and diameters, only the <span class="math inline">\(n\)</span> largest
-trees per hectar are considered. If not otherwise specified in the
-argument <code>num.tree</code> (see above), the number of dominant trees
-per hectare is set to 100 trees/ha. Dominant heights and diameters are
-also calculated as the arithmetic
+and diameters, only the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+largest trees per hectar are considered. If not otherwise specified in
+the argument <code>num.tree</code> (see above), the number of dominant
+trees per hectare is set to 100 trees/ha. Dominant heights and diameters
+are also calculated as the arithmetic
 (<strong><code>h.0.tls</code></strong>,
 <strong><code>d.0.tls</code></strong>), quadratic
 (<strong><code>h.0.g</code></strong>,
@@ -3663,28 +3685,26 @@ also calculated as the arithmetic
 </div>
 </div>
 
-  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>
 
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p>
-<p>Developed by Juan Alberto Molina-Valero, Adela Martínez-Calvo, Anika Seppelt, Juan Gabriel Álvarez-González, Fernando Montes, César Pérez-Cruzado.</p>
+  <p>Developed by Juan Alberto Molina-Valero, Adela Martínez-Calvo, María José Ginzo Villamayor, Juan Gabriel Álvarez-González, Fernando Montes, César Pérez-Cruzado.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.9000.</p>
 </div>
 
     </footer>
 </div>
 
-  
 
-  
+
+
 
   </body>
 </html>

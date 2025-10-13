@@ -1,7 +1,7 @@
 Package: FORTLS
 Title: Automatic Processing of Terrestrial-Based Technologies Point Cloud Data for Forestry Purposes
-Version: 1.6.0
-Date: 2025-07-30
+Version: 1.6.1
+Date: 2025-10-13
 Authors@R: c(
     person("Juan Alberto", "Molina-Valero", role = c("aut", "cph", "cre"),
     email = "jamolinavalero@gmail.com"),
@@ -26,6 +26,6 @@ Imports: data.table, dbscan, Distance, glue, htmlwidgets, lidR, methods, moments
 Suggests: devtools, kableExtra, knitr, rmarkdown, systemfonts, testthat
 LinkingTo: Rcpp, RcppArmadillo, RcppEigen
 Encoding: UTF-8
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 VignetteBuilder: knitr
 StagedInstall: yes

@@ -4,7 +4,7 @@ author: "Anika Seppelt"
 #date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{3. Plot design optimization}
+  %\VignetteIndexEntry{Plot design optimization}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -37,7 +37,7 @@ Thus, circular fixed area plots with increasing radius (increment of 0.1 m) to t
 
 The function generates size-estimation charts i.e., plots showing the estimated stand-level density ($N$) and basal area ($G$) on the $y$ axes respective to the different plot sizes ($x$ axes). The estimations will be performed for simulated plots corresponding to all sample plots. By default the output graphs will contain one line for each sample plot. When **`average`** is set to `TRUE`, the average of all estimations (for all plots) as a continuous line and the standard deviation as grey shaded area will be drawn instead of multiple lines for each sample plot. One chart for each plot design is drawn by default. If **`all.plot.designs`** is set to `TRUE`, the line charts of all three plot design will be drawn in one graph with different colours for each plot design.
 
-```{r fig.height=7, fig.width=7, fig.align = "center", message=FALSE, warning=FALSE}
+```{r fig.height=7, fig.width=7, fig.align = "center", message=FALSE, warning=FALSE,fig.alt = "Line charts output obtained with the estimation.plot.size function"}
 estimation.plot.size(tree.tls = tree.tls,
                      plot.parameters = data.frame(radius.max = 25, k.max = 50, BAF.max = 4),
                      dbh.min = 4,

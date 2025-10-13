@@ -1,10 +1,10 @@
 ---
-title: "Tree-level"
-author: "Anika Seppelt"
+title: "Tree-level variables"
+author: "Anika Seppelt & Juan Alberto Molina Valero"
 #date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{1. Tree-level}
+  %\VignetteIndexEntry{Tree-level variables}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -40,7 +40,7 @@ The aim of the normalization process is to obtain the coordinates relative to th
 
 The following figure shows the normalized point cloud which is used as example data below. The function `plot` from the [lidR](https://CRAN.R-project.org/package=lidR) package is used to generate the figure. 
 
-```{r eval = FALSE, include = TRUE}
+```{r include=FALSE}
 singleLAS <- lidR::readLAS(paste(dir.data, "PinusRadiata.laz", sep = "/"))
 lidR::plot(singleLAS, color = "RGB")
 ```
@@ -52,16 +52,12 @@ lidR::plot(singleLAS, color = "RGB")
 The `normalize` function is applied as follows:
 
 ```{r eval = TRUE, include = TRUE}
-pcd.single <- normalize(las = "PinusRadiata.laz", 
-                 normalized = NULL,
-                 x.center = 0, y.center = 0,
-                 max.dist = 10, min.height = NULL, max.height = NULL, 
-                 algorithm.dtm = "knnidw", res.dtm = 0.2,
-                 csf = list(cloth_resolution = 0.5),
-                 RGB = TRUE,
-                 scan.approach = "single",
-                 id = NULL, file = "single.txt",
-                 dir.data = dir.data, save.result = FALSE, dir.result = NULL)
+pcd.single <- normalize(las = "PinusRadiata.laz",
+                        id = "PinusRadiata",
+                        x.center = 0, y.center = 0,
+                        max.dist = 10, 
+                        scan.approach = "single",
+                        threads = parallel::detectCores())
 ```
 
 The name of the .las or .laz file containing the point cloud data is introduced in **`las`** argument and must include the .las/.laz extension. Optionally, the plot identification number (**`id`**) and the file name (**`file`**) can be defined. Both are set to `NULL` by default, which assigns `1` to the plot identification number and `1.txt` (same name as the identification number) to the reduced point cloud saved in the working directory specified in `dir.result`.
@@ -88,7 +84,7 @@ When the point clouds are colorized, the RGB values can be used to improve the n
 
 The `normalize` function generates the data frame shown below. Each row corresponds to one point of the point cloud of the input data. The columns `id`, `file` and `point` indicate the plot identification number, the file name and the point number respectively. The following columns contain the normalized Cartesian, cylindrical and spherical coordinates `x` (distance on x axis in m), `y` (distance on y axis in m), `z` (height relative to ground level in m), `rho` (horizontal distance in m), `phi` (angle in rad), `r` (radial distance in m) and `theta` (polar angle in rad). The column `slope` displays the slope of the terrain given in rad. If the GLA algorithm was used, the column `GLA` shows the results of that algorithm. Furthermore, a selection probability is assigned to each point by applying the PCP algorithm (`prob`) and the column `prob.select` shows the selected plots (indicated with 1) and discarded points (indicated with 0).
 
-```{r eval = FALSE, include = TRUE}
+```{r eval = FALSE, include=FALSE}
 head(pcd.single)
 ```
 
@@ -111,13 +107,8 @@ When the single-scan approach was used to collect the data, the function `tree.d
 tls.resolution = list(point.dist = 6.34, tls.dist = 10)
 
 tree.list.single.tls <- tree.detection.single.scan(data = pcd.single,
-                           dbh.min = 4, dbh.max = 200, h.min = 1.3,
-                           ncr.threshold = 0.1,
-                           tls.resolution = tls.resolution,
-                           d.top = NULL,
-                           plot.attributes = NULL,
-                           breaks = 1.3, stem.range = NULL, stem.section = c(1,5),
-                           save.result = FALSE, dir.result = NULL)
+                                                   tls.resolution = tls.resolution,
+                                                   threads = parallel::detectCores())
 ```
 
 The normalized and reduced point cloud, i.e. the output of the `normalize` function, is the input data frame for this function (**`data`**). The different arguments that can be specified are explained below.
@@ -156,11 +147,11 @@ As explained above, these algorithms are applied on all horizontal slices (defin
 
 The diameter of the detected trees ($dbh$) is obtained at 1.3 m as the double of radius. If the tree is not detected in the section at 1.3 m, the $dbh$ is estimated by fitting a linear taper function with radius as response variable and the section heights as explanatory variables. Thus, this function allows to estimate the radius at 1.3 m and to calculate $dbh$.
 
-The argument **`d.top`** defines the top stem diameter (in cm), which is used for the calculation of the commercial stem volume. If this argument is not specified, the commercial stem volume (`v.com`) is not calculated.
+The argument **`d.mer`** defines the top stem diameter (in cm), which is used for the calculation of the commercial stem volume. If this argument is not specified, the merchantable tree volume volume (`v.mer`) is not calculated.
 
 #### The output data frame
 
-```{r eval = FALSE, include=TRUE}
+```{r eval = FALSE, include=FALSE}
 head(tree.list.single.tls)
 ```
 
@@ -172,7 +163,7 @@ kableExtra::scroll_box(kable_input = kableExtra::kable(head(tree.list.single.tls
 
 The data frame shown above is the output of the `tree.detect.single.scan` function. Each row represents a detected tree (consecutively numbered in the column `tree`). The columns `id` and `file` display the plot identification number and the file name respectively equal to the columns in the `normalize` output table. The coordinates of the detected trees are given as Cartesian coordinates of the tree's center (`x` and `y`, in m) and azimuthal angles of the center (`phi` in rad), the left border (`phi.left` in rad), the right border (`phi.right` in rad) and the horizontal distance from the tree's center to the plot's center (`h.dist` in m).
 
-Furthermore, the tree attributes `dbh` (diameter at breast height in cm), `h` (total height in m), `v` (tree stem volume in m$^3$) are estimated. If `d.top` was defined as argument, the volume of the stem from the ground to the height of the diameter given in `d.top` is estimated (commercial stem volume, `v.com` in m$^3$). 
+Furthermore, the tree attributes `dbh` (diameter at breast height in cm), `h` (total height in m), `v` (tree stem volume in m$^3$) are estimated. If `d.mer` was defined as argument, the volume of the stem from the ground to the height of the diameter given in `d.mer` is estimated (merchantable volume, `v.mer` in m$^3$). 
 
 For each tree, the number of points of the normal section slice (1.3 m +/- 0.05 m) of the original point cloud and the reduced point cloud (`n.pts` and `n.pts.red` respectively) are calculated and also estimated (`n.pts.est` and `n.pts.red.est` respectively). The column `partial.occlusion` describes whether the the detected tree is partially occluded (1) or not (0).
 
@@ -183,20 +174,15 @@ The data frame is saved as .csv file without row names using the `write.csv` fun
 When multiple scans were performed in the same sampling plot (multi-scan approach) or SLAM devices were used, the function `tree.detection.multi.scan` can be applied as follows below. Additionally, the function `normalize` must be adjusted by specifying `scan.approach = "multi"`.
 
 ```{r eval = FALSE, warning=FALSE, include=TRUE}
-pcd.multi <- normalize(las = "PiceaAbies.laz", 
-                 x.center = 0, y.center = 0,
-                 scan.approach = "multi", file = "multi.txt",
-                 dir.data = dir.data, save.result = FALSE)
+pcd.multi <- normalize(las = "PiceaAbies.laz",
+                       id = "PiceaAbies",
+                       x.center = 0, y.center = 0,
+                       scan.approach = "multi",
+                       threads = parallel::detectCores())
 
 tree.list.multi.tls <- tree.detection.multi.scan(data = pcd.multi,
-                          dbh.min = 4, dbh.max = 200, h.min = 1.3,
-                          slice = 0.15,
-                          ncr.threshold = 0.1,
-                          tls.precision = 0.05,
-                          breaks = NULL, stem.section = c(1,5),
-                          d.top = NULL,
-                          plot.attributes = NULL,
-                          save.result = FALSE, dir.result = NULL)
+                                                 d.mer = 20,
+                                                 threads = parallel::detectCores())
 ```
 
 The function `tree.detection.multi.scan` comes along with the same arguments as the function `tree.detection.single.scan`, which are described in "Data from TLS single-scan approach". However, instead of specifying the resolution, the precision of the TLS (in m) can be defined in `tls.precision`. If not defined, the default value is 0.03 m. The procedure remains the same and the output data frame contains the all the columns explained above:
@@ -227,23 +213,19 @@ If data from multiple plots are to be analysed, the function `tree.detection.sev
 In the function, the arguments for both the `normalize` and `tree.detection` functions must be specified as explained above. The function is applied as follows:
 
 ```{r eval = FALSE, include= TRUE}
-tls.resolution = list(point.dist = 7.67, tls.dist = 10)
+id <- c("PinusSylvestris1", "PinusSylvestris2")
 
-tree.list.tls <- tree.detection.several.plots(las.list = c("PinusSylvestris1.laz", "PinusSylvestris2.laz"), 
-                      id = NULL, file = NULL,
-                      scan.approach = "single",
-                      x.center = 0, y.center = 0,
-                      max.dist = 10, min.height = 0.1, max.height = NULL,
-                      algorithm.dtm = "knnidw", res.dtm = 0.2, 
-                      csf = list(cloth_resolution = 0.5),
-                      
-                      dbh.min = 7, dbh.max = 200, h.min = 1.3,
-                      tls.resolution = tls.resolution,
-                      ncr.threshold = 0.05,
-                      breaks = 1.3,
-                      stem.section = c(0.5, 4),
-                      d.top = NULL, plot.attributes = NULL,
-                      dir.data = dir.data, save.result = FALSE, dir.result = NULL)
+center.coord <- data.frame(id = id,
+                           x = rep(0, length(id)),
+                           y = rep(0, length(id)))
+
+tree.tls <- tree.detection.several.plots(las.list = c("PinusSylvestris1.laz",
+                                                      "PinusSylvestris2.laz"),
+                                         id.list = id,
+                                         center.coord = center.coord,
+                                         tls.resolution = list(point.dist = 7.67, tls.dist = 10),
+                                         max.dist = 7.5,
+                                         threads = parallel::detectCores())
 ```
 
 The names of the .las files have to be introduced as a character vector in **`las.list`**. Optionally, vectors with the plot identification numbers and the file names can be specified in **`id`** and **`file`**. If not specified, the plots will be named with correspondent numbers from 1 to n plots (`id`) and their respective `id` in "id.txt" as file names. The other arguments can be specified as explained in the sections above. 

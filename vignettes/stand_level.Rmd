@@ -1,10 +1,10 @@
 ---
-title: "Stand-level"
+title: "Stand-level variables"
 author: "Anika Seppelt"
 #date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{2. Stand-level}
+  %\VignetteIndexEntry{Stand-level variables}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

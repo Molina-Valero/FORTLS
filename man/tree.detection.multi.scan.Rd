@@ -15,7 +15,7 @@ tree.detection.multi.scan(data, single.tree = NULL,
                           tls.precision = NULL,
                           stem.section = c(0.7, 3.5), stem.range = NULL, breaks = NULL,
                           slice = 0.1, understory = NULL, bark.roughness = 1,
-                          den.type = 1, d.top = NULL,
+                          den.type = 1, d.mer = NULL,
                           segmentation = NULL,
                           plot.attributes = NULL, plot = TRUE,
                           threads = 1,
@@ -51,7 +51,7 @@ tree.detection.multi.scan(data, single.tree = NULL,
 
   \item{den.type}{Numeric argument indicating the dendrometic type used to estimate volumen when there are not sections enough to fit a taper equation. Dendrometrics types available are the following: cylinder = 0, paraboloid = 1 (by default), cone = 2 and neiloid = 3.}
 
-  \item{d.top}{Top stem diameter (cm) considered to estimate commercial timber volume.}
+  \item{d.mer}{Top stem diameter (cm) considered to estimate commercial timber volume.}
 
   \item{segmentation}{Tree segmentation.}
 
@@ -105,11 +105,11 @@ Local surface variation (also known as normal change rate ,NCR), is a quantitati
 
 \item{\emph{h}}{estimated tree total height (m).}
 
-\item{\emph{h.com}}{estimated commercial tree height (m) according to the top diameter defined in the argument \code{d.top}.}
+\item{\emph{h.com}}{estimated commercial tree height (m) according to the top diameter defined in the argument \code{d.mer}.}
 
 \item{\emph{v}}{estimated tree stem volume (m^3).}
 
-\item{\emph{v.com}}{estimated commercial tree stem volume (m^3) according to the top diameter defined in the argument \code{d.top}.}
+\item{\emph{v.com}}{estimated commercial tree stem volume (m^3) according to the top diameter defined in the argument \code{d.mer}.}
 
 \item{\emph{SS.max}}{Maximum sagitta (see Prendes et al. (2022)).}
 
@@ -195,10 +195,6 @@ pcd <- normalize(las = "PiceaAbies.laz",
 # Tree detection without considering arguments
 
 tree.tls <- tree.detection.multi.scan(data = pcd,
-
-                                      tls.precision = 0.05,
-
-                                      slice = 0.2,
 
                                       threads = 2,
 

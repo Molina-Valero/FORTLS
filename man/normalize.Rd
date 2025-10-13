@@ -19,6 +19,7 @@ normalize(las, normalized = NULL,
           intensity = NULL, RGB = NULL,
           scan.approach = "single",
           voxel_size = NULL,
+          threads = 1,
           id = NULL, file = NULL, plot = TRUE,
           dir.data = NULL, save.result = TRUE, dir.result = NULL,
           save.las = NULL)}
@@ -64,6 +65,8 @@ normalize(las, normalized = NULL,
   \item{scan.approach}{Character parameter indicating TLS single-scan (\sQuote{single}) or TLS multi-scan approach or SLAM point clouds (\sQuote{multi}) approaches. If this argument is not specified by the user, it will be set to \sQuote{single} approach.}
 
   \item{voxel_size}{Defines the size of the 3D grid cells used for downsampling.}
+
+  \item{threads}{Number of threads.}
 
   \item{id}{Optional plot identification encoded as character string or numeric. If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, the plot will be encoded as 1.}
 
