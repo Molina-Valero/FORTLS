@@ -10,7 +10,8 @@ install_fortls_python_deps <- function(envname = "fortls_env", method = "auto") 
   }
 
   reticulate::py_install(
-    packages = c("pandas", "numpy", "jakteristics"),  # Add more as needed
+    # packages = c("pandas", "numpy", "jakteristics"),  # Add more as needed
+    packages = c("numpy"),  # Add more as needed
     envname = envname,
     method = method,
     pip = TRUE

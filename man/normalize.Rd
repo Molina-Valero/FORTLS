@@ -215,6 +215,8 @@ pcd <- normalize(las = "PiceaAbies.laz",
 
                  scan.approach = "multi",
 
+                 threads = 2,
+
                  dir.data = dir.data, dir.result = dir.result)
 
   }
