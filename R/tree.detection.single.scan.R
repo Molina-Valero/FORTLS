@@ -108,13 +108,6 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   noise <- noise[, c("id", "file", "x", "y", "z", "rho")]
 
 
-  # 2. Defining the vertical section in which trees are detected
-  # Applying +/- geo.dist as a buffer to compute geometric features properly
-
-
-  stem <- woody[woody$z > stem.section[1] - geo.dist & woody$z < stem.section[2] + geo.dist, ]
-
-
 
   # 3. Computing geometric features
 
@@ -122,65 +115,49 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   threads <- max(1, threads)
 
-  # VerSur <- geometric.features(data = stem,
-  #                              approximate_KNN = FALSE,
-  #                              features = c("verticality", "surface_variation", "planarity"),
-  #                              dist = geo.dist,
-  #                              threads = threads,
-  #                              keep_NaN = FALSE,            # this means, when we run the Rcpp code we don't ex <- ude computed rows if 1 of the features is NA. If we have to compute 13 features and 1 is NA, then we keep this row
-  #                              verbose = TRUE,
-  #                              solver_threshold = 50000)
-  #
-  # if(is.null(VerSur$verticality) | is.null(VerSur$surface_variation) | is.null(VerSur$planarity)){
-  #
-  #   VerSur$verticality <- NA
-  #   VerSur$surface_variation <- NA
-  #   VerSur$planarity <- NA
-  #
-  # }
+  GeometricFeatures <- geometric_features_dist(points = as.matrix(woody[, c("point", "x", "y", "z")]),
+                                               dist = geo.dist,
+                                               Planarity = TRUE,
+                                               Surface_variation = TRUE,
+                                               Verticality = TRUE,
+                                               num_threads = threads)
 
-  VerSur <- geometric_features_py(data = stem,
-                                  dist = geo.dist,
-                                  threads = as.integer(threads))
+  # GeometricFeatures <- geometric_features_py(data = stem,
+  #                                            dist = geo.dist,
+  #                                            threads = as.integer(threads))
 
 
   # Retaining those points within the vertical section defined in the arguments
 
-  stem <- stem[stem$z > stem.section[1] & stem$z < stem.section[2], ]
+  woody <- merge(woody, GeometricFeatures[, c("point", "Planarity", "Surface_variation", "Verticality")], by = "point")
 
-  stem <- merge(stem, VerSur[, c("point", "verticality", "surface_variation", "planarity")], by = "point")
-
-  rm(VerSur)
+  rm(GeometricFeatures)
 
 
 
   # 4. Retention of points with high verticality
 
-  stem <- stem[stem$verticality > 0.7, ]
-
-
-  # Keeping only points with high verticality, planarity & low surface variation
-  # within the vertical section defined in the arguments in the whole point cloud
-
-  woody <- woody[woody$z <= stem.section[1] | woody$z >= stem.section[2], ]
-  woody <- rbind(woody, stem[, 1:ncol(woody)])
+  woody <- woody[woody$Verticality > 0.7, ]
 
 
   # 5. Retention of points with low surface variation
 
-  stem$surface_variation <- stem$surface_variation / 0.33
-  stem$surface_variation <- ifelse(is.na(stem$surface_variation), stats::runif(1), stem$surface_variation)
-  stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
-  stem <- stem[stem$surface_variation < stem$prob.ver, ]
+  woody$Surface_variation <- woody$Surface_variation / 0.33
+  woody$Surface_variation <- ifelse(is.na(woody$Surface_variation), stats::runif(1), woody$Surface_variation)
+  woody$prob.ver <- stats::runif(nrow(woody), min = 0, max = 1)
+  woody <- woody[woody$Surface_variation < woody$prob.ver, ]
+  # woody <- woody[woody$Surface_variation < 0.95, ]
 
 
   # 6. Retention of points with high planarity
 
-  stem <- stem[stem$planarity > 0.05, ]
-
+  # woody$Planarity <- ifelse(is.na(woody$Planarity), stats::runif(1), woody$Planarity)
+  woody <- woody[woody$Planarity > 0.05, ]
 
 
   # 7. Retention of high points
+
+  stem <- woody[woody$z > stem.section[1] & woody$z < stem.section[2], c("x", "y", "z", "prob.selec")]
 
   stem$ver <- (stem$z - stem.section[1]) / (stem.section[2] - stem.section[1])
   stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
@@ -360,70 +337,10 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     cuts <- breaks[i]
 
 
-    .cut <- woody[woody$z > (cuts - 2 * slice - geo.dist) & woody$z < cuts + geo.dist, , drop = FALSE]
-
-
-    if(nrow(.cut) < 50){next}
-
-
-    if(cuts <= stem.section[1] | cuts >= stem.section[2]){
-
-      # VerSur <- geometric.features(data = .cut,
-      #                              approximate_KNN = FALSE,
-      #                              features = c("verticality", "surface_variation", "planarity"),
-      #                              dist = geo.dist,
-      #                              threads = threads,
-      #                              keep_NaN = FALSE,            # this means, when we run the Rcpp code we don't exclude computed rows if 1 of the features is NA. If we have to compute 13 features and 1 is NA, then we keep this row
-      #                              verbose = FALSE,
-      #                              solver_threshold = 50000)
-      #
-      # if(is.null(VerSur$verticality) | is.null(VerSur$surface_variation) | is.null(VerSur$planarity)){
-      #
-      #   VerSur$verticality <- NA
-      #   VerSur$surface_variation <- NA
-      #   VerSur$planarity <- NA
-      #
-      # }
-
-      VerSur <- geometric_features_py(data = .cut,
-                                      dist = geo.dist,
-                                      threads = as.integer(threads))
-
-
-      VerSur <- VerSur[!duplicated(VerSur$point), ]
-
-      .cut <- merge(.cut, VerSur[, c("point", "verticality", "surface_variation", "planarity")], by = "point")
-
-      rm(VerSur)
-
-      # Retention of points with high verticality
-
-      .cut <- .cut[.cut$verticality > 0.7, ]
-
-
-      # Retention of points with low surface variation
-
-      .cut$surface_variation <- .cut$surface_variation / 0.33
-      .cut$surface_variation <- ifelse(is.na(.cut$surface_variation), stats::runif(1), .cut$surface_variation)
-      .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
-      .cut <- .cut[.cut$surface_variation < .cut$prob.ver, ]
-
-
-      # Retention of points with high planarity
-
-      .cut <- .cut[.cut$planarity > 0.05, ]
-
-    }
+    .cut <- woody[woody$z > (cuts - 2 * slice) & woody$z < cuts, , drop = FALSE]
 
     if(nrow(.cut) < 25){next}
 
-
-    # Restrict to slice corresponding to cuts m +/- 5 cm
-
-    .cut <- .cut[.cut$z > (cuts - 2 * slice) & .cut$z < cuts, , drop = FALSE]
-
-
-    if(nrow(.cut) < 25){next}
 
 
     # DBSCAN parameters
@@ -481,61 +398,10 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     if(!is.null(stem.2)){
 
-      .cut <- stem.2[stem.2$z > (cuts - 2 * slice - geo.dist) & stem.2$z < cuts + geo.dist, , drop = FALSE]
-
-
-      if(nrow(.cut) < 50){next}
-
-
-      if(cuts <= stem.section[1] | cuts >= stem.section[2]){
-
-        VerSur <- geometric.features(data = .cut,
-                                     approximate_KNN = FALSE,
-                                     features = c("verticality", "surface_variation"),
-                                     dist = geo.dist,
-                                     threads = threads,
-                                     keep_NaN = FALSE,            # this means, when we run the Rcpp code we don't exclude computed rows if 1 of the features is NA. If we have to compute 13 features and 1 is NA, then we keep this row
-                                     verbose = FALSE,
-                                     solver_threshold = 50000)
-
-        if(is.null(VerSur$verticality) | is.null(VerSur$surface_variation)){
-
-          VerSur$verticality <- NA
-          VerSur$surface_variation <- NA
-
-        }
-
-        .cut <- merge(.cut, VerSur[, c("point", "verticality", "surface_variation")], by = "point")
-
-        rm(VerSur)
-
-        # Retention of points with high verticality
-
-        .cut <- .cut[.cut$verticality > 0.7, ]
-
-
-        # Retention of points with low surface variation
-
-        .cut$surface_variation <- .cut$surface_variation / 0.33
-        .cut$surface_variation <- ifelse(is.na(.cut$surface_variation), stats::runif(1), .cut$surface_variation)
-        .cut$prob.ver <- stats::runif(nrow(.cut), min = 0, max = 1)
-        .cut <- .cut[.cut$surface_variation < .cut$prob.ver, ]
-
-
-        # Retention of points with high planarity
-
-        .cut <- .cut[.cut$planarity > 0.05, ]
-
-      }
+      .cut <- woody[woody$z > (cuts - 2 * slice) & woody$z < cuts, , drop = FALSE]
 
       if(nrow(.cut) < 25){next}
 
-
-      # Restrict to slice corresponding to cuts m +/- 5 cm
-
-      .cut <- .cut[.cut$z > (cuts - 2 * slice) & .cut$z < cuts, , drop = FALSE]
-
-      if(nrow(.cut) < 25){next}
 
       # DBSCAN parameters
 

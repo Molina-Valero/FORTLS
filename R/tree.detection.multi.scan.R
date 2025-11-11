@@ -76,7 +76,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   woody <- merge(data, woody[, c("x", "y", "z")], by = c("x", "y", "z"), all = FALSE)
 
 
-  # 3. Computing geometric features
+  # 2. Computing geometric features (Planarity, Surface_variation and Verticality)
 
   message("Retention of points with high verticality & low surface variation")
 
@@ -97,52 +97,32 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
 
 
-  # Retaining those points within the vertical section defined in the arguments
-
   woody <- merge(woody, GeometricFeatures[, c("point", "Planarity", "Surface_variation", "Verticality")], by = "point")
 
   rm(GeometricFeatures)
 
 
 
-  # 4. Retention of points with high verticality
+  # 3. Retention of points with high verticality
 
-  # woody$Verticality <- ifelse(is.na(woody$Verticality), stats::runif(1), woody$Verticality)
   woody <- woody[woody$Verticality > 0.7, ]
 
 
-  # 5. Retention of points with low surface variation
+  # 4. Retention of points with low surface variation
 
   woody$Surface_variation <- woody$Surface_variation / 0.33
   woody$Surface_variation <- ifelse(is.na(woody$Surface_variation), stats::runif(1), woody$Surface_variation)
   woody$prob.ver <- stats::runif(nrow(woody), min = 0, max = 1)
   woody <- woody[woody$Surface_variation < woody$prob.ver, ]
-  # woody <- woody[woody$Surface_variation < 0.95, ]
 
 
-  # 6. Retention of points with high planarity
+  # 6. Remove points with very hight planarity
 
-  # woody$Planarity <- ifelse(is.na(woody$Planarity), stats::runif(1), woody$Planarity)
   woody <- woody[woody$Planarity > 0.05, ]
 
 
-  # Keeping only points with high verticality, planarity & low surface variation
-  # within the vertical section defined in the arguments in the whole point cloud
 
-  # GeometricFeatures <- geometric_features_dist(points = as.matrix(woody[, c("point", "x", "y", "z")]),
-  #                                              dist = geo.dist,
-  #                                              Verticality = TRUE,
-  #                                              num_threads = threads)
-  #
-  # woody <- merge(woody, GeometricFeatures[, c("point", "Verticality")], by = "point")
-  #
-  # rm(GeometricFeatures)
-  #
-  # woody <- woody[woody$Verticality > 0.7, ]
-
-
-
-  # 7. Retention of high points
+  # 6. Retention of high points in the stem section defined
 
   stem <- woody[woody$z > stem.section[1] & woody$z < stem.section[2], c("x", "y", "z", "prob.selec")]
 
@@ -151,18 +131,22 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
   stem <- stem[stem$ver > stem$prob.ver, ]
 
+
   # Detection of regions of high point density ----
 
   message("Detection of tree stem axes")
 
   # Reducing point density to 50% approx.
 
-  stem <- stem[stem$prob.selec == 1, ]
-
+  # stem <- stem[stem$prob.selec == 1, ]
 
   if(is.null(tls.precision)){
   stem <- VoxR::vox(stem[, c("x", "y", "z")], res = 0.03)} else {
     stem <- VoxR::vox(stem[, c("x", "y", "z")], res = tls.precision)}
+
+  stem$cluster <- dbscan::dbscan(stem[, c("x", "y", "z"), drop = FALSE], eps = .dbh.min, minPts = 2)$cluster
+  stem <- stem[stem$cluster > 0, , drop = FALSE]
+
   stem <- stem[, c("x", "y", "z", "npts")]
 
 
@@ -176,6 +160,9 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
 
   stem <- stem[stem$npts > mean(stem$npts) & stem$nvox > mean(stem$nvox) & stem$ratio > mean(stem$ratio), ]
+
+  stem$cluster <- dbscan::dbscan(stem[, c("x", "y"), drop = FALSE], eps = .dbh.min, minPts = 2)$cluster
+  stem <- stem[stem$cluster > 0, , drop = FALSE]
 
 
   if(!is.null(understory))
@@ -368,7 +355,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     # Checking if there are clusters
 
-    if(nrow(.cut) < 1){next}
+    if(nrow(.cut) < 25){next}
 
     # Assigning section to the slice
 
