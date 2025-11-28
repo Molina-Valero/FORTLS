@@ -1,7 +1,7 @@
 Package: FORTLS
 Title: Automatic Processing of Terrestrial-Based Technologies Point Cloud Data for Forestry Purposes
-Version: 1.6.1
-Date: 2025-10-13
+Version: 1.6.2
+Date: 2025-11-18
 Authors@R: c(
     person("Juan Alberto", "Molina-Valero", role = c("aut", "cph", "cre"),
     email = "jamolinavalero@gmail.com"),
@@ -22,7 +22,7 @@ URL: https://molina-valero.github.io/FORTLS/, https://github.com/Molina-Valero/F
 BugReports: https://github.com/Molina-Valero/FORTLS/issues
 License: GPL-3
 Depends: R (>= 4.1.0)
-Imports: data.table, dbscan, Distance, glue, htmlwidgets, lidR, methods, moments, parallel, plotly, progress, raster, Rcpp(>= 1.0.10), RCSF, reticulate, scales, sf, tidyr, VoxR, vroom
+Imports: data.table, dbscan, Distance, htmlwidgets, lidR, methods, moments, parallel, plotly, progress, raster, Rcpp(>= 1.0.10), RCSF, reticulate, scales, sf, tidyr, VoxR, vroom
 Suggests: devtools, kableExtra, knitr, rmarkdown, systemfonts, testthat
 LinkingTo: Rcpp, RcppArmadillo, RcppEigen
 Encoding: UTF-8

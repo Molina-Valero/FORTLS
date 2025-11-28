@@ -10,7 +10,7 @@ The elements of the list are as follows:
     \item \code{tree.tls}: data frame that includes the list of trees detected with \code{\link{tree.detection.single.scan}} for 16 TLS single-scan sampling points. The following
 variables are provided for each tree (see \code{\link{tree.detection.single.scan}} \sQuote{Value} for more details):
 
-\tabular{rlll}{
+\tabular{rll}{
 [,1] \tab id   \tab character/numeric\cr
 [,2] \tab file   \tab character\cr
 [,3] \tab tree    \tab numeric\cr
