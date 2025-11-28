@@ -47,37 +47,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// geometric_features_knn
-Rcpp::DataFrame geometric_features_knn(Rcpp::NumericMatrix points, int k, bool Anisotropy, bool Eigenentropy, bool Eigenvalue_sum, bool First_eigenvalue, bool Linearity, bool Normal_x, bool Normal_y, bool Normal_z, bool Number_of_points, bool Omnivariance, bool PCA_1, bool PCA_2, bool Planarity, bool Second_eigenvalue, bool Sphericity, bool Surface_variation, bool Third_eigenvalue, bool Verticality, int num_threads);
-RcppExport SEXP _FORTLS_geometric_features_knn(SEXP pointsSEXP, SEXP kSEXP, SEXP AnisotropySEXP, SEXP EigenentropySEXP, SEXP Eigenvalue_sumSEXP, SEXP First_eigenvalueSEXP, SEXP LinearitySEXP, SEXP Normal_xSEXP, SEXP Normal_ySEXP, SEXP Normal_zSEXP, SEXP Number_of_pointsSEXP, SEXP OmnivarianceSEXP, SEXP PCA_1SEXP, SEXP PCA_2SEXP, SEXP PlanaritySEXP, SEXP Second_eigenvalueSEXP, SEXP SphericitySEXP, SEXP Surface_variationSEXP, SEXP Third_eigenvalueSEXP, SEXP VerticalitySEXP, SEXP num_threadsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type points(pointsSEXP);
-    Rcpp::traits::input_parameter< int >::type k(kSEXP);
-    Rcpp::traits::input_parameter< bool >::type Anisotropy(AnisotropySEXP);
-    Rcpp::traits::input_parameter< bool >::type Eigenentropy(EigenentropySEXP);
-    Rcpp::traits::input_parameter< bool >::type Eigenvalue_sum(Eigenvalue_sumSEXP);
-    Rcpp::traits::input_parameter< bool >::type First_eigenvalue(First_eigenvalueSEXP);
-    Rcpp::traits::input_parameter< bool >::type Linearity(LinearitySEXP);
-    Rcpp::traits::input_parameter< bool >::type Normal_x(Normal_xSEXP);
-    Rcpp::traits::input_parameter< bool >::type Normal_y(Normal_ySEXP);
-    Rcpp::traits::input_parameter< bool >::type Normal_z(Normal_zSEXP);
-    Rcpp::traits::input_parameter< bool >::type Number_of_points(Number_of_pointsSEXP);
-    Rcpp::traits::input_parameter< bool >::type Omnivariance(OmnivarianceSEXP);
-    Rcpp::traits::input_parameter< bool >::type PCA_1(PCA_1SEXP);
-    Rcpp::traits::input_parameter< bool >::type PCA_2(PCA_2SEXP);
-    Rcpp::traits::input_parameter< bool >::type Planarity(PlanaritySEXP);
-    Rcpp::traits::input_parameter< bool >::type Second_eigenvalue(Second_eigenvalueSEXP);
-    Rcpp::traits::input_parameter< bool >::type Sphericity(SphericitySEXP);
-    Rcpp::traits::input_parameter< bool >::type Surface_variation(Surface_variationSEXP);
-    Rcpp::traits::input_parameter< bool >::type Third_eigenvalue(Third_eigenvalueSEXP);
-    Rcpp::traits::input_parameter< bool >::type Verticality(VerticalitySEXP);
-    Rcpp::traits::input_parameter< int >::type num_threads(num_threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(geometric_features_knn(points, k, Anisotropy, Eigenentropy, Eigenvalue_sum, First_eigenvalue, Linearity, Normal_x, Normal_y, Normal_z, Number_of_points, Omnivariance, PCA_1, PCA_2, Planarity, Second_eigenvalue, Sphericity, Surface_variation, Third_eigenvalue, Verticality, num_threads));
-    return rcpp_result_gen;
-END_RCPP
-}
 // fit_circle_cpp_modified
 arma::mat fit_circle_cpp_modified(arma::mat points);
 RcppExport SEXP _FORTLS_fit_circle_cpp_modified(SEXP pointsSEXP) {
@@ -258,7 +227,6 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_FORTLS_geometric_features_dist", (DL_FUNC) &_FORTLS_geometric_features_dist, 25},
-    {"_FORTLS_geometric_features_knn", (DL_FUNC) &_FORTLS_geometric_features_knn, 21},
     {"_FORTLS_fit_circle_cpp_modified", (DL_FUNC) &_FORTLS_fit_circle_cpp_modified, 1},
     {"_FORTLS_is_one_row_all_na", (DL_FUNC) &_FORTLS_is_one_row_all_na, 1},
     {"_FORTLS_sample_indices", (DL_FUNC) &_FORTLS_sample_indices, 2},

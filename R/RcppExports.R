@@ -5,10 +5,6 @@ geometric_features_dist <- function(points, dist, Anisotropy = FALSE, Eigenentro
     .Call(`_FORTLS_geometric_features_dist`, points, dist, Anisotropy, Eigenentropy, Eigenvalue_sum, First_eigenvalue, Linearity, Normal_x, Normal_y, Normal_z, Number_of_points, Omnivariance, PCA_1, PCA_2, Planarity, Second_eigenvalue, Sphericity, Surface_density, Surface_variation, Third_eigenvalue, Verticality, Volume_density, num_threads, use_spatial_index, grid_cell_size)
 }
 
-geometric_features_knn <- function(points, k = 30L, Anisotropy = FALSE, Eigenentropy = FALSE, Eigenvalue_sum = FALSE, First_eigenvalue = FALSE, Linearity = FALSE, Normal_x = FALSE, Normal_y = FALSE, Normal_z = FALSE, Number_of_points = FALSE, Omnivariance = FALSE, PCA_1 = FALSE, PCA_2 = FALSE, Planarity = FALSE, Second_eigenvalue = FALSE, Sphericity = FALSE, Surface_variation = FALSE, Third_eigenvalue = FALSE, Verticality = FALSE, num_threads = 0L) {
-    .Call(`_FORTLS_geometric_features_knn`, points, k, Anisotropy, Eigenentropy, Eigenvalue_sum, First_eigenvalue, Linearity, Normal_x, Normal_y, Normal_z, Number_of_points, Omnivariance, PCA_1, PCA_2, Planarity, Second_eigenvalue, Sphericity, Surface_variation, Third_eigenvalue, Verticality, num_threads)
-}
-
 fit_circle_cpp_modified <- function(points) {
     .Call(`_FORTLS_fit_circle_cpp_modified`, points)
 }
