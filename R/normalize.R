@@ -463,7 +463,7 @@ normalize <- function(las, normalized = NULL,
 
     .data.red <- .data[which(.data$prob.selec == 1), , drop = FALSE]
 
-    vroom::vroom_write(.data.red, path = file.path(dir.result, .data.red$file[1]), delim = ",", progress = FALSE)
+    vroom::vroom_write(.data.red, file = file.path(dir.result, .data.red$file[1]), delim = ",", progress = FALSE)
 
   }
 
