@@ -211,7 +211,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   # Assigning points to trees previously detected
 
   # stem <- data.frame(woody[woody$prob.selec == 1, ])
-  stem <- data.frame(woody[woody$z > stem.section[1] & woody$z < stem.section[2], ])
+  stem <- data.frame(woody[woody$z < stem.section[2], ])
   stem.3 <- sf::st_as_sf(stem, coords = c("x","y"))
 
   stem.3 <- sf::st_intersects(buf, stem.3)
@@ -447,7 +447,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   .taper <- .filter[, c("tree", "sec", "radius"), drop = FALSE]
 
-  .slope.tree <- data.frame(tree = as.numeric(), slope = as.numeric(), slope2 = as.numeric())
+  .slope.tree <- data.frame(tree = as.numeric(), slope = as.numeric())
 
   for(i in unique(.taper$tree)){
 
@@ -497,8 +497,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     .dat <- .filter[which(.filter$tree == i), ]
     .dat$dif <- abs(.dat$dif)
 
-    if(min(.dat$dif) > top.lim)
-      next
+    # if(min(.dat$dif) > top.lim)
+    #   next
 
     .dat <- .dat[order(.dat$dif), ]
 
@@ -577,8 +577,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     if(nrow(.dat) > 3)
       .dat <- .dat[1:3, ]
 
-    if(min(abs(.dat$dif)) > top.lim)
-      next
+    # if(min(abs(.dat$dif)) > top.lim)
+    #   next
 
     .filteraux <- rbind(.filteraux, .dat)
 
@@ -842,56 +842,38 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   # If only one tree is detected, Voronoi tessellation is not working
 
+  .tree$tree2 <- .tree$tree
+  .tree$tree <- 1:nrow(.tree)
+
   if(nrow(.tree) == 1){
 
     .P99 <- data.frame(tree = .tree$tree, h = stats::quantile(data$z, prob = 0.9999999999))
 
   } else {
 
-  # Voronoi tessellation
+    # 1. Build Voronoi polygons from tree positions
+    trees_sf <- sf::st_as_sf(.tree, coords = c("sec.x", "sec.y"))
+    voronoi  <- sf::st_collection_extract(sf::st_voronoi(sf::st_union(trees_sf)))
 
-  .tree.2 <- .tree[ , c("tree", "sec.x", "sec.y"), drop = FALSE]
-  .tree.2 <- .tree.2[!duplicated(.tree.2$sec.x) & !duplicated(.tree.2$sec.y), ]
-  colnames(.tree.2) <- c("tree", "x", "y")
-  .tree.2$tree <- 1:nrow(.tree.2)
+    # 2. Assign each Voronoi cell back to its tree
+    tree_idx <- unlist(sf::st_intersects(voronoi, trees_sf))
+    voronoi  <- sf::st_as_sf(data.frame(tree = .tree$tree[tree_idx], geometry = sf::st_geometry(voronoi)))
 
-  .sec <- .tree[ , c("tree", "sec.max", "radius"), drop = FALSE]
-  .sec$tree <- 1:nrow(.sec)
+    # 3. Assign each point cloud point to a Voronoi cell
+    cloud_sf       <- sf::st_as_sf(data, coords = c("x", "y"))
+    cloud_sf$tree  <- unlist(sf::st_intersects(cloud_sf, voronoi))  # NA if outside all cells
 
-  .voro <- data[, c("x", "y", "z")]
-  .voro <- sf::st_as_sf(.voro, coords = c("x", "y"))
+    # 4. Compute P99.9 per tree
+    .P99 <- lapply(unique(voronoi$tree), function(id) {
+      sec.max <- .tree$sec.max[.tree$tree == id]
+      z       <- cloud_sf$z[cloud_sf$tree == id & cloud_sf$z > sec.max]
+      if (length(z) < 1) return(data.frame(tree = id, h = 0))
+      h <- height_perc_cpp(rho_seq = Inf, z = z, rho = z)[, "P99.9"]
+      data.frame(tree = id, h = h)
+    })
+    .P99 <- do.call(rbind, .P99)
 
-  .tree.2 <- sf::st_as_sf(.tree.2, coords = c("x", "y"))
-  .voronoi <- sf::st_buffer(.tree.2, dist = .sec$radius * 3)
-  .voro <- suppressWarnings(sf::st_intersection(.voro, .voronoi))
-
-  .voronoi <- sf::st_collection_extract(sf::st_voronoi(do.call(c, sf::st_geometry(.tree.2))))
-
-  .tree.3 <- sf::st_intersects(.voronoi, .tree.2)
-  .tree.3 <- data.frame(id = 1:length(.tree.3),
-                        tree = unlist(.tree.3, recursive = TRUE, use.names = TRUE))
-  .tree.3 <- merge(.tree.3, .sec, by = "tree")
-  .voro$tree <- unlist(sf::st_intersects(.voro, .voronoi))
-
-
-  # Compute height percentile P99.9
-  .P99 <- sapply(sort(unique(.tree.3$id)),
-                 function(id, voro, tree.3) {
-                   sec.max <- .tree.3[.tree.3$id == id, "sec.max"]
-                   z <- voro$z[voro$tree == id & voro$z > sec.max]
-                   if(length(z) < 1) {
-                     P99 <- 0
-                     names(P99) <- tree.3[tree.3$id == id, "tree"]
-                   } else {
-                     P99 <-
-                       height_perc_cpp(rho_seq = Inf, z = z, rho = z)[, "P99.9"]
-                     names(P99) <- tree.3[tree.3$id == id, "tree"]}
-                   return(P99)
-                 },
-                 voro = .voro, tree.3 = .tree.3)
-  .P99 <- data.frame(tree = names(.P99), h = .P99)
-
-  rm(.tree.2, .tree.3, .voro)
+    rm(trees_sf, tree_idx, voronoi)
 
   }
 
@@ -908,7 +890,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   # Assigning dbh to stem dataset
 
-  .tree$tree2 <- .tree$tree
+  # .tree$tree2 <- .tree$tree
   .tree <- .tree[order(.tree$rho), ]
   .tree$tree <- 1:nrow(.tree)
 
