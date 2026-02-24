@@ -57,7 +57,7 @@ pcd.single <- normalize(las = "PinusRadiata.laz",
                         x.center = 0, y.center = 0,
                         max.dist = 10, 
                         scan.approach = "single",
-                        threads = parallel::detectCores())
+                        threads = 2)
 ```
 
 The name of the .las or .laz file containing the point cloud data is introduced in **`las`** argument and must include the .las/.laz extension. Optionally, the plot identification number (**`id`**) and the file name (**`file`**) can be defined. Both are set to `NULL` by default, which assigns `1` to the plot identification number and `1.txt` (same name as the identification number) to the reduced point cloud saved in the working directory specified in `dir.result`.
@@ -108,7 +108,7 @@ tls.resolution = list(point.dist = 6.34, tls.dist = 10)
 
 tree.list.single.tls <- tree.detection.single.scan(data = pcd.single,
                                                    tls.resolution = tls.resolution,
-                                                   threads = parallel::detectCores())
+                                                   threads = 2)
 ```
 
 The normalized and reduced point cloud, i.e. the output of the `normalize` function, is the input data frame for this function (**`data`**). The different arguments that can be specified are explained below.
@@ -178,11 +178,11 @@ pcd.multi <- normalize(las = "PiceaAbies.laz",
                        id = "PiceaAbies",
                        x.center = 0, y.center = 0,
                        scan.approach = "multi",
-                       threads = parallel::detectCores())
+                       threads = 2)
 
 tree.list.multi.tls <- tree.detection.multi.scan(data = pcd.multi,
                                                  d.mer = 20,
-                                                 threads = parallel::detectCores())
+                                                 threads = 2)
 ```
 
 The function `tree.detection.multi.scan` comes along with the same arguments as the function `tree.detection.single.scan`, which are described in "Data from TLS single-scan approach". However, instead of specifying the resolution, the precision of the TLS (in m) can be defined in `tls.precision`. If not defined, the default value is 0.03 m. The procedure remains the same and the output data frame contains the all the columns explained above:
@@ -225,7 +225,7 @@ tree.tls <- tree.detection.several.plots(las.list = c("PinusSylvestris1.laz",
                                          center.coord = center.coord,
                                          tls.resolution = list(point.dist = 7.67, tls.dist = 10),
                                          max.dist = 7.5,
-                                         threads = parallel::detectCores())
+                                         threads = 2)
 ```
 
 The names of the .las files have to be introduced as a character vector in **`las.list`**. Optionally, vectors with the plot identification numbers and the file names can be specified in **`id`** and **`file`**. If not specified, the plots will be named with correspondent numbers from 1 to n plots (`id`) and their respective `id` in "id.txt" as file names. The other arguments can be specified as explained in the sections above. 
