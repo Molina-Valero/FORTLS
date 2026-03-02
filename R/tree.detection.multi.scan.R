@@ -856,8 +856,13 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     voronoi  <- sf::st_collection_extract(sf::st_voronoi(sf::st_union(trees_sf)))
 
     # 2. Assign each Voronoi cell back to its tree
-    tree_idx <- unlist(sf::st_intersects(voronoi, trees_sf))
-    voronoi  <- sf::st_as_sf(data.frame(tree = .tree$tree[tree_idx], geometry = sf::st_geometry(voronoi)))
+    # tree_idx <- unlist(sf::st_intersects(voronoi, trees_sf))
+    # voronoi  <- sf::st_as_sf(data.frame(tree = .tree$tree[tree_idx], geometry = sf::st_geometry(voronoi)))
+    tree_idx <- sf::st_nearest_feature(voronoi, trees_sf)   # length == nrow(voronoi), guaranteed
+    voronoi  <- sf::st_as_sf(data.frame(
+      tree     = .tree$tree[tree_idx],
+      geometry = sf::st_geometry(voronoi)
+    ))
 
     # 3. Assign each point cloud point to a Voronoi cell
     cloud_sf       <- sf::st_as_sf(data, coords = c("x", "y"))
