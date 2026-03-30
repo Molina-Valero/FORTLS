@@ -352,7 +352,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     cuts <- breaks[i]
 
 
-    .cut <- woody[woody$z > (cuts - 2 * slice) & woody$z < cuts, , drop = FALSE]
+    .cut <- woody[woody$z > (cuts - slice) & woody$z < (cuts + slice), , drop = FALSE]
 
     if(nrow(.cut) < 25){next}
 
@@ -413,7 +413,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
     if(!is.null(stem.2)){
 
-      .cut <- woody[woody$z > (cuts - 2 * slice) & woody$z < cuts, , drop = FALSE]
+      .cut <- woody[woody$z > (cuts - slice) & woody$z < (cuts + slice), , drop = FALSE]
 
       if(nrow(.cut) < 25){next}
 

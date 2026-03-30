@@ -337,7 +337,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     cuts <- breaks[i]
 
 
-    .cut <- woody[woody$z > (cuts - 2 * slice) & woody$z < cuts, , drop = FALSE]
+    .cut <- woody[woody$z > (cuts - slice) & woody$z < (cuts + slice), , drop = FALSE]
 
     if(nrow(.cut) < 25){next}
 

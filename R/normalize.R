@@ -4,7 +4,7 @@ normalize <- function(las, normalized = NULL,
                       x.side = NULL, y.side = NULL,
                       xpoly = NULL, ypoly = NULL,
                       max.dist = NULL, min.height = NULL, max.height = 50,
-                      algorithm.dtm = "knnidw", res.dtm = 0.2,
+                      algorithm.dtm = "tin", res.dtm = 0.2,
                       csf = list(cloth_resolution = 0.5),
                       intensity = NULL, RGB = NULL,
                       scan.approach = "single",
@@ -36,7 +36,7 @@ normalize <- function(las, normalized = NULL,
 
   # Reading input (LAS file)
 
-  if(class(las)[1]=="LAS"){
+  if(inherits(las, "LAS")){
 
     las <- las
 
@@ -148,7 +148,7 @@ normalize <- function(las, normalized = NULL,
 
   # Normalize
 
-  data <- suppressWarnings(suppressMessages(lidR::classify_ground(las, algorithm = lidR::csf(cloth_resolution = csf$cloth_resolution), last_returns = FALSE)))
+  data <- suppressWarnings(suppressMessages(lidR::classify_ground(las, algorithm = lidR::csf(cloth_resolution = csf$cloth_resolution, class_threshold  = res.dtm), last_returns = FALSE)))
 
   pb$tick()
 
@@ -166,11 +166,21 @@ normalize <- function(las, normalized = NULL,
 
   dtm[dtm < min(data@data$Z)] <- NA
 
+
   pb$tick()
 
   # Estimating slope
 
-  raster::crs(dtm) <- "+proj=utm +zone=19 +ellps=GRS80 +datum=NAD83"
+  if(is.na(sf::st_crs(las))){
+
+    raster::crs(dtm) <- "+proj=utm +zone=19 +ellps=GRS80 +datum=NAD83"
+
+  } else {
+
+    raster::crs(dtm) <- sf::st_crs(las)
+
+  }
+
   slope <- raster::terrain(dtm, opt=c('slope'), unit='radians')
 
   pb$tick()
@@ -206,7 +216,22 @@ normalize <- function(las, normalized = NULL,
 
   # Normalization of cloud data
 
-  data <- suppressWarnings(suppressMessages(lidR::normalize_height(data, dtm, add_lasattribute = FALSE, na.rm = TRUE)))
+  if(algorithm.dtm == "knnidw"){
+
+      data <- suppressWarnings(suppressMessages(lidR::normalize_height(data, dtm, add_lasattribute = FALSE, na.rm = TRUE)))
+      # data <- suppressWarnings(suppressMessages(lidR::normalize_height(data, algorithm = lidR::knnidw(), use_class = c(2L, 9L), dtm = NULL)))
+
+  }
+
+  if(algorithm.dtm == "tin"){
+
+    data <- suppressWarnings(suppressMessages(lidR::normalize_height(data, dtm, add_lasattribute = FALSE, na.rm = TRUE)))
+    # data <- suppressWarnings(suppressMessages(lidR::normalize_height(data, algorithm = lidR::tin(), use_class = c(2L, 9L), dtm = NULL)))
+
+  }
+
+
+  data <- lidR::filter_poi(data, Z >= 0)
 
   rm(dtm)
 
@@ -264,179 +289,176 @@ normalize <- function(las, normalized = NULL,
 
   }
 
-  # Removing points classified as ground
-
-  data <- subset(data, data$Classification == 1)
-
+  # Removing points classified as ground - OPTIMIZED with data.table syntax
+  data <- data[Classification == 1]
 
 
-  # Extracting coordinates values
 
-  if(is.null(RGB) & is.null(intensity)){
-    data <- data[, c("X", "Y", "Z", "slope"), drop = FALSE]
-    colnames(data) <- c("x", "y", "z", "slope")}
-  else if (is.null(RGB) & !is.null(intensity)){
-    data <- data[, c("X", "Y", "Z", "slope", "Intensity"), drop = FALSE]
-    colnames(data) <- c("x", "y", "z", "slope", "intensity")}
-  else if (!is.null(RGB) & is.null(intensity)){
-    data <- data[, c("X", "Y", "Z", "slope", "R", "G", "B"), drop = FALSE]
-    colnames(data) <- c("x", "y", "z", "slope", "R", "G", "B")}
-  else{
-    data <- data[, c("X", "Y", "Z", "slope", "Intensity", "R", "G", "B"), drop = FALSE]
-    colnames(data) <- c("x", "y", "z", "slope", "intensity", "R", "G", "B")}
+  # Extracting coordinates values - OPTIMIZED to reduce redundancy
+  cols <- c("X", "Y", "Z", "slope")
+  col_names <- c("x", "y", "z", "slope")
 
-
-  # Low point filtering
-
-  if(!is.null(min.height)) {
-
-    data <- data[which(data$z > min.height), , drop = FALSE]
-
+  if (!is.null(intensity)) {
+    cols <- c(cols, "Intensity")
+    col_names <- c(col_names, "intensity")
   }
 
+  if (!is.null(RGB)) {
+    cols <- c(cols, "R", "G", "B")
+    col_names <- c(col_names, "R", "G", "B")
+  }
 
-  # High point filtering
+  data <- data[, cols, with = FALSE]
+  data.table::setnames(data, old = cols, new = col_names)
+
+
+  # Low and high point filtering - OPTIMIZED with data.table chaining
+  if(!is.null(min.height)) {
+    data <- data[z > min.height]
+  }
 
   if(!is.null(max.height)) {
-
-    data <- data[which(data$z < max.height), , drop = FALSE]
-
+    data <- data[z < max.height]
   }
 
-  # Transformation to other coordinate systems
+  # Transformation to other coordinate systems - OPTIMIZED
+  # Cylindrical coordinate system
+  # Pre-compute differences to avoid redundant calculations
+  dx <- data$x - x.center
+  dy <- data$y - y.center
 
-  # Cylindrical coordinate system (https://en.wikipedia.org/wiki/Cylindrical_coordinate_system)
-  # rho, axial distance or radial distance (euclidean distance from the z-axis to the point P)
-  # phi, azimuth is the angle between the reference direction on the chosen plane and the line from the origin to the projection of P on the plane
-  # z, axial coordinate or height z is the signed distance from the chosen plane to the point P
+  data[, rho := sqrt(dx^2 + dy^2)]
+  data[, phi := atan2(dy, dx)]
+  data[phi < 0, phi := phi + 2 * pi]
 
-  data$rho <- sqrt((data$x - x.center) ^ 2 + (data$y - y.center) ^ 2)
-  data$phi <- atan2(data$y - y.center, data$x - x.center)
-  data$phi <- ifelse(data$phi < 0, data$phi + (2 * pi), data$phi)
+  # Spherical coordinates system
+  data[, r := sqrt(z^2 + rho^2)]
+  data[, theta := atan2(z, rho)]
 
-  # Spherical coordinates system (https://en.wikipedia.org/wiki/Spherical_coordinate_system)
-  # r, radius or radial distance is the Euclidean distance from the origin O to P
-  # theta, inclination (or polar angle) is the angle between the zenith direction and the line segment OP
-  # phi, azimuth is the angle between the reference direction on the chosen plane and the line from the origin to the projection of P on the plane
-
-  data$r <- sqrt(data$z ^ 2 + data$rho ^ 2)
-  data$theta <- atan2(data$z, data$rho)
-
-  data$point <- as.integer((1:nrow(data)))
+  data[, point := .I]
 
 
   # Green Leaf Algorithm (GLA) (Louhaichi et al., (2001))
   if(!is.null(RGB))
-    data$GLA <- (2 * data$G - data$R - data$B) / (2 * data$G + data$R + data$B)
+    data[, GLA := (2 * G - R - B) / (2 * G + R + B)]
 
 
   # Point crooping process (TLS single-scan)
-  # This is a previous step to obtain a homogeneous density of points in the space
-  # This is based on the principle that closer objects (with the same size and shape)
-  # have more probability to receive points
 
   if(scan.approach == "single"){
 
-    data$prob <- (data$r / max(data$r)) ^ 2
-    data$prob.random <- stats::runif(nrow(data))
-    data$prob.selec <- as.integer(ifelse(data$prob > data$prob.random, 1, 0))}
+    data[, prob := (r / max(r))^2]
+    data[, prob.random := stats::runif(.N)]
+    data[, prob.selec := as.integer(prob > prob.random)]
+  }
 
 
   # For the rest of situations, point cloud is downsampled by voxelization
 
-  # if(scan.approach == "multi" & is.null(voxel_size))
-  #   voxel_size <- 0.01
-
-
   if(scan.approach == "multi" & !is.null(voxel_size)){
 
-    if(is.null(RGB) & is.null(intensity)){
-      data <- as.data.frame(voxel_grid_downsampling(as.matrix(data[, c("x", "y", "z", "slope")]), voxel_size))
-      colnames(data) <- c("x", "y", "z", "slope")}
+    # Determine columns for voxelization
+    voxel_cols <- c("x", "y", "z", "slope")
+    voxel_names <- c("x", "y", "z", "slope")
 
-    else if (is.null(RGB) & !is.null(intensity)){
-      data <- as.data.frame(voxel_grid_downsampling(as.matrix(data[, c("x", "y", "z", "slope", "intensity")]), voxel_size))
-      colnames(data) <- c("x", "y", "z", "slope", "intensity")}
+    if (!is.null(intensity)) {
+      voxel_cols <- c(voxel_cols, "intensity")
+      voxel_names <- c(voxel_names, "intensity")
+    }
 
-    else if (!is.null(RGB) & is.null(intensity)){
-      data <- as.data.frame(voxel_grid_downsampling(as.matrix(data[, c("x", "y", "z", "slope", "R", "G", "B", "GLA")]), voxel_size))
-      colnames(data) <- c("x", "y", "z", "slope", "R", "G", "B")}
+    if (!is.null(RGB)) {
+      voxel_cols <- c(voxel_cols, "R", "G", "B")
+      voxel_names <- c(voxel_names, "R", "G", "B")
+    }
 
-    else{
-      data <- as.data.frame(voxel_grid_downsampling(as.matrix(data[, c("x", "y", "z", "slope", "intensity", "R", "G", "B", "GLA")]), voxel_size))
-      colnames(data) <- c("x", "y", "z", "slope", "intensity", "R", "G", "B")}
+    data <- as.data.frame(voxel_grid_downsampling(as.matrix(data[, voxel_cols, with = FALSE]), voxel_size))
+    colnames(data) <- voxel_names
+    data <- data.table::setDT(data)
+
+    # Recalculate coordinates - OPTIMIZED (fixed bug: swapped arguments)
+    dx <- data$x - x.center
+    dy <- data$y - y.center
+
+    data[, rho := sqrt(dx^2 + dy^2)]
+    data[, phi := atan2(dy, dx)]  # BUGFIX: was atan2(dx, dy)
+    data[phi < 0, phi := phi + 2 * pi]
+    data[, r := sqrt(z^2 + rho^2)]
+    data[, theta := atan2(z, rho)]
+
+    data[, point := .I]
+  }
 
 
-    data$rho <- sqrt((data$x - x.center) ^ 2 + (data$y - y.center) ^ 2)
-    data$phi <- atan2(data$x - x.center, data$y - y.center)
-    data$phi <- ifelse(data$phi < 0, data$phi + (2 * pi), data$phi)
-    data$r <- sqrt(data$z ^ 2 + data$rho ^ 2)
-    data$theta <- atan2(data$z, data$rho)
-
-    data$point <- as.integer((1:nrow(data)))}
-
-
-    if(scan.approach == "multi"){
-
-    data$prob <- stats::runif(nrow(data))
-    data$prob.selec <- as.integer(ifelse(data$prob > 0.5, 1, 0))}
+  if(scan.approach == "multi"){
+    data[, prob := stats::runif(.N)]
+    data[, prob.selec := as.integer(prob > 0.5)]
+  }
 
 
   # Assign id
 
   if(!is.null(id)){
-
-    data$id <- id
-
+    data[, id := id]
   } else {
-
-    data$id <- as.integer(1)
-
+    data[, id := 1L]
   }
 
 
   # File name
 
   if(!is.null(file)){
-
-    data$file <- file
-
+    data[, file := file]
   } else {
-
-    data$file <- paste(data$id[1], ".txt", sep = "")
-
+    data[, file := paste0(id[1], ".txt")]
   }
 
-  if(is.null(RGB) & is.null(intensity)){
-    data <- data[, c("id", "file", "point", "x", "y", "z", "rho", "phi", "r", "theta", "slope", "prob", "prob.selec"), drop = FALSE]}
-  else if (is.null(RGB) & !is.null(intensity)){
-    data <- data[, c("id", "file", "point", "x", "y", "z", "rho", "phi", "r", "theta", "slope", "intensity", "prob", "prob.selec"), drop = FALSE]}
-  else if (!is.null(RGB) & is.null(intensity)){
-    data <- data[, c("id", "file", "point", "x", "y", "z", "rho", "phi", "r", "theta", "slope", "R", "G", "B", "GLA", "prob", "prob.selec"), drop = FALSE]}
-  else{data <- data[, c("id", "file", "point", "x", "y", "z", "rho", "phi", "r", "theta", "slope", "intensity", "R", "G", "B", "GLA", "prob", "prob.selec"), drop = FALSE]}
+  # Reorder columns - OPTIMIZED to reduce redundancy
+  final_cols <- c("id", "file", "point", "x", "y", "z", "rho", "phi", "r", "theta", "slope")
+
+  if (!is.null(intensity)) {
+    final_cols <- c(final_cols, "intensity")
+  }
+
+  if (!is.null(RGB)) {
+    final_cols <- c(final_cols, "R", "G", "B", "GLA")
+  }
+
+  final_cols <- c(final_cols, "prob", "prob.selec")
+
+  data <- data[, final_cols, with = FALSE]
 
   pb$tick()
 
 
-  # Adding the point of the plot center
+  # Adding the point of the plot center - OPTIMIZED direct creation
 
-  new_row <- data[1, ]
-  new_row[1, ] <- NA
+  new_row <- data.table::data.table(
+    id = data$id[1],
+    file = data$file[1],
+    point = 0L,
+    x = x.center,
+    y = y.center,
+    z = 0,
+    rho = 0,
+    phi = 0,
+    r = 0,
+    theta = 0,
+    slope = NA_real_,
+    prob = 1,
+    prob.selec = 1L
+  )
 
-  # Set specific values
+  # Add optional columns
+  if (!is.null(intensity)) {
+    new_row[, intensity := NA_real_]
+  }
 
-  new_row$id <- data$id[1]
-  new_row$file <- data$file[1]
-  new_row$point <- 0
-  new_row$x <- x.center
-  new_row$y <- y.center
-  new_row$z <- 0
-  new_row$rho <- 0
-  new_row$phi <- 0
-  new_row$r <- 0
-  new_row$theta <- 0
-  new_row$prob <- 1
-  new_row$prob.selec <- 1
+  if (!is.null(RGB)) {
+    new_row[, c("R", "G", "B", "GLA") := list(NA_real_, NA_real_, NA_real_, NA_real_)]
+  }
+
+  # Reorder to match data columns
+  data.table::setcolorder(new_row, names(data))
 
   # Bind it to the top of the existing data
   data <- rbind(new_row, data)
@@ -444,11 +466,9 @@ normalize <- function(las, normalized = NULL,
 
   # Saving data
 
-  # Obtaining working directory for saving files
-
   if(isTRUE(save.result)){
 
-    data.red <- data[which(data$prob.selec == 1), , drop = FALSE]
+    data.red <- data[prob.selec == 1]
 
     vroom::vroom_write(data.red, file = file.path(dir.result, data.red$file[1]), delim = ",", progress = FALSE)
 
