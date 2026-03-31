@@ -7,7 +7,7 @@ normalize <- function(las, normalized = NULL,
                       algorithm.dtm = "tin", res.dtm = 0.2,
                       csf = list(cloth_resolution = 0.5),
                       intensity = NULL, RGB = NULL,
-                      scan.approach = "single",
+                      scan.approach = "multi",
                       voxel_size = NULL,
                       threads = 1,
                       id = NULL, file = NULL, plot = TRUE,
@@ -148,7 +148,7 @@ normalize <- function(las, normalized = NULL,
 
   # Normalize
 
-  data <- suppressWarnings(suppressMessages(lidR::classify_ground(las, algorithm = lidR::csf(cloth_resolution = csf$cloth_resolution, class_threshold  = res.dtm), last_returns = FALSE)))
+  data <- suppressWarnings(suppressMessages(lidR::classify_ground(las, algorithm = lidR::csf(cloth_resolution = csf$cloth_resolution, class_threshold  = 0.1), last_returns = FALSE)))
 
   pb$tick()
 
@@ -190,7 +190,7 @@ normalize <- function(las, normalized = NULL,
 
     # Normalize
 
-    data <- suppressWarnings(suppressMessages(lidR::classify_ground(las, algorithm = lidR::csf(sloop_smooth = TRUE), last_returns = FALSE)))
+    data <- suppressWarnings(suppressMessages(lidR::classify_ground(las, algorithm = lidR::csf(sloop_smooth = TRUE, class_threshold  = 0.1), last_returns = FALSE)))
 
 
     # Generaion of Digital Terrain Model (DTM)
