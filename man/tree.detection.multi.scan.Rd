@@ -198,7 +198,7 @@ tree.tls <- tree.detection.multi.scan(data = pcd,
 
                                       threads = 2,
 
-                                      dir.result = dir.result)
+                                      dir.data = dir.data, dir.result = dir.result)
 
   }
 

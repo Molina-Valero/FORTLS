@@ -204,6 +204,8 @@ pcd <- normalize(las = "PinusRadiata.laz",
 
                  id = "PinusRadiata",
 
+                 scan.approach = "single",
+
                  x.center = 0, y.center = 0,
 
                  dir.data = dir.data, dir.result = dir.result)
@@ -219,7 +221,7 @@ tree.tls <- tree.detection.single.scan(data = pcd,
 
                                        threads = 2,
 
-                                       dir.result = dir.result)
+                                       dir.data = dir.data, dir.result = dir.result)
 
   }
 

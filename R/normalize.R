@@ -1,10 +1,17 @@
 
+utils::globalVariables(c(
+  "Z", "Classification", "z", "rho", "phi", "r", "theta", "point",
+  ".I", "GLA", "G", "R", "B", "prob", "prob.random", ".N",
+  "prob.selec"
+))
+
+
 normalize <- function(las, normalized = NULL,
                       x.center = NULL, y.center = NULL,
                       x.side = NULL, y.side = NULL,
                       xpoly = NULL, ypoly = NULL,
                       max.dist = NULL, min.height = NULL, max.height = 50,
-                      algorithm.dtm = "tin", res.dtm = 0.2,
+                      algorithm.dtm = "knnidw", res.dtm = 0.2,
                       csf = list(cloth_resolution = 0.5),
                       intensity = NULL, RGB = NULL,
                       scan.approach = "multi",

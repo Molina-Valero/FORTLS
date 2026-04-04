@@ -95,9 +95,9 @@
 # @return Corrected data frame
 
 .refine_diameters <- function(data,
-                             window_size = 10,
-                             overlap_threshold = 0.75,
-                             make_plots = TRUE) {
+                              window_size = 10,
+                              overlap_threshold = 0.75,
+                              make_plots = TRUE) {
 
   # Validation
   required_cols <- c("tree", "hi", "dhi", "x", "y")

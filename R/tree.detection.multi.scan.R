@@ -155,7 +155,8 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   # 6. Remove cluster with fewer than 10 points
 
   stem$cluster <- dbscan::dbscan(stem[, c("x", "y", "z"), drop = FALSE], eps = tls.precision, minPts = 2)$cluster
-  stem <- stem[stem$cluster > 0 & ave(stem$cluster, stem$cluster, FUN = length) > 10, , drop = FALSE]
+  # tem <- stem[stem$cluster > 0 & ave(stem$cluster, stem$cluster, FUN = length) > 10, , drop = FALSE]
+  stem <- stem[stem$cluster > 0 & ave(stem$cluster, stem$cluster, FUN = length) > mean(table(stem$cluster), na.rm = TRUE), , drop = FALSE]
 
 
   # 7. Retention of high points in the stem section defined (understory = TRUE)
@@ -350,7 +351,9 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
       next} else {
         .dbscan <- dbscan::dbscan(.cut[, c("x", "y"), drop = FALSE], eps = tls.precision)
         .cut$cluster <- .dbscan$cluster
-        .cut <- .cut[.cut$cluster > 0, , drop = FALSE]}
+        .cut <- .cut[.cut$cluster > 0 & ave(.cut$cluster, .cut$cluster, FUN = length) > 2, , drop = FALSE]
+        # .cut <- .cut[.cut$cluster > 0, , drop = FALSE]
+        }
 
     # Checking if there are clusters
 
@@ -434,10 +437,31 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   # Export all section detected
 
+  # .filter <- .filter[order(.filter$tree, .filter$sec), , drop = FALSE]
+  # .stem <- .filter[, c("tree", "sec", "center.x",  "center.y", "radius")]
+  # .stem$radius <- .stem$radius * 200
+  # colnames(.stem) <- c("tree2", "hi", "x",  "y", "dhi")
+
+  # Export all section detected
+
   .filter <- .filter[order(.filter$tree, .filter$sec), , drop = FALSE]
   .stem <- .filter[, c("tree", "sec", "center.x",  "center.y", "radius")]
   .stem$radius <- .stem$radius * 200
-  # colnames(.stem) <- c("tree", "sec", "x",  "y", "dbh")
+  colnames(.stem) <- c("tree", "hi", "x",  "y", "dhi")
+
+
+  # ESTE ES EL SITIO PARA IMPLEMENTAR LA CORRECCIÓN DE DIÁMETROS !!!!
+
+  # .stem <- do.call(
+  #   rbind,
+  #   lapply(split(.stem, .stem$tree), .refine_diameters)
+  # )
+  # key_filter <- paste(.filter$tree, .filter$sec)
+  # key_stem   <- paste(.stem$tree, .stem$hi)
+  # idx <- match(key_filter, key_stem)
+  # .filter$center.x <- .stem$x[idx]
+  # .filter$center.y <- .stem$y[idx]
+  # .filter$radius <- .stem$dhi[idx] / 200
   colnames(.stem) <- c("tree2", "hi", "x",  "y", "dhi")
 
 
@@ -851,34 +875,36 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
   } else {
 
-    # 1. Build Voronoi polygons from tree positions
-    trees_sf <- sf::st_as_sf(.tree, coords = c("sec.x", "sec.y"))
-    voronoi  <- sf::st_collection_extract(sf::st_voronoi(sf::st_union(trees_sf)))
+    cloud_sf <- sf::st_as_sf(data, coords = c("x", "y"))
+    stopifnot(nrow(cloud_sf) == nrow(data))
 
-    # 2. Assign each Voronoi cell back to its tree
-    # tree_idx <- unlist(sf::st_intersects(voronoi, trees_sf))
-    # voronoi  <- sf::st_as_sf(data.frame(tree = .tree$tree[tree_idx], geometry = sf::st_geometry(voronoi)))
-    tree_idx <- sf::st_nearest_feature(voronoi, trees_sf)   # length == nrow(voronoi), guaranteed
+    bbox     <- sf::st_as_sfc(sf::st_bbox(cloud_sf))
+    trees_sf <- sf::st_as_sf(.tree, coords = c("sec.x", "sec.y"))
+    voronoi  <- sf::st_collection_extract(
+      sf::st_voronoi(sf::st_union(trees_sf), envelope = bbox)
+    )
+
+    tree_idx <- vapply(sf::st_intersects(voronoi, trees_sf), `[`, integer(1), 1L)
     voronoi  <- sf::st_as_sf(data.frame(
       tree     = .tree$tree[tree_idx],
       geometry = sf::st_geometry(voronoi)
     ))
 
-    # 3. Assign each point cloud point to a Voronoi cell
-    cloud_sf       <- sf::st_as_sf(data, coords = c("x", "y"))
-    cloud_sf$tree  <- unlist(sf::st_intersects(cloud_sf, voronoi))  # NA if outside all cells
+    int_idx       <- sf::st_intersects(cloud_sf, voronoi)
+    cloud_sf$tree <- vapply(
+      int_idx,
+      function(x) if (length(x) == 0L) NA_integer_ else x[1L],
+      integer(1)
+    )
 
-    # 4. Compute P99.9 per tree
-    .P99 <- lapply(unique(voronoi$tree), function(id) {
+    .P99 <- do.call(rbind, lapply(unique(voronoi$tree), function(id) {
       sec.max <- .tree$sec.max[.tree$tree == id]
-      z       <- cloud_sf$z[cloud_sf$tree == id & cloud_sf$z > sec.max]
-      if (length(z) < 1) return(data.frame(tree = id, h = 0))
-      h <- height_perc_cpp(rho_seq = Inf, z = z, rho = z)[, "P99.9"]
-      data.frame(tree = id, h = h)
-    })
-    .P99 <- do.call(rbind, .P99)
+      z       <- cloud_sf$z[!is.na(cloud_sf$tree) & cloud_sf$tree == id & cloud_sf$z > sec.max]
+      if (length(z) < 1L) return(data.frame(tree = id, h = 0))
+      data.frame(tree = id, h = height_perc_cpp(rho_seq = Inf, z = z, rho = z)[, "P99.9"])
+    }))
 
-    rm(trees_sf, tree_idx, voronoi)
+    rm(trees_sf, tree_idx, voronoi, cloud_sf, int_idx)
 
   }
 
