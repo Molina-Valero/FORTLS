@@ -1,0 +1,11 @@
+pandoc: 3.1.11
+pkgdown: 2.2.0
+pkgdown_sha: ~
+articles:
+  plot_design_optimization: plot_design_optimization.html
+  stand_level: stand_level.html
+  tree_level: tree_level.html
+last_built: 2026-04-08T13:57Z
+urls:
+  reference: https://molina-valero.github.io/FORTLS/reference
+  article: https://molina-valero.github.io/FORTLS/articles

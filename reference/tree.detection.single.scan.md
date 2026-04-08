@@ -1,0 +1,462 @@
+# Tree-Level Variables Estimation for TLS Single-Scan Approach
+
+Detects trees from TLS point clouds corresponding to a single scan. For
+each tree detected, the function calculates the central coordinates and
+estimates the diameter at 1.3 m above ground level (which is known as
+*dbh*, diameter at breast height) and classifies it as fully visible or
+partially occluded. Finally, the function obtains the number of points
+belonging to normal sections of trees (those corresponding to *dbh* +/-
+5 cm) and estimates them for both original and reduced (with point
+cropping process) point clouds.
+
+## Usage
+
+``` r
+tree.detection.single.scan(data, single.tree = NULL,
+                           dbh.min = 4, dbh.max = 200, h.min = 1.3,
+                           geo.dist = 0.1,
+                           tls.resolution = list(),
+                           tls.precision = NULL,
+                           stem.section = c(0.7, 3.5), stem.range = NULL, breaks = NULL,
+                           slice = 0.1, understory = NULL, bark.roughness = 1,
+                           den.type = 1, d.mer = NULL, segmentation = NULL,
+                           plot.attributes = NULL, plot = TRUE,
+                           threads = 1,
+                           dir.data = NULL, save.result = TRUE, dir.result = NULL)
+```
+
+## Arguments
+
+- data:
+
+  Data frame with same description and format as indicated for
+  [`normalize`](https://molina-valero.github.io/FORTLS/reference/normalize.md)
+  ‘Value’.
+
+- single.tree:
+
+  Optional argument to indicate if there is only one tree.
+
+- dbh.min:
+
+  Optional minimum *dbh* (cm) considered for detecting trees. By default
+  it will be set at 4 cm.
+
+- dbh.max:
+
+  Optional maximum *dbh* (cm) considered for detecting trees. By default
+  it will be set at 200 cm.
+
+- h.min:
+
+  Optional minimum *h* (m) considered for detecting trees. By default it
+  will be set at 1.3 m.
+
+- geo.dist:
+
+  Local surface variation (also known as normal change rate, NCR). By
+  default it will be set as 0.1. For better understanding of this
+  argument see ‘Details’.
+
+- tls.resolution:
+
+  List containing parameters of TLS resolution. This can be defined by
+  the angle aperture:
+
+&nbsp;
+
+- `horizontal.angle`: horizontal angle aperture (degrees).
+
+- `vertical.angle`: vertical angle aperture (degrees).
+
+- `point.dist`: distance (mm) between two consecutive points.
+
+- `tls.dist`: distance (m) from TLS at which two consecutive points are
+  separated by `point.dist`.
+
+  If this argument is not specified by the user, it will be set to NULL
+  by default and, as a consequence the function will stop giving an
+  error message.
+
+&nbsp;
+
+- tls.precision:
+
+  Average point cloud precision in cm.
+
+- stem.section:
+
+  Section free of noise (shurb, branches, etc.) considered to detect
+  trees. If not specified, an automatic internal algorithm will be
+  applied (see ‘Details’).
+
+- stem.range:
+
+  Section considered to estimate straightness tree attributes.
+
+- breaks:
+
+  Height above ground level (m) of slices considered for detecting
+  trees. By default it will be considered all possible sections from 0.1
+  m to maximum height by 0.3 m intervals (+/- 5 cm).
+
+- slice:
+
+  Slice width considered for detecting trees. By default it will be
+  considered as 0.1 m.
+
+- understory:
+
+  Optional argument to indicate if there is dense understory vegetation.
+
+- bark.roughness:
+
+  Bark roughness established in 3 degrees (1 \< 2 \< 3). By default it
+  will be considered as 1.
+
+- den.type:
+
+  Numeric argument indicating the dendrometic type used to estimate
+  volumen when there are not sections enough to fit a taper equation.
+  Dendrometrics types available are the following: cylinder = 0,
+  paraboloid = 1 (by default), cone = 2 and neiloid = 3.
+
+- d.mer:
+
+  Top stem diameter (cm) considered to estimate commercial timber
+  volume.
+
+- segmentation:
+
+  Tree segmentation.
+
+- plot.attributes:
+
+  Data frame with attributes at plot level. It must contain a column
+  named `id` (character string or numeric value) with encoding
+  coinciding with that used in `id` argument of
+  [`normalize`](https://molina-valero.github.io/FORTLS/reference/normalize.md)
+  for identifying plots. If there are strata, another column named
+  ‘stratum’ (numeric) will be required for other functionalities of
+  FORTLS (see, for instance,
+  [`estimation.plot.size`](https://molina-valero.github.io/FORTLS/reference/estimation.plot.size.md)
+  or
+  [`metrics.variables`](https://molina-valero.github.io/FORTLS/reference/metrics.variables.md)).
+  If this argument is not specified by the user, it will be set to NULL
+  by default and, as a consequence, the function will not add these
+  possible plot attributes.
+
+- plot:
+
+  Optional logical which indicates whether or not the normalized point
+  cloud will be plot. If this argument is not specified by the user, it
+  will be set to `TRUE` by default and, as consequence, the normalized
+  point cloud will be plot.
+
+- threads:
+
+  Number of threads.
+
+- dir.data:
+
+  Optional character string naming the absolute path of the directory
+  where LAS files containing TLS point clouds are located.
+  `.Platform$file.sep` must be used as the path separator in `dir.data`.
+  If this argument is not specified by the user, it will be set to
+  `NULL` by default and, as a consequence, the current working directory
+  of the R process will be assigned to `dir.data` during the execution.
+
+- save.result:
+
+  Optional logical which indicates whether or not the output files
+  described in ‘Output Files’ section should be saved in `dir.result`.
+  If this argument is not specified by the user, it will be set to
+  `TRUE` by default and, as a consequence, the output files will be
+  saved.
+
+- dir.result:
+
+  Optional character string naming the absolute path of an existing
+  directory where the files described in ‘Output Files’ section will be
+  saved. `.Platform$file.sep` must be used as the path separator in
+  `dir.result`. If this argument is not specified by the user, and the
+  `save.result` is `TRUE`, it will be set to `NULL` by default and, as a
+  consequence, the current working directory of the R process will be
+  assigned to `dir.result` during the execution.
+
+## Details
+
+Slices determined by `breaks` argument are clustered using the DBSCAN
+algorithm (Ester et al., 1996) on the horizontal plane according to
+Cartesian coordinates (x, y). Before and after this process, several
+algorithms are used to remove noisy points and apply classification
+criteria to select the clusters of trees.
+
+*dbh* is directly estimated for the section of 1.3 m above ground level,
+and estimated from other sections using *dbh*~*breaks* linear
+regression. Finally, the mean value of all estimates is provided in
+‘Value’ as the *dbh* of the tree section.
+
+The number of points corresponding to a normal section (+/- 5 cm) is
+estimated in proportion to *dbh*, using the average number of points per
+radius unit as reference. In this respect, only tree sections fully
+visible at 1.3 m above ground level will be considered for estimating
+the average number of points.
+
+Local surface variation (also known as normal change rate ,NCR), is a
+quantitative measure of curvature feature (Pauly et al., 2002). This is
+useful for distinguishing points belonging to fine branches and foliage
+(e.g. leaves, shrubs) and stem points (e.g. Jin et al., 2016; Zhang et
+al., 2019). Just as we considered 5 cm as suitable for calculating local
+surface variation for the stem separation in forests, according to other
+authors (Ma et al., 2015; Xia et al., 2015), we also established the NCR
+threshold as 0.1, according to Zhang et al. (2019). However, this
+argument (`ncr.threshold`) may be modified in order to use more
+appropriate values.
+
+## Value
+
+Data frame with the following columns for every tree detected (each row
+corresponds to one tree detected):
+
+- id:
+
+  Optional plot identification encoded as a character string or numeric.
+  If this argument is not specified by the user, it will be set to NULL
+  by default and, as a consequence, the plot will be encoded as 1.
+
+- file:
+
+  Optional file name identification encoded as character string or
+  numeric. If it is null, the file will be encoded as `id` by default.
+
+- tree:
+
+  tree numbering
+
+- Coordinates:
+
+  Cartesian (according to
+  <https://en.wikipedia.org/wiki/Cartesian_coordinate_system> notation):
+
+&nbsp;
+
+- `x`: distance on x axis (m) of tree centre.
+
+- `y`: distance on y axis (m) of tree centre.
+
+Azimuthal angles:
+
+- `phi`: angular coordinate (rad) of tree centre.
+
+- `phi.left`: angular coordinate (rad) of left border of tree section.
+
+- `phi.right`: angular coordinate (rad) of right border of tree section
+
+&nbsp;
+
+- h.dist:
+
+  horizontal distance (m) from plot centre to tree centre.
+
+- *dbh*:
+
+  estimated tree diameter (cm) at breast height (1.3 m).
+
+- *h*:
+
+  estimated tree total height (m).
+
+- *h.com*:
+
+  estimated commercial tree height (m) according to the top diameter
+  defined in the argument `d.mer`.
+
+- *v*:
+
+  estimated tree stem volume (m^3).
+
+- *v.com*:
+
+  estimated commercial tree stem volume (m^3) according to the top
+  diameter defined in the argument `d.mer`.
+
+- *SS.max*:
+
+  Maximum sagitta (see Prendes et al. (2022)).
+
+- *sinuosity*:
+
+  Sinuosity (see Prendes et al. (2022)).
+
+- *lean*:
+
+  Lean (see Prendes et al. (2022)).
+
+- n.pts:
+
+  number of points corresponding to a normal section (+/- 5 cm) in the
+  original point cloud.
+
+- n.pts.red:
+
+  number of points corresponding to a normal section (+/- 5 cm) in the
+  point cloud reduced by the point cropping process.
+
+- n.pts.est:
+
+  number of points estimated for a normal section (+/- 5 cm) in the
+  original point cloud.
+
+- n.pts.red.est:
+
+  number of points estimated for a normal section (+/- 5 cm) in the
+  point cloud reduced by the point cropping process.
+
+- partial.occlusion:
+
+  yes (1) or no (0)
+
+## Output Files
+
+At the end of the tree detection process, if the `save.result` argument
+is `TRUE`, the function will save the data frame described in ‘Value’ as
+a CSV file named ‘tree.tls.csv’. The data frame will be written without
+row names in the `dir.result` directory by using
+[`write.csv`](https://rdrr.io/r/utils/write.table.html) function from
+the utils package.
+
+## Note
+
+Although `tree.detection` also works with reduced point clouds, thus
+reducing the computing time, use of the original point cloud is
+recommended in order to detect more trees. This will also depend on
+forest conditions, especially those related to visibility. The more
+distant the trees are, the lower the density of points will be, and
+using reduced point clouds will therefore complicate detection of the
+most distant trees.
+
+Note that `dbh.min` and `dbh.max` are important for avoiding outlier
+values when inventory data are used for reference purposes. Otherwise,
+knowledge about the autoecology of species could be used for filtering
+anomalous values of *dbh*.
+
+The argument `breaks = 1.3` could be sufficient for detecting trees
+visible at *dbh*, involving lower computational cost. However, those
+trees not detected at *dbh*, may be estimated from lower and/or higher
+sections. Considering the three default sections in the argument
+`breaks = c(1.0, 1.3, 1.6)` maintains a good balance in the case study
+of this package.
+
+## References
+
+Ester, M., Kriegel, H. P., Sander, J., & Xu, X. (1996). A density-based
+algorithm for discovering clusters in large spatial databases with
+noise. In Kdd (Vol. 96, No. 34, pp. 226-231).
+
+Jin, S., Tamura, M., & Susaki, J. (2016). A new approach to retrieve
+leaf normal distribution using terrestrial laser scanners. J. *Journal
+of Forestry Research*, **27(3)**, 631-638.
+[doi:10.1007/s11676-015-0204-z](https://doi.org/10.1007/s11676-015-0204-z)
+
+Ma, L., Zheng, G., Eitel, J. U., Moskal, L. M., He, W., & Huang, H.
+(2015). Improved salient feature-based approach for automatically
+separating photosynthetic and nonphotosynthetic components within
+terrestrial lidar point cloud data of forest canopies. *IEEE
+Transactions Geoscience Remote Sensing*, **54(2)**, 679-696.
+[doi:10.1109/TGRS.2015.2459716](https://doi.org/10.1109/TGRS.2015.2459716)
+
+Pauly, M., Gross, M., & Kobbelt, L. P., (2002). Efficient simplification
+of point-sampled surfaces. In IEEE Conference on Visualization. (pp.
+163-170). Boston, USA.
+[doi:10.1109/VISUAL.2002.1183771](https://doi.org/10.1109/VISUAL.2002.1183771)
+
+Prendes, C., Canga, E., Ordoñez, C., Majada, J., Acuna, M., & Cabo, C.
+(2022). Automatic assessment of individual stem shape parameters in
+forest stands from tls point clouds: Application in pinus pinaster.
+Forests, 13(3), 431.
+[doi:10.3390/f13030431](https://doi.org/10.3390/f13030431)
+
+Xia, S., Wang, C., Pan, F., Xi, X., Zeng, H., & Liu, H. (2015).
+Detecting stems in dense and homogeneous forest using single-scan TLS.
+*Forests*. **6(11)**, 3923-3945.
+[doi:10.3390/f6113923](https://doi.org/10.3390/f6113923)
+
+Zhang, W., Wan, P., Wang, T., Cai, S., Chen, Y., Jin, X., & Yan, G.
+(2019). A novel approach for the detection of standing tree stems from
+plot-level terrestrial laser scanning data. *Remote Sens*. **11(2)**,
+211. [doi:10.3390/rs11020211](https://doi.org/10.3390/rs11020211)
+
+## Author
+
+Juan Alberto Molina-Valero and Adela Martínez-Calvo.
+
+## See also
+
+[`normalize`](https://molina-valero.github.io/FORTLS/reference/normalize.md),
+[`tree.detection.multi.scan`](https://molina-valero.github.io/FORTLS/reference/tree.detection.multi.scan.md),
+[`tree.detection.several.plots`](https://molina-valero.github.io/FORTLS/reference/tree.detection.several.plots.md),
+[`distance.sampling`](https://molina-valero.github.io/FORTLS/reference/distance.sampling.md),
+[`estimation.plot.size`](https://molina-valero.github.io/FORTLS/reference/estimation.plot.size.md),
+[`simulations`](https://molina-valero.github.io/FORTLS/reference/simulations.md),
+[`metrics.variables`](https://molina-valero.github.io/FORTLS/reference/metrics.variables.md)
+
+## Examples
+
+``` r
+# \donttest{
+
+# Establishment of working directories (optional)
+# Establishment of working directories using tempdir() to avoid leaving files in
+# user filespace
+
+dir.data <- tempdir()
+dir.result <- tempdir()
+
+
+# Loading example data (LAZ file) to dir.data
+
+download.file("https://www.dropbox.com/s/17yl25pbrapat52/PinusRadiata.laz?dl=1",
+              destfile = file.path(dir.data, "PinusRadiata.laz"),
+              mode = "wb")
+
+
+# Normalizing the whole point cloud data without considering arguments
+
+# Note that in the case of TLS single-scans, the coordinates of the plot center
+# must be specified by the x.center and y.center arguments, which are
+# x.center = 0 and y.center = 0 in this case
+
+pcd <- normalize(las = "PinusRadiata.laz",
+
+                 id = "PinusRadiata",
+
+                 scan.approach = "single",
+
+                 x.center = 0, y.center = 0,
+
+                 max.dist = 7.5,
+
+                 dir.data = dir.data, dir.result = dir.result)
+#> [====================>                             ] 41% ETA: 2s     [====================>                             ] 41% ETA: 2s     [====================>                             ] 41% ETA: 2s     [====================>                             ] 41% ETA: 2s     [====================>                             ] 41% ETA: 2s     [====================>                             ] 41% ETA: 2s     [====================>                             ] 41% ETA: 2s     [====================>                             ] 41% ETA: 2s     [====================>                             ] 41% ETA: 2s     [====================>                             ] 41% ETA: 2s     [====================>                             ] 41% ETA: 2s     [====================>                             ] 41% ETA: 2s     [====================>                             ] 41% ETA: 2s     [====================>                             ] 41% ETA: 2s     [====================>                             ] 41% ETA: 2s     [====================>                             ] 41% ETA: 2s     [====================>                             ] 41% ETA: 2s     [=====================>                            ] 42% ETA: 2s     [=====================>                            ] 42% ETA: 2s     [=====================>                            ] 42% ETA: 2s     [=====================>                            ] 42% ETA: 2s     [=====================>                            ] 42% ETA: 2s     [=====================>                            ] 42% ETA: 2s     [=====================>                            ] 42% ETA: 2s     [=====================>                            ] 42% ETA: 2s     [=====================>                            ] 42% ETA: 2s     [=====================>                            ] 42% ETA: 2s     [=====================>                            ] 42% ETA: 2s     [=====================>                            ] 42% ETA: 2s     [=====================>                            ] 42% ETA: 2s     [=====================>                            ] 42% ETA: 2s     [=====================>                            ] 42% ETA: 2s     [=====================>                            ] 42% ETA: 2s     [=====================>                            ] 42% ETA: 2s     [=====================>                            ] 42% ETA: 2s     [=====================>                            ] 43% ETA: 2s     [=====================>                            ] 43% ETA: 2s     [=====================>                            ] 43% ETA: 2s     [=====================>                            ] 43% ETA: 2s     [=====================>                            ] 43% ETA: 2s     [=====================>                            ] 43% ETA: 2s     [=====================>                            ] 43% ETA: 2s     [=====================>                            ] 43% ETA: 2s     [=====================>                            ] 43% ETA: 2s     [=====================>                            ] 43% ETA: 2s     [=====================>                            ] 43% ETA: 2s     [=====================>                            ] 43% ETA: 2s     [=====================>                            ] 43% ETA: 2s     [=====================>                            ] 43% ETA: 2s     [=====================>                            ] 43% ETA: 2s     [=====================>                            ] 43% ETA: 2s     [=====================>                            ] 43% ETA: 2s     [=====================>                            ] 43% ETA: 2s     [=====================>                            ] 43% ETA: 2s     [======================>                           ] 44% ETA: 2s     [======================>                           ] 44% ETA: 2s     [======================>                           ] 44% ETA: 2s     [======================>                           ] 44% ETA: 2s     [======================>                           ] 44% ETA: 2s     [======================>                           ] 44% ETA: 2s     [======================>                           ] 44% ETA: 2s     [======================>                           ] 44% ETA: 2s     [======================>                           ] 44% ETA: 2s     [======================>                           ] 44% ETA: 2s     [======================>                           ] 44% ETA: 2s     [======================>                           ] 44% ETA: 2s     [======================>                           ] 44% ETA: 2s     [======================>                           ] 44% ETA: 2s     [======================>                           ] 44% ETA: 2s     [======================>                           ] 44% ETA: 2s     [======================>                           ] 44% ETA: 2s     [======================>                           ] 44% ETA: 2s     [======================>                           ] 45% ETA: 2s     [======================>                           ] 45% ETA: 2s     [======================>                           ] 45% ETA: 2s     [======================>                           ] 45% ETA: 2s     [======================>                           ] 45% ETA: 2s     [======================>                           ] 45% ETA: 2s     [======================>                           ] 45% ETA: 2s     [======================>                           ] 45% ETA: 2s     [======================>                           ] 45% ETA: 2s     [======================>                           ] 45% ETA: 2s     [======================>                           ] 45% ETA: 2s     [======================>                           ] 45% ETA: 2s     [======================>                           ] 45% ETA: 2s     [======================>                           ] 45% ETA: 2s     [======================>                           ] 45% ETA: 2s     [======================>                           ] 45% ETA: 2s     [======================>                           ] 45% ETA: 2s     [======================>                           ] 45% ETA: 2s     [=======================>                          ] 46% ETA: 2s     [=======================>                          ] 46% ETA: 2s     [=======================>                          ] 46% ETA: 2s     [=======================>                          ] 46% ETA: 2s     [=======================>                          ] 46% ETA: 2s     [=======================>                          ] 46% ETA: 2s     [=======================>                          ] 46% ETA: 2s     [=======================>                          ] 46% ETA: 2s     [=======================>                          ] 46% ETA: 2s     [=======================>                          ] 46% ETA: 2s     [=======================>                          ] 46% ETA: 2s     [=======================>                          ] 46% ETA: 2s     [=======================>                          ] 46% ETA: 2s     [=======================>                          ] 46% ETA: 2s     [=======================>                          ] 46% ETA: 2s     [=======================>                          ] 46% ETA: 2s     [=======================>                          ] 46% ETA: 2s     [=======================>                          ] 46% ETA: 2s     [=======================>                          ] 47% ETA: 2s     [=======================>                          ] 47% ETA: 2s     [=======================>                          ] 47% ETA: 2s     [=======================>                          ] 47% ETA: 2s     [=======================>                          ] 47% ETA: 2s     [=======================>                          ] 47% ETA: 2s     [=======================>                          ] 47% ETA: 2s     [=======================>                          ] 47% ETA: 2s     [=======================>                          ] 47% ETA: 2s     [=======================>                          ] 47% ETA: 2s     [=======================>                          ] 47% ETA: 2s     [=======================>                          ] 47% ETA: 2s     [=======================>                          ] 47% ETA: 2s     [=======================>                          ] 47% ETA: 2s     [=======================>                          ] 47% ETA: 2s     [=======================>                          ] 47% ETA: 2s     [=======================>                          ] 47% ETA: 2s     [=======================>                          ] 47% ETA: 2s     [========================>                         ] 48% ETA: 2s     [========================>                         ] 48% ETA: 2s     [========================>                         ] 48% ETA: 2s     [========================>                         ] 48% ETA: 2s     [========================>                         ] 48% ETA: 2s     [========================>                         ] 48% ETA: 2s     [========================>                         ] 48% ETA: 2s     [========================>                         ] 48% ETA: 2s     [========================>                         ] 48% ETA: 2s     [========================>                         ] 48% ETA: 2s     [========================>                         ] 48% ETA: 2s     [========================>                         ] 48% ETA: 2s     [========================>                         ] 48% ETA: 2s     [========================>                         ] 48% ETA: 2s     [========================>                         ] 48% ETA: 2s     [========================>                         ] 48% ETA: 2s     [========================>                         ] 48% ETA: 2s     [========================>                         ] 48% ETA: 2s     [========================>                         ] 49% ETA: 2s     [========================>                         ] 49% ETA: 2s     [========================>                         ] 49% ETA: 2s     [========================>                         ] 49% ETA: 2s     [========================>                         ] 49% ETA: 2s     [========================>                         ] 49% ETA: 2s     [========================>                         ] 49% ETA: 2s     [========================>                         ] 49% ETA: 2s     [========================>                         ] 49% ETA: 2s     [========================>                         ] 49% ETA: 2s     [========================>                         ] 49% ETA: 2s     [========================>                         ] 49% ETA: 2s     [========================>                         ] 49% ETA: 2s     [========================>                         ] 49% ETA: 2s     [========================>                         ] 49% ETA: 2s     [========================>                         ] 49% ETA: 2s     [========================>                         ] 49% ETA: 2s     [========================>                         ] 49% ETA: 2s     [========================>                         ] 49% ETA: 2s     [=========================>                        ] 50% ETA: 2s     [=========================>                        ] 50% ETA: 2s     [=========================>                        ] 50% ETA: 2s     [=========================>                        ] 50% ETA: 2s     [=========================>                        ] 50% ETA: 2s     [=========================>                        ] 50% ETA: 2s     [=========================>                        ] 50% ETA: 2s     [=========================>                        ] 50% ETA: 2s     [=========================>                        ] 50% ETA: 2s     [=========================>                        ] 50% ETA: 2s     [=========================>                        ] 50% ETA: 2s     [=========================>                        ] 50% ETA: 2s     [=========================>                        ] 50% ETA: 2s     [=========================>                        ] 50% ETA: 2s     [=========================>                        ] 50% ETA: 2s     [=========================>                        ] 50% ETA: 2s     [=========================>                        ] 50% ETA: 2s     [=========================>                        ] 50% ETA: 2s     [=========================>                        ] 51% ETA: 2s     [=========================>                        ] 51% ETA: 2s     [=========================>                        ] 51% ETA: 2s     [=========================>                        ] 51% ETA: 2s     [=========================>                        ] 51% ETA: 2s     [=========================>                        ] 51% ETA: 2s     [=========================>                        ] 51% ETA: 2s     [=========================>                        ] 51% ETA: 2s     [=========================>                        ] 51% ETA: 2s     [=========================>                        ] 51% ETA: 2s     [=========================>                        ] 51% ETA: 2s     [=========================>                        ] 51% ETA: 2s     [=========================>                        ] 51% ETA: 2s     [=========================>                        ] 51% ETA: 2s     [=========================>                        ] 51% ETA: 2s     [=========================>                        ] 51% ETA: 2s     [=========================>                        ] 51% ETA: 2s     [=========================>                        ] 51% ETA: 2s     [==========================>                       ] 52% ETA: 2s     [==========================>                       ] 52% ETA: 2s     [==========================>                       ] 52% ETA: 2s     [==========================>                       ] 52% ETA: 2s     [==========================>                       ] 52% ETA: 2s     [==========================>                       ] 52% ETA: 2s     [==========================>                       ] 52% ETA: 2s     [==========================>                       ] 52% ETA: 2s     [==========================>                       ] 52% ETA: 2s     [==========================>                       ] 52% ETA: 2s     [==========================>                       ] 52% ETA: 2s     [==========================>                       ] 52% ETA: 2s     [==========================>                       ] 52% ETA: 2s     [==========================>                       ] 52% ETA: 2s     [==========================>                       ] 52% ETA: 2s     [==========================>                       ] 52% ETA: 2s     [==========================>                       ] 52% ETA: 2s     [==========================>                       ] 52% ETA: 2s     [==========================>                       ] 53% ETA: 2s     [==========================>                       ] 53% ETA: 2s     [==========================>                       ] 53% ETA: 2s     [==========================>                       ] 53% ETA: 2s     [==========================>                       ] 53% ETA: 2s     [==========================>                       ] 53% ETA: 2s     [==========================>                       ] 53% ETA: 2s     [==========================>                       ] 53% ETA: 2s     [==========================>                       ] 53% ETA: 2s     [==========================>                       ] 53% ETA: 2s     [==========================>                       ] 53% ETA: 2s     [==========================>                       ] 53% ETA: 2s     [==========================>                       ] 53% ETA: 2s     [==========================>                       ] 53% ETA: 2s     [==========================>                       ] 53% ETA: 2s     [==========================>                       ] 53% ETA: 2s     [==========================>                       ] 53% ETA: 2s     [==========================>                       ] 53% ETA: 2s     [===========================>                      ] 54% ETA: 2s     [===========================>                      ] 54% ETA: 2s     [===========================>                      ] 54% ETA: 2s     [===========================>                      ] 54% ETA: 2s     [===========================>                      ] 54% ETA: 2s     [===========================>                      ] 54% ETA: 2s     [===========================>                      ] 54% ETA: 2s     [===========================>                      ] 54% ETA: 2s     [===========================>                      ] 54% ETA: 2s     [===========================>                      ] 54% ETA: 2s     [===========================>                      ] 54% ETA: 2s     [===========================>                      ] 54% ETA: 2s     [===========================>                      ] 54% ETA: 2s     [===========================>                      ] 54% ETA: 2s     [===========================>                      ] 54% ETA: 2s     [===========================>                      ] 54% ETA: 2s     [===========================>                      ] 54% ETA: 2s     [===========================>                      ] 54% ETA: 2s     [===========================>                      ] 54% ETA: 2s     [===========================>                      ] 55% ETA: 2s     [===========================>                      ] 55% ETA: 2s     [===========================>                      ] 55% ETA: 2s     [===========================>                      ] 55% ETA: 2s     [===========================>                      ] 55% ETA: 2s     [===========================>                      ] 55% ETA: 2s     [===========================>                      ] 55% ETA: 2s     [===========================>                      ] 55% ETA: 2s     [===========================>                      ] 55% ETA: 2s     [===========================>                      ] 55% ETA: 2s     [===========================>                      ] 55% ETA: 2s     [===========================>                      ] 55% ETA: 2s     [===========================>                      ] 55% ETA: 2s     [===========================>                      ] 55% ETA: 2s     [===========================>                      ] 55% ETA: 2s     [===========================>                      ] 55% ETA: 2s     [===========================>                      ] 55% ETA: 2s     [===========================>                      ] 55% ETA: 2s     [============================>                     ] 56% ETA: 2s     [============================>                     ] 56% ETA: 2s     [============================>                     ] 56% ETA: 2s     [============================>                     ] 56% ETA: 2s     [============================>                     ] 56% ETA: 2s     [============================>                     ] 56% ETA: 2s     [============================>                     ] 56% ETA: 2s     [============================>                     ] 56% ETA: 2s     [============================>                     ] 56% ETA: 2s     [============================>                     ] 56% ETA: 2s     [============================>                     ] 56% ETA: 2s     [============================>                     ] 56% ETA: 2s     [============================>                     ] 56% ETA: 2s     [============================>                     ] 56% ETA: 2s     [============================>                     ] 56% ETA: 2s     [============================>                     ] 56% ETA: 2s     [============================>                     ] 56% ETA: 2s     [============================>                     ] 56% ETA: 2s     [============================>                     ] 57% ETA: 2s     [============================>                     ] 57% ETA: 2s     [============================>                     ] 57% ETA: 2s     [============================>                     ] 57% ETA: 2s     [============================>                     ] 57% ETA: 2s     [============================>                     ] 57% ETA: 2s     [============================>                     ] 57% ETA: 2s     [============================>                     ] 57% ETA: 2s     [============================>                     ] 57% ETA: 2s     [============================>                     ] 57% ETA: 2s     [============================>                     ] 57% ETA: 2s     [============================>                     ] 57% ETA: 2s     [============================>                     ] 57% ETA: 2s     [============================>                     ] 57% ETA: 2s     [============================>                     ] 57% ETA: 2s     [============================>                     ] 57% ETA: 2s     [============================>                     ] 57% ETA: 2s     [============================>                     ] 57% ETA: 2s     [=============================>                    ] 58% ETA: 2s     [=============================>                    ] 58% ETA: 2s     [=============================>                    ] 58% ETA: 2s     [=============================>                    ] 58% ETA: 2s     [=============================>                    ] 58% ETA: 2s     [=============================>                    ] 58% ETA: 2s     [=============================>                    ] 58% ETA: 2s     [=============================>                    ] 58% ETA: 2s     [=============================>                    ] 58% ETA: 2s     [=============================>                    ] 58% ETA: 2s     [=============================>                    ] 58% ETA: 2s     [=============================>                    ] 58% ETA: 2s     [=============================>                    ] 58% ETA: 2s     [=============================>                    ] 58% ETA: 2s     [=============================>                    ] 58% ETA: 2s     [=============================>                    ] 58% ETA: 2s     [=============================>                    ] 58% ETA: 2s     [=============================>                    ] 58% ETA: 2s     [=============================>                    ] 59% ETA: 1s     [=============================>                    ] 59% ETA: 1s     [=============================>                    ] 59% ETA: 1s     [=============================>                    ] 59% ETA: 1s     [=============================>                    ] 59% ETA: 1s     [=============================>                    ] 59% ETA: 1s     [=============================>                    ] 59% ETA: 1s     [=============================>                    ] 59% ETA: 1s     [=============================>                    ] 59% ETA: 1s     [=============================>                    ] 59% ETA: 1s     [=============================>                    ] 59% ETA: 1s     [=============================>                    ] 59% ETA: 1s     [=============================>                    ] 59% ETA: 1s     [=============================>                    ] 59% ETA: 1s     [=============================>                    ] 59% ETA: 1s     [=============================>                    ] 59% ETA: 1s     [=============================>                    ] 59% ETA: 1s     [=============================>                    ] 59% ETA: 1s     [==============================>                   ] 60% ETA: 1s     [==============================>                   ] 60% ETA: 1s     [==============================>                   ] 60% ETA: 1s     [==============================>                   ] 60% ETA: 1s     [==============================>                   ] 60% ETA: 1s     [==============================>                   ] 60% ETA: 1s     [==============================>                   ] 60% ETA: 1s     [==============================>                   ] 60% ETA: 1s     [==============================>                   ] 60% ETA: 1s     [==============================>                   ] 60% ETA: 1s     [==============================>                   ] 60% ETA: 1s     [==============================>                   ] 60% ETA: 1s     [==============================>                   ] 60% ETA: 1s     [==============================>                   ] 60% ETA: 1s     [==============================>                   ] 60% ETA: 1s     [==============================>                   ] 60% ETA: 1s     [==============================>                   ] 60% ETA: 1s     [==============================>                   ] 60% ETA: 1s     [==============================>                   ] 60% ETA: 1s     [==============================>                   ] 61% ETA: 1s     [==============================>                   ] 61% ETA: 1s     [==============================>                   ] 61% ETA: 1s     [==============================>                   ] 61% ETA: 1s     [==============================>                   ] 61% ETA: 1s     [==============================>                   ] 61% ETA: 1s     [==============================>                   ] 61% ETA: 1s     [==============================>                   ] 61% ETA: 1s     [==============================>                   ] 61% ETA: 1s     [==============================>                   ] 61% ETA: 1s     [==============================>                   ] 61% ETA: 1s     [==============================>                   ] 61% ETA: 1s     [==============================>                   ] 61% ETA: 1s     [==============================>                   ] 61% ETA: 1s     [==============================>                   ] 61% ETA: 1s     [==============================>                   ] 61% ETA: 1s     [==============================>                   ] 61% ETA: 1s     [==============================>                   ] 61% ETA: 1s     [===============================>                  ] 62% ETA: 1s     [===============================>                  ] 62% ETA: 1s     [===============================>                  ] 62% ETA: 1s     [===============================>                  ] 62% ETA: 1s     [===============================>                  ] 62% ETA: 1s     [===============================>                  ] 62% ETA: 1s     [===============================>                  ] 62% ETA: 1s     [===============================>                  ] 62% ETA: 1s     [===============================>                  ] 62% ETA: 1s     [===============================>                  ] 62% ETA: 1s     [===============================>                  ] 62% ETA: 1s     [===============================>                  ] 62% ETA: 1s     [===============================>                  ] 62% ETA: 1s     [===============================>                  ] 62% ETA: 1s     [===============================>                  ] 62% ETA: 1s     [===============================>                  ] 62% ETA: 1s     [===============================>                  ] 62% ETA: 1s     [===============================>                  ] 62% ETA: 1s     [===============================>                  ] 63% ETA: 1s     [===============================>                  ] 63% ETA: 1s     [===============================>                  ] 63% ETA: 1s     [===============================>                  ] 63% ETA: 1s     [===============================>                  ] 63% ETA: 1s     [===============================>                  ] 63% ETA: 1s     [===============================>                  ] 63% ETA: 1s     [===============================>                  ] 63% ETA: 1s     [===============================>                  ] 63% ETA: 1s     [===============================>                  ] 63% ETA: 1s     [===============================>                  ] 63% ETA: 1s     [===============================>                  ] 63% ETA: 1s     [===============================>                  ] 63% ETA: 1s     [===============================>                  ] 63% ETA: 1s     [===============================>                  ] 63% ETA: 1s     [===============================>                  ] 63% ETA: 1s     [===============================>                  ] 63% ETA: 1s     [===============================>                  ] 63% ETA: 1s     [================================>                 ] 64% ETA: 1s     [================================>                 ] 64% ETA: 1s     [================================>                 ] 64% ETA: 1s     [================================>                 ] 64% ETA: 1s     [================================>                 ] 64% ETA: 1s     [================================>                 ] 64% ETA: 1s     [================================>                 ] 64% ETA: 1s     [================================>                 ] 64% ETA: 1s     [================================>                 ] 64% ETA: 1s     [================================>                 ] 64% ETA: 1s     [================================>                 ] 64% ETA: 1s     [================================>                 ] 64% ETA: 1s     [================================>                 ] 64% ETA: 1s     [================================>                 ] 64% ETA: 1s     [================================>                 ] 64% ETA: 1s     [================================>                 ] 64% ETA: 1s     [================================>                 ] 64% ETA: 1s     [================================>                 ] 64% ETA: 1s     [================================>                 ] 65% ETA: 1s     [================================>                 ] 65% ETA: 1s     [================================>                 ] 65% ETA: 1s     [================================>                 ] 65% ETA: 1s     [================================>                 ] 65% ETA: 1s     [================================>                 ] 65% ETA: 1s     [================================>                 ] 65% ETA: 1s     [================================>                 ] 65% ETA: 1s     [================================>                 ] 65% ETA: 1s     [================================>                 ] 65% ETA: 1s     [================================>                 ] 65% ETA: 1s     [================================>                 ] 65% ETA: 1s     [================================>                 ] 65% ETA: 1s     [================================>                 ] 65% ETA: 1s     [================================>                 ] 65% ETA: 1s     [================================>                 ] 65% ETA: 1s     [================================>                 ] 65% ETA: 1s     [================================>                 ] 65% ETA: 1s     [================================>                 ] 65% ETA: 1s     [=================================>                ] 66% ETA: 1s     [=================================>                ] 66% ETA: 1s     [=================================>                ] 66% ETA: 1s     [=================================>                ] 66% ETA: 1s     [=================================>                ] 66% ETA: 1s     [=================================>                ] 66% ETA: 1s     [=================================>                ] 66% ETA: 1s     [=================================>                ] 66% ETA: 1s     [=================================>                ] 66% ETA: 1s     [=================================>                ] 66% ETA: 1s     [=================================>                ] 66% ETA: 1s     [=================================>                ] 66% ETA: 1s     [=================================>                ] 66% ETA: 1s     [=================================>                ] 66% ETA: 1s     [=================================>                ] 66% ETA: 1s     [=================================>                ] 66% ETA: 1s     [=================================>                ] 66% ETA: 1s     [=================================>                ] 66% ETA: 1s     [=================================>                ] 67% ETA: 1s     [=================================>                ] 67% ETA: 1s     [=================================>                ] 67% ETA: 1s     [=================================>                ] 67% ETA: 1s     [=================================>                ] 67% ETA: 1s     [=================================>                ] 67% ETA: 1s     [=================================>                ] 67% ETA: 1s     [=================================>                ] 67% ETA: 1s     [=================================>                ] 67% ETA: 1s     [=================================>                ] 67% ETA: 1s     [=================================>                ] 67% ETA: 1s     [=================================>                ] 67% ETA: 1s     [=================================>                ] 67% ETA: 1s     [=================================>                ] 67% ETA: 1s     [=================================>                ] 67% ETA: 1s     [=================================>                ] 67% ETA: 1s     [=================================>                ] 67% ETA: 1s     [=================================>                ] 67% ETA: 1s     [==================================>               ] 68% ETA: 1s     [==================================>               ] 68% ETA: 1s     [==================================>               ] 68% ETA: 1s     [==================================>               ] 68% ETA: 1s     [==================================>               ] 68% ETA: 1s     [==================================>               ] 68% ETA: 1s     [==================================>               ] 68% ETA: 1s     [==================================>               ] 68% ETA: 1s     [==================================>               ] 68% ETA: 1s     [==================================>               ] 68% ETA: 1s     [==================================>               ] 68% ETA: 1s     [==================================>               ] 68% ETA: 1s     [==================================>               ] 68% ETA: 1s     [==================================>               ] 68% ETA: 1s     [==================================>               ] 68% ETA: 1s     [==================================>               ] 68% ETA: 1s     [==================================>               ] 68% ETA: 1s     [==================================>               ] 68% ETA: 1s     [==================================>               ] 69% ETA: 1s     [==================================>               ] 69% ETA: 1s     [==================================>               ] 69% ETA: 1s     [==================================>               ] 69% ETA: 1s     [==================================>               ] 69% ETA: 1s     [==================================>               ] 69% ETA: 1s     [==================================>               ] 69% ETA: 1s     [==================================>               ] 69% ETA: 1s     [==================================>               ] 69% ETA: 1s     [==================================>               ] 69% ETA: 1s     [==================================>               ] 69% ETA: 1s     [==================================>               ] 69% ETA: 1s     [==================================>               ] 69% ETA: 1s     [==================================>               ] 69% ETA: 1s     [==================================>               ] 69% ETA: 1s     [==================================>               ] 69% ETA: 1s     [==================================>               ] 69% ETA: 1s     [==================================>               ] 69% ETA: 1s     [===================================>              ] 70% ETA: 1s     [===================================>              ] 70% ETA: 1s     [===================================>              ] 70% ETA: 1s     [===================================>              ] 70% ETA: 1s     [===================================>              ] 70% ETA: 1s     [===================================>              ] 70% ETA: 1s     [===================================>              ] 70% ETA: 1s     [===================================>              ] 70% ETA: 1s     [===================================>              ] 70% ETA: 1s     [===================================>              ] 70% ETA: 1s     [===================================>              ] 70% ETA: 1s     [===================================>              ] 70% ETA: 1s     [===================================>              ] 70% ETA: 1s     [===================================>              ] 70% ETA: 1s     [===================================>              ] 70% ETA: 1s     [===================================>              ] 70% ETA: 1s     [===================================>              ] 70% ETA: 1s     [===================================>              ] 70% ETA: 1s     [===================================>              ] 71% ETA: 1s     [===================================>              ] 71% ETA: 1s     [===================================>              ] 71% ETA: 1s     [===================================>              ] 71% ETA: 1s     [===================================>              ] 71% ETA: 1s     [===================================>              ] 71% ETA: 1s     [===================================>              ] 71% ETA: 1s     [===================================>              ] 71% ETA: 1s     [===================================>              ] 71% ETA: 1s     [===================================>              ] 71% ETA: 1s     [===================================>              ] 71% ETA: 1s     [===================================>              ] 71% ETA: 1s     [===================================>              ] 71% ETA: 1s     [===================================>              ] 71% ETA: 1s     [===================================>              ] 71% ETA: 1s     [===================================>              ] 71% ETA: 1s     [===================================>              ] 71% ETA: 1s     [===================================>              ] 71% ETA: 1s     [===================================>              ] 71% ETA: 1s     [====================================>             ] 72% ETA: 1s     [====================================>             ] 72% ETA: 1s     [====================================>             ] 72% ETA: 1s     [====================================>             ] 72% ETA: 1s     [====================================>             ] 72% ETA: 1s     [====================================>             ] 72% ETA: 1s     [====================================>             ] 72% ETA: 1s     [====================================>             ] 72% ETA: 1s     [====================================>             ] 72% ETA: 1s     [====================================>             ] 72% ETA: 1s     [====================================>             ] 72% ETA: 1s     [====================================>             ] 72% ETA: 1s     [====================================>             ] 72% ETA: 1s     [====================================>             ] 72% ETA: 1s     [====================================>             ] 72% ETA: 1s     [====================================>             ] 72% ETA: 1s     [====================================>             ] 72% ETA: 1s     [====================================>             ] 72% ETA: 1s     [====================================>             ] 73% ETA: 1s     [====================================>             ] 73% ETA: 1s     [====================================>             ] 73% ETA: 1s     [====================================>             ] 73% ETA: 1s     [====================================>             ] 73% ETA: 1s     [====================================>             ] 73% ETA: 1s     [====================================>             ] 73% ETA: 1s     [====================================>             ] 73% ETA: 1s     [====================================>             ] 73% ETA: 1s     [====================================>             ] 73% ETA: 1s     [====================================>             ] 73% ETA: 1s     [====================================>             ] 73% ETA: 1s     [====================================>             ] 73% ETA: 1s     [====================================>             ] 73% ETA: 1s     [====================================>             ] 73% ETA: 1s     [====================================>             ] 73% ETA: 1s     [====================================>             ] 73% ETA: 1s     [====================================>             ] 73% ETA: 1s     [=====================================>            ] 74% ETA: 1s     [=====================================>            ] 74% ETA: 1s     [=====================================>            ] 74% ETA: 1s     [=====================================>            ] 74% ETA: 1s     [=====================================>            ] 74% ETA: 1s     [=====================================>            ] 74% ETA: 1s     [=====================================>            ] 74% ETA: 1s     [=====================================>            ] 74% ETA: 1s     [=====================================>            ] 74% ETA: 1s     [=====================================>            ] 74% ETA: 1s     [=====================================>            ] 74% ETA: 1s     [=====================================>            ] 74% ETA: 1s     [=====================================>            ] 74% ETA: 1s     [=====================================>            ] 74% ETA: 1s     [=====================================>            ] 74% ETA: 1s     [=====================================>            ] 74% ETA: 1s     [=====================================>            ] 74% ETA: 1s     [=====================================>            ] 74% ETA: 1s     [=====================================>            ] 75% ETA: 1s     [=====================================>            ] 75% ETA: 1s     [=====================================>            ] 75% ETA: 1s     [=====================================>            ] 75% ETA: 1s     [=====================================>            ] 75% ETA: 1s     [=====================================>            ] 75% ETA: 1s     [=====================================>            ] 75% ETA: 1s     [=====================================>            ] 75% ETA: 1s     [=====================================>            ] 75% ETA: 1s     [=====================================>            ] 75% ETA: 1s     [=====================================>            ] 75% ETA: 1s     [=====================================>            ] 75% ETA: 1s     [=====================================>            ] 75% ETA: 1s     [=====================================>            ] 75% ETA: 1s     [=====================================>            ] 75% ETA: 1s     [=====================================>            ] 75% ETA: 1s     [=====================================>            ] 75% ETA: 1s     [=====================================>            ] 75% ETA: 1s     [======================================>           ] 76% ETA: 1s     [======================================>           ] 76% ETA: 1s     [======================================>           ] 76% ETA: 1s     [======================================>           ] 76% ETA: 1s     [======================================>           ] 76% ETA: 1s     [======================================>           ] 76% ETA: 1s     [======================================>           ] 76% ETA: 1s     [======================================>           ] 76% ETA: 1s     [======================================>           ] 76% ETA: 1s     [======================================>           ] 76% ETA: 1s     [======================================>           ] 76% ETA: 1s     [======================================>           ] 76% ETA: 1s     [======================================>           ] 76% ETA: 1s     [======================================>           ] 76% ETA: 1s     [======================================>           ] 76% ETA: 1s     [======================================>           ] 76% ETA: 1s     [======================================>           ] 76% ETA: 1s     [======================================>           ] 76% ETA: 1s     [======================================>           ] 76% ETA: 1s     [======================================>           ] 77% ETA: 1s     [======================================>           ] 77% ETA: 1s     [======================================>           ] 77% ETA: 1s     [======================================>           ] 77% ETA: 1s     [======================================>           ] 77% ETA: 1s     [======================================>           ] 77% ETA: 1s     [======================================>           ] 77% ETA: 1s     [======================================>           ] 77% ETA: 1s     [======================================>           ] 77% ETA: 1s     [======================================>           ] 77% ETA: 1s     [======================================>           ] 77% ETA: 1s     [======================================>           ] 77% ETA: 1s     [======================================>           ] 77% ETA: 1s     [======================================>           ] 77% ETA: 1s     [======================================>           ] 77% ETA: 1s     [======================================>           ] 77% ETA: 1s     [======================================>           ] 77% ETA: 1s     [======================================>           ] 77% ETA: 1s     [=======================================>          ] 78% ETA: 1s     [=======================================>          ] 78% ETA: 1s     [=======================================>          ] 78% ETA: 1s     [=======================================>          ] 78% ETA: 1s     [=======================================>          ] 78% ETA: 1s     [=======================================>          ] 78% ETA: 1s     [=======================================>          ] 78% ETA: 1s     [=======================================>          ] 78% ETA: 1s     [=======================================>          ] 78% ETA: 1s     [=======================================>          ] 78% ETA: 1s     [=======================================>          ] 78% ETA: 1s     [=======================================>          ] 78% ETA: 1s     [=======================================>          ] 78% ETA: 1s     [=======================================>          ] 78% ETA: 1s     [=======================================>          ] 78% ETA: 1s     [=======================================>          ] 78% ETA: 1s     [=======================================>          ] 78% ETA: 1s     [=======================================>          ] 78% ETA: 1s     [=======================================>          ] 79% ETA: 1s     [=======================================>          ] 79% ETA: 1s     [=======================================>          ] 79% ETA: 1s     [=======================================>          ] 79% ETA: 1s     [=======================================>          ] 79% ETA: 1s     [=======================================>          ] 79% ETA: 1s     [=======================================>          ] 79% ETA: 1s     [=======================================>          ] 79% ETA: 1s     [=======================================>          ] 79% ETA: 1s     [=======================================>          ] 79% ETA: 1s     [=======================================>          ] 79% ETA: 1s     [=======================================>          ] 79% ETA: 1s     [=======================================>          ] 79% ETA: 0s     [=======================================>          ] 79% ETA: 0s     [=======================================>          ] 79% ETA: 0s     [=======================================>          ] 79% ETA: 0s     [=======================================>          ] 79% ETA: 0s     [=======================================>          ] 79% ETA: 0s     [========================================>         ] 80% ETA: 0s     [========================================>         ] 80% ETA: 0s     [========================================>         ] 80% ETA: 0s     [========================================>         ] 80% ETA: 0s     [========================================>         ] 80% ETA: 0s     [========================================>         ] 80% ETA: 0s     [========================================>         ] 80% ETA: 0s     [========================================>         ] 80% ETA: 0s     [========================================>         ] 80% ETA: 0s     [========================================>         ] 80% ETA: 0s     [========================================>         ] 80% ETA: 0s     [========================================>         ] 80% ETA: 0s     [========================================>         ] 80% ETA: 0s     [========================================>         ] 80% ETA: 0s     [========================================>         ] 80% ETA: 0s     [========================================>         ] 80% ETA: 0s     [========================================>         ] 80% ETA: 0s     [========================================>         ] 80% ETA: 0s     [========================================>         ] 81% ETA: 0s     [========================================>         ] 81% ETA: 0s     [========================================>         ] 81% ETA: 0s     [========================================>         ] 81% ETA: 0s     [========================================>         ] 81% ETA: 0s     [========================================>         ] 81% ETA: 0s     [========================================>         ] 81% ETA: 0s     [========================================>         ] 81% ETA: 0s     [========================================>         ] 81% ETA: 0s     [========================================>         ] 81% ETA: 0s     [========================================>         ] 81% ETA: 0s     [========================================>         ] 81% ETA: 0s     [========================================>         ] 81% ETA: 0s     [========================================>         ] 81% ETA: 0s     [========================================>         ] 81% ETA: 0s     [========================================>         ] 81% ETA: 0s     [========================================>         ] 81% ETA: 0s     [========================================>         ] 81% ETA: 0s     [=========================================>        ] 82% ETA: 0s     [=========================================>        ] 82% ETA: 0s     [=========================================>        ] 82% ETA: 0s     [=========================================>        ] 82% ETA: 0s     [=========================================>        ] 82% ETA: 0s     [=========================================>        ] 82% ETA: 0s     [=========================================>        ] 82% ETA: 0s     [=========================================>        ] 82% ETA: 0s     [=========================================>        ] 82% ETA: 0s     [=========================================>        ] 82% ETA: 0s     [=========================================>        ] 82% ETA: 0s     [=========================================>        ] 82% ETA: 0s     [=========================================>        ] 82% ETA: 0s     [=========================================>        ] 82% ETA: 0s     [=========================================>        ] 82% ETA: 0s     [=========================================>        ] 82% ETA: 0s     [=========================================>        ] 82% ETA: 0s     [=========================================>        ] 82% ETA: 0s     [=========================================>        ] 82% ETA: 0s     [=========================================>        ] 83% ETA: 0s     [=========================================>        ] 83% ETA: 0s     [=========================================>        ] 83% ETA: 0s     [=========================================>        ] 83% ETA: 0s     [=========================================>        ] 83% ETA: 0s     [=========================================>        ] 83% ETA: 0s     [=========================================>        ] 83% ETA: 0s     [=========================================>        ] 83% ETA: 0s     [=========================================>        ] 83% ETA: 0s     [=========================================>        ] 83% ETA: 0s     [=========================================>        ] 83% ETA: 0s     [=========================================>        ] 83% ETA: 0s     [=========================================>        ] 83% ETA: 0s     [=========================================>        ] 83% ETA: 0s     [=========================================>        ] 83% ETA: 0s     [=========================================>        ] 83% ETA: 0s     [=========================================>        ] 83% ETA: 0s     [=========================================>        ] 83% ETA: 0s     [==========================================>       ] 84% ETA: 0s     [==========================================>       ] 84% ETA: 0s     [==========================================>       ] 84% ETA: 0s     [==========================================>       ] 84% ETA: 0s     [==========================================>       ] 84% ETA: 0s     [==========================================>       ] 84% ETA: 0s     [==========================================>       ] 84% ETA: 0s     [==========================================>       ] 84% ETA: 0s     [==========================================>       ] 84% ETA: 0s     [==========================================>       ] 84% ETA: 0s     [==========================================>       ] 84% ETA: 0s     [==========================================>       ] 84% ETA: 0s     [==========================================>       ] 84% ETA: 0s     [==========================================>       ] 84% ETA: 0s     [==========================================>       ] 84% ETA: 0s     [==========================================>       ] 84% ETA: 0s     [==========================================>       ] 84% ETA: 0s     [==========================================>       ] 84% ETA: 0s     [==========================================>       ] 85% ETA: 0s     [==========================================>       ] 85% ETA: 0s     [==========================================>       ] 85% ETA: 0s     [==========================================>       ] 85% ETA: 0s     [==========================================>       ] 85% ETA: 0s     [==========================================>       ] 85% ETA: 0s     [==========================================>       ] 85% ETA: 0s     [==========================================>       ] 85% ETA: 0s     [==========================================>       ] 85% ETA: 0s     [==========================================>       ] 85% ETA: 0s     [==========================================>       ] 85% ETA: 0s     [==========================================>       ] 85% ETA: 0s     [==========================================>       ] 85% ETA: 0s     [==========================================>       ] 85% ETA: 0s     [==========================================>       ] 85% ETA: 0s     [==========================================>       ] 85% ETA: 0s     [==========================================>       ] 85% ETA: 0s     [==========================================>       ] 85% ETA: 0s     [===========================================>      ] 86% ETA: 0s     [===========================================>      ] 86% ETA: 0s     [===========================================>      ] 86% ETA: 0s     [===========================================>      ] 86% ETA: 0s     [===========================================>      ] 86% ETA: 0s     [===========================================>      ] 86% ETA: 0s     [===========================================>      ] 86% ETA: 0s     [===========================================>      ] 86% ETA: 0s     [===========================================>      ] 86% ETA: 0s     [===========================================>      ] 86% ETA: 0s     [===========================================>      ] 86% ETA: 0s     [===========================================>      ] 86% ETA: 0s     [===========================================>      ] 86% ETA: 0s     [===========================================>      ] 86% ETA: 0s     [===========================================>      ] 86% ETA: 0s     [===========================================>      ] 86% ETA: 0s     [===========================================>      ] 86% ETA: 0s     [===========================================>      ] 86% ETA: 0s     [===========================================>      ] 87% ETA: 0s     [===========================================>      ] 87% ETA: 0s     [===========================================>      ] 87% ETA: 0s     [===========================================>      ] 87% ETA: 0s     [===========================================>      ] 87% ETA: 0s     [===========================================>      ] 87% ETA: 0s     [===========================================>      ] 87% ETA: 0s     [===========================================>      ] 87% ETA: 0s     [===========================================>      ] 87% ETA: 0s     [===========================================>      ] 87% ETA: 0s     [===========================================>      ] 87% ETA: 0s     [===========================================>      ] 87% ETA: 0s     [===========================================>      ] 87% ETA: 0s     [===========================================>      ] 87% ETA: 0s     [===========================================>      ] 87% ETA: 0s     [===========================================>      ] 87% ETA: 0s     [===========================================>      ] 87% ETA: 0s     [===========================================>      ] 87% ETA: 0s     [===========================================>      ] 87% ETA: 0s     [============================================>     ] 88% ETA: 0s     [============================================>     ] 88% ETA: 0s     [============================================>     ] 88% ETA: 0s     [============================================>     ] 88% ETA: 0s     [============================================>     ] 88% ETA: 0s     [============================================>     ] 88% ETA: 0s     [============================================>     ] 88% ETA: 0s     [============================================>     ] 88% ETA: 0s     [============================================>     ] 88% ETA: 0s     [============================================>     ] 88% ETA: 0s     [============================================>     ] 88% ETA: 0s     [============================================>     ] 88% ETA: 0s     [============================================>     ] 88% ETA: 0s     [============================================>     ] 88% ETA: 0s     [============================================>     ] 88% ETA: 0s     [============================================>     ] 88% ETA: 0s     [============================================>     ] 88% ETA: 0s     [============================================>     ] 88% ETA: 0s     [============================================>     ] 89% ETA: 0s     [============================================>     ] 89% ETA: 0s     [============================================>     ] 89% ETA: 0s     [============================================>     ] 89% ETA: 0s     [============================================>     ] 89% ETA: 0s     [============================================>     ] 89% ETA: 0s     [============================================>     ] 89% ETA: 0s     [============================================>     ] 89% ETA: 0s     [============================================>     ] 89% ETA: 0s     [============================================>     ] 89% ETA: 0s     [============================================>     ] 89% ETA: 0s     [============================================>     ] 89% ETA: 0s     [============================================>     ] 89% ETA: 0s     [============================================>     ] 89% ETA: 0s     [============================================>     ] 89% ETA: 0s     [============================================>     ] 89% ETA: 0s     [============================================>     ] 89% ETA: 0s     [============================================>     ] 89% ETA: 0s     [=============================================>    ] 90% ETA: 0s     [=============================================>    ] 90% ETA: 0s     [=============================================>    ] 90% ETA: 0s     [=============================================>    ] 90% ETA: 0s     [=============================================>    ] 90% ETA: 0s     [=============================================>    ] 90% ETA: 0s     [=============================================>    ] 90% ETA: 0s     [=============================================>    ] 90% ETA: 0s     [=============================================>    ] 90% ETA: 0s     [=============================================>    ] 90% ETA: 0s     [=============================================>    ] 90% ETA: 0s     [=============================================>    ] 90% ETA: 0s     [=============================================>    ] 90% ETA: 0s     [=============================================>    ] 90% ETA: 0s     [=============================================>    ] 90% ETA: 0s     [=============================================>    ] 90% ETA: 0s     [=============================================>    ] 90% ETA: 0s     [=============================================>    ] 90% ETA: 0s     [=============================================>    ] 91% ETA: 0s     [=============================================>    ] 91% ETA: 0s     [=============================================>    ] 91% ETA: 0s     [=============================================>    ] 91% ETA: 0s     [=============================================>    ] 91% ETA: 0s     [=============================================>    ] 91% ETA: 0s     [=============================================>    ] 91% ETA: 0s     [=============================================>    ] 91% ETA: 0s     [=============================================>    ] 91% ETA: 0s     [=============================================>    ] 91% ETA: 0s     [=============================================>    ] 91% ETA: 0s     [=============================================>    ] 91% ETA: 0s     [=============================================>    ] 91% ETA: 0s     [=============================================>    ] 91% ETA: 0s     [=============================================>    ] 91% ETA: 0s     [=============================================>    ] 91% ETA: 0s     [=============================================>    ] 91% ETA: 0s     [=============================================>    ] 91% ETA: 0s     [==============================================>   ] 92% ETA: 0s     [==============================================>   ] 92% ETA: 0s     [==============================================>   ] 92% ETA: 0s     [==============================================>   ] 92% ETA: 0s     [==============================================>   ] 92% ETA: 0s     [==============================================>   ] 92% ETA: 0s     [==============================================>   ] 92% ETA: 0s     [==============================================>   ] 92% ETA: 0s     [==============================================>   ] 92% ETA: 0s     [==============================================>   ] 92% ETA: 0s     [==============================================>   ] 92% ETA: 0s     [==============================================>   ] 92% ETA: 0s     [==============================================>   ] 92% ETA: 0s     [==============================================>   ] 92% ETA: 0s     [==============================================>   ] 92% ETA: 0s     [==============================================>   ] 92% ETA: 0s     [==============================================>   ] 92% ETA: 0s     [==============================================>   ] 92% ETA: 0s     [==============================================>   ] 93% ETA: 0s     [==============================================>   ] 93% ETA: 0s     [==============================================>   ] 93% ETA: 0s     [==============================================>   ] 93% ETA: 0s     [==============================================>   ] 93% ETA: 0s     [==============================================>   ] 93% ETA: 0s     [==============================================>   ] 93% ETA: 0s     [==============================================>   ] 93% ETA: 0s     [==============================================>   ] 93% ETA: 0s     [==============================================>   ] 93% ETA: 0s     [==============================================>   ] 93% ETA: 0s     [==============================================>   ] 93% ETA: 0s     [==============================================>   ] 93% ETA: 0s     [==============================================>   ] 93% ETA: 0s     [==============================================>   ] 93% ETA: 0s     [==============================================>   ] 93% ETA: 0s     [==============================================>   ] 93% ETA: 0s     [==============================================>   ] 93% ETA: 0s     [==============================================>   ] 93% ETA: 0s     [===============================================>  ] 94% ETA: 0s     [===============================================>  ] 94% ETA: 0s     [===============================================>  ] 94% ETA: 0s     [===============================================>  ] 94% ETA: 0s     [===============================================>  ] 94% ETA: 0s     [===============================================>  ] 94% ETA: 0s     [===============================================>  ] 94% ETA: 0s     [===============================================>  ] 94% ETA: 0s     [===============================================>  ] 94% ETA: 0s     [===============================================>  ] 94% ETA: 0s     [===============================================>  ] 94% ETA: 0s     [===============================================>  ] 94% ETA: 0s     [===============================================>  ] 94% ETA: 0s     [===============================================>  ] 94% ETA: 0s     [===============================================>  ] 94% ETA: 0s     [===============================================>  ] 94% ETA: 0s     [===============================================>  ] 94% ETA: 0s     [===============================================>  ] 94% ETA: 0s     [===============================================>  ] 95% ETA: 0s     [===============================================>  ] 95% ETA: 0s     [===============================================>  ] 95% ETA: 0s     [===============================================>  ] 95% ETA: 0s     [===============================================>  ] 95% ETA: 0s     [===============================================>  ] 95% ETA: 0s     [===============================================>  ] 95% ETA: 0s     [===============================================>  ] 95% ETA: 0s     [===============================================>  ] 95% ETA: 0s     [===============================================>  ] 95% ETA: 0s     [===============================================>  ] 95% ETA: 0s     [===============================================>  ] 95% ETA: 0s     [===============================================>  ] 95% ETA: 0s     [===============================================>  ] 95% ETA: 0s     [===============================================>  ] 95% ETA: 0s     [===============================================>  ] 95% ETA: 0s     [===============================================>  ] 95% ETA: 0s     [===============================================>  ] 95% ETA: 0s     [================================================> ] 96% ETA: 0s     [================================================> ] 96% ETA: 0s     [================================================> ] 96% ETA: 0s     [================================================> ] 96% ETA: 0s     [================================================> ] 96% ETA: 0s     [================================================> ] 96% ETA: 0s     [================================================> ] 96% ETA: 0s     [================================================> ] 96% ETA: 0s     [================================================> ] 96% ETA: 0s     [================================================> ] 96% ETA: 0s     [================================================> ] 96% ETA: 0s     [================================================> ] 96% ETA: 0s     [================================================> ] 96% ETA: 0s     [================================================> ] 96% ETA: 0s     [================================================> ] 96% ETA: 0s     [================================================> ] 96% ETA: 0s     [================================================> ] 96% ETA: 0s     [================================================> ] 96% ETA: 0s     [================================================> ] 97% ETA: 0s     [================================================> ] 97% ETA: 0s     [================================================> ] 97% ETA: 0s     [================================================> ] 97% ETA: 0s     [================================================> ] 97% ETA: 0s     [================================================> ] 97% ETA: 0s     [================================================> ] 97% ETA: 0s     [================================================> ] 97% ETA: 0s     [================================================> ] 97% ETA: 0s     [================================================> ] 97% ETA: 0s     [================================================> ] 97% ETA: 0s     [================================================> ] 97% ETA: 0s     [================================================> ] 97% ETA: 0s     [================================================> ] 97% ETA: 0s     [================================================> ] 97% ETA: 0s     [================================================> ] 97% ETA: 0s     [================================================> ] 97% ETA: 0s     [================================================> ] 97% ETA: 0s     [=================================================>] 98% ETA: 0s     [=================================================>] 98% ETA: 0s     [=================================================>] 98% ETA: 0s     [=================================================>] 98% ETA: 0s     [=================================================>] 98% ETA: 0s     [=================================================>] 98% ETA: 0s     [=================================================>] 98% ETA: 0s     [=================================================>] 98% ETA: 0s     [=================================================>] 98% ETA: 0s     [=================================================>] 98% ETA: 0s     [=================================================>] 98% ETA: 0s     [=================================================>] 98% ETA: 0s     [=================================================>] 98% ETA: 0s     [=================================================>] 98% ETA: 0s     [=================================================>] 98% ETA: 0s     [=================================================>] 98% ETA: 0s     [=================================================>] 98% ETA: 0s     [=================================================>] 98% ETA: 0s     [=================================================>] 98% ETA: 0s     [=================================================>] 99% ETA: 0s     [=================================================>] 99% ETA: 0s     [=================================================>] 99% ETA: 0s     [=================================================>] 99% ETA: 0s     [=================================================>] 99% ETA: 0s     [=================================================>] 99% ETA: 0s     [=================================================>] 99% ETA: 0s     [=================================================>] 99% ETA: 0s     [=================================================>] 99% ETA: 0s     [=================================================>] 99% ETA: 0s     [=================================================>] 99% ETA: 0s     [=================================================>] 99% ETA: 0s     [=================================================>] 99% ETA: 0s     [=================================================>] 99% ETA: 0s     [=================================================>] 99% ETA: 0s     [=================================================>] 99% ETA: 0s     [=================================================>] 99% ETA: 0s     [=================================================>] 99% ETA: 0s                                                                                     
+
+
+# Tree detection without considering arguments
+# For this case study, TLS resolution was established as:
+# point.dist = 6.34 mm and tls.dist = 10 m
+
+tree.tls <- tree.detection.single.scan(data = pcd,
+
+                                       tls.resolution = list(point.dist = 6.34, tls.dist = 10),
+
+                                       threads = 2,
+
+                                       dir.data = dir.data, dir.result = dir.result)
+#> Application of Statistical Outlier Removal (SOR) to the entire point cloud
+#> Retention of points with high verticality & low surface variation
+#> Computing geometric features...
+#> [>                                                 ] 0% (0/22180)[==>                                               ] 4% (1000/22180)[====>                                             ] 9% (2000/22180)[======>                                           ] 13% (3000/22180)[=========>                                        ] 18% (4000/22180)[===========>                                      ] 22% (5000/22180)[=============>                                    ] 27% (6000/22180)[===============>                                  ] 31% (7000/22180)[==================>                               ] 36% (8000/22180)[====================>                             ] 40% (9000/22180)[======================>                           ] 45% (10000/22180)[========================>                         ] 49% (11000/22180)[===========================>                      ] 54% (12000/22180)[=============================>                    ] 58% (13000/22180)[===============================>                  ] 63% (14000/22180)[=================================>                ] 67% (15000/22180)[====================================>             ] 72% (16000/22180)[======================================>           ] 76% (17000/22180)[========================================>         ] 81% (18000/22180)[==========================================>       ] 85% (19000/22180)[=============================================>    ] 90% (20000/22180)[===============================================>  ] 94% (21000/22180)[=================================================>] 99% (22000/22180)[==================================================] 100% (22180/22180)
+#> Computing sections
+
+  # }
+```
