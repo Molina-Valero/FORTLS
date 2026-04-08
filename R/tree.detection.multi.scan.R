@@ -372,14 +372,14 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                                                   tls.precision = tls.precision,
                                                   .dbh.min = .dbh.min, .dbh.max = .dbh.max,
                                                   slice = slice * 2, bark.roughness = bark.roughness,
-                                                  x.center = x.center, y.center = y.center))}
-    else {
+                                                  x.center = x.center, y.center = y.center))
+    } else {
 
       .filter <- do.call(rbind, lapply(split(.cut, .cut$cluster), .sections.multi.scan,
-                                     tls.precision = tls.precision,
-                                     .dbh.min = .dbh.min, .dbh.max = .dbh.max,
-                                     slice = slice * 2, bark.roughness = bark.roughness,
-                                     x.center = x.center, y.center = y.center))
+                                       tls.precision = tls.precision,
+                                       .dbh.min = .dbh.min, .dbh.max = .dbh.max,
+                                       slice = slice * 2, bark.roughness = bark.roughness,
+                                       x.center = x.center, y.center = y.center))
     }
 
 

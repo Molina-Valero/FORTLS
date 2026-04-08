@@ -181,10 +181,11 @@ and Adela Martínez-Calvo.}
 \donttest{
 
 # Establishment of working directories (optional)
-# By default here we propose the current working directory of the R process
+# Establishment of working directories using tempdir() to avoid leaving files in
+# user filespace
 
-dir.data <- getwd()
-dir.result <- getwd()
+dir.data <- tempdir()
+dir.result <- tempdir()
 
 
 # Loading example data (LAZ file) to dir.data
@@ -207,6 +208,8 @@ pcd <- normalize(las = "PinusRadiata.laz",
                  scan.approach = "single",
 
                  x.center = 0, y.center = 0,
+
+                 max.dist = 7.5,
 
                  dir.data = dir.data, dir.result = dir.result)
 

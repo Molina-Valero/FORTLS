@@ -77,9 +77,16 @@ normalize <- function(las, normalized = NULL,
     }
 
     # Read LAS file with the selected attributes
+    # Suppress lidR's progress bar in non-interactive mode
+    old_opt <- getOption("lidR.progress")
+    options(lidR.progress = interactive())
+
     las <- suppressWarnings(suppressMessages(
       lidR::readLAS(file.path(dir.data, las), select = select_option)
     ))
+
+    # Restore original option
+    options(lidR.progress = old_opt)
 
   }
 
@@ -155,7 +162,7 @@ normalize <- function(las, normalized = NULL,
 
   # Normalize
 
-  data <- suppressWarnings(suppressMessages(lidR::classify_ground(las, algorithm = lidR::csf(cloth_resolution = csf$cloth_resolution, class_threshold  = 0.1), last_returns = FALSE)))
+  data <- suppressWarnings(suppressMessages(lidR::classify_ground(las, algorithm = lidR::csf(cloth_resolution = csf$cloth_resolution, class_threshold  = 0.2), last_returns = FALSE)))
 
   pb$tick()
 
@@ -197,7 +204,7 @@ normalize <- function(las, normalized = NULL,
 
     # Normalize
 
-    data <- suppressWarnings(suppressMessages(lidR::classify_ground(las, algorithm = lidR::csf(sloop_smooth = TRUE, class_threshold  = 0.1), last_returns = FALSE)))
+    data <- suppressWarnings(suppressMessages(lidR::classify_ground(las, algorithm = lidR::csf(sloop_smooth = TRUE, class_threshold  = 0.2), last_returns = FALSE)))
 
 
     # Generaion of Digital Terrain Model (DTM)

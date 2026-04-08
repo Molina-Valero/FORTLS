@@ -168,7 +168,8 @@ Adela Martínez-Calvo.}
 \donttest{
 
 # Establishment of working directories (optional)
-# By default here we propose the current working directory of the R process
+# Establishment of working directories using tempdir() to avoid leaving files in
+# user filespace
 
 dir.data <- tempdir()
 dir.result <- tempdir()
@@ -192,6 +193,8 @@ download.file("https://www.dropbox.com/s/17yl25pbrapat52/PinusRadiata.laz?dl=1",
 pcd <- normalize(las = "PinusRadiata.laz",
 
                  id = "PinusRadiata",
+
+                 scan.approach = "single",
 
                  x.center = 0, y.center = 0,
 
