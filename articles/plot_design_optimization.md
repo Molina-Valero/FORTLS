@@ -357,7 +357,7 @@ cor <- correlations(simulations = fixed.area.simulations,
              method = c("pearson", "spearman"), 
              save.result = FALSE, dir.result = NULL)
 #> Computing correlations for fixed area plots
-#>  (23.13 secs)
+#>  (19.88 secs)
 ```
 
 In addition to the calculation of the correlation measures, the function

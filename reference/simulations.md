@@ -602,9 +602,9 @@ sim <- simulations(tree.tls = example.tls, tree.field = example.field,
                                                 BAF.max = 2),
                    dir.data = dir.data, dir.result = dir.result)
 #> Computing simulations for plot: '1'
-#>  (185.71 secs)
+#>  (217.24 secs)
 #> Computing simulations for plot: '2'
-#>  (164.64 secs)
+#>  (185.35 secs)
 
 
 # }
