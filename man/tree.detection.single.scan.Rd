@@ -222,6 +222,8 @@ tree.tls <- tree.detection.single.scan(data = pcd,
 
                                        tls.resolution = list(point.dist = 6.34, tls.dist = 10),
 
+                                       breaks = 1.3,
+
                                        threads = 2,
 
                                        dir.data = dir.data, dir.result = dir.result)

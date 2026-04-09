@@ -203,6 +203,8 @@ tree.tls <- tree.detection.several.plots(las.list = c("PinusSylvestris1.laz",
 
                                          max.dist = 7.5,
 
+                                         breaks = 1.3,
+
                                          threads = 2,
 
                                          dir.data = dir.data, dir.result = dir.result)
