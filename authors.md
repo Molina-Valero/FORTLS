@@ -15,7 +15,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/Molina-Valero/FORTLS/blob/master/inst/CITATION)
+[`inst/CITATION`](https://github.com/Molina-Valero/FORTLS/blob/devel/inst/CITATION)
 
 Molina-Valero, J. A., Martínez-Calvo, A., Ginzo Villamayor, M. J., Novo
 Pérez, M. A., Álvarez-González, J. G., Montes, F., Pérez-Cruzado, C.

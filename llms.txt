@@ -25,12 +25,12 @@ install_fortls_python_deps()
 
 # Taller de manejo de nubes de puntos forestales - 9CFE
 
-## Materiales y datos
+## Materials and data
 
-[Materiales y
-datos](https://drive.google.com/drive/folders/1lBoe4XIYFdUfPUCAZ3KGU6JhrosPfoY6?usp=sharing)
+[Materials and
+data](https://drive.google.com/drive/folders/1lBoe4XIYFdUfPUCAZ3KGU6JhrosPfoY6?usp=sharing)
 
-## Instalación de FORTLS
+## Installing FORTLS
 
 ``` r
 install.packages("FORTLS")
@@ -38,92 +38,89 @@ library(FORTLS)
 install_fortls_python_deps()
 ```
 
-## Establecimiento del directorio de trabajo
+## Setting the working directory
 
-Es **extremadamente importante** que el directorio de trabajo (p. ej.
-“C:\_FORTLS”) coincida con el directorio donde se encuentran los datos
-de origen (nubes de puntos en formato LAS o LAZ). Recordad que en R los
-directorios se escriben con la barra inclinada u oblícua ( / ).
+It is **extremely important**that the working directory (for example,
+“C:\_FORTLS”) matches the directory where the source data are located
+(point clouds in LAS or LAZ format). Remember that in R, directories are
+written with a forward slash ( / ).
 
 ``` r
 setwd("C:/taller_FORTLS")
 ```
 
-## Normalización de la nube de puntos
+## Point cloud normalization
 
-Esta función (normalize) se utiliza para obtener coordenadas relativas
-al centro de la parcela especificado para las nubes de puntos del
-Escáner Láser Terrestre (TLS) y del Escáner Láser Móvil (MLS)
-(suministradas como archivos LAS o LAZ). A continuación se describen los
-argumentos utilizados en la función normalizar:
+This function (normalize) is used to obtain coordinates relative to the
+plot center specified for point clouds from the Terrestrial Laser
+Scanner (TLS) and the Mobile Laser Scanner (MLS) (provided as LAS or LAZ
+files). The arguments used in the normalize function are described
+below:
 
-las: texto que contiene el nombre del archivo LAS/LAZ perteneciente a la
-nube de puntos, incluiyendo las extensiones del archico (.las/.laz).
+las: text containing the name of the LAS/LAZ file belonging to the point
+cloud, including the file extension (.las/.laz).
 
-id: identificación opcional de la parcela, codificada como texto o de
-forma numérica.
+id: optional plot identification, encoded as text or numerically.
 
-dist.max: distancia horizontal máxima (m) considerada desde el centro de
-la parcela.
+dist.max: maximum horizontal distance (m) considered from the plot
+center.
 
-scan.approach: argumento que indica el tipo de escaneo realizado, tanto
-para escaneos únicos de TLS (‘single’) como múltiples o nubes de puntos
-generadas con escáner láser móvil (MLS) (‘multi’).
+scan.approach: argument indicating the type of scan performed, either
+single TLS scans (“single”) or multiple scans / point clouds generated
+with a mobile laser scanner (MLS) (“multi”).
 
 ``` r
 pcd <- normalize(las = "HLS_LiGrip.laz",
                  id = "HLS_LiGrip",
                  max.dist = 12.5,
-                 scan.approach = "multi")
+                 scan.approach = "multi",
+                 threads = parallel::detectCores()-2)
 ```
 
-## Variables de árbol individual (o dendrométricas)
+## Tree-level variables (or dendrometric variables)
 
-Esta función (tree.detection.multi.scan) detecta árboles a partir de
-nubes de puntos correspondientes a escaneos múltiples de TLS o nubes de
-puntos generadas con escáner láser móvil (MLS). Para cada árbol
-detectado, la función calcula las coordenadas centrales de la sección
-normal y estima el diámetro a 1,3 m sobre el nivel del suelo (lo que se
-conoce como dbh, diámetro a la altura del pecho), así como otras
-variables deárbol individual (altura total, volumen del fuste, etc.);
-clasificando el árbol como totalmente visible o parcialmente ocluido. A
-continuación se describen los argumentos utilizados en la función
-tree.detection.multi.scan:
+This function (tree.detection.multi.scan) detects trees from point
+clouds corresponding to multiple TLS scans or point clouds generated
+with a mobile laser scanner (MLS). For each detected tree, the function
+calculates the central coordinates of the normal section and estimates
+the diameter at 1.3 m above ground level (known as DBH, diameter at
+breast height), as well as other individual-tree variables (total
+height, stem volume, etc.); classifying the tree as fully visible or
+partially occluded. The arguments used in the tree.detection.multi.scan
+function are described below:
 
-data: data frame obtenido tras ejecutar la función normalize.
+data: data frame obtained after running the normalize function.
 
-understory: argumento opcional para indicar si hay vegetación densa en
-el sotobosque.
+understory: optional argument indicating whether there is dense
+understory vegetation.
 
 ``` r
 tree.tls <- tree.detection.multi.scan(data = pcd,
-                                      threads = parallel::detectCores()-1)
+                                      threads = parallel::detectCores()-2)
 ```
 
-## Variables de masa (o dasométricas)
+## Stand-level variables (or dasometric variables)
 
-Esta función (metrics.variables) calcula un conjunto de métricas y
-variables de masa a partir de nubes de puntos tomadas con escáneres
-terrestres de tecnología LiDAR. Mientras que las métricas puden ser
-vistas como potenciales variables explicativas en modelos, las variables
-podrían utilizarse como estimaciones directas de los atributos
-forestales a nivel de parcela. Esta función puede implementar diferentes
-diseños de parcela (parcelas circulares de área fija, k-tree y
-relascópicas) e incluye metodologías para corregir las oclusiones
-generadas en las nubes de puntos de escaneos únicos de TLS. A
-continuación se describen los argumentos utilizados en la función
-metrics.variables:
+This function (metrics.variables) calculates a set of metrics and stand
+variables from point clouds acquired with terrestrial LiDAR scanners.
+While the metrics can be viewed as potential explanatory variables in
+models, the variables could be used as direct estimates of forest
+attributes at plot level. This function can implement different plot
+designs (fixed-area circular plots, k-tree, and angle-count plots) and
+includes methodologies to correct for occlusions generated in point
+clouds from single TLS scans. The arguments used in the
+metrics.variables function are described below:
 
-tree.tls: data frame obtenido tras ejecutar la función
-tree.detection.multi.scan.
+tree.tls: data frame obtained after running the
+tree.detection.multi.scan function.
 
-scan.approach: argumento que indica el tipo de escaneo realizado, tanto
-para escaneos únicos de TLS (‘single’) como múltiples o nubes de puntos
-generadas con escáner láser móvil (MLS) (‘multi’).
+scan.approach: argument indicating the type of scan performed, either
+single TLS scans (“single”) or multiple scans / point clouds generated
+with a mobile laser scanner (MLS) (“multi”).
 
-plot.parameters: data frame que contiene los parámetros para definir los
-diseños de parcela de área fija circular (radio en m), k-tree (k) y
-relascópica (BAF).
+plot.parameters: data frame containing the parameters used to define
+fixed-area circular plot designs (radius in m), k-tree (k), and
+angle-count plot (BAF).
 
 ``` r
 met.var <- metrics.variables(tree.tls = tree.tls,

@@ -82,12 +82,12 @@
 <h1 id="taller-de-manejo-de-nubes-de-puntos-forestales---9cfe">Taller de manejo de nubes de puntos forestales - 9CFE<a class="anchor" aria-label="anchor" href="#taller-de-manejo-de-nubes-de-puntos-forestales---9cfe"></a>
 </h1>
 <div class="section level2">
-<h2 id="materiales-y-datos">Materiales y datos<a class="anchor" aria-label="anchor" href="#materiales-y-datos"></a>
+<h2 id="materials-and-data">Materials and data<a class="anchor" aria-label="anchor" href="#materials-and-data"></a>
 </h2>
-<p><a href="https://drive.google.com/drive/folders/1lBoe4XIYFdUfPUCAZ3KGU6JhrosPfoY6?usp=sharing" class="external-link">Materiales y datos</a></p>
+<p><a href="https://drive.google.com/drive/folders/1lBoe4XIYFdUfPUCAZ3KGU6JhrosPfoY6?usp=sharing" class="external-link">Materials and data</a></p>
 </div>
 <div class="section level2">
-<h2 id="instalación-de-fortls">Instalación de FORTLS<a class="anchor" aria-label="anchor" href="#instalaci%C3%B3n-de-fortls"></a>
+<h2 id="installing-fortls">Installing FORTLS<a class="anchor" aria-label="anchor" href="#installing-fortls"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"FORTLS"</span><span class="op">)</span></span>
@@ -95,43 +95,44 @@
 <span><span class="fu"><a href="reference/install_fortls_python_deps.html">install_fortls_python_deps</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="establecimiento-del-directorio-de-trabajo">Establecimiento del directorio de trabajo<a class="anchor" aria-label="anchor" href="#establecimiento-del-directorio-de-trabajo"></a>
+<h2 id="setting-the-working-directory">Setting the working directory<a class="anchor" aria-label="anchor" href="#setting-the-working-directory"></a>
 </h2>
-<p>Es <strong>extremadamente importante</strong> que el directorio de trabajo (p. ej. “C:_FORTLS”) coincida con el directorio donde se encuentran los datos de origen (nubes de puntos en formato LAS o LAZ). Recordad que en R los directorios se escriben con la barra inclinada u oblícua ( / ).</p>
+<p>It is <strong>extremely important</strong>that the working directory (for example, “C:_FORTLS”) matches the directory where the source data are located (point clouds in LAS or LAZ format). Remember that in R, directories are written with a forward slash ( / ).</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">setwd</a></span><span class="op">(</span><span class="st">"C:/taller_FORTLS"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="normalización-de-la-nube-de-puntos">Normalización de la nube de puntos<a class="anchor" aria-label="anchor" href="#normalizaci%C3%B3n-de-la-nube-de-puntos"></a>
+<h2 id="point-cloud-normalization">Point cloud normalization<a class="anchor" aria-label="anchor" href="#point-cloud-normalization"></a>
 </h2>
-<p>Esta función (normalize) se utiliza para obtener coordenadas relativas al centro de la parcela especificado para las nubes de puntos del Escáner Láser Terrestre (TLS) y del Escáner Láser Móvil (MLS) (suministradas como archivos LAS o LAZ). A continuación se describen los argumentos utilizados en la función normalizar:</p>
-<p>las: texto que contiene el nombre del archivo LAS/LAZ perteneciente a la nube de puntos, incluiyendo las extensiones del archico (.las/.laz).</p>
-<p>id: identificación opcional de la parcela, codificada como texto o de forma numérica.</p>
-<p>dist.max: distancia horizontal máxima (m) considerada desde el centro de la parcela.</p>
-<p>scan.approach: argumento que indica el tipo de escaneo realizado, tanto para escaneos únicos de TLS (‘single’) como múltiples o nubes de puntos generadas con escáner láser móvil (MLS) (‘multi’).</p>
+<p>This function (normalize) is used to obtain coordinates relative to the plot center specified for point clouds from the Terrestrial Laser Scanner (TLS) and the Mobile Laser Scanner (MLS) (provided as LAS or LAZ files). The arguments used in the normalize function are described below:</p>
+<p>las: text containing the name of the LAS/LAZ file belonging to the point cloud, including the file extension (.las/.laz).</p>
+<p>id: optional plot identification, encoded as text or numerically.</p>
+<p>dist.max: maximum horizontal distance (m) considered from the plot center.</p>
+<p>scan.approach: argument indicating the type of scan performed, either single TLS scans (“single”) or multiple scans / point clouds generated with a mobile laser scanner (MLS) (“multi”).</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pcd</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/normalize.html">normalize</a></span><span class="op">(</span>las <span class="op">=</span> <span class="st">"HLS_LiGrip.laz"</span>,</span>
 <span>                 id <span class="op">=</span> <span class="st">"HLS_LiGrip"</span>,</span>
 <span>                 max.dist <span class="op">=</span> <span class="fl">12.5</span>,</span>
-<span>                 scan.approach <span class="op">=</span> <span class="st">"multi"</span><span class="op">)</span></span></code></pre></div>
+<span>                 scan.approach <span class="op">=</span> <span class="st">"multi"</span>,</span>
+<span>                 threads <span class="op">=</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">detectCores</a></span><span class="op">(</span><span class="op">)</span><span class="op">-</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="variables-de-árbol-individual-o-dendrométricas">Variables de árbol individual (o dendrométricas)<a class="anchor" aria-label="anchor" href="#variables-de-%C3%A1rbol-individual-o-dendrom%C3%A9tricas"></a>
+<h2 id="tree-level-variables-or-dendrometric-variables">Tree-level variables (or dendrometric variables)<a class="anchor" aria-label="anchor" href="#tree-level-variables-or-dendrometric-variables"></a>
 </h2>
-<p>Esta función (tree.detection.multi.scan) detecta árboles a partir de nubes de puntos correspondientes a escaneos múltiples de TLS o nubes de puntos generadas con escáner láser móvil (MLS). Para cada árbol detectado, la función calcula las coordenadas centrales de la sección normal y estima el diámetro a 1,3 m sobre el nivel del suelo (lo que se conoce como dbh, diámetro a la altura del pecho), así como otras variables deárbol individual (altura total, volumen del fuste, etc.); clasificando el árbol como totalmente visible o parcialmente ocluido. A continuación se describen los argumentos utilizados en la función tree.detection.multi.scan:</p>
-<p>data: data frame obtenido tras ejecutar la función normalize.</p>
-<p>understory: argumento opcional para indicar si hay vegetación densa en el sotobosque.</p>
+<p>This function (tree.detection.multi.scan) detects trees from point clouds corresponding to multiple TLS scans or point clouds generated with a mobile laser scanner (MLS). For each detected tree, the function calculates the central coordinates of the normal section and estimates the diameter at 1.3 m above ground level (known as DBH, diameter at breast height), as well as other individual-tree variables (total height, stem volume, etc.); classifying the tree as fully visible or partially occluded. The arguments used in the tree.detection.multi.scan function are described below:</p>
+<p>data: data frame obtained after running the normalize function.</p>
+<p>understory: optional argument indicating whether there is dense understory vegetation.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tree.tls</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/tree.detection.multi.scan.html">tree.detection.multi.scan</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pcd</span>,</span>
-<span>                                      threads <span class="op">=</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">detectCores</a></span><span class="op">(</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<span>                                      threads <span class="op">=</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">detectCores</a></span><span class="op">(</span><span class="op">)</span><span class="op">-</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="variables-de-masa-o-dasométricas">Variables de masa (o dasométricas)<a class="anchor" aria-label="anchor" href="#variables-de-masa-o-dasom%C3%A9tricas"></a>
+<h2 id="stand-level-variables-or-dasometric-variables">Stand-level variables (or dasometric variables)<a class="anchor" aria-label="anchor" href="#stand-level-variables-or-dasometric-variables"></a>
 </h2>
-<p>Esta función (metrics.variables) calcula un conjunto de métricas y variables de masa a partir de nubes de puntos tomadas con escáneres terrestres de tecnología LiDAR. Mientras que las métricas puden ser vistas como potenciales variables explicativas en modelos, las variables podrían utilizarse como estimaciones directas de los atributos forestales a nivel de parcela. Esta función puede implementar diferentes diseños de parcela (parcelas circulares de área fija, k-tree y relascópicas) e incluye metodologías para corregir las oclusiones generadas en las nubes de puntos de escaneos únicos de TLS. A continuación se describen los argumentos utilizados en la función metrics.variables:</p>
-<p>tree.tls: data frame obtenido tras ejecutar la función tree.detection.multi.scan.</p>
-<p>scan.approach: argumento que indica el tipo de escaneo realizado, tanto para escaneos únicos de TLS (‘single’) como múltiples o nubes de puntos generadas con escáner láser móvil (MLS) (‘multi’).</p>
-<p>plot.parameters: data frame que contiene los parámetros para definir los diseños de parcela de área fija circular (radio en m), k-tree (k) y relascópica (BAF).</p>
+<p>This function (metrics.variables) calculates a set of metrics and stand variables from point clouds acquired with terrestrial LiDAR scanners. While the metrics can be viewed as potential explanatory variables in models, the variables could be used as direct estimates of forest attributes at plot level. This function can implement different plot designs (fixed-area circular plots, k-tree, and angle-count plots) and includes methodologies to correct for occlusions generated in point clouds from single TLS scans. The arguments used in the metrics.variables function are described below:</p>
+<p>tree.tls: data frame obtained after running the tree.detection.multi.scan function.</p>
+<p>scan.approach: argument indicating the type of scan performed, either single TLS scans (“single”) or multiple scans / point clouds generated with a mobile laser scanner (MLS) (“multi”).</p>
+<p>plot.parameters: data frame containing the parameters used to define fixed-area circular plot designs (radius in m), k-tree (k), and angle-count plot (BAF).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">met.var</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/metrics.variables.html">metrics.variables</a></span><span class="op">(</span>tree.tls <span class="op">=</span> <span class="va">tree.tls</span>,</span>
 <span>                             scan.approach <span class="op">=</span> <span class="st">"multi"</span>,</span>
