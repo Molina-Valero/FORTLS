@@ -192,11 +192,11 @@ corr <- correlations(simulations = Rioja.simulations,
                                    "hgeom.0", "hharm.0"),
                      save.result = FALSE)
 #> Computing correlations for fixed area plots
-#>  (180.43 secs)
+#>  (179.15 secs)
 #> Computing correlations for k-tree plots
-#>  (45.55 secs)
+#>  (45.05 secs)
 #> Computing correlations for angle-count plots
-#>  (35.53 secs)
+#>  (35.54 secs)
 
 opt.corr <- corr$opt.correlations
 
