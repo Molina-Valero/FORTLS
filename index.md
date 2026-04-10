@@ -18,7 +18,7 @@ Get the lat stable version of FORTLS from GitHub (included in the master
 branch)
 
 ``` r
-remotes::install_github("Molina-Valero/FORTLS", ref = "devel", dependencies = TRUE)
+remotes::install_github("Molina-Valero/FORTLS", ref = "master", dependencies = TRUE)
 library(FORTLS)
 install_fortls_python_deps()
 ```
@@ -126,18 +126,18 @@ diseños de parcela de área fija circular (radio en m), k-tree (k) y
 relascópica (BAF).
 
 ``` r
-met.var.TLS <- metrics.variables(tree.tls = tree.tls,
-                                 scan.approach = "multi",
-                                 plot.parameters = data.frame(radius = 10, k = 10, BAF = 2))
+met.var <- metrics.variables(tree.tls = tree.tls,
+                             scan.approach = "multi",
+                             plot.parameters = data.frame(radius = 10, k = 10, BAF = 2))
                                  
 # Parcela circular de área fija (10 m de radio)
-parcela.circular <- met.var.TLS$fixed.area
+parcela.circular <- met.var$fixed.area
 
 # Parceka k-tree (k = 10)
-parcela.k.tree <- met.var.TLS$k.tree
+parcela.k.tree <- met.var$k.tree
 
 # Parcela relascópica (BAF = 2)
-parcela.relascopica <- met.var.TLS$angle.count
+parcela.relascopica <- met.var$angle.count
 ```
 
 # Acknowledgements
