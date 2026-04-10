@@ -168,10 +168,11 @@ and Adela Martínez-Calvo.}
 \donttest{
 
 # Establishment of working directories (optional)
-# By default here we propose the current working directory of the R process
+# Establishment of working directories using tempdir() to avoid leaving files in
+# user filespace
 
-dir.data <- getwd()
-dir.result <- getwd()
+dir.data <- tempdir()
+dir.result <- tempdir()
 
 
 # Loading example data of TLS multi-scan approach point cloud (LAZ file) to dir.data
@@ -189,6 +190,8 @@ pcd <- normalize(las = "PiceaAbies.laz",
 
                  scan.approach = "multi",
 
+                 max.dist = 7.5,
+
                  dir.data = dir.data, dir.result = dir.result)
 
 
@@ -198,7 +201,7 @@ tree.tls <- tree.detection.multi.scan(data = pcd,
 
                                       threads = 2,
 
-                                      dir.result = dir.result)
+                                      dir.data = dir.data, dir.result = dir.result)
 
   }
 

@@ -11,7 +11,7 @@
 \usage{
 tree.detection.several.plots(las.list, id.list = NULL, file = NULL,
 
-                             scan.approach = "single",
+                             scan.approach = "multi",
                              pcd.red = NULL, normalized = NULL,
                              center.coord = NULL,
                              x.side = NULL, y.side = NULL,
@@ -163,10 +163,11 @@ and Adela Martínez-Calvo.}
 \donttest{
 
 # Establishment of working directories (optional)
-# By default here we propose the current working directory of the R process
+# Establishment of working directories using tempdir() to avoid leaving files in
+# user filespace
 
-dir.data <- getwd()
-dir.result <- getwd()
+dir.data <- tempdir()
+dir.result <- tempdir()
 
 # Loading example data (LAZ files) to dir.data
 
@@ -194,13 +195,19 @@ tree.tls <- tree.detection.several.plots(las.list = c("PinusSylvestris1.laz",
 
                                          id.list = id,
 
+                                         scan.approach = "single",
+
                                          center.coord = center.coord,
 
                                          tls.resolution = list(point.dist = 7.67, tls.dist = 10),
 
                                          max.dist = 7.5,
 
-                                         threads = 2)
+                                         breaks = 1.3,
+
+                                         threads = 2,
+
+                                         dir.data = dir.data, dir.result = dir.result)
 
   }
 }

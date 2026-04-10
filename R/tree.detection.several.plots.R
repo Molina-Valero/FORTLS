@@ -1,7 +1,7 @@
 
 tree.detection.several.plots <- function(las.list, id.list = NULL, file = NULL,
 
-                                         scan.approach = "single",
+                                         scan.approach = "multi",
 
                                          pcd.red = NULL, normalized = NULL,
                                          center.coord = NULL,

@@ -928,7 +928,11 @@
 .n.w.ratio <- function(stem){
 
   n.w.ratio <- stats::sd(stem$z) / sqrt(stats::sd(stem$x) ^ 2 + stats::sd(stem$y) ^ 2)
-  out <- data.frame(tree = stem$tree[1], n.w.ratio = n.w.ratio, z.sd = sd(stem$z, na.rm = TRUE))
+  out <- data.frame(tree = stem$tree[1],
+                    n.w.ratio = n.w.ratio,
+                    z.sd = sd(stem$z, na.rm = TRUE),
+                    z.min = min(stem$z, na.rm = TRUE),
+                    z.max = max(stem$z, na.rm = TRUE))
   return(out)
 
 }
@@ -1100,11 +1104,11 @@
 }
 
 
-.stem.axis <- function(data, scan.approach = "single"){
+.stem.axis <- function(data, breaks, scan.approach = "single", tls.precision){
 
   if(scan.approach == "multi"){
 
-    s <- sample(nrow(data), round(nrow(data)*0.25))
+    s <- sample(nrow(data), round(nrow(data)*0.5))
     data <- data[s, ]
 
     } else {
@@ -1112,16 +1116,17 @@
     data <- data[data$prob < 0.1 | data$prob > 0.9, ]}
 
 
-  if(nrow(data) < 100 | nrow(data) > 1000000 | min(data$z) > 1.3){
+  # if(nrow(data) < 100 | nrow(data) > 1000000 | min(data$z) > 1.3){
+  if(nrow(data) < 50 | nrow(data) > 1000000){
 
     eje <- data.frame(tree = as.numeric(), sec = as.numeric(), x = as.numeric(), y = as.numeric(), n.w.ratio = as.numeric(), z.sd = as.numeric())
 
     } else {
 
-  eje <- data.frame(tree = unique(data$tree), sec = seq(0, round(max(data$z), 1), by = 0.1))
+  eje <- data.frame(tree = unique(data$tree), sec = seq(0, round(max(breaks), 1), by = 0.1))
 
 
-  dbscan <- dbscan::dbscan(data[, c("x", "z"), drop = FALSE], eps = 0.25)
+  dbscan <- dbscan::dbscan(data[, c("x", "z"), drop = FALSE], eps = tls.precision * 2)
   data$cluster <- as.factor(dbscan$cluster)
   # plot(data$z, data$x, col = data$cluster, asp =1)
 
@@ -1131,13 +1136,20 @@
 
   data <- merge(data, cluster, by = "cluster", all = FALSE)
 
-  # plot(data$z, data$x, col = data$cluster, asp =1)
 
   mod.x <- stats::lm(data = data, x ~ z)
   mod.y <- stats::lm(data = data, y ~ z)
 
   eje$x <- stats::coef(mod.x)[1] + stats::coef(mod.x)[2] * eje$sec
   eje$y <- stats::coef(mod.y)[1] + stats::coef(mod.y)[2] * eje$sec
+
+
+  # plot(data$z, data$x, col = "red", asp =1)
+  # points(eje$x~eje$sec)
+  # plot(data$z, data$y, col = "red", asp =1)
+  # points(eje$y~eje$sec)
+
+
 
   # n.w.ratio <- as.numeric(.n.w.ratio(data)[2])
 

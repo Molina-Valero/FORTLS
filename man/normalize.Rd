@@ -17,7 +17,7 @@ normalize(las, normalized = NULL,
           algorithm.dtm = "knnidw", res.dtm = 0.2,
           csf = list(cloth_resolution = 0.5),
           intensity = NULL, RGB = NULL,
-          scan.approach = "single",
+          scan.approach = "multi",
           voxel_size = NULL,
           threads = 1,
           id = NULL, file = NULL, plot = TRUE,
@@ -48,7 +48,7 @@ normalize(las, normalized = NULL,
 
   \item{max.height}{Optional maximum height (m) considered from ground level. All points above \code{max.height} will be discarded after the normalization process. If this argument is not specified by the user, it will be set to NULL by default and, as a consequence, all points will be used in processing, with \code{max.height} representing the highest point.}
 
-    \item{algorithm.dtm}{Algorithm used to generate the digital terrain model (DTM) from the TLS point cloud. There are two posible options based on spatial interpolation: \sQuote{tin} and \sQuote{knnidw} (see \sQuote{Details}). If this argument is not specified by the user, it will be set to \sQuote{knnidw} algorithm.}
+    \item{algorithm.dtm}{Algorithm used to generate the digital terrain model (DTM) from the TLS point cloud. There are two posible options based on spatial interpolation: \sQuote{tin} and \sQuote{knnidw} (see \sQuote{Details}). If this argument is not specified by the user, it will be set to \sQuote{tin} algorithm.}
 
       \item{res.dtm}{Numeric parameter. Resolution of the DTM generated to normalize point cloud (see \sQuote{Details}). If this argument is not specified by the user, it will be set to 0.2 m.}
 
@@ -62,7 +62,7 @@ normalize(las, normalized = NULL,
 
   \item{RGB}{Logical parameter useful when point clouds are colorized, thus including values of RGB colors. It is based on the Green Leaf Algorithm (GLA) (see \sQuote{Details}).}
 
-  \item{scan.approach}{Character parameter indicating TLS single-scan (\sQuote{single}) or TLS multi-scan approach or SLAM point clouds (\sQuote{multi}) approaches. If this argument is not specified by the user, it will be set to \sQuote{single} approach.}
+  \item{scan.approach}{Character parameter indicating TLS single-scan (\sQuote{single}) or TLS multi-scan approach or SLAM point clouds (\sQuote{multi}) approaches. If this argument is not specified by the user, it will be set to \sQuote{multi} approach.}
 
   \item{voxel_size}{Defines the size of the 3D grid cells used for downsampling.}
 
@@ -168,7 +168,8 @@ Adela Martínez-Calvo.}
 \donttest{
 
 # Establishment of working directories (optional)
-# By default here we propose the current working directory of the R process
+# Establishment of working directories using tempdir() to avoid leaving files in
+# user filespace
 
 dir.data <- tempdir()
 dir.result <- tempdir()
@@ -192,6 +193,8 @@ download.file("https://www.dropbox.com/s/17yl25pbrapat52/PinusRadiata.laz?dl=1",
 pcd <- normalize(las = "PinusRadiata.laz",
 
                  id = "PinusRadiata",
+
+                 scan.approach = "single",
 
                  x.center = 0, y.center = 0,
 
