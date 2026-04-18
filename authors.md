@@ -36,13 +36,13 @@ package FORTLS. Environmental Modelling & Software, 105337.
 Juan Alberto Molina-Valero, Adela Martínez-Calvo, Juan Gabriel
 Álvarez-González, Fernando Montes and César Pérez-Cruzado (2026).
 Automatic Processing of Terrestrial-Based Technologies Point Cloud Data
-for Forestry Purposes. R package version 2.0.0.
+for Forestry Purposes. R package version 2.0.1.
 https://CRAN.R-project.org/package=FORTLS
 
     @Manual{,
       title = {Automatic Processing of Terrestrial-Based Technologies Point Cloud Data for Forestry Purposes},
       author = {Juan Alberto Molina-Valero and Adela Martínez-Calvo and Juan Gabriel Álvarez-González and Fernando Montes and César Pérez-Cruzado},
       year = {2026},
-      note = {R package version 2.0.0},
+      note = {R package version 2.0.1},
       url = {https://CRAN.R-project.org/package=FORTLS},
     }

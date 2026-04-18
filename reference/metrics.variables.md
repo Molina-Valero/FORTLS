@@ -14,7 +14,7 @@ occlusions generated in TLS single-scan point clouds.
 metrics.variables(tree.tls, tree.ds = NULL, tree.field = NULL,
                   plot.design = c("fixed.area", "k.tree", "angle.count"),
                   plot.parameters = data.frame(radius = 25, k = 10, BAF = 2),
-                  scan.approach = "single",
+                  scan.approach = "multi",
                   var.metr = list(tls = NULL, field = NULL),
                   v.calc = "parab", dbh.min = 4, h.min = 1.3,
                   max.dist = Inf, dir.data = NULL,
@@ -539,7 +539,7 @@ met.var.TLS <- metrics.variables(tree.tls = tree.tls,
                                  plot.parameters = data.frame(radius = 10, k = 10, BAF = 2),
                                  dir.data = dir.data, dir.result = dir.result)
 #> Computing metrics for plot: '1'
-#>  (8.53 secs)
+#>  (8.63 secs)
 
 
   # }

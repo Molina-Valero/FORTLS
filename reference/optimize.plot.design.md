@@ -192,11 +192,11 @@ corr <- correlations(simulations = Rioja.simulations,
                                    "hgeom.0", "hharm.0"),
                      save.result = FALSE)
 #> Computing correlations for fixed area plots
-#>  (210.02 secs)
+#>  (208 secs)
 #> Computing correlations for k-tree plots
-#>  (52.98 secs)
+#>  (52.75 secs)
 #> Computing correlations for angle-count plots
-#>  (41.2 secs)
+#>  (41.08 secs)
 
 opt.corr <- corr$opt.correlations
 
@@ -219,7 +219,7 @@ dir.result <- tempdir()
 optimize.plot.design(correlations = opt.corr, variables = c("N", "G"),
                      dir.result = dir.result)
 #> Plotting heatmap(s) for optimal Pearson's correlations 
-#>  (0.47 secs)
+#>  (0.5 secs)
 #> Plotting heatmap(s) for optimal Spearman's correlations 
 #>  (0.26 secs)
 
