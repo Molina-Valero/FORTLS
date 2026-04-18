@@ -165,7 +165,7 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   # 5. Remove cluster with fewer than 5 points
 
-  stem$cluster <- dbscan::dbscan(stem[, c("x", "y", "z"), drop = FALSE], eps = tls.precision, minPts = 2)$cluster
+  stem$cluster <- dbscan::dbscan(stem[, c("x", "y", "z"), drop = FALSE], eps = tls.precision, minPts = 3)$cluster
   stem <- stem[stem$cluster > 0 & ave(stem$cluster, stem$cluster, FUN = length) > 5, , drop = FALSE]
 
 

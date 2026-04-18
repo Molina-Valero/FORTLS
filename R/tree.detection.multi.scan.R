@@ -212,7 +212,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   # Filtering stems axis
 
   stem.i <- do.call(rbind, lapply(split(stem, stem$tree), .n.w.ratio))
-  stem.i <- stem.i[stem.i$z.p95 > stem.section[2] - 0.5, ]
+  stem.i <- stem.i[stem.i$z.p99 > stem.section[2] - 0.5, ]
   stem <- stem[stem$tree %in% stem.i$tree, ]
 
   rm(stem.i)

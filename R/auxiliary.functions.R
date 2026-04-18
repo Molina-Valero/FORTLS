@@ -929,7 +929,7 @@
                     z.sd = sd(stem$z, na.rm = TRUE),
                     z.min = min(stem$z, na.rm = TRUE),
                     z.max = max(stem$z, na.rm = TRUE),
-                    z.p95 <- quantile(stem$z, probs = 0.95, na.rm = TRUE))
+                    z.p99 <- quantile(stem$z, probs = 0.99, na.rm = TRUE))
   return(out)
 
 }
