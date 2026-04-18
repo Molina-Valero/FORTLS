@@ -1,7 +1,7 @@
 Package: FORTLS
 Title: Automatic Processing of Terrestrial-Based Technologies Point Cloud Data for Forestry Purposes
-Version: 2.0.0
-Date: 2026-4-8
+Version: 2.0.1
+Date: 2026-4-17
 Authors@R: c(
     person("Juan Alberto", "Molina-Valero", role = c("aut", "cph", "cre"),
     email = "jamolinavalero@gmail.com"),
