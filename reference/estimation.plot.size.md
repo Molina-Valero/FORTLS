@@ -139,154 +139,154 @@ tree.tls <- Rioja.data$tree.tls
 estimation.plot.size(tree.tls)
 #> Computing simulations for plot: '1'
 #> Warning: For TLS plot '1', maximum 'k' was reduced to 35, since this is the number of trees in the plot.
-#>  (0.38 secs)
+#>  (0.27 secs)
 #> Computing simulations for plot: '2'
 #> Warning: For TLS plot '2', maximum 'k' was reduced to 47, since this is the number of trees in the plot.
-#>  (0.39 secs)
+#>  (0.27 secs)
 #> Computing simulations for plot: '3'
 #> Warning: For TLS plot '3', maximum 'k' was reduced to 44, since this is the number of trees in the plot.
-#>  (0.38 secs)
+#>  (0.27 secs)
 #> Computing simulations for plot: '4'
 #> Warning: For TLS plot '4', maximum 'k' was reduced to 38, since this is the number of trees in the plot.
-#>  (0.39 secs)
+#>  (0.28 secs)
 #> Computing simulations for plot: '5'
 #> Warning: For TLS plot '5', maximum 'k' was reduced to 44, since this is the number of trees in the plot.
-#>  (0.4 secs)
+#>  (0.29 secs)
 #> Computing simulations for plot: '6'
 #> Warning: For TLS plot '6', maximum 'k' was reduced to 36, since this is the number of trees in the plot.
-#>  (0.36 secs)
+#>  (0.26 secs)
 #> Computing simulations for plot: '7'
 #> Warning: For TLS plot '7', maximum 'k' was reduced to 33, since this is the number of trees in the plot.
-#>  (0.35 secs)
+#>  (0.25 secs)
 #> Computing simulations for plot: '8'
 #> Warning: For TLS plot '8', maximum 'k' was reduced to 46, since this is the number of trees in the plot.
-#>  (0.38 secs)
+#>  (0.28 secs)
 #> Computing simulations for plot: '9'
 #> Warning: For TLS plot '9', maximum 'k' was reduced to 38, since this is the number of trees in the plot.
-#>  (0.35 secs)
+#>  (0.25 secs)
 #> Computing simulations for plot: '10'
 #> Warning: For TLS plot '10', maximum 'k' was reduced to 26, since this is the number of trees in the plot.
-#>  (0.32 secs)
+#>  (0.23 secs)
 #> Computing simulations for plot: '11'
 #> Warning: For TLS plot '11', maximum 'k' was reduced to 31, since this is the number of trees in the plot.
-#>  (0.37 secs)
+#>  (0.27 secs)
 #> Computing simulations for plot: '12'
 #> Warning: For TLS plot '12', maximum 'k' was reduced to 36, since this is the number of trees in the plot.
-#>  (0.38 secs)
+#>  (0.27 secs)
 #> Computing simulations for plot: '13'
 #> Warning: For TLS plot '13', maximum 'k' was reduced to 40, since this is the number of trees in the plot.
-#>  (0.38 secs)
+#>  (0.27 secs)
 #> Computing simulations for plot: '14'
 #> Warning: For TLS plot '14', maximum 'k' was reduced to 38, since this is the number of trees in the plot.
-#>  (0.39 secs)
+#>  (0.28 secs)
 #> Computing simulations for plot: '15'
 #> Warning: For TLS plot '15', maximum 'k' was reduced to 36, since this is the number of trees in the plot.
-#>  (0.39 secs)
+#>  (0.28 secs)
 #> Computing simulations for plot: '16'
 #> Warning: For TLS plot '16', maximum 'k' was reduced to 36, since this is the number of trees in the plot.
-#>  (0.38 secs)
+#>  (0.27 secs)
 
 
 estimation.plot.size(tree.tls, average = TRUE)
 #> Computing simulations for plot: '1'
 #> Warning: For TLS plot '1', maximum 'k' was reduced to 35, since this is the number of trees in the plot.
-#>  (0.39 secs)
+#>  (0.29 secs)
 #> Computing simulations for plot: '2'
 #> Warning: For TLS plot '2', maximum 'k' was reduced to 47, since this is the number of trees in the plot.
-#>  (0.4 secs)
+#>  (0.29 secs)
 #> Computing simulations for plot: '3'
 #> Warning: For TLS plot '3', maximum 'k' was reduced to 44, since this is the number of trees in the plot.
-#>  (0.39 secs)
+#>  (0.29 secs)
 #> Computing simulations for plot: '4'
 #> Warning: For TLS plot '4', maximum 'k' was reduced to 38, since this is the number of trees in the plot.
-#>  (0.42 secs)
+#>  (0.29 secs)
 #> Computing simulations for plot: '5'
 #> Warning: For TLS plot '5', maximum 'k' was reduced to 44, since this is the number of trees in the plot.
-#>  (0.4 secs)
+#>  (0.29 secs)
 #> Computing simulations for plot: '6'
 #> Warning: For TLS plot '6', maximum 'k' was reduced to 36, since this is the number of trees in the plot.
-#>  (0.36 secs)
+#>  (0.26 secs)
 #> Computing simulations for plot: '7'
 #> Warning: For TLS plot '7', maximum 'k' was reduced to 33, since this is the number of trees in the plot.
-#>  (0.36 secs)
+#>  (0.26 secs)
 #> Computing simulations for plot: '8'
 #> Warning: For TLS plot '8', maximum 'k' was reduced to 46, since this is the number of trees in the plot.
-#>  (0.4 secs)
+#>  (0.29 secs)
 #> Computing simulations for plot: '9'
 #> Warning: For TLS plot '9', maximum 'k' was reduced to 38, since this is the number of trees in the plot.
-#>  (0.36 secs)
+#>  (0.26 secs)
 #> Computing simulations for plot: '10'
 #> Warning: For TLS plot '10', maximum 'k' was reduced to 26, since this is the number of trees in the plot.
-#>  (0.33 secs)
+#>  (0.24 secs)
 #> Computing simulations for plot: '11'
 #> Warning: For TLS plot '11', maximum 'k' was reduced to 31, since this is the number of trees in the plot.
-#>  (0.38 secs)
+#>  (0.28 secs)
 #> Computing simulations for plot: '12'
 #> Warning: For TLS plot '12', maximum 'k' was reduced to 36, since this is the number of trees in the plot.
-#>  (0.4 secs)
+#>  (0.3 secs)
 #> Computing simulations for plot: '13'
 #> Warning: For TLS plot '13', maximum 'k' was reduced to 40, since this is the number of trees in the plot.
-#>  (0.39 secs)
+#>  (0.29 secs)
 #> Computing simulations for plot: '14'
 #> Warning: For TLS plot '14', maximum 'k' was reduced to 38, since this is the number of trees in the plot.
-#>  (0.4 secs)
+#>  (0.29 secs)
 #> Computing simulations for plot: '15'
 #> Warning: For TLS plot '15', maximum 'k' was reduced to 36, since this is the number of trees in the plot.
-#>  (0.4 secs)
+#>  (0.29 secs)
 #> Computing simulations for plot: '16'
 #> Warning: For TLS plot '16', maximum 'k' was reduced to 36, since this is the number of trees in the plot.
-#>  (0.4 secs)
+#>  (0.29 secs)
 
 
 estimation.plot.size(tree.tls, all.plot.designs = TRUE)
 #> Computing simulations for plot: '1'
 #> Warning: For TLS plot '1', maximum 'k' was reduced to 35, since this is the number of trees in the plot.
-#>  (0.39 secs)
+#>  (0.29 secs)
 #> Computing simulations for plot: '2'
 #> Warning: For TLS plot '2', maximum 'k' was reduced to 47, since this is the number of trees in the plot.
-#>  (0.4 secs)
+#>  (0.3 secs)
 #> Computing simulations for plot: '3'
 #> Warning: For TLS plot '3', maximum 'k' was reduced to 44, since this is the number of trees in the plot.
-#>  (0.39 secs)
+#>  (0.29 secs)
 #> Computing simulations for plot: '4'
 #> Warning: For TLS plot '4', maximum 'k' was reduced to 38, since this is the number of trees in the plot.
-#>  (0.4 secs)
+#>  (0.29 secs)
 #> Computing simulations for plot: '5'
 #> Warning: For TLS plot '5', maximum 'k' was reduced to 44, since this is the number of trees in the plot.
-#>  (0.41 secs)
+#>  (0.3 secs)
 #> Computing simulations for plot: '6'
 #> Warning: For TLS plot '6', maximum 'k' was reduced to 36, since this is the number of trees in the plot.
-#>  (0.37 secs)
+#>  (0.27 secs)
 #> Computing simulations for plot: '7'
 #> Warning: For TLS plot '7', maximum 'k' was reduced to 33, since this is the number of trees in the plot.
-#>  (0.52 secs)
+#>  (0.45 secs)
 #> Computing simulations for plot: '8'
 #> Warning: For TLS plot '8', maximum 'k' was reduced to 46, since this is the number of trees in the plot.
-#>  (0.37 secs)
+#>  (0.26 secs)
 #> Computing simulations for plot: '9'
 #> Warning: For TLS plot '9', maximum 'k' was reduced to 38, since this is the number of trees in the plot.
-#>  (0.34 secs)
+#>  (0.25 secs)
 #> Computing simulations for plot: '10'
 #> Warning: For TLS plot '10', maximum 'k' was reduced to 26, since this is the number of trees in the plot.
-#>  (0.32 secs)
+#>  (0.23 secs)
 #> Computing simulations for plot: '11'
 #> Warning: For TLS plot '11', maximum 'k' was reduced to 31, since this is the number of trees in the plot.
-#>  (0.37 secs)
+#>  (0.26 secs)
 #> Computing simulations for plot: '12'
 #> Warning: For TLS plot '12', maximum 'k' was reduced to 36, since this is the number of trees in the plot.
-#>  (0.37 secs)
+#>  (0.26 secs)
 #> Computing simulations for plot: '13'
 #> Warning: For TLS plot '13', maximum 'k' was reduced to 40, since this is the number of trees in the plot.
-#>  (0.37 secs)
+#>  (0.27 secs)
 #> Computing simulations for plot: '14'
 #> Warning: For TLS plot '14', maximum 'k' was reduced to 38, since this is the number of trees in the plot.
-#>  (0.38 secs)
+#>  (0.28 secs)
 #> Computing simulations for plot: '15'
 #> Warning: For TLS plot '15', maximum 'k' was reduced to 36, since this is the number of trees in the plot.
-#>  (0.38 secs)
+#>  (0.27 secs)
 #> Computing simulations for plot: '16'
 #> Warning: For TLS plot '16', maximum 'k' was reduced to 36, since this is the number of trees in the plot.
-#>  (0.38 secs)
+#>  (0.27 secs)
 
 
 
