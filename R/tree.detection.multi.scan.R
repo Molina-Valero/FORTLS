@@ -148,10 +148,10 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   }
 
 
-  # 5. Remove cluster with fewer than 10 points
+  # 5. Remove cluster with fewer than 15 points
 
-  stem$cluster <- dbscan::dbscan(stem[, c("x", "y", "z"), drop = FALSE], eps = tls.precision, minPts = 3)$cluster
-  stem <- stem[stem$cluster > 0 & ave(stem$cluster, stem$cluster, FUN = length) > 10, , drop = FALSE]
+  stem$cluster <- dbscan::dbscan(stem[, c("x", "y", "z"), drop = FALSE], eps = tls.precision, minPts = 2)$cluster
+  stem <- stem[stem$cluster > 0 & ave(stem$cluster, stem$cluster, FUN = length) > 20, , drop = FALSE]
 
 
   # 7. Detection of regions of high point density

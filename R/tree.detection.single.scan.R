@@ -163,10 +163,10 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
 
   }
 
-  # 5. Remove cluster with fewer than 5 points
+  # 5. Remove cluster with fewer than 20 points
 
-  stem$cluster <- dbscan::dbscan(stem[, c("x", "y", "z"), drop = FALSE], eps = tls.precision, minPts = 3)$cluster
-  stem <- stem[stem$cluster > 0 & ave(stem$cluster, stem$cluster, FUN = length) > 5, , drop = FALSE]
+  stem$cluster <- dbscan::dbscan(stem[, c("x", "y", "z"), drop = FALSE], eps = tls.precision, minPts = 2)$cluster
+  stem <- stem[stem$cluster > 0 & ave(stem$cluster, stem$cluster, FUN = length) > 20, , drop = FALSE]
 
 
   stem.2 <- NULL
@@ -278,7 +278,8 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   # Breaks argument
 
   if(is.null(breaks)){
-    breaks <- c(0.2, seq(from = 0.4, to = max(woody$z), by = 0.3))
+    breaks <- seq(from = 0.4, to = max(woody$z), by = 0.3)
+    # breaks <- c(0.2, seq(from = 0.4, to = max(woody$z), by = 0.3))
     breaks <- breaks[-length(breaks)]}
 
   gc()

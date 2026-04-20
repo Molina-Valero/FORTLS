@@ -369,7 +369,7 @@
   .center.r <- sqrt(.dat$sec[1] ^ 2 + .center.rho ^ 2)
   .center.theta <- atan2(.dat$sec[1], .center.rho)
 
-  if(is.na(.cv) | .cv > 0.15 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2) {return(.filter)}
+  if(is.na(.cv) | .cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2) {return(.filter)}
 
   # Center behind tree surface
   if(stats::quantile(.dat$rho, prob = 0.05, na.rm = T) > .center.r) {return(.filter)}
@@ -929,7 +929,7 @@
                     z.sd = sd(stem$z, na.rm = TRUE),
                     z.min = min(stem$z, na.rm = TRUE),
                     z.max = max(stem$z, na.rm = TRUE),
-                    z.p99 <- quantile(stem$z, probs = 0.99, na.rm = TRUE))
+                    z.p99 <- stats::quantile(stem$z, probs = 0.99, na.rm = TRUE))
   return(out)
 
 }
