@@ -268,11 +268,11 @@ bias <- relative.bias(simulations = Rioja.simulations,
               variables = c("N", "G", "d", "dg", "d.0", "h", "h.0"),
               save.result = FALSE, dir.result = NULL)
 #> Computing relative bias for fixed area plots
-#>  (0.19 secs)
+#>  (0.23 secs)
 #> Computing relative bias for k-tree plots
-#>  (0.05 secs)
+#>  (0.06 secs)
 #> Computing relative bias for angle-count plots
-#>  (0.03 secs)
+#>  (0.04 secs)
 ```
 
 The function calculates the relative bias between the field data
@@ -357,7 +357,7 @@ cor <- correlations(simulations = fixed.area.simulations,
              method = c("pearson", "spearman"), 
              save.result = FALSE, dir.result = NULL)
 #> Computing correlations for fixed area plots
-#>  (15.89 secs)
+#>  (19.61 secs)
 ```
 
 In addition to the calculation of the correlation measures, the function
