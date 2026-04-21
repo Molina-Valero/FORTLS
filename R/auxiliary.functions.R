@@ -807,12 +807,8 @@
 
   # Application of some quality criteria to make sure that the point cloud belongs to a tree section
 
-  if(.radio > 0.1){
-    if(is.na(.cv) | .cv > 0.1 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2){return(.filter)}}
+  if(is.na(.cv) | .cv > 0.15 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2) {return(.filter)}
 
-
-  if(.radio < 0.1){
-    if(is.na(.cv) | .cv > 0.25 | length(.dat$dist[.dat$dist>stats::quantile(.dat$dist, prob = 0.25, na.rm = T)]) < 2){return(.filter)}}
 
 
   # At least 95 % of distances should be greater than .radio / 2 for trees larger than 20 cm at dbh
@@ -932,7 +928,8 @@
                     n.w.ratio = n.w.ratio,
                     z.sd = sd(stem$z, na.rm = TRUE),
                     z.min = min(stem$z, na.rm = TRUE),
-                    z.max = max(stem$z, na.rm = TRUE))
+                    z.max = max(stem$z, na.rm = TRUE),
+                    z.p99 <- stats::quantile(stem$z, probs = 0.99, na.rm = TRUE))
   return(out)
 
 }

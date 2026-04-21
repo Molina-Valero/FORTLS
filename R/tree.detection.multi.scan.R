@@ -91,7 +91,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                      z = stem[, 3])
 
 
-  # 2.1 Computing geometric features (Verticality)
+  # 2 Computing geometric features (Verticality)
 
   message("Retention of points with high verticality & low surface variation")
 
@@ -103,63 +103,41 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
                                                num_threads = threads)
 
 
-  # GeometricFeatures <- geometric_features_py(data = woody[, c("point", "x", "y", "z")],
-  #                                            dist = geo.dist,
-  #                                            threads = as.integer(threads))
-
-
   stem <- merge(stem, GeometricFeatures[, c("point", "Verticality")], by = "point")
 
   rm(GeometricFeatures)
 
-  # 2.2 Retention of points with high verticality
+  # 2.1 Retention of points with high verticality
 
-  stem <- stem[stem$ Verticality> 0.7 & !is.na(stem$Verticality), ]
+  stem <- stem[!is.na(stem$Verticality), ]
+  stem <- stem[stem$Verticality > 0.7, ]
 
 
-  # 2.3 Computing geometric features (Planarity, Surface_variation & Verticality)
+  # 3 Computing geometric features (Surface_variation & Verticality)
 
   GeometricFeatures <- geometric_features_dist(points = as.matrix(stem[, c("point", "x", "y", "z")]),
                                                dist = geo.dist,
-                                               Planarity = TRUE,
                                                Surface_variation = TRUE,
                                                Verticality = TRUE,
                                                num_threads = threads)
 
   stem <- merge(stem[, c("point", "x", "y", "z")],
-                GeometricFeatures[, c("point", "Planarity", "Surface_variation", "Verticality")], by = "point")
+                GeometricFeatures[, c("point", "Surface_variation", "Verticality")], by = "point")
 
 
-  # 3 Retention of points with high verticality
+  # 3.1 Retention of points with high verticality
 
+  stem <- stem[!is.na(stem$Verticality), ]
+  stem <- stem[stem$Verticality > 0.7, ]
 
-  stem <- stem[stem$Verticality > 0.7 & !is.na(stem$Verticality), ]
-
-  # 4. Retention of points with low surface variation
+  # 3.2 Retention of points with low surface variation
 
   stem$Surface_variation <- stem$Surface_variation / 0.33
-  stem$Surface_variation <- ifelse(is.na(stem$Surface_variation), stats::runif(1), stem$Surface_variation)
   stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
   stem <- stem[stem$Surface_variation < stem$prob.ver, ]
 
 
-  # 5. Remove points with very hight planarity
-
-  # stem <- stem[stem$Planarity > 0.05, ]
-
-  stem$Planarity <- ifelse(is.na(stem$Planarity), stats::runif(1), stem$Planarity)
-  stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
-  stem <- stem[stem$Planarity > stem$prob.ver, ]
-
-
-  # 6. Remove cluster with fewer than 10 points
-
-  stem$cluster <- dbscan::dbscan(stem[, c("x", "y", "z"), drop = FALSE], eps = tls.precision, minPts = 2)$cluster
-  # tem <- stem[stem$cluster > 0 & ave(stem$cluster, stem$cluster, FUN = length) > 10, , drop = FALSE]
-  stem <- stem[stem$cluster > 0 & ave(stem$cluster, stem$cluster, FUN = length) > mean(table(stem$cluster), na.rm = TRUE), , drop = FALSE]
-
-
-  # 7. Retention of high points in the stem section defined (understory = TRUE)
+  # 4. Retention of high points in the stem section defined (understory = TRUE)
 
   if(!is.null(understory)){
 
@@ -167,13 +145,16 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
     stem$prob.ver <- stats::runif(nrow(stem), min = 0, max = 1)
     stem <- stem[stem$ver > stem$prob.ver, ]
 
-    stem$cluster <- dbscan::dbscan(stem[, c("x", "y", "z"), drop = FALSE], eps = tls.precision, minPts = 2)$cluster
-    stem <- stem[stem$cluster > 0 & ave(stem$cluster, stem$cluster, FUN = length) > 10, , drop = FALSE]
-
   }
 
 
-  # 8. Detection of regions of high point density
+  # 5. Remove cluster with fewer than 15 points
+
+  stem$cluster <- dbscan::dbscan(stem[, c("x", "y", "z"), drop = FALSE], eps = tls.precision, minPts = 2)$cluster
+  stem <- stem[stem$cluster > 0 & ave(stem$cluster, stem$cluster, FUN = length) > 20, , drop = FALSE]
+
+
+  # 7. Detection of regions of high point density
 
   stem <- VoxR::vox(stem[, c("x", "y", "z")], res = tls.precision)
 
@@ -231,7 +212,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
   # Filtering stems axis
 
   stem.i <- do.call(rbind, lapply(split(stem, stem$tree), .n.w.ratio))
-  stem.i <- stem.i[stem.i$z.max > stem.section[2] - 0.5, ]
+  stem.i <- stem.i[stem.i$z.p99 > stem.section[2] - 0.5, ]
   stem <- stem[stem$tree %in% stem.i$tree, ]
 
   rm(stem.i)
@@ -352,7 +333,6 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
         .dbscan <- dbscan::dbscan(.cut[, c("x", "y"), drop = FALSE], eps = tls.precision)
         .cut$cluster <- .dbscan$cluster
         .cut <- .cut[.cut$cluster > 0 & ave(.cut$cluster, .cut$cluster, FUN = length) > 2, , drop = FALSE]
-        # .cut <- .cut[.cut$cluster > 0, , drop = FALSE]
         }
 
     # Checking if there are clusters
@@ -579,11 +559,15 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     .dat <- .filter[which(.filter$tree == i), ]
 
-    if(nrow(.dat) < 2)
-      next
+    if(length(breaks) > 3){
 
-    if(suppressWarnings(min(diff(.dat$sec, lag = 2), na.rm = TRUE)) > 0.6)
-      next
+      if(nrow(.dat) < 3)
+        next
+
+      if (!any(suppressWarnings(diff(.dat$sec, lag = 2)) >= 0.6, na.rm = TRUE))
+        next
+
+      }
 
     .dat <- .dat[order(abs(.dat$dif)), ]
 
@@ -877,28 +861,31 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
     cloud_sf <- sf::st_as_sf(data, coords = c("x", "y"))
     stopifnot(nrow(cloud_sf) == nrow(data))
-
     bbox     <- sf::st_as_sfc(sf::st_bbox(cloud_sf))
     trees_sf <- sf::st_as_sf(.tree, coords = c("sec.x", "sec.y"))
     voronoi  <- sf::st_collection_extract(
       sf::st_voronoi(sf::st_union(trees_sf), envelope = bbox)
     )
 
-    tree_idx <- vapply(sf::st_intersects(voronoi, trees_sf), `[`, integer(1), 1L)
-    voronoi  <- sf::st_as_sf(data.frame(
+    tree_idx <- vapply(
+      sf::st_intersects(voronoi, trees_sf),
+      function(x) if (length(x) == 0L) NA_integer_ else x[1L],
+      integer(1)
+    )
+    voronoi <- sf::st_as_sf(data.frame(
       tree     = .tree$tree[tree_idx],
       geometry = sf::st_geometry(voronoi)
     ))
 
     int_idx       <- sf::st_intersects(cloud_sf, voronoi)
-    cloud_sf$tree <- vapply(
+    cloud_sf$tree <- voronoi$tree[vapply(
       int_idx,
       function(x) if (length(x) == 0L) NA_integer_ else x[1L],
       integer(1)
-    )
+    )]
 
     .P99 <- do.call(rbind, lapply(unique(voronoi$tree), function(id) {
-      sec.max <- .tree$sec.max[.tree$tree == id]
+      sec.max <- .tree$sec.max[match(id, .tree$tree)]
       z       <- cloud_sf$z[!is.na(cloud_sf$tree) & cloud_sf$tree == id & cloud_sf$z > sec.max]
       if (length(z) < 1L) return(data.frame(tree = id, h = 0))
       data.frame(tree = id, h = height_perc_cpp(rho_seq = Inf, z = z, rho = z)[, "P99.9"])

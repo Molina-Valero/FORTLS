@@ -146,7 +146,7 @@
         if(nrow(.filt) > 1)
           .filt <- .filt[1, ]
 
-        if(.filt$dist > 2.5 | .filt$dist.rho > 2.5 | .filt$dist.phi > 0.25){next}
+        if(.filt$dist > 2.5 | .filt$dist.rho > 2.5 | .filt$dist.phi > pi/2){next}
 
 
         .filt <- .filt[, c("tree", "cluster", "sec", "dist",
@@ -339,7 +339,7 @@
         if(nrow(.filt) > 1)
           .filt <- .filt[1, ]
 
-        if(.filt$dist > 2.5 | .filt$dist.rho > 2.5 | .filt$dist.phi > 0.25){next}
+        if(.filt$dist > 2.5 | .filt$dist.rho > 2.5 | .filt$dist.phi > pi/2){next}
 
 
         .filt <- .filt[, c("tree", "cluster", "sec", "dist",
@@ -400,7 +400,7 @@
 
     threshold <- mean(.filt$radius) / 2
 
-    .filt <- .filt[.filt$dif < threshold & .filt$dif > - threshold, ]
+    .filt <- .filt[.filt$dif < threshold & .filt$dif > -threshold, ]
 
     if(nrow(.filt) < 1){next}
 
