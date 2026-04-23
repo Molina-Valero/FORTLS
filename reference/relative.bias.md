@@ -249,11 +249,11 @@ dir.result <- tempdir()
 
 rb <- relative.bias(simulations = Rioja.simulations, dir.result = dir.result)
 #> Computing relative bias for fixed area plots
-#>  (0.85 secs)
+#>  (0.79 secs)
 #> Computing relative bias for k-tree plots
-#>  (0.61 secs)
+#>  (0.53 secs)
 #> Computing relative bias for angle-count plots
-#>  (0.47 secs)
+#>  (0.42 secs)
 
 
 # Relative bias for variable 'N'
@@ -261,9 +261,9 @@ rb <- relative.bias(simulations = Rioja.simulations, dir.result = dir.result)
 rb <- relative.bias(simulations = Rioja.simulations, variables = "N",
                     dir.result = dir.result)
 #> Computing relative bias for fixed area plots
-#>  (0.27 secs)
+#>  (0.23 secs)
 #> Computing relative bias for k-tree plots
-#>  (0.17 secs)
+#>  (0.15 secs)
 #> Computing relative bias for angle-count plots
 #>  (0.11 secs)
 
@@ -277,6 +277,6 @@ rb <- relative.bias(simulations = Rioja.simulations["angle.count"],
                                    "hgeom.0", "hharm.0"),
                     dir.result = dir.result)
 #> Computing relative bias for angle-count plots
-#>  (0.84 secs)
+#>  (0.75 secs)
   # }
 ```

@@ -18,7 +18,7 @@ Get the lat stable version of FORTLS from GitHub (included in the master
 branch)
 
 ``` r
-remotes::install_github("Molina-Valero/FORTLS", ref = "devel", dependencies = TRUE)
+remotes::install_github("Molina-Valero/FORTLS", ref = "master", dependencies = TRUE)
 library(FORTLS)
 install_fortls_python_deps()
 ```
