@@ -31,6 +31,19 @@ geometric_features_py <- function(data, dist = 0.1, geom_features_input = NULL, 
 
 }
 
+# Fit circles
 
+fit_circles_macif <- function(points, step = 0.035, width = 0.07, ...) {
 
+  macif <- reticulate::import_from_path("fit_circles_macif", path = system.file("python", package = "FORTLS"))
+
+  pts_np <- reticulate::np_array(as.matrix(points), dtype = "float64")
+
+  result  <- macif$fit_circles_macif(pts_np, step = step, width = width, ...)
+
+  colnames(result) <- c("x", "y", "radius", "residual", "inner", "z")
+
+  as.data.frame(reticulate::py_to_r(result))
+
+}
 

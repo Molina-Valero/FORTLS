@@ -3,6 +3,7 @@
 #' @param envname Name of the virtual environment or conda environment.
 #' @param method Either "virtualenv", "conda", or "auto".
 #' @export
+
 install_fortls_python_deps <- function(envname = "fortls_env", method = "auto") {
   # Install Miniconda if using conda and it's not available
   if (method == "conda") {
@@ -11,7 +12,7 @@ install_fortls_python_deps <- function(envname = "fortls_env", method = "auto") 
 
   reticulate::py_install(
     # packages = c("pandas", "numpy", "jakteristics"),  # Add more as needed
-    packages = c("numpy"),  # Add more as needed
+    packages = c("numpy", "scipy", "scikit-learn"),  # required by fit_circles_macif
     envname = envname,
     method = method,
     pip = TRUE
