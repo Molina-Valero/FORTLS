@@ -16,6 +16,8 @@
   : Distance Sampling Methods for Correcting Occlusions Effects
 - [`estimation.plot.size()`](https://molina-valero.github.io/FORTLS/reference/estimation.plot.size.md)
   : Assess Consistency of Metrics for Simulated TLS Plots
+- [`fit_circles_macif()`](https://molina-valero.github.io/FORTLS/reference/fit_circles_macif.md)
+  : Tree stem diameter estimation.
 - [`install_fortls_python_deps()`](https://molina-valero.github.io/FORTLS/reference/install_fortls_python_deps.md)
   : Install Python dependencies required by FORTLS
 - [`metrics.variables()`](https://molina-valero.github.io/FORTLS/reference/metrics.variables.md)

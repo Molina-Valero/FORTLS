@@ -540,7 +540,7 @@ met.var.TLS <- metrics.variables(tree.tls = tree.tls,
                                  plot.parameters = data.frame(radius = 10, k = 10, BAF = 2),
                                  dir.data = dir.data, dir.result = dir.result)
 #> Computing metrics for plot: '1'
-#>  (8.56 secs)
+#>  (8.3 secs)
 
 
   # }
