@@ -278,8 +278,8 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
   # Breaks argument
 
   if(is.null(breaks)){
-    breaks <- seq(from = 0.4, to = max(woody$z), by = 0.3)
-    # breaks <- c(0.2, seq(from = 0.4, to = max(woody$z), by = 0.3))
+    # breaks <- seq(from = 0.4, to = max(woody$z), by = 0.3)
+    breaks <- c(0.2, seq(from = 0.4, to = max(woody$z), by = 0.3))
     breaks <- breaks[-length(breaks)]}
 
   gc()
@@ -601,6 +601,17 @@ tree.detection.single.scan <- function(data, single.tree = NULL,
     for (i in unique(.filter$tree)) {
 
       .dat <- .filter[which(.filter$tree == i), ]
+
+      if(length(breaks) > 3){
+
+        if(nrow(.dat) < 3)
+          next
+
+        if (!any(suppressWarnings(diff(.dat$sec, lag = 2)) >= 0.6, na.rm = TRUE))
+          next
+
+      }
+
       .dat <- .dat[order(abs(.dat$dif)), ]
 
       .sec.x <- .dat$center.x[nrow(.dat)]

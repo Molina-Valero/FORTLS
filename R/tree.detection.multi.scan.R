@@ -58,7 +58,7 @@ tree.detection.multi.scan <- function(data, single.tree = NULL,
 
 
   if(!is.null(data$intensity) & suppressWarnings(mean(data$intensity, na.rm = T)) > 0 & is.null(data$GLA)){
-    woody <- data[data$intensity > mean(data$intensity, na.rm = T), ]}
+    woody <- data[data$intensity > stats::quantile(data$intensity, prob = 0.05), ]}
 
 
   if(!is.null(data$intensity) & suppressWarnings(mean(data$intensity, na.rm = T)) > 0 & !is.null(data$GLA)){

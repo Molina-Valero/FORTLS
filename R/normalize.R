@@ -6,7 +6,7 @@ utils::globalVariables(c(
 ))
 
 
-normalize <- function(las, normalized = NULL,
+normalize <- function(las, normalized = NULL, classification = TRUE,
                       x.center = NULL, y.center = NULL,
                       x.side = NULL, y.side = NULL,
                       xpoly = NULL, ypoly = NULL,
@@ -72,7 +72,7 @@ normalize <- function(las, normalized = NULL,
     }
 
     # If normalized = TRUE, append "Classification"
-    if (!is.null(normalized)) {
+    if (!is.null(normalized) & !is.null(classification)) {
       select_option <- paste(select_option, "Classification")
     }
 
@@ -304,7 +304,8 @@ normalize <- function(las, normalized = NULL,
   }
 
   # Removing points classified as ground - OPTIMIZED with data.table syntax
-  data <- data[Classification == 1]
+  if("Classification" %in% names(data))
+    data <- data[Classification == 1]
 
 
 
